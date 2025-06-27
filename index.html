@@ -299,8 +299,44 @@
     <script src="core/PresetManager.js"></script>
     <script src="VIB34D_ADAPTIVE_CARD_VISUALIZER.js"></script>
 
-    <script>
+    <script type="module">
         console.log('🌌 VIB3CODE FIXED ARCHITECTURE - Reusable Canvas System');
+        
+        // Initialize VIB3STYLEPACK core systems
+        let homeMaster, reactivityBridge, presetManager;
+        
+        async function initializeCoreSystem() {
+            try {
+                // Initialize VIB3HomeMaster with all parameters
+                homeMaster = new VIB3HomeMaster({
+                    sections: ['HOME', 'TECH', 'RESEARCH', 'MEDIA', 'INNOVATION'],
+                    geometries: {
+                        HOME: 'hypercube',
+                        TECH: 'tetrahedron', 
+                        RESEARCH: 'sphere',
+                        MEDIA: 'torus',
+                        INNOVATION: 'fractal'
+                    }
+                });
+                
+                // Initialize ReactivityBridge
+                reactivityBridge = new UnifiedReactivityBridge(homeMaster);
+                
+                // Initialize PresetManager
+                presetManager = new PresetManager();
+                await presetManager.loadThemeCollection('vib3code-blog');
+                
+                console.log('✅ VIB3STYLEPACK core systems initialized');
+                
+                // Connect to hypercube navigation
+                window.homeMaster = homeMaster;
+                window.reactivityBridge = reactivityBridge;
+                window.presetManager = presetManager;
+                
+            } catch (error) {
+                console.warn('⚠️ Core systems not available, using standalone mode:', error);
+            }
+        }
         
         // FACE CONFIGURATION - Same elements, different content per face
         const FACE_CONFIGS = {
@@ -387,13 +423,16 @@
             async init() {
                 console.log('🎯 Initializing FIXED Hypercube Navigation...');
                 
-                // Load site content first
+                // Initialize VIB3STYLEPACK core systems first
+                await initializeCoreSystem();
+                
+                // Load site content
                 await this.loadSiteContent();
                 
-                // Initialize reusable visualizers
+                // Initialize reusable visualizers with proper VIB3 integration
                 await this.initializeVisualizers();
                 
-                // Setup navigation
+                // Setup navigation with VIB3 reactivity
                 this.setupNavigation();
                 
                 // Load initial face
@@ -402,7 +441,7 @@
                 // Hide loading indicator  
                 document.getElementById('loadingIndicator').style.display = 'none';
                 
-                console.log('✅ FIXED Hypercube Navigation ready - 5 WebGL contexts total (not 31!)');
+                console.log('✅ FIXED Hypercube Navigation ready with full VIB3STYLEPACK integration');
                 document.getElementById('contextCount').textContent = '5';
             }
             
@@ -503,6 +542,21 @@
                 
                 const faceConfig = FACE_CONFIGS[faceIndex];
                 
+                // Register section transition with VIB3HomeMaster
+                if (window.homeMaster) {
+                    window.homeMaster.transitionToSection(faceConfig.name);
+                    console.log(`🎯 VIB3 section transition: ${faceConfig.name}`);
+                }
+                
+                // Trigger reactivity bridge updates
+                if (window.reactivityBridge) {
+                    window.reactivityBridge.triggerReaction('sectionTransition', {
+                        section: faceConfig.name,
+                        geometry: faceConfig.geometry,
+                        intensity: 0.8
+                    });
+                }
+                
                 // Update face indicator
                 document.getElementById('currentFaceName').textContent = faceConfig.name;
                 document.getElementById('currentFaceIndex').textContent = faceIndex;
@@ -522,12 +576,24 @@
             updateVisualizersGeometry(geometry) {
                 console.log(`🔄 REUSING same canvases with new geometry: ${geometry}`);
                 
-                // Update all 5 reusable visualizers to new geometry
+                // Get VIB3 parameters for this geometry
+                let vib3Params = {};
+                if (window.homeMaster) {
+                    vib3Params = window.homeMaster.getParametersForGeometry(geometry);
+                    console.log(`📊 VIB3 parameters for ${geometry}:`, vib3Params);
+                }
+                
+                // Update all 5 reusable visualizers to new geometry with VIB3 parameters
                 Object.values(this.visualizers).forEach(visualizer => {
                     if (visualizer && visualizer.updateGeometry) {
-                        visualizer.updateGeometry(geometry);
+                        visualizer.updateGeometry(geometry, vib3Params);
                     }
                 });
+                
+                // Sync all visual layers through ReactivityBridge
+                if (window.reactivityBridge) {
+                    window.reactivityBridge.syncAllLayers();
+                }
             }
             
             updateContent(content) {

@@ -511,4 +511,4 @@ class VIB3HomeMaster {
     }
 }
 
-export default VIB3HomeMaster;
+// VIB3HomeMaster class available globally

@@ -207,6 +207,7 @@ class AdaptiveCardVisualizer {
         try {
             // Vertex shader adapted from demo
             const vertexShaderSource = `
+                precision mediump float;
                 attribute vec3 a_position;
                 uniform mat4 u_matrix;
                 uniform float u_time;
@@ -773,6 +774,49 @@ class AdaptiveCardVisualizer {
         }
     }
     
+    updateGeometry(newGeometry, vib3Params = {}) {
+        if (!this.isInitialized) return;
+        
+        this.options.geometry = newGeometry;
+        this.vib3Params = vib3Params;
+        console.log(`🔄 Geometry updated to: ${newGeometry} with VIB3 params:`, vib3Params);
+        
+        // Update WebGL uniforms to reflect new geometry and VIB3 parameters
+        if (this.gl && this.program) {
+            this.setGeometryUniforms();
+            this.updateVIB3Uniforms(vib3Params);
+        }
+    }
+    
+    updateVIB3Uniforms(params) {
+        if (!this.gl || !this.program) return;
+        
+        const gl = this.gl;
+        
+        // Apply VIB3 parameters to shader uniforms
+        if (params.intensity !== undefined) {
+            const intensityLocation = gl.getUniformLocation(this.program, 'u_intensity');
+            if (intensityLocation) gl.uniform1f(intensityLocation, params.intensity);
+        }
+        
+        if (params.dimension !== undefined) {
+            const dimensionLocation = gl.getUniformLocation(this.program, 'u_dimension');
+            if (dimensionLocation) gl.uniform1f(dimensionLocation, params.dimension);
+        }
+        
+        if (params.complexity !== undefined) {
+            const complexityLocation = gl.getUniformLocation(this.program, 'u_emergence');
+            if (complexityLocation) gl.uniform1f(complexityLocation, params.complexity);
+        }
+        
+        if (params.coherence !== undefined) {
+            const coherenceLocation = gl.getUniformLocation(this.program, 'u_crystallization');
+            if (coherenceLocation) gl.uniform1f(coherenceLocation, params.coherence);
+        }
+        
+        console.log('✅ VIB3 uniforms updated');
+    }
+
     destroy() {
         if (this.animationId) {
             cancelAnimationFrame(this.animationId);

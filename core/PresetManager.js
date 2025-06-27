@@ -374,4 +374,4 @@ class PresetManager {
     }
 }
 
-export default PresetManager;
+// PresetManager class available globally

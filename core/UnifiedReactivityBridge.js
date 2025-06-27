@@ -721,4 +721,4 @@ class UnifiedReactivityBridge {
     }
 }
 
-export default UnifiedReactivityBridge;
+// UnifiedReactivityBridge class available globally
