@@ -70,8 +70,9 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.3;
+            opacity: 0.6;
             pointer-events: none;
+            border: 2px solid rgba(255, 0, 255, 0.5);
         }
         
         /* REUSABLE BLOG CARDS - SAME POSITIONS, CONTENT ADAPTS */
@@ -120,10 +121,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0;
-            opacity: 0.5;
+            z-index: 1;
+            opacity: 0.8;
             pointer-events: none;
             transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 1px solid rgba(0, 255, 255, 0.3);
         }
         
         .card-content {
@@ -131,6 +133,8 @@
             padding: 20px;
             height: 100%;
             z-index: 10;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
         }
         
         .card-title {
@@ -260,36 +264,36 @@
     <div class="blog-card blog-card-1" id="blogCard1">
         <canvas class="card-canvas" id="cardCanvas1"></canvas>
         <div class="card-content">
-            <h3 class="card-title" id="cardTitle1">Loading...</h3>
-            <h4 class="card-subtitle" id="cardSubtitle1">Loading...</h4>
-            <div class="article-content" id="articleContent1">Loading content...</div>
+            <h3 class="card-title" id="cardTitle1">VIB3CODE System</h3>
+            <h4 class="card-subtitle" id="cardSubtitle1">Hypercube Navigation</h4>
+            <div class="article-content" id="articleContent1">WebGL reusable canvas architecture with 5 total contexts. Drag from screen edges to navigate between faces.</div>
         </div>
     </div>
     
     <div class="blog-card blog-card-2" id="blogCard2">
         <canvas class="card-canvas" id="cardCanvas2"></canvas>
         <div class="card-content">
-            <h3 class="card-title" id="cardTitle2">Loading...</h3>
-            <h4 class="card-subtitle" id="cardSubtitle2">Loading...</h4>
-            <div class="article-content" id="articleContent2">Loading content...</div>
+            <h3 class="card-title" id="cardTitle2">Architecture Status</h3>
+            <h4 class="card-subtitle" id="cardSubtitle2">Performance Metrics</h4>
+            <div class="article-content" id="articleContent2">5 WebGL contexts active (84% reduction from 31). Reusable canvas system with geometry switching.</div>
         </div>
     </div>
     
     <div class="blog-card blog-card-3" id="blogCard3">
         <canvas class="card-canvas" id="cardCanvas3"></canvas>
         <div class="card-content">
-            <h3 class="card-title" id="cardTitle3">Loading...</h3>
-            <h4 class="card-subtitle" id="cardSubtitle3">Loading...</h4>
-            <div class="article-content" id="articleContent3">Loading content...</div>
+            <h3 class="card-title" id="cardTitle3">Visual Systems</h3>
+            <h4 class="card-subtitle" id="cardSubtitle3">WebGL Shaders</h4>
+            <div class="article-content" id="articleContent3">Dynamic geometry morphing with hypercube, tetrahedron, sphere, torus, and fractal patterns.</div>
         </div>
     </div>
     
     <div class="blog-card blog-card-sidebar" id="blogCardSidebar">
         <canvas class="card-canvas" id="cardCanvasSidebar"></canvas>
         <div class="card-content">
-            <h3 class="card-title" id="cardTitleSidebar">Loading...</h3>
-            <h4 class="card-subtitle" id="cardSubtitleSidebar">Loading...</h4>
-            <div class="article-content" id="articleContentSidebar">Loading content...</div>
+            <h3 class="card-title" id="cardTitleSidebar">Navigation Guide</h3>
+            <h4 class="card-subtitle" id="cardSubtitleSidebar">Hypercube Control</h4>
+            <div class="article-content" id="articleContentSidebar">Drag from 250px bezel zones on screen edges. Arrow keys also work. Visual feedback shows transitions.</div>
         </div>
     </div>
 
@@ -471,6 +475,7 @@
                 try {
                     // Background visualizer
                     const backgroundCanvas = document.getElementById('backgroundCanvas');
+                    console.log('🎨 Background canvas element:', backgroundCanvas);
                     this.visualizers.background = new AdaptiveCardVisualizer(backgroundCanvas.parentElement, {
                         canvas: backgroundCanvas,
                         geometry: 'hypercube',

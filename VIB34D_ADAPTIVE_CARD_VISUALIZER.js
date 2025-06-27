@@ -147,29 +147,46 @@ class AdaptiveCardVisualizer {
         console.log(`🎨 Initializing AdaptiveCardVisualizer for geometry ${this.options.geometry}...`);
         
         try {
-            // Get WebGL context from pool
-            console.log('🔧 Getting WebGL context from pool...');
-            const contextData = window.vib34dContextPool.getContext(this.options.width, this.options.height);
-            
-            if (!contextData) {
-                console.log('⚠️ WebGL context pool exhausted, falling back to Canvas 2D');
-                this.initCanvas2DFallback();
-                return;
+            // Use existing canvas if provided, otherwise get from pool
+            if (this.options.canvas) {
+                console.log('🎨 Using provided canvas element:', this.options.canvas.id);
+                this.canvas = this.options.canvas;
+                this.canvas.width = this.options.width;
+                this.canvas.height = this.options.height;
+                this.gl = this.canvas.getContext('webgl', { antialias: true, alpha: true });
+                this.contextId = this.canvas.id || 'provided-canvas';
+            } else {
+                // Get WebGL context from pool
+                console.log('🔧 Getting WebGL context from pool...');
+                const contextData = window.vib34dContextPool.getContext(this.options.width, this.options.height);
+                
+                if (!contextData) {
+                    console.log('⚠️ WebGL context pool exhausted, falling back to Canvas 2D');
+                    this.initCanvas2DFallback();
+                    return;
+                }
+                
+                this.canvas = contextData.canvas;
+                this.gl = contextData.gl;
+                this.contextId = contextData.id;
             }
             
-            this.canvas = contextData.canvas;
-            this.gl = contextData.gl;
-            this.contextId = contextData.id;
-            
-            // Update canvas styling
+            // Update canvas styling and make it visible
             this.canvas.className = 'vib34d-adaptive-canvas';
+            this.canvas.style.display = 'block';
+            this.canvas.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+            this.canvas.style.border = '1px solid rgba(0, 255, 255, 0.3)';
+            console.log(`🖼️ Canvas styled and made visible: ${this.canvas.width}x${this.canvas.height}`);
             
             // Apply dynamic subclasses
             if (this.options.subclasses.length > 0) {
                 this.canvas.className += ' ' + this.options.subclasses.join(' ');
             }
             
-            this.container.appendChild(this.canvas);
+            // Only append if canvas not already in container
+            if (!this.options.canvas) {
+                this.container.appendChild(this.canvas);
+            }
             
             console.log(`✅ Using WebGL context ${this.contextId}`);
             
