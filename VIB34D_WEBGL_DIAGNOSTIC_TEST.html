@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D WebGL Diagnostic & Repair Test</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Orbitron', monospace;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+        
+        .diagnostic-panel {
+            background: rgba(0, 50, 100, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .diagnostic-status {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .status-good { color: #00ff00; }
+        .status-warning { color: #ffaa00; }
+        .status-error { color: #ff4444; }
+        .status-info { color: #00aaff; }
+        
+        .test-section {
+            margin-bottom: 40px;
+        }
+        
+        .test-section h3 {
+            color: #00ffff;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .test-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            height: 400px;
+            position: relative;
+        }
+        
+        .test-card.error {
+            border-color: rgba(255, 68, 68, 0.5);
+            background: rgba(255, 68, 68, 0.1);
+        }
+        
+        .test-card.success {
+            border-color: rgba(0, 255, 0, 0.5);
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .test-card h4 {
+            margin-bottom: 15px;
+            color: #ffff00;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .canvas-info {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .controls {
+            background: rgba(100, 0, 150, 0.2);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        
+        .control-group button {
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 2px;
+        }
+        
+        .control-group button:hover {
+            background: rgba(0, 255, 255, 0.4);
+        }
+        
+        .control-group button.active {
+            background: rgba(255, 0, 255, 0.5);
+            border-color: rgba(255, 0, 255, 0.8);
+        }
+        
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .metric {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .metric-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .debug-log {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            margin-top: 20px;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .log-error { background: rgba(255, 0, 0, 0.2); }
+        .log-warning { background: rgba(255, 165, 0, 0.2); }
+        .log-info { background: rgba(0, 0, 255, 0.2); }
+        .log-success { background: rgba(0, 255, 0, 0.2); }
+        
+        .repair-recommendations {
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .recommendation {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .recommendation.critical {
+            border-left: 4px solid #ff4444;
+        }
+        
+        .recommendation.high {
+            border-left: 4px solid #ffaa00;
+        }
+        
+        .recommendation.medium {
+            border-left: 4px solid #00aaff;
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">VIB34D WebGL Diagnostic & Repair Tool</h1>
+        <p class="subtitle">Comprehensive testing and debugging for WebGL rendering issues</p>
+    </div>
+    
+    <div class="diagnostic-panel">
+        <h3>🔬 System Diagnostic Status</h3>
+        <div class="diagnostic-status" id="diagnostic-status">
+            Running initial diagnostics...
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="diagnostic-progress"></div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h3>🎯 Visualizer Comparison Test</h3>
+        <div class="comparison-grid">
+            <div class="test-card" id="original-card">
+                <h4>Original VIB34D Visualizer</h4>
+                <div class="canvas-container" id="original-container"></div>
+                <div class="canvas-info" id="original-info">Initializing...</div>
+            </div>
+            
+            <div class="test-card" id="fixed-card">
+                <h4>Fixed VIB34D Visualizer</h4>
+                <div class="canvas-container" id="fixed-container"></div>
+                <div class="canvas-info" id="fixed-info">Initializing...</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <h3>🎛️ Test Controls</h3>
+        <div class="control-grid">
+            <div class="control-group">
+                <label for="geometry-select">Geometry Type:</label>
+                <select id="geometry-select" style="width: 100%; padding: 5px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3);">
+                    <option value="0">Hypercube</option>
+                    <option value="1">Tetrahedron</option>
+                    <option value="2">Sphere</option>
+                    <option value="3">Torus</option>
+                    <option value="4">Klein Bottle</option>
+                    <option value="5">Fractal</option>
+                    <option value="6">Wave Function</option>
+                    <option value="7">Crystal Lattice</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="intensity-control">Intensity: <span id="intensity-value">1.0</span></label>
+                <input type="range" id="intensity-control" min="0.1" max="2.0" step="0.1" value="1.0">
+            </div>
+            
+            <div class="control-group">
+                <label for="scale-control">Scale: <span id="scale-value">1.0</span></label>
+                <input type="range" id="scale-control" min="0.5" max="2.0" step="0.1" value="1.0">
+            </div>
+            
+            <div class="control-group">
+                <label for="speed-control">Animation Speed: <span id="speed-value">1.0</span></label>
+                <input type="range" id="speed-control" min="0.1" max="3.0" step="0.1" value="1.0">
+            </div>
+            
+            <div class="control-group">
+                <label>Test Actions:</label>
+                <button id="run-diagnostic">🔬 Run Full Diagnostic</button>
+                <button id="stress-test">⚡ Stress Test</button>
+                <button id="context-loss-test">🔥 Simulate Context Loss</button>
+            </div>
+            
+            <div class="control-group">
+                <label>Force Rendering Mode:</label>
+                <button id="force-webgl" class="active">WebGL</button>
+                <button id="force-canvas2d">Canvas 2D</button>
+                <button id="auto-mode">Auto</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="performance-metrics">
+        <div class="metric">
+            <div class="metric-value" id="original-fps">--</div>
+            <div class="metric-label">Original FPS</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value" id="fixed-fps">--</div>
+            <div class="metric-label">Fixed FPS</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value" id="original-mode">--</div>
+            <div class="metric-label">Original Mode</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value" id="fixed-mode">--</div>
+            <div class="metric-label">Fixed Mode</div>
+        </div>
+    </div>
+    
+    <div class="debug-log" id="debug-log">
+        <div class="log-entry log-info">Debug log initialized...</div>
+    </div>
+    
+    <div class="repair-recommendations" id="recommendations" style="display: none;">
+        <h3>🔧 Repair Recommendations</h3>
+        <div id="recommendations-content"></div>
+    </div>
+    
+    <!-- Include diagnostic tool and visualizers -->
+    <script src="VIB34D_WEBGL_DIAGNOSTIC_TOOL.js"></script>
+    <script src="VIB34D_ADAPTIVE_CARD_VISUALIZER.js"></script>
+    <script src="VIB34D_ADAPTIVE_CARD_VISUALIZER_FIXED.js"></script>
+    
+    <script>
+        // Global test state
+        let diagnosticTool = null;
+        let originalVisualizer = null;
+        let fixedVisualizer = null;
+        let testParams = {
+            geometry: 0,
+            intensity: 1.0,
+            scale: 1.0,
+            speed: 1.0,
+            forcedMode: null
+        };
+        
+        // Logging system
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('debug-log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logElement.appendChild(entry);
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            // Also log to console with appropriate level
+            switch(type) {
+                case 'error': console.error(message); break;
+                case 'warning': console.warn(message); break;
+                case 'success': console.log('✅', message); break;
+                default: console.log(message);
+            }
+        }
+        
+        // Update diagnostic status
+        function updateDiagnosticStatus(message, progress = 0) {
+            document.getElementById('diagnostic-status').innerHTML = message;
+            document.getElementById('diagnostic-progress').style.width = `${progress}%`;
+        }
+        
+        // Initialize diagnostic tool
+        async function initializeDiagnostic() {
+            log('🔬 Initializing WebGL diagnostic tool...', 'info');
+            updateDiagnosticStatus('Initializing diagnostic tool...', 10);
+            
+            try {
+                diagnosticTool = new WebGLDiagnosticTool();
+                updateDiagnosticStatus('Running comprehensive diagnostic...', 30);
+                
+                const results = await diagnosticTool.runFullDiagnostic();
+                updateDiagnosticStatus('Diagnostic complete - analyzing results...', 80);
+                
+                displayDiagnosticResults(results);
+                updateDiagnosticStatus('✅ Diagnostic complete', 100);
+                
+                log('✅ Diagnostic completed successfully', 'success');
+                
+            } catch (error) {
+                log(`❌ Diagnostic failed: ${error.message}`, 'error');
+                updateDiagnosticStatus('❌ Diagnostic failed', 100);
+            }
+        }
+        
+        // Display diagnostic results
+        function displayDiagnosticResults(results) {
+            const statusElement = document.getElementById('diagnostic-status');
+            let statusHTML = '<div class="diagnostic-results">';
+            
+            // WebGL Support
+            if (results.webglSupport.supported) {
+                statusHTML += `<div class="status-good">✅ WebGL: ${results.webglSupport.version}</div>`;
+                statusHTML += `<div class="status-info">📊 Renderer: ${results.webglSupport.renderer}</div>`;
+            } else {
+                statusHTML += `<div class="status-error">❌ WebGL: Not supported</div>`;
+            }
+            
+            // Shader Compilation
+            if (results.shaderCompilation) {
+                const shaders = results.shaderCompilation;
+                statusHTML += `<div class="status-info">🔧 Shader Tests:</div>`;
+                statusHTML += `<div class="status-${shaders.simple?.success ? 'good' : 'error'}">  Simple: ${shaders.simple?.success ? '✅' : '❌'}</div>`;
+                statusHTML += `<div class="status-${shaders.basic3D?.success ? 'good' : 'error'}">  Basic 3D: ${shaders.basic3D?.success ? '✅' : '❌'}</div>`;
+                statusHTML += `<div class="status-${shaders.vib34d?.success ? 'good' : 'error'}">  VIB34D: ${shaders.vib34d?.success ? '✅' : '❌'}</div>`;
+            }
+            
+            // Rendering Pipeline
+            if (results.renderingPipeline) {
+                const pipeline = results.renderingPipeline;
+                statusHTML += `<div class="status-${pipeline.success ? 'good' : 'error'}">🎨 Rendering: ${pipeline.success ? '✅' : '❌'}</div>`;
+                if (pipeline.success) {
+                    statusHTML += `<div class="status-${pipeline.hasVisibleContent ? 'good' : 'warning'}">  Visible Content: ${pipeline.hasVisibleContent ? '✅' : '⚠️'}</div>`;
+                }
+            }
+            
+            // Performance
+            if (results.performance && results.performance.success) {
+                const perf = results.performance;
+                const perfStatus = perf.performance === 'good' ? 'good' : perf.performance === 'acceptable' ? 'warning' : 'error';
+                statusHTML += `<div class="status-${perfStatus}">⚡ Performance: ${perf.estimatedFPS.toFixed(1)} FPS (${perf.performance})</div>`;
+            }
+            
+            statusHTML += '</div>';
+            statusElement.innerHTML = statusHTML;
+            
+            // Show recommendations if any
+            if (diagnosticTool.repairs.length > 0) {
+                displayRecommendations(diagnosticTool.repairs);
+            }
+        }
+        
+        // Display repair recommendations
+        function displayRecommendations(recommendations) {
+            const container = document.getElementById('recommendations');
+            const content = document.getElementById('recommendations-content');
+            
+            content.innerHTML = '';
+            
+            recommendations.forEach(rec => {
+                const div = document.createElement('div');
+                div.className = `recommendation ${rec.priority}`;
+                div.innerHTML = `
+                    <h4>${rec.issue}</h4>
+                    <p><strong>Solution:</strong> ${rec.solution}</p>
+                    ${rec.code ? `<div class="code-block">${rec.code.substring(0, 200)}...</div>` : ''}
+                `;
+                content.appendChild(div);
+            });
+            
+            container.style.display = 'block';
+        }
+        
+        // Initialize visualizers
+        async function initializeVisualizers() {
+            log('🎨 Initializing visualizers...', 'info');
+            
+            try {
+                // Initialize original visualizer
+                const originalContainer = document.getElementById('original-container');
+                try {
+                    if (window.AdaptiveCardVisualizer) {
+                        originalVisualizer = new AdaptiveCardVisualizer(originalContainer, {
+                            geometry: testParams.geometry,
+                            intensity: testParams.intensity,
+                            scale: testParams.scale,
+                            forceCanvas2D: testParams.forcedMode === 'canvas2d',
+                            editorMode: true
+                        });
+                        document.getElementById('original-card').className = 'test-card success';
+                        log('✅ Original visualizer initialized', 'success');
+                    } else {
+                        throw new Error('AdaptiveCardVisualizer not found');
+                    }
+                } catch (error) {
+                    document.getElementById('original-card').className = 'test-card error';
+                    document.getElementById('original-info').textContent = `Error: ${error.message}`;
+                    log(`❌ Original visualizer failed: ${error.message}`, 'error');
+                }
+                
+                // Initialize fixed visualizer
+                const fixedContainer = document.getElementById('fixed-container');
+                try {
+                    if (window.AdaptiveCardVisualizerFixed) {
+                        fixedVisualizer = new AdaptiveCardVisualizerFixed(fixedContainer, {
+                            geometry: testParams.geometry,
+                            intensity: testParams.intensity,
+                            scale: testParams.scale,
+                            forceCanvas2D: testParams.forcedMode === 'canvas2d',
+                            editorMode: true
+                        });
+                        document.getElementById('fixed-card').className = 'test-card success';
+                        log('✅ Fixed visualizer initialized', 'success');
+                    } else {
+                        throw new Error('AdaptiveCardVisualizerFixed not found');
+                    }
+                } catch (error) {
+                    document.getElementById('fixed-card').className = 'test-card error';
+                    document.getElementById('fixed-info').textContent = `Error: ${error.message}`;
+                    log(`❌ Fixed visualizer failed: ${error.message}`, 'error');
+                }
+                
+                // Start performance monitoring
+                startPerformanceMonitoring();
+                
+            } catch (error) {
+                log(`❌ Visualizer initialization failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Performance monitoring
+        function startPerformanceMonitoring() {
+            setInterval(() => {
+                // Update original visualizer metrics
+                if (originalVisualizer && originalVisualizer.getPerformanceMetrics) {
+                    const metrics = originalVisualizer.getPerformanceMetrics();
+                    document.getElementById('original-fps').textContent = metrics.fps || '--';
+                    document.getElementById('original-mode').textContent = metrics.renderingMode || '--';
+                    document.getElementById('original-info').textContent = 
+                        `Mode: ${metrics.renderingMode}, FPS: ${metrics.fps}, Status: ${metrics.initialized ? 'OK' : 'Failed'}`;
+                }
+                
+                // Update fixed visualizer metrics
+                if (fixedVisualizer && fixedVisualizer.getPerformanceMetrics) {
+                    const metrics = fixedVisualizer.getPerformanceMetrics();
+                    document.getElementById('fixed-fps').textContent = metrics.fps || '--';
+                    document.getElementById('fixed-mode').textContent = metrics.renderingMode || '--';
+                    document.getElementById('fixed-info').textContent = 
+                        `Mode: ${metrics.renderingMode}, FPS: ${metrics.fps}, Status: ${metrics.initialized ? 'OK' : 'Failed'}`;
+                }
+            }, 1000);
+        }
+        
+        // Setup controls
+        function setupControls() {
+            // Geometry selector
+            document.getElementById('geometry-select').addEventListener('change', (e) => {
+                testParams.geometry = parseInt(e.target.value);
+                if (originalVisualizer) originalVisualizer.updateGeometry(testParams.geometry);
+                if (fixedVisualizer) fixedVisualizer.updateGeometry(testParams.geometry);
+                log(`🔄 Geometry changed to: ${e.target.options[e.target.selectedIndex].text}`, 'info');
+            });
+            
+            // Intensity control
+            const intensityControl = document.getElementById('intensity-control');
+            intensityControl.addEventListener('input', (e) => {
+                testParams.intensity = parseFloat(e.target.value);
+                document.getElementById('intensity-value').textContent = testParams.intensity;
+                
+                if (originalVisualizer) originalVisualizer.updateParams({ intensity: testParams.intensity });
+                if (fixedVisualizer) fixedVisualizer.updateParams({ intensity: testParams.intensity });
+            });
+            
+            // Scale control
+            const scaleControl = document.getElementById('scale-control');
+            scaleControl.addEventListener('input', (e) => {
+                testParams.scale = parseFloat(e.target.value);
+                document.getElementById('scale-value').textContent = testParams.scale;
+                
+                if (originalVisualizer) originalVisualizer.updateParams({ scale: testParams.scale });
+                if (fixedVisualizer) fixedVisualizer.updateParams({ scale: testParams.scale });
+            });
+            
+            // Speed control
+            const speedControl = document.getElementById('speed-control');
+            speedControl.addEventListener('input', (e) => {
+                testParams.speed = parseFloat(e.target.value);
+                document.getElementById('speed-value').textContent = testParams.speed;
+                // Speed control would need to be implemented in visualizers
+            });
+            
+            // Test action buttons
+            document.getElementById('run-diagnostic').addEventListener('click', () => {
+                log('🔬 Running manual diagnostic...', 'info');
+                initializeDiagnostic();
+            });
+            
+            document.getElementById('stress-test').addEventListener('click', () => {
+                log('⚡ Running stress test...', 'warning');
+                runStressTest();
+            });
+            
+            document.getElementById('context-loss-test').addEventListener('click', () => {
+                log('🔥 Simulating context loss...', 'warning');
+                simulateContextLoss();
+            });
+            
+            // Rendering mode buttons
+            const modeButtons = {
+                'force-webgl': null,
+                'force-canvas2d': 'canvas2d',
+                'auto-mode': null
+            };
+            
+            Object.keys(modeButtons).forEach(id => {
+                document.getElementById(id).addEventListener('click', (e) => {
+                    // Update button states
+                    Object.keys(modeButtons).forEach(btnId => {
+                        document.getElementById(btnId).classList.remove('active');
+                    });
+                    e.target.classList.add('active');
+                    
+                    testParams.forcedMode = modeButtons[id];
+                    log(`🎛️ Forced rendering mode: ${testParams.forcedMode || 'auto'}`, 'info');
+                    
+                    // Reinitialize visualizers with new mode
+                    reinitializeVisualizers();
+                });
+            });
+        }
+        
+        // Stress test
+        function runStressTest() {
+            let testCount = 0;
+            const maxTests = 10;
+            
+            const stressInterval = setInterval(() => {
+                // Rapidly change parameters
+                testParams.geometry = Math.floor(Math.random() * 8);
+                testParams.intensity = 0.5 + Math.random() * 1.5;
+                testParams.scale = 0.5 + Math.random() * 1.5;
+                
+                if (originalVisualizer) {
+                    originalVisualizer.updateGeometry(testParams.geometry);
+                    originalVisualizer.updateParams({ 
+                        intensity: testParams.intensity, 
+                        scale: testParams.scale 
+                    });
+                }
+                
+                if (fixedVisualizer) {
+                    fixedVisualizer.updateGeometry(testParams.geometry);
+                    fixedVisualizer.updateParams({ 
+                        intensity: testParams.intensity, 
+                        scale: testParams.scale 
+                    });
+                }
+                
+                testCount++;
+                if (testCount >= maxTests) {
+                    clearInterval(stressInterval);
+                    log('✅ Stress test completed', 'success');
+                }
+            }, 200);
+        }
+        
+        // Simulate context loss
+        function simulateContextLoss() {
+            // Try to get WebGL extension to simulate context loss
+            const testCanvas = document.createElement('canvas');
+            const gl = testCanvas.getContext('webgl');
+            
+            if (gl) {
+                const ext = gl.getExtension('WEBGL_lose_context');
+                if (ext) {
+                    ext.loseContext();
+                    log('🔥 Context loss simulated', 'warning');
+                    
+                    setTimeout(() => {
+                        ext.restoreContext();
+                        log('✅ Context restored', 'success');
+                    }, 2000);
+                } else {
+                    log('⚠️ WEBGL_lose_context extension not available', 'warning');
+                }
+            }
+        }
+        
+        // Reinitialize visualizers
+        function reinitializeVisualizers() {
+            // Destroy existing visualizers
+            if (originalVisualizer && originalVisualizer.destroy) {
+                originalVisualizer.destroy();
+            }
+            if (fixedVisualizer && fixedVisualizer.destroy) {
+                fixedVisualizer.destroy();
+            }
+            
+            // Clear containers
+            document.getElementById('original-container').innerHTML = '';
+            document.getElementById('fixed-container').innerHTML = '';
+            
+            // Reinitialize
+            setTimeout(() => {
+                initializeVisualizers();
+            }, 100);
+        }
+        
+        // Initialize everything when DOM is ready
+        document.addEventListener('DOMContentLoaded', async () => {
+            log('🚀 VIB34D WebGL Diagnostic Test starting...', 'info');
+            
+            setupControls();
+            
+            // Wait for scripts to load
+            setTimeout(async () => {
+                await initializeDiagnostic();
+                await initializeVisualizers();
+                log('✅ All systems initialized', 'success');
+            }, 500);
+        });
+        
+        // Handle errors globally
+        window.addEventListener('error', (e) => {
+            log(`💥 Global error: ${e.message}`, 'error');
+        });
+        
+        window.addEventListener('unhandledrejection', (e) => {
+            log(`💥 Unhandled promise rejection: ${e.reason}`, 'error');
+        });
+        
+    </script>
+</body>
+</html>

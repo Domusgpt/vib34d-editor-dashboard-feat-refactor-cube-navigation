@@ -1,939 +1,927 @@
 /**
- * VIB3_ENHANCED_INTERACTION_SYSTEM.js
- * 
- * Revolutionary interaction enhancement system for VIB34D hypercube navigation.
- * Transforms "complete lack of visual feedback" into "intuitive and discoverable interactions"
- * with comprehensive visual feedback, hover effects, gesture detection, and user guidance.
- * 
- * Features:
- * - Advanced visual feedback system
- * - Smart gesture detection and previews
- * - Interactive UI discovery elements
- * - Configurable interaction presets
- * - Comprehensive user guidance system
+ * VIB3 ENHANCED INTERACTION SYSTEM
+ * Adds comprehensive visual feedback, UI discoverability, and enhanced navigation
+ * Integrates seamlessly with existing VIB3HomeMaster and UnifiedReactivityBridge
  */
 
-class VIB3_ENHANCED_INTERACTION_SYSTEM {
-    constructor(hypercubeNavigation) {
-        console.log('🚀 VIB3_ENHANCED_INTERACTION_SYSTEM - Initializing Revolutionary UX...');
+class VIB3EnhancedInteractionSystem {
+    constructor(homeMaster, reactivityBridge) {
+        this.homeMaster = homeMaster;
+        this.reactivityBridge = reactivityBridge;
         
-        this.hypercubeNav = hypercubeNavigation;
-        this.isEnabled = true;
-        this.debugMode = false;
-        
-        // Interaction State Management
-        this.interactionState = {
-            isHovering: false,
-            isDragging: false,
-            currentZone: null,
-            dragDirection: null,
-            dragTension: 0,
-            lastInteractionTime: 0,
-            gesturePreview: false,
-            tutorialActive: false
-        };
-        
-        // Configuration System - All features configurable
+        // Configuration
         this.config = {
-            visualFeedback: {
+            // Visual feedback settings
+            feedback: {
                 enabled: true,
                 intensity: 0.8,
-                hoverEffects: true,
-                dragVisualization: true,
-                transitionPreviews: true
+                hapticStrength: 0.6,
+                cursorChanges: true,
+                hoverEffects: true
             },
-            gestureDetection: {
-                enabled: true,
-                sensitivityLevel: 'medium', // low, medium, high
-                momentumEnabled: true,
-                smartThresholds: true
-            },
-            uiDiscovery: {
-                enabled: true,
+            
+            // UI discovery settings
+            discovery: {
                 showHints: true,
-                animatedGuides: true,
-                firstTimeHelp: true
+                animateEdges: true,
+                tutorialMode: false,
+                breadcrumbs: true,
+                navigationMenu: true
             },
+            
+            // Interaction settings
+            interaction: {
+                dragThreshold: 50,
+                momentumEnabled: true,
+                previewTransitions: true,
+                multiTouch: true,
+                smartSensitivity: true
+            },
+            
+            // Accessibility
             accessibility: {
-                highContrast: false,
                 reducedMotion: false,
-                keyboardOnly: false,
-                screenReader: false
-            },
-            presets: {
-                current: 'advanced',
-                available: ['beginner', 'standard', 'advanced', 'expert', 'minimal']
+                highContrast: false,
+                keyboardNav: true,
+                screenReader: true
             }
         };
         
-        // Visual Elements
-        this.elements = {
-            bezelIndicators: [],
-            directionArrows: [],
-            tensionBar: null,
+        // State tracking
+        this.state = {
+            isHovering: false,
+            isDragging: false,
+            dragDirection: null,
+            tension: 0,
+            lastInteraction: Date.now(),
+            currentFace: 0,
+            hoverZone: null
+        };
+        
+        // UI elements
+        this.uiElements = {
+            edgeIndicators: [],
             navigationMenu: null,
-            tutorialOverlay: null,
             breadcrumbs: null,
-            helpPanel: null
+            tutorialOverlay: null,
+            feedbackLayer: null
         };
         
-        // Animation Timelines
-        this.animations = {
-            hoverPulse: null,
-            dragTension: null,
-            transitionPreview: null,
-            discoveryHints: null
-        };
-        
-        this.initialize();
+        this.init();
     }
     
-    initialize() {
-        console.log('🎯 Initializing Enhanced Interaction Features...');
+    init() {
+        console.log('🎮 Initializing VIB3 Enhanced Interaction System...');
         
-        // Load user preferences
-        this.loadUserPreferences();
+        // Create UI elements
+        this.createFeedbackLayer();
+        this.createEdgeIndicators();
+        this.createNavigationMenu();
+        this.createBreadcrumbs();
+        this.createTutorialOverlay();
         
-        // Create enhanced UI elements
-        this.createVisualFeedbackElements();
-        this.createNavigationHelpers();
-        this.createTutorialSystem();
+        // Setup event listeners
+        this.setupEnhancedEventListeners();
         
-        // Setup enhanced event handlers
-        this.setupEnhancedEventHandlers();
+        // Initialize visual feedback
+        this.initializeVisualFeedback();
         
-        // Initialize interaction zones
-        this.initializeInteractionZones();
+        // Setup keyboard navigation
+        this.setupKeyboardNavigation();
         
-        // Start discovery hints system
-        this.startDiscoveryHints();
-        
-        // Show first-time tutorial if needed
-        this.checkFirstTimeUser();
-        
-        console.log('✅ VIB3_ENHANCED_INTERACTION_SYSTEM fully initialized');
+        console.log('✅ VIB3 Enhanced Interaction System initialized');
     }
     
-    /**
-     * CREATE VISUAL FEEDBACK ELEMENTS
-     */
-    createVisualFeedbackElements() {
-        console.log('🎨 Creating Advanced Visual Feedback Elements...');
-        
-        // Enhanced Bezel Indicators
-        this.createEnhancedBezelIndicators();
-        
-        // Drag Tension Visualization
-        this.createTensionVisualization();
-        
-        // Direction Arrow System
-        this.createDirectionArrows();
-        
-        // Gesture Preview System
-        this.createGesturePreview();
-        
-        // Transition Progress Indicator
-        this.createTransitionProgress();
-    }
-    
-    createEnhancedBezelIndicators() {
-        const bezels = ['left', 'right', 'top', 'bottom'];
-        
-        bezels.forEach(direction => {
-            const bezel = document.querySelector(`.nav-bezel-${direction}`);
-            if (bezel) {
-                // Add enhanced indicator
-                const indicator = document.createElement('div');
-                indicator.className = `enhanced-bezel-indicator enhanced-bezel-${direction}`;
-                indicator.innerHTML = `
-                    <div class="bezel-glow"></div>
-                    <div class="bezel-pattern"></div>
-                    <div class="bezel-hint">${this.getDirectionIcon(direction)}</div>
-                    <div class="bezel-label">${this.getDirectionLabel(direction)}</div>
-                `;
-                
-                bezel.appendChild(indicator);
-                this.elements.bezelIndicators.push({ element: indicator, direction });
-                
-                // Add hover effects
-                this.addBezelHoverEffects(bezel, direction);
-            }
-        });
-    }
-    
-    createTensionVisualization() {
-        this.elements.tensionBar = document.createElement('div');
-        this.elements.tensionBar.className = 'drag-tension-bar';
-        this.elements.tensionBar.innerHTML = `
-            <div class="tension-fill"></div>
-            <div class="tension-threshold"></div>
-            <div class="tension-label">Drag to Navigate</div>
+    createFeedbackLayer() {
+        // Create overlay for visual feedback effects
+        this.uiElements.feedbackLayer = document.createElement('div');
+        this.uiElements.feedbackLayer.className = 'vib3-feedback-layer';
+        this.uiElements.feedbackLayer.innerHTML = `
+            <div class="tension-meter">
+                <div class="tension-bar"></div>
+                <div class="tension-label">Tension</div>
+            </div>
+            <div class="direction-indicator">
+                <div class="arrow arrow-up">↑</div>
+                <div class="arrow arrow-down">↓</div>
+                <div class="arrow arrow-left">←</div>
+                <div class="arrow arrow-right">→</div>
+            </div>
+            <div class="transition-preview"></div>
         `;
-        document.body.appendChild(this.elements.tensionBar);
+        document.body.appendChild(this.uiElements.feedbackLayer);
     }
     
-    createDirectionArrows() {
-        const directions = [
-            { name: 'left', angle: 180, x: '5%', y: '50%' },
-            { name: 'right', angle: 0, x: '95%', y: '50%' },
-            { name: 'up', angle: -90, x: '50%', y: '5%' },
-            { name: 'down', angle: 90, x: '50%', y: '95%' }
-        ];
+    createEdgeIndicators() {
+        // Create edge zone indicators for drag areas
+        const edges = ['top', 'bottom', 'left', 'right'];
         
-        directions.forEach(dir => {
-            const arrow = document.createElement('div');
-            arrow.className = `direction-arrow direction-arrow-${dir.name}`;
-            arrow.style.cssText = `
-                position: fixed;
-                left: ${dir.x};
-                top: ${dir.y};
-                transform: translate(-50%, -50%) rotate(${dir.angle}deg);
-                z-index: 1001;
-            `;
-            arrow.innerHTML = `
-                <div class="arrow-shaft"></div>
-                <div class="arrow-head"></div>
-                <div class="arrow-glow"></div>
+        edges.forEach(edge => {
+            const indicator = document.createElement('div');
+            indicator.className = `vib3-edge-indicator edge-${edge}`;
+            indicator.innerHTML = `
+                <div class="edge-glow"></div>
+                <div class="edge-hint">${this.getEdgeHintText(edge)}</div>
+                <div class="edge-particles"></div>
             `;
             
-            document.body.appendChild(arrow);
-            this.elements.directionArrows.push({ element: arrow, direction: dir.name });
+            // Add hover detection
+            indicator.addEventListener('mouseenter', () => this.handleEdgeHover(edge, true));
+            indicator.addEventListener('mouseleave', () => this.handleEdgeHover(edge, false));
+            
+            this.uiElements.edgeIndicators.push(indicator);
+            document.body.appendChild(indicator);
         });
-    }
-    
-    createGesturePreview() {
-        const preview = document.createElement('div');
-        preview.className = 'gesture-preview';
-        preview.innerHTML = `
-            <div class="preview-container">
-                <div class="preview-face current-face"></div>
-                <div class="preview-face next-face"></div>
-                <div class="preview-transition"></div>
-            </div>
-        `;
-        document.body.appendChild(preview);
-        this.elements.gesturePreview = preview;
-    }
-    
-    createTransitionProgress() {
-        const progress = document.createElement('div');
-        progress.className = 'transition-progress';
-        progress.innerHTML = `
-            <div class="progress-track"></div>
-            <div class="progress-fill"></div>
-            <div class="progress-label">Transitioning...</div>
-        `;
-        document.body.appendChild(progress);
-        this.elements.transitionProgress = progress;
-    }
-    
-    /**
-     * CREATE NAVIGATION HELPERS
-     */
-    createNavigationHelpers() {
-        console.log('🧭 Creating Navigation Helper Elements...');
-        
-        // Navigation Menu
-        this.createNavigationMenu();
-        
-        // Breadcrumb System
-        this.createBreadcrumbs();
-        
-        // Help Panel
-        this.createHelpPanel();
-        
-        // Keyboard Shortcuts Overlay
-        this.createKeyboardShortcuts();
     }
     
     createNavigationMenu() {
-        this.elements.navigationMenu = document.createElement('div');
-        this.elements.navigationMenu.className = 'enhanced-navigation-menu';
-        this.elements.navigationMenu.innerHTML = `
-            <div class="nav-menu-toggle">
-                <div class="hamburger-icon">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+        // Create backup navigation menu
+        this.uiElements.navigationMenu = document.createElement('div');
+        this.uiElements.navigationMenu.className = 'vib3-navigation-menu';
+        this.uiElements.navigationMenu.innerHTML = `
+            <div class="nav-header">
+                <span class="nav-title">Navigate</span>
+                <button class="nav-toggle">☰</button>
             </div>
-            <div class="nav-menu-content">
-                <div class="nav-menu-header">
-                    <h3>Hypercube Navigation</h3>
-                    <button class="nav-menu-close">×</button>
-                </div>
-                <div class="nav-menu-faces">
-                    ${this.generateFaceButtons()}
-                </div>
-                <div class="nav-menu-controls">
-                    <button class="tutorial-btn">Tutorial</button>
-                    <button class="settings-btn">Settings</button>
-                </div>
+            <div class="nav-faces">
+                <button class="nav-face" data-face="0">
+                    <div class="face-icon">🏠</div>
+                    <div class="face-name">HOME</div>
+                </button>
+                <button class="nav-face" data-face="1">
+                    <div class="face-icon">⚡</div>
+                    <div class="face-name">TECH</div>
+                </button>
+                <button class="nav-face" data-face="2">
+                    <div class="face-icon">🔬</div>
+                    <div class="face-name">RESEARCH</div>
+                </button>
+                <button class="nav-face" data-face="3">
+                    <div class="face-icon">🎬</div>
+                    <div class="face-name">MEDIA</div>
+                </button>
+                <button class="nav-face" data-face="4">
+                    <div class="face-icon">🚀</div>
+                    <div class="face-name">INNOVATION</div>
+                </button>
             </div>
         `;
         
-        document.body.appendChild(this.elements.navigationMenu);
-        this.setupNavigationMenuEvents();
+        // Add navigation event listeners
+        this.uiElements.navigationMenu.addEventListener('click', (e) => {
+            if (e.target.closest('.nav-face')) {
+                const face = parseInt(e.target.closest('.nav-face').dataset.face);
+                this.navigateToFace(face);
+            }
+            if (e.target.closest('.nav-toggle')) {
+                this.toggleNavigationMenu();
+            }
+        });
+        
+        document.body.appendChild(this.uiElements.navigationMenu);
     }
     
     createBreadcrumbs() {
-        this.elements.breadcrumbs = document.createElement('div');
-        this.elements.breadcrumbs.className = 'navigation-breadcrumbs';
-        this.elements.breadcrumbs.innerHTML = `
-            <div class="breadcrumb-trail">
-                <div class="breadcrumb-current">HOME</div>
-                <div class="breadcrumb-path"></div>
-            </div>
-            <div class="breadcrumb-progress">
-                <div class="progress-dots"></div>
-            </div>
-        `;
-        
-        document.body.appendChild(this.elements.breadcrumbs);
+        // Create breadcrumb navigation
+        this.uiElements.breadcrumbs = document.createElement('div');
+        this.uiElements.breadcrumbs.className = 'vib3-breadcrumbs';
+        this.updateBreadcrumbs();
+        document.body.appendChild(this.uiElements.breadcrumbs);
     }
     
-    createHelpPanel() {
-        this.elements.helpPanel = document.createElement('div');
-        this.elements.helpPanel.className = 'interaction-help-panel';
-        this.elements.helpPanel.innerHTML = `
-            <div class="help-toggle">?</div>
-            <div class="help-content">
-                <h3>Navigation Guide</h3>
-                <div class="help-sections">
-                    <div class="help-section">
-                        <h4>Drag Navigation</h4>
-                        <p>Drag from screen edges to navigate between faces</p>
-                        <div class="help-visual drag-demo"></div>
-                    </div>
-                    <div class="help-section">
-                        <h4>Keyboard Shortcuts</h4>
-                        <div class="shortcuts-list">
-                            <div>Arrow Keys: Navigate faces</div>
-                            <div>Space: Open menu</div>
-                            <div>H: Toggle help</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(this.elements.helpPanel);
-        this.setupHelpPanelEvents();
-    }
-    
-    createKeyboardShortcuts() {
-        const shortcuts = document.createElement('div');
-        shortcuts.className = 'keyboard-shortcuts-overlay';
-        shortcuts.innerHTML = `
-            <div class="shortcuts-content">
-                <h3>Keyboard Navigation</h3>
-                <div class="shortcut-grid">
-                    <div class="shortcut-item">
-                        <kbd>←</kbd><span>Previous Face</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <kbd>→</kbd><span>Next Face</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <kbd>↑</kbd><span>Up Navigation</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <kbd>↓</kbd><span>Down Navigation</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <kbd>Space</kbd><span>Menu</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <kbd>H</kbd><span>Help</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <kbd>T</kbd><span>Tutorial</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <kbd>Esc</kbd><span>Close</span>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(shortcuts);
-        this.elements.keyboardShortcuts = shortcuts;
-    }
-    
-    /**
-     * CREATE TUTORIAL SYSTEM
-     */
-    createTutorialSystem() {
-        console.log('📚 Creating Interactive Tutorial System...');
-        
-        this.elements.tutorialOverlay = document.createElement('div');
-        this.elements.tutorialOverlay.className = 'tutorial-overlay';
-        this.elements.tutorialOverlay.innerHTML = `
+    createTutorialOverlay() {
+        // Create tutorial/onboarding overlay
+        this.uiElements.tutorialOverlay = document.createElement('div');
+        this.uiElements.tutorialOverlay.className = 'vib3-tutorial-overlay hidden';
+        this.uiElements.tutorialOverlay.innerHTML = `
             <div class="tutorial-content">
-                <div class="tutorial-header">
-                    <h2>Welcome to VIB34D Hypercube Navigation</h2>
-                    <button class="tutorial-skip">Skip Tutorial</button>
+                <h2>Welcome to VIB3 Hypercube Navigation</h2>
+                <div class="tutorial-step active" data-step="1">
+                    <h3>Step 1: Drag from Edges</h3>
+                    <p>Drag from the edges of the screen to navigate between faces:</p>
+                    <ul>
+                        <li>↑ Top edge: RESEARCH</li>
+                        <li>↓ Bottom edge: HOME</li>
+                        <li>← Left edge: TECH</li>
+                        <li>→ Right edge: MEDIA</li>
+                    </ul>
                 </div>
-                <div class="tutorial-steps">
-                    <div class="tutorial-step active" data-step="1">
-                        <h3>Drag to Navigate</h3>
-                        <p>Drag from the edges of the screen to navigate between faces of the hypercube.</p>
-                        <div class="tutorial-visual drag-animation"></div>
-                        <div class="tutorial-try-zone"></div>
-                    </div>
-                    <div class="tutorial-step" data-step="2">
-                        <h3>Visual Feedback</h3>
-                        <p>Watch for visual cues - edges glow when you hover, and tension builds as you drag.</p>
-                        <div class="tutorial-visual feedback-demo"></div>
-                    </div>
-                    <div class="tutorial-step" data-step="3">
-                        <h3>Face Transitions</h3>
-                        <p>Each face has unique geometry and content. Navigate smoothly between them.</p>
-                        <div class="tutorial-visual transition-demo"></div>
-                    </div>
-                    <div class="tutorial-step" data-step="4">
-                        <h3>Navigation Menu</h3>
-                        <p>Click the menu button for direct access to all faces and settings.</p>
-                        <div class="tutorial-visual menu-demo"></div>
-                    </div>
+                <div class="tutorial-step" data-step="2">
+                    <h3>Step 2: Watch the Visual Feedback</h3>
+                    <p>Notice the tension meter and direction indicators as you drag.</p>
+                </div>
+                <div class="tutorial-step" data-step="3">
+                    <h3>Step 3: Use Alternative Navigation</h3>
+                    <p>Use the navigation menu or breadcrumbs for direct access.</p>
                 </div>
                 <div class="tutorial-controls">
                     <button class="tutorial-prev">Previous</button>
-                    <div class="tutorial-progress">
-                        <div class="progress-indicator"></div>
-                    </div>
                     <button class="tutorial-next">Next</button>
+                    <button class="tutorial-skip">Skip Tutorial</button>
                 </div>
             </div>
         `;
+        document.body.appendChild(this.uiElements.tutorialOverlay);
         
-        document.body.appendChild(this.elements.tutorialOverlay);
-        this.setupTutorialEvents();
+        // Show tutorial on first visit
+        if (!localStorage.getItem('vib3-tutorial-completed')) {
+            this.showTutorial();
+        }
     }
     
-    /**
-     * ENHANCED EVENT HANDLERS
-     */
-    setupEnhancedEventHandlers() {
-        console.log('🎮 Setting up Enhanced Event Handlers...');
+    setupEnhancedEventListeners() {
+        // Enhanced mouse/touch event handling
+        document.addEventListener('mousemove', (e) => this.handleEnhancedMouseMove(e));
+        document.addEventListener('touchmove', (e) => this.handleEnhancedTouchMove(e));
         
-        // Override original drag handlers with enhanced versions
-        this.setupEnhancedDragHandlers();
+        // Drag detection with enhanced feedback
+        let dragStart = null;
+        let dragCurrent = null;
         
-        // Add hover detection
-        this.setupHoverDetection();
-        
-        // Add keyboard enhancements
-        this.setupEnhancedKeyboard();
-        
-        // Add gesture recognition
-        this.setupGestureRecognition();
-        
-        // Add accessibility handlers
-        this.setupAccessibilityHandlers();
-    }
-    
-    setupEnhancedDragHandlers() {
-        // Intercept original drag events and enhance them
-        const originalOnDragStart = this.hypercubeNav.onDragStart.bind(this.hypercubeNav);
-        const originalOnDragMove = this.hypercubeNav.onDragMove.bind(this.hypercubeNav);
-        const originalOnDragEnd = this.hypercubeNav.onDragEnd.bind(this.hypercubeNav);
-        
-        this.hypercubeNav.onDragStart = (e) => {
-            this.onEnhancedDragStart(e);
-            originalOnDragStart(e);
+        const startDrag = (x, y) => {
+            dragStart = { x, y };
+            this.state.isDragging = true;
+            this.showDragFeedback();
         };
         
-        this.hypercubeNav.onDragMove = (e) => {
-            this.onEnhancedDragMove(e);
-            originalOnDragMove(e);
-        };
-        
-        this.hypercubeNav.onDragEnd = (e) => {
-            this.onEnhancedDragEnd(e);
-            originalOnDragEnd(e);
-        };
-    }
-    
-    onEnhancedDragStart(e) {
-        console.log('🎯 Enhanced drag start detected');
-        
-        this.interactionState.isDragging = true;
-        this.interactionState.dragDirection = null;
-        this.interactionState.dragTension = 0;
-        
-        // Show visual feedback
-        this.showDragStartFeedback(e);
-        
-        // Start tension visualization
-        this.startTensionVisualization();
-        
-        // Begin gesture preview
-        this.startGesturePreview(e);
-        
-        // Register interaction with UnifiedReactivityBridge
-        if (window.reactivityBridge) {
-            window.reactivityBridge.triggerEffect('drag-start');
-        }
-    }
-    
-    onEnhancedDragMove(e) {
-        if (!this.interactionState.isDragging) return;
-        
-        // Calculate enhanced drag metrics
-        const dragData = this.calculateDragMetrics(e);
-        
-        // Update tension visualization
-        this.updateTensionVisualization(dragData.tension);
-        
-        // Update gesture preview
-        this.updateGesturePreview(dragData);
-        
-        // Update direction arrows
-        this.updateDirectionArrows(dragData.direction);
-        
-        // Trigger haptic-style feedback
-        this.triggerHapticFeedback(dragData.tension);
-        
-        this.interactionState.dragTension = dragData.tension;
-        this.interactionState.dragDirection = dragData.direction;
-    }
-    
-    onEnhancedDragEnd(e) {
-        console.log('🎯 Enhanced drag end detected');
-        
-        this.interactionState.isDragging = false;
-        
-        // Hide visual feedback
-        this.hideDragFeedback();
-        
-        // Stop tension visualization
-        this.stopTensionVisualization();
-        
-        // Complete gesture preview
-        this.completeGesturePreview();
-        
-        // Show transition progress if navigation triggered
-        if (this.interactionState.dragTension > 0.05) {
-            this.showTransitionProgress();
-        }
-        
-        // Reset state
-        this.resetInteractionState();
-    }
-    
-    setupHoverDetection() {
-        // Enhanced hover detection for all interactive elements
-        document.addEventListener('mousemove', (e) => {
-            this.handleEnhancedHover(e);
-        });
-        
-        document.addEventListener('mouseleave', () => {
-            this.handleHoverExit();
-        });
-    }
-    
-    handleEnhancedHover(e) {
-        const zone = this.detectInteractionZone(e.clientX, e.clientY);
-        
-        if (zone !== this.interactionState.currentZone) {
-            // Zone changed
-            this.onZoneChange(this.interactionState.currentZone, zone);
-            this.interactionState.currentZone = zone;
-        }
-        
-        if (zone) {
-            this.interactionState.isHovering = true;
-            this.showHoverFeedback(zone, e);
-        } else {
-            this.interactionState.isHovering = false;
-            this.hideHoverFeedback();
-        }
-    }
-    
-    /**
-     * VISUAL FEEDBACK METHODS
-     */
-    showDragStartFeedback(e) {
-        // Add drag-active class to body
-        document.body.classList.add('drag-active');
-        
-        // Show tension bar
-        this.elements.tensionBar.classList.add('visible');
-        
-        // Activate bezel glow
-        this.activateBezelGlow();
-        
-        // Show direction arrows
-        this.showDirectionArrows();
-    }
-    
-    showHoverFeedback(zone, e) {
-        // Update cursor
-        this.updateCursor(zone);
-        
-        // Show zone-specific feedback
-        this.highlightInteractionZone(zone);
-        
-        // Show hint text
-        this.showHintText(zone);
-        
-        // Trigger subtle animation
-        this.triggerHoverAnimation(zone);
-    }
-    
-    updateCursor(zone) {
-        const cursors = {
-            'left': 'w-resize',
-            'right': 'e-resize',
-            'top': 'n-resize',
-            'bottom': 's-resize',
-            'center': 'grab'
-        };
-        
-        document.body.style.cursor = cursors[zone] || 'default';
-    }
-    
-    highlightInteractionZone(zone) {
-        // Remove previous highlights
-        document.querySelectorAll('.zone-highlighted').forEach(el => {
-            el.classList.remove('zone-highlighted');
-        });
-        
-        // Add highlight to current zone
-        const bezel = document.querySelector(`.nav-bezel-${zone}`);
-        if (bezel) {
-            bezel.classList.add('zone-highlighted');
-        }
-    }
-    
-    showHintText(zone) {
-        const hints = {
-            'left': 'Drag right to go to previous face',
-            'right': 'Drag left to go to next face',
-            'top': 'Drag down to navigate up',
-            'bottom': 'Drag up to navigate down'
-        };
-        
-        const hintText = hints[zone];
-        if (hintText) {
-            this.showTooltip(hintText);
-        }
-    }
-    
-    /**
-     * GESTURE RECOGNITION & PREVIEW
-     */
-    calculateDragMetrics(e) {
-        const startPos = this.hypercubeNav.startPosition;
-        const currentPos = this.hypercubeNav.getEventPosition(e);
-        
-        const dx = currentPos.x - startPos.x;
-        const dy = currentPos.y - startPos.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        // Enhanced tension calculation
-        const baseTension = Math.min(distance / 100, 1.0);
-        const velocityBoost = Math.min(Math.abs(dx) + Math.abs(dy), 50) / 50 * 0.2;
-        const tension = Math.min(baseTension + velocityBoost, 1.0);
-        
-        // Smart direction detection
-        let direction;
-        if (Math.abs(dx) > Math.abs(dy)) {
-            direction = dx > 0 ? 'right' : 'left';
-        } else {
-            direction = dy > 0 ? 'down' : 'up';
-        }
-        
-        return {
-            distance,
-            tension,
-            direction,
-            velocity: { x: dx, y: dy },
-            threshold: tension > 0.05
-        };
-    }
-    
-    startGesturePreview(e) {
-        this.elements.gesturePreview.classList.add('active');
-        this.interactionState.gesturePreview = true;
-    }
-    
-    updateGesturePreview(dragData) {
-        if (!this.interactionState.gesturePreview) return;
-        
-        const preview = this.elements.gesturePreview;
-        const currentFace = preview.querySelector('.current-face');
-        const nextFace = preview.querySelector('.next-face');
-        const transition = preview.querySelector('.preview-transition');
-        
-        // Update preview based on drag direction and tension
-        const progress = Math.min(dragData.tension * 2, 1);
-        
-        transition.style.setProperty('--transition-progress', progress);
-        nextFace.style.opacity = progress;
-        currentFace.style.opacity = 1 - progress * 0.5;
-        
-        // Update face previews
-        this.updateFacePreview(dragData.direction);
-    }
-    
-    /**
-     * DISCOVERY HINTS SYSTEM
-     */
-    startDiscoveryHints() {
-        if (!this.config.uiDiscovery.enabled) return;
-        
-        console.log('💡 Starting Discovery Hints System...');
-        
-        // Pulse bezel edges periodically
-        this.startBezelPulsing();
-        
-        // Show interaction hints after idle period
-        this.setupIdleHints();
-        
-        // Animate direction arrows subtly
-        this.startArrowAnimations();
-    }
-    
-    startBezelPulsing() {
-        setInterval(() => {
-            if (!this.interactionState.isDragging && !this.interactionState.isHovering) {
-                this.pulseRandomBezel();
+        const updateDrag = (x, y) => {
+            if (!dragStart) return;
+            
+            dragCurrent = { x, y };
+            const deltaX = x - dragStart.x;
+            const deltaY = y - dragStart.y;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            // Update tension meter
+            this.state.tension = Math.min(distance / this.config.interaction.dragThreshold, 1);
+            this.updateTensionMeter(this.state.tension);
+            
+            // Determine direction
+            if (distance > 20) {
+                if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                    this.state.dragDirection = deltaX > 0 ? 'right' : 'left';
+                } else {
+                    this.state.dragDirection = deltaY > 0 ? 'down' : 'up';
+                }
+                this.updateDirectionIndicator(this.state.dragDirection);
             }
-        }, 8000); // Pulse every 8 seconds
-    }
-    
-    pulseRandomBezel() {
-        const bezels = document.querySelectorAll('.nav-bezel');
-        const randomBezel = bezels[Math.floor(Math.random() * bezels.length)];
-        
-        if (randomBezel) {
-            randomBezel.classList.add('discovery-pulse');
-            setTimeout(() => {
-                randomBezel.classList.remove('discovery-pulse');
-            }, 2000);
-        }
-    }
-    
-    setupIdleHints() {
-        let idleTimer;
-        
-        const resetIdleTimer = () => {
-            clearTimeout(idleTimer);
-            idleTimer = setTimeout(() => {
-                this.showIdleHints();
-            }, 15000); // Show hints after 15 seconds of inactivity
-        };
-        
-        // Reset timer on any interaction
-        document.addEventListener('mousemove', resetIdleTimer);
-        document.addEventListener('keydown', resetIdleTimer);
-        document.addEventListener('click', resetIdleTimer);
-        
-        resetIdleTimer();
-    }
-    
-    showIdleHints() {
-        if (this.interactionState.tutorialActive) return;
-        
-        // Show subtle hints about available interactions
-        this.showTooltip('💡 Try dragging from the screen edges to navigate', 3000);
-        this.pulseAllBezels();
-    }
-    
-    /**
-     * CONFIGURATION & PRESETS
-     */
-    applyPreset(presetName) {
-        console.log(`🎛️ Applying interaction preset: ${presetName}`);
-        
-        const presets = {
-            beginner: {
-                visualFeedback: { intensity: 1.0, hoverEffects: true },
-                gestureDetection: { sensitivityLevel: 'low' },
-                uiDiscovery: { showHints: true, animatedGuides: true }
-            },
-            standard: {
-                visualFeedback: { intensity: 0.8, hoverEffects: true },
-                gestureDetection: { sensitivityLevel: 'medium' },
-                uiDiscovery: { showHints: true, animatedGuides: false }
-            },
-            advanced: {
-                visualFeedback: { intensity: 0.6, hoverEffects: true },
-                gestureDetection: { sensitivityLevel: 'high' },
-                uiDiscovery: { showHints: false, animatedGuides: false }
-            },
-            expert: {
-                visualFeedback: { intensity: 0.4, hoverEffects: false },
-                gestureDetection: { sensitivityLevel: 'high' },
-                uiDiscovery: { showHints: false, animatedGuides: false }
-            },
-            minimal: {
-                visualFeedback: { intensity: 0.2, hoverEffects: false },
-                gestureDetection: { sensitivityLevel: 'medium' },
-                uiDiscovery: { showHints: false, animatedGuides: false }
+            
+            // Show transition preview
+            if (this.config.interaction.previewTransitions && this.state.tension > 0.3) {
+                this.showTransitionPreview();
             }
         };
         
-        const preset = presets[presetName];
-        if (preset) {
-            Object.assign(this.config, preset);
-            this.config.presets.current = presetName;
-            this.updateVisualSettings();
-            this.saveUserPreferences();
+        const endDrag = () => {
+            if (this.state.tension > 0.7 && this.state.dragDirection) {
+                this.triggerNavigation(this.state.dragDirection);
+            }
+            this.resetDragState();
+        };
+        
+        // Mouse events
+        document.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
+        document.addEventListener('mousemove', (e) => updateDrag(e.clientX, e.clientY));
+        document.addEventListener('mouseup', () => endDrag());
+        
+        // Touch events
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                const touch = e.touches[0];
+                startDrag(touch.clientX, touch.clientY);
+            }
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 1) {
+                const touch = e.touches[0];
+                updateDrag(touch.clientX, touch.clientY);
+            }
+        });
+        
+        document.addEventListener('touchend', () => endDrag());
+    }
+    
+    setupKeyboardNavigation() {
+        document.addEventListener('keydown', (e) => {
+            if (!this.config.accessibility.keyboardNav) return;
+            
+            switch (e.key) {
+                case 'ArrowUp':
+                    e.preventDefault();
+                    this.navigateToFace(2); // RESEARCH
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    this.navigateToFace(0); // HOME
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    this.navigateToFace(1); // TECH
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    this.navigateToFace(3); // MEDIA
+                    break;
+                case 'Tab':
+                    this.handleTabNavigation(e);
+                    break;
+                case 'Enter':
+                case ' ':
+                    this.handleActivation(e);
+                    break;
+                case '?':
+                case 'h':
+                    this.showTutorial();
+                    break;
+                case 'Escape':
+                    this.hideTutorial();
+                    break;
+            }
+        });
+    }
+    
+    initializeVisualFeedback() {
+        // Add CSS for visual feedback
+        const style = document.createElement('style');
+        style.textContent = `
+            .vib3-feedback-layer {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 999;
+            }
+            
+            .tension-meter {
+                position: absolute;
+                top: 50%;
+                right: 20px;
+                transform: translateY(-50%);
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            
+            .tension-meter.active {
+                opacity: 1;
+            }
+            
+            .tension-bar {
+                width: 4px;
+                height: 200px;
+                background: rgba(0, 255, 255, 0.2);
+                border: 1px solid #00ffff;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .tension-bar::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 0%;
+                background: linear-gradient(to top, #ff0080, #00ffff);
+                transition: height 0.1s ease;
+            }
+            
+            .tension-label {
+                color: #00ffff;
+                font-size: 0.7rem;
+                text-align: center;
+                margin-top: 5px;
+            }
+            
+            .direction-indicator {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            
+            .direction-indicator.active {
+                opacity: 1;
+            }
+            
+            .arrow {
+                position: absolute;
+                font-size: 2rem;
+                color: #00ffff;
+                opacity: 0.3;
+                transition: all 0.3s ease;
+            }
+            
+            .arrow.active {
+                opacity: 1;
+                transform: scale(1.5);
+                text-shadow: 0 0 20px #00ffff;
+            }
+            
+            .arrow-up { top: -40px; left: 50%; transform: translateX(-50%); }
+            .arrow-down { bottom: -40px; left: 50%; transform: translateX(-50%); }
+            .arrow-left { left: -40px; top: 50%; transform: translateY(-50%); }
+            .arrow-right { right: -40px; top: 50%; transform: translateY(-50%); }
+            
+            .vib3-edge-indicator {
+                position: fixed;
+                opacity: 0;
+                transition: opacity 0.5s ease;
+                pointer-events: none;
+            }
+            
+            .edge-top {
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 50px;
+                background: linear-gradient(to bottom, rgba(0, 255, 255, 0.1), transparent);
+                border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            }
+            
+            .edge-bottom {
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 50px;
+                background: linear-gradient(to top, rgba(0, 255, 255, 0.1), transparent);
+                border-top: 1px solid rgba(0, 255, 255, 0.3);
+            }
+            
+            .edge-left {
+                left: 0;
+                top: 0;
+                width: 50px;
+                height: 100%;
+                background: linear-gradient(to right, rgba(0, 255, 255, 0.1), transparent);
+                border-right: 1px solid rgba(0, 255, 255, 0.3);
+            }
+            
+            .edge-right {
+                right: 0;
+                top: 0;
+                width: 50px;
+                height: 100%;
+                background: linear-gradient(to left, rgba(0, 255, 255, 0.1), transparent);
+                border-left: 1px solid rgba(0, 255, 255, 0.3);
+            }
+            
+            .vib3-edge-indicator.hint {
+                opacity: 0.6;
+                animation: pulse 2s infinite;
+            }
+            
+            .edge-hint {
+                position: absolute;
+                color: #00ffff;
+                font-size: 0.8rem;
+                font-weight: bold;
+                text-shadow: 0 0 10px #00ffff;
+            }
+            
+            .edge-top .edge-hint {
+                top: 15px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .edge-bottom .edge-hint {
+                bottom: 15px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .edge-left .edge-hint {
+                left: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                writing-mode: vertical-rl;
+            }
+            
+            .edge-right .edge-hint {
+                right: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                writing-mode: vertical-lr;
+            }
+            
+            .vib3-navigation-menu {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.9);
+                border: 1px solid #00ffff;
+                border-radius: 10px;
+                padding: 15px;
+                z-index: 1000;
+                transition: transform 0.3s ease;
+            }
+            
+            .vib3-navigation-menu.collapsed {
+                transform: translateX(calc(100% - 40px));
+            }
+            
+            .nav-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            
+            .nav-title {
+                color: #00ffff;
+                font-weight: bold;
+            }
+            
+            .nav-toggle {
+                background: none;
+                border: none;
+                color: #00ffff;
+                cursor: pointer;
+                font-size: 1.2rem;
+            }
+            
+            .nav-faces {
+                display: grid;
+                gap: 8px;
+            }
+            
+            .nav-face {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: rgba(0, 255, 255, 0.1);
+                border: 1px solid rgba(0, 255, 255, 0.3);
+                border-radius: 5px;
+                padding: 8px 12px;
+                color: #00ffff;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .nav-face:hover {
+                background: rgba(0, 255, 255, 0.2);
+                transform: translateX(5px);
+            }
+            
+            .nav-face.active {
+                background: rgba(0, 255, 255, 0.3);
+                border-color: #00ffff;
+            }
+            
+            .vib3-breadcrumbs {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                gap: 10px;
+                z-index: 1000;
+            }
+            
+            .breadcrumb {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: rgba(0, 255, 255, 0.3);
+                border: 2px solid rgba(0, 255, 255, 0.5);
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+            
+            .breadcrumb.active {
+                background: #00ffff;
+                transform: scale(1.3);
+                box-shadow: 0 0 15px #00ffff;
+            }
+            
+            @keyframes pulse {
+                0%, 100% { opacity: 0.6; }
+                50% { opacity: 1; }
+            }
+            
+            @keyframes ripple {
+                0% { transform: scale(1); opacity: 1; }
+                100% { transform: scale(2); opacity: 0; }
+            }
+            
+            .vib3-tutorial-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: opacity 0.3s ease;
+            }
+            
+            .vib3-tutorial-overlay.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            
+            .tutorial-content {
+                background: rgba(0, 0, 0, 0.95);
+                border: 2px solid #00ffff;
+                border-radius: 15px;
+                padding: 30px;
+                max-width: 600px;
+                color: #00ffff;
+            }
+            
+            .tutorial-step {
+                display: none;
+            }
+            
+            .tutorial-step.active {
+                display: block;
+            }
+            
+            .tutorial-controls {
+                margin-top: 20px;
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+            }
+            
+            .tutorial-controls button {
+                background: rgba(0, 255, 255, 0.1);
+                border: 1px solid #00ffff;
+                color: #00ffff;
+                padding: 8px 16px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .tutorial-controls button:hover {
+                background: rgba(0, 255, 255, 0.2);
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Event handlers
+    handleEnhancedMouseMove(e) {
+        if (!this.config.feedback.cursorChanges) return;
+        
+        const edge = this.detectEdgeZone(e.clientX, e.clientY);
+        if (edge) {
+            document.body.style.cursor = 'grab';
+            this.state.hoverZone = edge;
+        } else {
+            document.body.style.cursor = 'crosshair';
+            this.state.hoverZone = null;
+        }
+        
+        // Show edge hints on hover
+        if (this.config.discovery.showHints) {
+            this.updateEdgeHints();
         }
     }
     
-    /**
-     * UTILITY METHODS
-     */
-    detectInteractionZone(x, y) {
-        const bezelWidth = this.hypercubeNav.bezelWidth;
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
+    handleEnhancedTouchMove(e) {
+        // Enhanced touch handling
+        if (e.touches.length === 1) {
+            const touch = e.touches[0];
+            this.handleEnhancedMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
+        }
+    }
+    
+    handleEdgeHover(edge, isHovering) {
+        const indicator = this.uiElements.edgeIndicators.find(el => el.classList.contains(`edge-${edge}`));
+        if (!indicator) return;
         
-        if (x < bezelWidth) return 'left';
-        if (x > windowWidth - bezelWidth) return 'right';
-        if (y < bezelWidth) return 'top';
-        if (y > windowHeight - bezelWidth) return 'bottom';
+        if (isHovering) {
+            indicator.classList.add('hover');
+            this.showEdgeHint(edge);
+        } else {
+            indicator.classList.remove('hover');
+        }
+    }
+    
+    // Visual feedback methods
+    showDragFeedback() {
+        const tensionMeter = document.querySelector('.tension-meter');
+        const directionIndicator = document.querySelector('.direction-indicator');
+        
+        if (tensionMeter) tensionMeter.classList.add('active');
+        if (directionIndicator) directionIndicator.classList.add('active');
+    }
+    
+    updateTensionMeter(tension) {
+        const tensionBar = document.querySelector('.tension-bar');
+        if (tensionBar) {
+            const after = tensionBar.querySelector('::after') || tensionBar;
+            after.style.setProperty('--tension', `${tension * 100}%`);
+        }
+    }
+    
+    updateDirectionIndicator(direction) {
+        const arrows = document.querySelectorAll('.arrow');
+        arrows.forEach(arrow => arrow.classList.remove('active'));
+        
+        const activeArrow = document.querySelector(`.arrow-${direction}`);
+        if (activeArrow) activeArrow.classList.add('active');
+    }
+    
+    showTransitionPreview() {
+        // Implementation for transition preview
+        if (this.reactivityBridge) {
+            this.reactivityBridge.triggerEffect('preview-transition', {
+                direction: this.state.dragDirection,
+                intensity: this.state.tension
+            });
+        }
+    }
+    
+    resetDragState() {
+        this.state.isDragging = false;
+        this.state.dragDirection = null;
+        this.state.tension = 0;
+        
+        const tensionMeter = document.querySelector('.tension-meter');
+        const directionIndicator = document.querySelector('.direction-indicator');
+        
+        if (tensionMeter) tensionMeter.classList.remove('active');
+        if (directionIndicator) directionIndicator.classList.remove('active');
+    }
+    
+    // Navigation methods
+    triggerNavigation(direction) {
+        const directionMap = {
+            'up': 2,    // RESEARCH
+            'down': 0,  // HOME
+            'left': 1,  // TECH
+            'right': 3  // MEDIA
+        };
+        
+        const targetFace = directionMap[direction];
+        if (targetFace !== undefined) {
+            this.navigateToFace(targetFace);
+        }
+    }
+    
+    navigateToFace(faceIndex) {
+        console.log(`🎮 Enhanced navigation to face ${faceIndex}`);
+        
+        // Add haptic feedback
+        this.triggerHapticFeedback();
+        
+        // Update state
+        this.state.currentFace = faceIndex;
+        this.state.lastInteraction = Date.now();
+        
+        // Trigger navigation through existing system
+        if (window.loadFace) {
+            window.loadFace(faceIndex);
+        }
+        
+        // Update UI
+        this.updateBreadcrumbs();
+        this.updateNavigationMenu();
+        
+        // Register with VIB3 systems
+        if (this.homeMaster) {
+            this.homeMaster.registerInteraction('enhancedNavigation', 1.0, 800);
+        }
+    }
+    
+    // Utility methods
+    detectEdgeZone(x, y) {
+        const threshold = 100;
+        const { innerWidth, innerHeight } = window;
+        
+        if (y < threshold) return 'top';
+        if (y > innerHeight - threshold) return 'bottom';
+        if (x < threshold) return 'left';
+        if (x > innerWidth - threshold) return 'right';
         
         return null;
     }
     
-    getDirectionIcon(direction) {
-        const icons = {
-            left: '←',
-            right: '→',
-            up: '↑',
-            down: '↓'
+    getEdgeHintText(edge) {
+        const hints = {
+            'top': '↑ RESEARCH',
+            'bottom': '↓ HOME',
+            'left': '← TECH',
+            'right': '→ MEDIA'
         };
-        return icons[direction] || '↔';
+        return hints[edge] || '';
     }
     
-    getDirectionLabel(direction) {
-        const labels = {
-            left: 'Previous',
-            right: 'Next',
-            up: 'Up',
-            down: 'Down'
-        };
-        return labels[direction] || 'Navigate';
-    }
-    
-    showTooltip(text, duration = 2000) {
-        // Create or update tooltip
-        let tooltip = document.querySelector('.enhanced-tooltip');
-        if (!tooltip) {
-            tooltip = document.createElement('div');
-            tooltip.className = 'enhanced-tooltip';
-            document.body.appendChild(tooltip);
-        }
-        
-        tooltip.textContent = text;
-        tooltip.classList.add('visible');
-        
-        setTimeout(() => {
-            tooltip.classList.remove('visible');
-        }, duration);
-    }
-    
-    loadUserPreferences() {
-        try {
-            const saved = localStorage.getItem('vib34d_interaction_preferences');
-            if (saved) {
-                const preferences = JSON.parse(saved);
-                Object.assign(this.config, preferences);
-                console.log('✅ User preferences loaded');
+    updateEdgeHints() {
+        this.uiElements.edgeIndicators.forEach(indicator => {
+            if (this.state.hoverZone && indicator.classList.contains(`edge-${this.state.hoverZone}`)) {
+                indicator.classList.add('hint');
+            } else {
+                indicator.classList.remove('hint');
             }
-        } catch (error) {
-            console.warn('⚠️ Failed to load user preferences:', error);
+        });
+    }
+    
+    updateBreadcrumbs() {
+        if (!this.uiElements.breadcrumbs) return;
+        
+        const faces = ['HOME', 'TECH', 'RESEARCH', 'MEDIA', 'INNOVATION'];
+        this.uiElements.breadcrumbs.innerHTML = faces.map((face, index) => 
+            `<div class="breadcrumb ${index === this.state.currentFace ? 'active' : ''}" 
+                  data-face="${index}" title="${face}"></div>`
+        ).join('');
+        
+        // Add click handlers
+        this.uiElements.breadcrumbs.addEventListener('click', (e) => {
+            if (e.target.classList.contains('breadcrumb')) {
+                const face = parseInt(e.target.dataset.face);
+                this.navigateToFace(face);
+            }
+        });
+    }
+    
+    updateNavigationMenu() {
+        const faces = this.uiElements.navigationMenu.querySelectorAll('.nav-face');
+        faces.forEach((face, index) => {
+            face.classList.toggle('active', index === this.state.currentFace);
+        });
+    }
+    
+    toggleNavigationMenu() {
+        this.uiElements.navigationMenu.classList.toggle('collapsed');
+    }
+    
+    triggerHapticFeedback() {
+        if (navigator.vibrate && this.config.feedback.hapticStrength > 0) {
+            navigator.vibrate(Math.floor(this.config.feedback.hapticStrength * 100));
         }
     }
     
-    saveUserPreferences() {
-        try {
-            localStorage.setItem('vib34d_interaction_preferences', JSON.stringify(this.config));
-            console.log('💾 User preferences saved');
-        } catch (error) {
-            console.warn('⚠️ Failed to save user preferences:', error);
-        }
-    }
-    
-    checkFirstTimeUser() {
-        const hasVisited = localStorage.getItem('vib34d_tutorial_completed');
-        if (!hasVisited && this.config.uiDiscovery.firstTimeHelp) {
-            setTimeout(() => {
-                this.showTutorial();
-            }, 2000);
-        }
-    }
-    
+    // Tutorial methods
     showTutorial() {
-        this.elements.tutorialOverlay.classList.add('active');
-        this.interactionState.tutorialActive = true;
-        document.body.classList.add('tutorial-mode');
+        this.uiElements.tutorialOverlay.classList.remove('hidden');
+        this.config.discovery.tutorialMode = true;
     }
     
-    /**
-     * PUBLIC API
-     */
-    enable() {
-        this.isEnabled = true;
-        document.body.classList.add('enhanced-interactions-enabled');
-        console.log('✅ Enhanced interactions enabled');
+    hideTutorial() {
+        this.uiElements.tutorialOverlay.classList.add('hidden');
+        this.config.discovery.tutorialMode = false;
+        localStorage.setItem('vib3-tutorial-completed', 'true');
     }
     
-    disable() {
-        this.isEnabled = false;
-        document.body.classList.remove('enhanced-interactions-enabled');
-        console.log('⏸️ Enhanced interactions disabled');
+    // Accessibility methods
+    handleTabNavigation(e) {
+        // Implementation for tab navigation
     }
     
-    setConfig(newConfig) {
+    handleActivation(e) {
+        // Implementation for enter/space activation
+    }
+    
+    // Configuration methods
+    updateConfig(newConfig) {
         Object.assign(this.config, newConfig);
-        this.updateVisualSettings();
-        this.saveUserPreferences();
+        this.applyConfigChanges();
     }
     
-    getConfig() {
-        return { ...this.config };
+    applyConfigChanges() {
+        // Apply configuration changes to UI elements
+        if (!this.config.discovery.showHints) {
+            this.uiElements.edgeIndicators.forEach(indicator => {
+                indicator.classList.remove('hint');
+            });
+        }
+        
+        if (!this.config.discovery.navigationMenu) {
+            this.uiElements.navigationMenu.style.display = 'none';
+        }
+        
+        if (!this.config.discovery.breadcrumbs) {
+            this.uiElements.breadcrumbs.style.display = 'none';
+        }
     }
-    
-    // Additional methods for completeness...
-    updateVisualSettings() {
-        // Implementation for updating visual settings based on config
-        console.log('🎨 Updating visual settings based on configuration');
-    }
-    
-    // More placeholder methods for the complete implementation...
-    activateBezelGlow() { /* Implementation */ }
-    showDirectionArrows() { /* Implementation */ }
-    startTensionVisualization() { /* Implementation */ }
-    updateTensionVisualization(tension) { /* Implementation */ }
-    updateDirectionArrows(direction) { /* Implementation */ }
-    triggerHapticFeedback(tension) { /* Implementation */ }
-    hideDragFeedback() { /* Implementation */ }
-    stopTensionVisualization() { /* Implementation */ }
-    completeGesturePreview() { /* Implementation */ }
-    showTransitionProgress() { /* Implementation */ }
-    resetInteractionState() { /* Implementation */ }
-    handleHoverExit() { /* Implementation */ }
-    onZoneChange(oldZone, newZone) { /* Implementation */ }
-    hideHoverFeedback() { /* Implementation */ }
-    triggerHoverAnimation(zone) { /* Implementation */ }
-    updateFacePreview(direction) { /* Implementation */ }
-    pulseAllBezels() { /* Implementation */ }
-    startArrowAnimations() { /* Implementation */ }
-    generateFaceButtons() { return ''; /* Implementation */ }
-    setupNavigationMenuEvents() { /* Implementation */ }
-    setupHelpPanelEvents() { /* Implementation */ }
-    setupTutorialEvents() { /* Implementation */ }
-    addBezelHoverEffects(bezel, direction) { /* Implementation */ }
-    initializeInteractionZones() { /* Implementation */ }
-    setupEnhancedKeyboard() { /* Implementation */ }
-    setupGestureRecognition() { /* Implementation */ }
-    setupAccessibilityHandlers() { /* Implementation */ }
 }
 
-// Make class available globally
-window.VIB3_ENHANCED_INTERACTION_SYSTEM = VIB3_ENHANCED_INTERACTION_SYSTEM;
+// Auto-initialize when DOM is ready and VIB3 systems are available
+document.addEventListener('DOMContentLoaded', () => {
+    // Wait for VIB3 systems to be ready
+    const initEnhancedSystem = () => {
+        if (window.homeMaster && window.reactivityBridge) {
+            window.enhancedInteractionSystem = new VIB3EnhancedInteractionSystem(
+                window.homeMaster,
+                window.reactivityBridge
+            );
+            console.log('✅ VIB3 Enhanced Interaction System ready');
+        } else {
+            setTimeout(initEnhancedSystem, 100);
+        }
+    };
+    
+    initEnhancedSystem();
+});

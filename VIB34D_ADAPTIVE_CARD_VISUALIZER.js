@@ -222,7 +222,7 @@ class AdaptiveCardVisualizer {
     
     setupShaders() {
         try {
-            // Vertex shader adapted from demo
+            // DEBUG: Simplified vertex shader that MUST work
             const vertexShaderSource = `
                 precision mediump float;
                 attribute vec3 a_position;
@@ -234,28 +234,29 @@ class AdaptiveCardVisualizer {
                 varying float v_depth;
                 
                 void main() {
-                    vec3 pos = a_position;
+                    // DEBUG: Use simple position with no complex transformations
+                    vec3 pos = a_position * 0.5; // Make smaller to ensure it's in view
                     
-                    // Apply geometry-specific transformations
-                    float geomMultiplier = mix(1.0, u_geometry * 0.5 + 0.5, u_masterKey);
-                    pos *= geomMultiplier;
-                    
-                    // 4D rotation for hypercube effect
-                    float angle = u_time * 0.5;
+                    // Simple rotation only
+                    float angle = u_time * 0.2;
                     float c = cos(angle);
                     float s = sin(angle);
                     
-                    // XW rotation
-                    float w = pos.x * -s + 0.5 * c;
-                    pos.x = pos.x * c + 0.5 * s;
+                    vec3 rotated = vec3(
+                        pos.x * c - pos.z * s,
+                        pos.y,
+                        pos.x * s + pos.z * c
+                    );
                     
-                    v_position = pos;
-                    v_depth = w;
-                    gl_Position = u_matrix * vec4(pos, 1.0);
+                    v_position = rotated;
+                    v_depth = 0.0;
+                    
+                    // DEBUG: Use simple orthographic projection instead of complex matrix
+                    gl_Position = vec4(rotated.xy, 0.0, 1.0);
                 }
             `;
             
-            // Fragment shader with all 17 uniforms from VIB34D spec
+            // DEBUG: Simple fragment shader that MUST be visible
             const fragmentShaderSource = `
                 precision mediump float;
                 
@@ -280,35 +281,25 @@ class AdaptiveCardVisualizer {
                 varying vec3 v_position;
                 varying float v_depth;
                 
-                vec3 hsv2rgb(vec3 c) {
-                    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-                    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-                    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-                }
-                
                 void main() {
                     vec2 uv = gl_FragCoord.xy / u_resolution;
                     
-                    // Base color from position and depth
-                    float hue = u_colorShift + v_depth * 0.5 + u_time * 0.1;
-                    float saturation = 0.8 + sin(u_time + length(v_position)) * 0.2;
-                    float value = u_intensity * (0.5 + v_depth * 0.5);
+                    // DEBUG: Force bright, obvious colors that MUST be visible
+                    vec3 debugColor = vec3(
+                        0.5 + 0.5 * sin(u_time + uv.x * 10.0),
+                        0.5 + 0.5 * sin(u_time + uv.y * 10.0 + 2.0),
+                        0.5 + 0.5 * sin(u_time + (uv.x + uv.y) * 10.0 + 4.0)
+                    );
                     
-                    vec3 color = hsv2rgb(vec3(hue, saturation, value));
+                    // Ensure minimum brightness - FORCE visibility
+                    debugColor = max(debugColor, vec3(0.3));
                     
-                    // Add holographic rainbow effect
-                    float rainbow = sin(v_position.x * 10.0 + u_time) * 0.5 + 0.5;
-                    color = mix(color, hsv2rgb(vec3(rainbow, 1.0, 1.0)), u_holographic * 0.3);
+                    // Add pulsing to make it obvious
+                    float pulse = 0.7 + 0.3 * sin(u_time * 3.0);
+                    debugColor *= pulse;
                     
-                    // Crystallization effect
-                    float crystal = step(0.5, fract(length(v_position) * u_crystallization * 10.0));
-                    color = mix(color, vec3(1.0), crystal * u_crystallization * 0.2);
-                    
-                    // Emergence glow (fixed vec3/vec2 type mismatch)
-                    float glow = 1.0 / (1.0 + length(v_position.xy - u_mouse) * 5.0);
-                    color += vec3(glow) * u_emergence * 0.5;
-                    
-                    gl_FragColor = vec4(color, 1.0);
+                    // Force full opacity
+                    gl_FragColor = vec4(debugColor, 1.0);
                 }
             `;
             
@@ -467,9 +458,21 @@ class AdaptiveCardVisualizer {
         
         this.time += 0.016; // ~60fps
         
-        // Clear
-        this.gl.clearColor(0, 0, 0, 0);
+        // Clear with subtle background that shows geometry
+        const bgAlpha = 0.1 + Math.sin(this.time * 0.5) * 0.05; // Subtle pulsing background
+        const bgIntensity = 0.03 + this.editorParams.intensity * 0.02;
+        this.gl.clearColor(
+            bgIntensity, 
+            bgIntensity * 0.7, 
+            bgIntensity * 1.2, 
+            bgAlpha
+        );
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        
+        // Enable depth testing and blending for proper 3D rendering
+        this.gl.enable(this.gl.DEPTH_TEST);
+        this.gl.enable(this.gl.BLEND);
+        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         
         // Use program
         this.gl.useProgram(this.program);
@@ -508,7 +511,23 @@ class AdaptiveCardVisualizer {
         this.gl.vertexAttribPointer(this.uniforms.a_position, 3, this.gl.FLOAT, false, 0, 0);
         
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
+        
+        // Draw filled triangles
         this.gl.drawElements(this.gl.TRIANGLES, this.indexCount, this.gl.UNSIGNED_SHORT, 0);
+        
+        // Also draw wireframe for extra visibility
+        this.gl.enable(this.gl.POLYGON_OFFSET_FILL);
+        this.gl.polygonOffset(1.0, 1.0);
+        
+        // Set wireframe color uniform (brighter)
+        this.gl.uniform1f(this.uniforms.u_intensity, this.editorParams.intensity * 2.0);
+        
+        // Draw wireframe lines
+        for (let i = 0; i < this.indexCount; i += 3) {
+            this.gl.drawElements(this.gl.LINE_LOOP, 3, this.gl.UNSIGNED_SHORT, i * 2);
+        }
+        
+        this.gl.disable(this.gl.POLYGON_OFFSET_FILL);
         
         this.animationId = requestAnimationFrame(() => this.animate());
     }
@@ -519,31 +538,86 @@ class AdaptiveCardVisualizer {
         const near = 0.1;
         const far = 100;
         
+        // Create perspective projection matrix
         const f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
         const rangeInv = 1.0 / (near - far);
         
-        const matrix = new Float32Array(16);
-        matrix[0] = f / aspect;
-        matrix[5] = f;
-        matrix[10] = (near + far) * rangeInv;
-        matrix[11] = -1;
-        matrix[14] = near * far * rangeInv * 2;
+        const perspective = new Float32Array(16);
+        perspective[0] = f / aspect;
+        perspective[5] = f;
+        perspective[10] = (near + far) * rangeInv;
+        perspective[11] = -1;
+        perspective[14] = near * far * rangeInv * 2;
+        perspective[15] = 0;
         
-        // Apply rotation based on time and editor params
+        // Create view matrix (camera positioned back to see geometry)
+        const view = new Float32Array(16);
+        view[0] = 1; view[5] = 1; view[10] = 1; view[15] = 1; // Identity
+        view[14] = -5; // Move camera back 5 units to see geometry
+        
+        // Create rotation matrix
         const rotX = this.time * 0.5 + this.editorParams.rotation;
         const rotY = this.time * 0.3;
+        const rotZ = this.time * 0.2;
         
-        const cosX = Math.cos(rotX);
-        const sinX = Math.sin(rotX);
-        const cosY = Math.cos(rotY);
-        const sinY = Math.sin(rotY);
+        const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+        const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+        const cosZ = Math.cos(rotZ), sinZ = Math.sin(rotZ);
         
-        // Simplified rotation application
-        const scale = this.editorParams.scale;
-        matrix[0] *= scale;
-        matrix[5] *= scale;
+        // Combined rotation matrix
+        const rotation = new Float32Array(16);
+        rotation[0] = cosY * cosZ;
+        rotation[1] = -cosY * sinZ;
+        rotation[2] = sinY;
+        rotation[4] = cosX * sinZ + sinX * sinY * cosZ;
+        rotation[5] = cosX * cosZ - sinX * sinY * sinZ;
+        rotation[6] = -sinX * cosY;
+        rotation[8] = sinX * sinZ - cosX * sinY * cosZ;
+        rotation[9] = sinX * cosZ + cosX * sinY * sinZ;
+        rotation[10] = cosX * cosY;
+        rotation[15] = 1;
         
-        return matrix;
+        // Apply scale - make geometry much larger and more visible
+        const scale = this.editorParams.scale * 2.0; // Doubled scale for visibility
+        rotation[0] *= scale;
+        rotation[5] *= scale;
+        rotation[10] *= scale;
+        
+        // Multiply matrices: perspective * view * rotation
+        const result = new Float32Array(16);
+        this.multiplyMatrices(result, perspective, view);
+        this.multiplyMatrices(result, result, rotation);
+        
+        return result;
+    }
+    
+    multiplyMatrices(out, a, b) {
+        const a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
+        const a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
+        const a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
+        const a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
+        
+        const b00 = b[0], b01 = b[1], b02 = b[2], b03 = b[3];
+        const b10 = b[4], b11 = b[5], b12 = b[6], b13 = b[7];
+        const b20 = b[8], b21 = b[9], b22 = b[10], b23 = b[11];
+        const b30 = b[12], b31 = b[13], b32 = b[14], b33 = b[15];
+        
+        out[0] = a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30;
+        out[1] = a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31;
+        out[2] = a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32;
+        out[3] = a00 * b03 + a01 * b13 + a02 * b23 + a03 * b33;
+        out[4] = a10 * b00 + a11 * b10 + a12 * b20 + a13 * b30;
+        out[5] = a10 * b01 + a11 * b11 + a12 * b21 + a13 * b31;
+        out[6] = a10 * b02 + a11 * b12 + a12 * b22 + a13 * b32;
+        out[7] = a10 * b03 + a11 * b13 + a12 * b23 + a13 * b33;
+        out[8] = a20 * b00 + a21 * b10 + a22 * b20 + a23 * b30;
+        out[9] = a20 * b01 + a21 * b11 + a22 * b21 + a23 * b31;
+        out[10] = a20 * b02 + a21 * b12 + a22 * b22 + a23 * b32;
+        out[11] = a20 * b03 + a21 * b13 + a22 * b23 + a23 * b33;
+        out[12] = a30 * b00 + a31 * b10 + a32 * b20 + a33 * b30;
+        out[13] = a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31;
+        out[14] = a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32;
+        out[15] = a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33;
     }
     
     initCanvas2DFallback() {

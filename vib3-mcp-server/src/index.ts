@@ -177,6 +177,91 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           type: "object",
           properties: {}
         }
+      },
+      {
+        name: "screenshot_live_site",
+        description: "Take a screenshot of the live VIB34D hypercube navigation site",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: {
+              type: "string",
+              description: "URL to screenshot (default: https://domusgpt.github.io/vib34d-hypercube-navigation/)",
+              default: "https://domusgpt.github.io/vib34d-hypercube-navigation/"
+            },
+            waitTime: {
+              type: "number",
+              description: "Time to wait in seconds before screenshot (default: 5)",
+              default: 5
+            },
+            element: {
+              type: "string",
+              description: "CSS selector of specific element to screenshot (optional)"
+            },
+            fullPage: {
+              type: "boolean",
+              description: "Take full page screenshot (default: true)",
+              default: true
+            }
+          }
+        }
+      },
+      {
+        name: "debug_live_site",
+        description: "Debug the live site: check WebGL canvases, console errors, element visibility",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: {
+              type: "string",
+              description: "URL to debug (default: https://domusgpt.github.io/vib34d-hypercube-navigation/)",
+              default: "https://domusgpt.github.io/vib34d-hypercube-navigation/"
+            }
+          }
+        }
+      },
+      {
+        name: "test_live_site_interactions",
+        description: "Test various interactions on the live site (drag from edges, navigation clicks)",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: {
+              type: "string",
+              description: "URL to test (default: https://domusgpt.github.io/vib34d-hypercube-navigation/)",
+              default: "https://domusgpt.github.io/vib34d-hypercube-navigation/"
+            },
+            interactions: {
+              type: "array",
+              items: {
+                type: "string",
+                enum: ["drag_top", "drag_bottom", "drag_left", "drag_right", "click_nav", "scroll_test"]
+              },
+              description: "Which interactions to test (default: all)",
+              default: ["drag_top", "drag_bottom", "drag_left", "drag_right", "click_nav", "scroll_test"]
+            }
+          }
+        }
+      },
+      {
+        name: "inspect_live_site_elements",
+        description: "Inspect specific elements on the live site for content and styling issues",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: {
+              type: "string",
+              description: "URL to inspect (default: https://domusgpt.github.io/vib34d-hypercube-navigation/)",
+              default: "https://domusgpt.github.io/vib34d-hypercube-navigation/"
+            },
+            selectors: {
+              type: "array",
+              items: { type: "string" },
+              description: "CSS selectors to inspect (default: common elements)",
+              default: ["canvas", ".face", ".nav-item", ".content-section", "[data-face]"]
+            }
+          }
+        }
       }
     ]
   };
@@ -614,6 +699,401 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new McpError(
           ErrorCode.InternalError,
           `Failed to close test: ${error.message}`
+        );
+      }
+    }
+    
+    case "screenshot_live_site": {
+      const { 
+        url = "https://domusgpt.github.io/vib34d-hypercube-navigation/", 
+        waitTime = 5, 
+        element, 
+        fullPage = true 
+      } = request.params.arguments as any;
+      
+      try {
+        const { page } = await ensureBrowser();
+        
+        console.log(`Taking screenshot of: ${url}`);
+        await page.goto(url, { waitUntil: 'networkidle0' });
+        
+        // Wait for the specified time to let WebGL/animations load
+        await new Promise(resolve => setTimeout(resolve, waitTime * 1000));
+        
+        // Take screenshot
+        const screenshotOptions: any = {
+          type: 'png',
+          fullPage: fullPage
+        };
+        
+        let screenshot;
+        if (element) {
+          const elementHandle = await page.$(element);
+          if (elementHandle) {
+            screenshot = await elementHandle.screenshot(screenshotOptions);
+          } else {
+            throw new Error(`Element not found: ${element}`);
+          }
+        } else {
+          screenshot = await page.screenshot(screenshotOptions);
+        }
+        
+        // Save screenshot to file
+        const fs = await import('fs/promises');
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `screenshot_${timestamp}.png`;
+        const filepath = join(process.cwd(), filename);
+        
+        await fs.writeFile(filepath, screenshot);
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: true,
+              message: "Screenshot taken successfully",
+              url: url,
+              filepath: filepath,
+              timestamp: new Date().toISOString(),
+              waitTime: waitTime,
+              element: element || "full page",
+              fullPage: fullPage
+            }, null, 2)
+          }]
+        };
+        
+      } catch (error: any) {
+        throw new McpError(
+          ErrorCode.InternalError,
+          `Failed to take screenshot: ${error.message}`
+        );
+      }
+    }
+    
+    case "debug_live_site": {
+      const { url = "https://domusgpt.github.io/vib34d-hypercube-navigation/" } = request.params.arguments as any;
+      
+      try {
+        const { page } = await ensureBrowser();
+        
+        console.log(`Debugging live site: ${url}`);
+        
+        // Capture console messages
+        const consoleMessages: any[] = [];
+        page.on('console', msg => {
+          consoleMessages.push({
+            type: msg.type(),
+            text: msg.text(),
+            timestamp: new Date().toISOString()
+          });
+        });
+        
+        // Capture errors
+        const errors: any[] = [];
+        page.on('error', err => {
+          errors.push({
+            message: err.message,
+            stack: err.stack,
+            timestamp: new Date().toISOString()
+          });
+        });
+        
+        await page.goto(url, { waitUntil: 'networkidle0' });
+        
+        // Wait for site to load and execute
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        
+        // Debug information
+        const debugInfo = await page.evaluate(() => {
+          const results: any = {
+            webglSupport: false,
+            canvases: [],
+            visibleElements: {},
+            computedStyles: {},
+            documentReady: document.readyState,
+            errors: []
+          };
+          
+          // Check WebGL support
+          try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            results.webglSupport = !!gl;
+            if (gl) {
+              results.webglInfo = {
+                vendor: gl.getParameter(gl.VENDOR),
+                renderer: gl.getParameter(gl.RENDERER),
+                version: gl.getParameter(gl.VERSION)
+              };
+            }
+          } catch (e: any) {
+            results.errors.push(`WebGL check failed: ${e.message}`);
+          }
+          
+          // Check all canvases
+          const canvases = document.querySelectorAll('canvas');
+          canvases.forEach((canvas, index) => {
+            const rect = canvas.getBoundingClientRect();
+            results.canvases.push({
+              index,
+              id: canvas.id,
+              className: canvas.className,
+              width: canvas.width,
+              height: canvas.height,
+              displayWidth: rect.width,
+              displayHeight: rect.height,
+              visible: rect.width > 0 && rect.height > 0,
+              contextType: canvas.getContext('webgl') ? 'webgl' : 
+                          canvas.getContext('2d') ? '2d' : 'none'
+            });
+          });
+          
+          // Check key elements
+          const selectors = ['.face', '.nav-item', '.content-section', '[data-face]', '.hypercube-container'];
+          selectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            results.visibleElements[selector] = {
+              count: elements.length,
+              visible: Array.from(elements).map(el => {
+                const rect = el.getBoundingClientRect();
+                return {
+                  hasContent: el.textContent?.trim().length > 0,
+                  visible: rect.width > 0 && rect.height > 0,
+                  rect: {
+                    width: rect.width,
+                    height: rect.height,
+                    top: rect.top,
+                    left: rect.left
+                  }
+                };
+              })
+            };
+          });
+          
+          // Check for common styling issues
+          const body = document.body;
+          if (body) {
+            const bodyStyle = getComputedStyle(body);
+            results.computedStyles.body = {
+              display: bodyStyle.display,
+              visibility: bodyStyle.visibility,
+              overflow: bodyStyle.overflow,
+              backgroundColor: bodyStyle.backgroundColor
+            };
+          }
+          
+          return results;
+        });
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              url: url,
+              timestamp: new Date().toISOString(),
+              debugInfo: debugInfo,
+              consoleMessages: consoleMessages,
+              errors: errors
+            }, null, 2)
+          }]
+        };
+        
+      } catch (error: any) {
+        throw new McpError(
+          ErrorCode.InternalError,
+          `Failed to debug live site: ${error.message}`
+        );
+      }
+    }
+    
+    case "test_live_site_interactions": {
+      const { 
+        url = "https://domusgpt.github.io/vib34d-hypercube-navigation/",
+        interactions = ["drag_top", "drag_bottom", "drag_left", "drag_right", "click_nav", "scroll_test"]
+      } = request.params.arguments as any;
+      
+      try {
+        const { page } = await ensureBrowser();
+        
+        console.log(`Testing interactions on: ${url}`);
+        await page.goto(url, { waitUntil: 'networkidle0' });
+        
+        // Wait for site to load
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
+        const testResults: any = {
+          url: url,
+          timestamp: new Date().toISOString(),
+          interactions: {}
+        };
+        
+        for (const interaction of interactions) {
+          console.log(`Testing interaction: ${interaction}`);
+          
+          try {
+            switch (interaction) {
+              case "drag_top":
+                await page.mouse.move(window.innerWidth / 2, 10);
+                await page.mouse.down();
+                await page.mouse.move(window.innerWidth / 2, 100);
+                await page.mouse.up();
+                break;
+                
+              case "drag_bottom":
+                await page.mouse.move(window.innerWidth / 2, window.innerHeight - 10);
+                await page.mouse.down();
+                await page.mouse.move(window.innerWidth / 2, window.innerHeight - 100);
+                await page.mouse.up();
+                break;
+                
+              case "drag_left":
+                await page.mouse.move(10, window.innerHeight / 2);
+                await page.mouse.down();
+                await page.mouse.move(100, window.innerHeight / 2);
+                await page.mouse.up();
+                break;
+                
+              case "drag_right":
+                await page.mouse.move(window.innerWidth - 10, window.innerHeight / 2);
+                await page.mouse.down();
+                await page.mouse.move(window.innerWidth - 100, window.innerHeight / 2);
+                await page.mouse.up();
+                break;
+                
+              case "click_nav":
+                const navElements = await page.$$('.nav-item, [data-face]');
+                if (navElements.length > 0) {
+                  await navElements[0].click();
+                }
+                break;
+                
+              case "scroll_test":
+                await page.evaluate(() => {
+                  window.scrollBy(0, 100);
+                });
+                break;
+            }
+            
+            // Wait a bit after each interaction
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Check if anything changed
+            const postInteractionState = await page.evaluate(() => {
+              return {
+                scrollTop: window.scrollY,
+                activeElement: document.activeElement?.tagName,
+                visibleCanvases: Array.from(document.querySelectorAll('canvas')).filter(c => {
+                  const rect = c.getBoundingClientRect();
+                  return rect.width > 0 && rect.height > 0;
+                }).length
+              };
+            });
+            
+            testResults.interactions[interaction] = {
+              success: true,
+              postState: postInteractionState,
+              timestamp: new Date().toISOString()
+            };
+            
+          } catch (error: any) {
+            testResults.interactions[interaction] = {
+              success: false,
+              error: error.message,
+              timestamp: new Date().toISOString()
+            };
+          }
+        }
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify(testResults, null, 2)
+          }]
+        };
+        
+      } catch (error: any) {
+        throw new McpError(
+          ErrorCode.InternalError,
+          `Failed to test interactions: ${error.message}`
+        );
+      }
+    }
+    
+    case "inspect_live_site_elements": {
+      const { 
+        url = "https://domusgpt.github.io/vib34d-hypercube-navigation/",
+        selectors = ["canvas", ".face", ".nav-item", ".content-section", "[data-face]"]
+      } = request.params.arguments as any;
+      
+      try {
+        const { page } = await ensureBrowser();
+        
+        console.log(`Inspecting elements on: ${url}`);
+        await page.goto(url, { waitUntil: 'networkidle0' });
+        
+        // Wait for site to load
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
+        const inspection = await page.evaluate((selectorList) => {
+          const results: any = {
+            timestamp: new Date().toISOString(),
+            elements: {}
+          };
+          
+          selectorList.forEach((selector: string) => {
+            const elements = document.querySelectorAll(selector);
+            results.elements[selector] = {
+              count: elements.length,
+              details: Array.from(elements).map((el, index) => {
+                const rect = el.getBoundingClientRect();
+                const style = getComputedStyle(el);
+                
+                return {
+                  index,
+                  tagName: el.tagName,
+                  id: el.id,
+                  className: el.className,
+                  textContent: el.textContent?.trim().substring(0, 100) || '',
+                  hasTextContent: (el.textContent?.trim().length || 0) > 0,
+                  rect: {
+                    width: rect.width,
+                    height: rect.height,
+                    top: rect.top,
+                    left: rect.left
+                  },
+                  isVisible: rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none',
+                  computedStyle: {
+                    display: style.display,
+                    visibility: style.visibility,
+                    opacity: style.opacity,
+                    position: style.position,
+                    zIndex: style.zIndex,
+                    backgroundColor: style.backgroundColor,
+                    color: style.color
+                  },
+                  attributes: Array.from(el.attributes).reduce((acc: any, attr) => {
+                    acc[attr.name] = attr.value;
+                    return acc;
+                  }, {})
+                };
+              })
+            };
+          });
+          
+          return results;
+        }, selectors);
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify(inspection, null, 2)
+          }]
+        };
+        
+      } catch (error: any) {
+        throw new McpError(
+          ErrorCode.InternalError,
+          `Failed to inspect elements: ${error.message}`
         );
       }
     }

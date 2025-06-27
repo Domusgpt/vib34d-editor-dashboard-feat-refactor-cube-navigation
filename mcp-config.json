@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "vib3-puppeteer": {
+      "command": "node",
+      "args": [
+        "/mnt/c/Users/millz/Desktop/vib34d-editor-dashboard-feat-refactor-cube-navigationWORKING/vib34d-editor-dashboard-feat-refactor-cube-navigation/vib3-mcp-server/dist/index.js"
+      ],
+      "env": {
+        "PUPPETEER_LAUNCH_OPTIONS": "{ \"headless\": false, \"args\": [\"--no-sandbox\", \"--disable-setuid-sandbox\"] }",
+        "ALLOW_DANGEROUS": "true"
+      }
+    }
+  }
+}
