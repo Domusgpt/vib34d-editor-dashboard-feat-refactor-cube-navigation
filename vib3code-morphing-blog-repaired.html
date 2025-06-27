@@ -3638,7 +3638,16 @@
                 
                 // Apply reactivity configuration
                 if (sectionConfig.reactivity && this.reactivityBridge) {
-                    this.reactivityBridge.applySectionReactivity(sectionConfig.section, sectionConfig.reactivity);
+                    // Check if method exists, otherwise apply reactivity directly
+                    if (typeof this.reactivityBridge.applySectionReactivity === 'function') {
+                        this.reactivityBridge.applySectionReactivity(sectionConfig.section, sectionConfig.reactivity);
+                    } else {
+                        console.log(`🎭 Applying reactivity config for ${sectionConfig.section}:`, sectionConfig.reactivity);
+                        // Apply reactivity settings directly to HomeMaster
+                        if (this.homeMaster && sectionConfig.reactivity.parameters) {
+                            this.homeMaster.updateReactivitySettings(sectionConfig.reactivity.parameters);
+                        }
+                    }
                 }
                 
                 // Apply layout configuration

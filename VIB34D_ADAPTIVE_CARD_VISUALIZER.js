@@ -4,6 +4,91 @@
  * with dynamic subclasses and master key integration
  */
 
+// WebGL Context Pool Manager - Prevents context overflow
+class WebGLContextPool {
+    constructor() {
+        this.pool = [];
+        this.activeContexts = new Set();
+        this.maxContexts = 4; // Maximum active WebGL contexts
+        this.canvasIndex = 0;
+    }
+    
+    getContext(width = 400, height = 300) {
+        // Reuse existing context if available
+        for (let i = 0; i < this.pool.length; i++) {
+            const contextData = this.pool[i];
+            if (!this.activeContexts.has(contextData.canvas)) {
+                // Resize canvas to requested dimensions
+                contextData.canvas.width = width;
+                contextData.canvas.height = height;
+                this.activeContexts.add(contextData.canvas);
+                console.log(`🔄 Reusing WebGL context ${i}`);
+                return contextData;
+            }
+        }
+        
+        // If we've hit the limit, reuse the oldest context
+        if (this.pool.length >= this.maxContexts) {
+            const oldestContext = this.pool[0];
+            this.releaseContext(oldestContext.canvas);
+            oldestContext.canvas.width = width;
+            oldestContext.canvas.height = height;
+            this.activeContexts.add(oldestContext.canvas);
+            console.log(`🔄 Recycling oldest WebGL context`);
+            return oldestContext;
+        }
+        
+        // Create new context
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        canvas.className = 'vib34d-pooled-canvas';
+        canvas.id = `vib34d-canvas-${this.canvasIndex++}`;
+        
+        const gl = canvas.getContext('webgl', { 
+            antialias: true, 
+            alpha: true,
+            preserveDrawingBuffer: false // Optimize memory
+        }) || canvas.getContext('experimental-webgl', { 
+            antialias: true, 
+            alpha: true,
+            preserveDrawingBuffer: false
+        });
+        
+        if (!gl) {
+            console.error('❌ Failed to create WebGL context');
+            return null;
+        }
+        
+        const contextData = { canvas, gl, id: canvas.id };
+        this.pool.push(contextData);
+        this.activeContexts.add(canvas);
+        
+        console.log(`✨ Created new WebGL context ${contextData.id} (${this.pool.length}/${this.maxContexts})`);
+        return contextData;
+    }
+    
+    releaseContext(canvas) {
+        this.activeContexts.delete(canvas);
+        console.log(`🔓 Released WebGL context ${canvas.id}`);
+    }
+    
+    clearInactiveContexts() {
+        // Clean up contexts that are no longer in DOM
+        this.pool = this.pool.filter(contextData => {
+            if (!document.body.contains(contextData.canvas)) {
+                this.activeContexts.delete(contextData.canvas);
+                console.log(`🗑️ Cleaned up orphaned context ${contextData.id}`);
+                return false;
+            }
+            return true;
+        });
+    }
+}
+
+// Create global context pool
+window.vib34dContextPool = window.vib34dContextPool || new WebGLContextPool();
+
 class AdaptiveCardVisualizer {
     constructor(container, options = {}) {
         this.container = container;
@@ -62,10 +147,21 @@ class AdaptiveCardVisualizer {
         console.log(`🎨 Initializing AdaptiveCardVisualizer for geometry ${this.options.geometry}...`);
         
         try {
-            // Create canvas element
-            this.canvas = document.createElement('canvas');
-            this.canvas.width = this.options.width;
-            this.canvas.height = this.options.height;
+            // Get WebGL context from pool
+            console.log('🔧 Getting WebGL context from pool...');
+            const contextData = window.vib34dContextPool.getContext(this.options.width, this.options.height);
+            
+            if (!contextData) {
+                console.log('⚠️ WebGL context pool exhausted, falling back to Canvas 2D');
+                this.initCanvas2DFallback();
+                return;
+            }
+            
+            this.canvas = contextData.canvas;
+            this.gl = contextData.gl;
+            this.contextId = contextData.id;
+            
+            // Update canvas styling
             this.canvas.className = 'vib34d-adaptive-canvas';
             
             // Apply dynamic subclasses
@@ -75,18 +171,7 @@ class AdaptiveCardVisualizer {
             
             this.container.appendChild(this.canvas);
             
-            // Try WebGL initialization
-            console.log('🔧 Attempting WebGL context creation...');
-            this.gl = this.canvas.getContext('webgl', { antialias: true, alpha: true }) || 
-                     this.canvas.getContext('experimental-webgl', { antialias: true, alpha: true });
-            
-            if (!this.gl) {
-                console.log('⚠️ WebGL not supported, falling back to Canvas 2D');
-                this.initCanvas2DFallback();
-                return;
-            }
-            
-            console.log('✅ WebGL context created successfully');
+            console.log(`✅ Using WebGL context ${this.contextId}`);
             
             // Setup WebGL components
             if (!this.setupShaders()) {
@@ -693,11 +778,27 @@ class AdaptiveCardVisualizer {
             cancelAnimationFrame(this.animationId);
         }
         
+        // Release WebGL context back to pool
+        if (this.canvas && this.contextId && window.vib34dContextPool) {
+            window.vib34dContextPool.releaseContext(this.canvas);
+            console.log(`🔓 Released WebGL context ${this.contextId} back to pool`);
+        }
+        
         if (this.canvas && this.canvas.parentNode) {
             this.canvas.parentNode.removeChild(this.canvas);
         }
         
+        this.canvas = null;
+        this.gl = null;
+        this.contextId = null;
         this.isInitialized = false;
+    }
+    
+    // Static method to clean up inactive contexts
+    static cleanupContextPool() {
+        if (window.vib34dContextPool) {
+            window.vib34dContextPool.clearInactiveContexts();
+        }
     }
 }
 

@@ -6,39 +6,39 @@
     "target": "blog_content",
     
     "sections": {
-      "hero": {
+      "HOME": {
         "style": "vib3code-hero",
         "reactivity": "interactive-focus",
         "layout": "full_viewport",
         "content_zones": ["title", "subtitle", "navigation"]
       },
       
-      "article_list": {
-        "style": "article-ambient", 
+      "TECH": {
+        "style": "technical-precision", 
         "reactivity": "reading-ambient",
         "layout": "card_grid",
-        "content_zones": ["preview_cards", "pagination"]
+        "content_zones": ["tech_articles", "tutorials", "guides"]
       },
       
-      "article_content": {
-        "style": "article-ambient",
+      "RESEARCH": {
+        "style": "quantum-wave",
         "reactivity": "reading-ambient", 
         "layout": "reading_optimized",
-        "content_zones": ["main_text", "code_blocks", "images"]
+        "content_zones": ["research_papers", "experiments", "analysis"]
       },
       
-      "interactive_cards": {
-        "style": "interactive-card",
+      "MEDIA": {
+        "style": "sphere-potential",
         "reactivity": "interactive-focus",
         "layout": "hover_responsive",
-        "content_zones": ["project_previews", "tool_showcases"]
+        "content_zones": ["videos", "podcasts", "interactive_demos"]
       },
       
-      "technical_deep": {
-        "style": "technical-precision",
-        "reactivity": "reading-ambient",
-        "layout": "documentation",
-        "content_zones": ["api_docs", "tutorials", "guides"]
+      "INNOVATION": {
+        "style": "mandelbulb-innovation",
+        "reactivity": "high-energy",
+        "layout": "immersive_showcase",
+        "content_zones": ["breakthrough_projects", "experimental_features", "future_tech"]
       },
       
       "sidebar": {
