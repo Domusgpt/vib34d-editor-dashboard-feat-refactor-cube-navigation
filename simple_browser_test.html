@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Browser Console Test</title>
+    <style>
+        body { 
+            background: #000; 
+            color: #00ff00; 
+            font-family: monospace; 
+            padding: 20px; 
+            margin: 0;
+        }
+        .output { 
+            background: #111; 
+            padding: 10px; 
+            border: 1px solid #333; 
+            max-height: 400px; 
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #333;
+            color: #00ff00;
+            border: 1px solid #555;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 VIB34D Console Test</h1>
+    <p>This page will show you exactly what's happening in the console.</p>
+    
+    <button onclick="testDashboard()">Test VIB34D Dashboard</button>
+    <button onclick="testWebGL()">Test WebGL Shader</button>
+    <button onclick="clearOutput()">Clear Output</button>
+    
+    <div id="output" class="output"></div>
+    
+    <script>
+        const output = document.getElementById('output');
+        
+        // Capture all console messages
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function logToPage(message, type = 'LOG') {
+            const timestamp = new Date().toLocaleTimeString();
+            const line = `[${timestamp}] [${type}] ${message}\n`;
+            output.textContent += line;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            logToPage(args.join(' '), 'LOG');
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            logToPage(args.join(' '), 'ERROR');
+            originalError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            logToPage(args.join(' '), 'WARN');
+            originalWarn.apply(console, args);
+        };
+        
+        function clearOutput() {
+            output.textContent = '';
+        }
+        
+        function testDashboard() {
+            logToPage('🎯 Testing VIB34D Editor Dashboard...', 'TEST');
+            
+            // Try to load the dashboard components
+            const iframe = document.createElement('iframe');
+            iframe.src = 'VIB34D_EDITOR_DASHBOARD.html';
+            iframe.style.display = 'none';
+            
+            iframe.onload = function() {
+                logToPage('✅ Dashboard iframe loaded', 'TEST');
+                try {
+                    // Access iframe content (will fail due to CORS but we can try)
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    logToPage('📄 Dashboard HTML loaded successfully', 'TEST');
+                } catch (e) {
+                    logToPage(`⚠️  Cannot access iframe content: ${e.message}`, 'TEST');
+                }
+            };
+            
+            iframe.onerror = function(e) {
+                logToPage(`❌ Dashboard failed to load: ${e}`, 'TEST');
+            };
+            
+            document.body.appendChild(iframe);
+        }
+        
+        function testWebGL() {
+            logToPage('🔧 Testing WebGL Shader System...', 'TEST');
+            
+            // Create a test canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = 400;
+            canvas.height = 400;
+            
+            try {
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                
+                if (!gl) {
+                    logToPage('❌ WebGL not supported', 'ERROR');
+                    return;
+                }
+                
+                logToPage('✅ WebGL context created', 'TEST');
+                logToPage(`📊 WebGL Version: ${gl.getParameter(gl.VERSION)}`, 'TEST');
+                logToPage(`🎮 WebGL Renderer: ${gl.getParameter(gl.RENDERER)}`, 'TEST');
+                
+                // Test shader compilation
+                const vertexShaderSource = `
+                    attribute vec4 position;
+                    void main() {
+                        gl_Position = position;
+                    }
+                `;
+                
+                const fragmentShaderSource = `
+                    precision mediump float;
+                    void main() {
+                        gl_Color = vec4(1.0, 0.0, 1.0, 1.0);
+                    }
+                `;
+                
+                logToPage('🔧 Creating test shaders...', 'TEST');
+                
+                const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+                gl.shaderSource(vertexShader, vertexShaderSource);
+                gl.compileShader(vertexShader);
+                
+                if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
+                    logToPage(`❌ Vertex shader compilation failed: ${gl.getShaderInfoLog(vertexShader)}`, 'ERROR');
+                } else {
+                    logToPage('✅ Vertex shader compiled successfully', 'TEST');
+                }
+                
+                const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+                gl.shaderSource(fragmentShader, fragmentShaderSource);
+                gl.compileShader(fragmentShader);
+                
+                if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
+                    logToPage(`❌ Fragment shader compilation failed: ${gl.getShaderInfoLog(fragmentShader)}`, 'ERROR');
+                } else {
+                    logToPage('✅ Fragment shader compiled successfully', 'TEST');
+                }
+                
+                // Try to load VIB34D core
+                logToPage('📦 Attempting to load VIB34D Core...', 'TEST');
+                
+                const script = document.createElement('script');
+                script.src = 'VIB34D_WORKING_CORE_ARCHITECTURE.js';
+                script.onload = function() {
+                    logToPage('✅ VIB34D Core loaded', 'TEST');
+                    
+                    // Test if VIB34D components are available
+                    if (window.VIB34D_WorkingCore) {
+                        logToPage('✅ VIB34D_WorkingCore found', 'TEST');
+                        
+                        try {
+                            const core = new window.VIB34D_WorkingCore();
+                            logToPage('✅ VIB34D Core instance created', 'TEST');
+                            
+                            // Test shader creation
+                            if (core.createShaderProgram) {
+                                logToPage('🔧 Testing VIB34D shader creation...', 'TEST');
+                                const testProgram = core.createShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
+                                if (testProgram) {
+                                    logToPage('✅ VIB34D shader program created successfully', 'TEST');
+                                } else {
+                                    logToPage('❌ VIB34D shader program creation failed', 'ERROR');
+                                }
+                            } else {
+                                logToPage('❌ createShaderProgram method not found', 'ERROR');
+                            }
+                            
+                        } catch (e) {
+                            logToPage(`❌ VIB34D Core initialization failed: ${e.message}`, 'ERROR');
+                        }
+                    } else {
+                        logToPage('❌ VIB34D_WorkingCore not found in window', 'ERROR');
+                    }
+                };
+                
+                script.onerror = function(e) {
+                    logToPage(`❌ Failed to load VIB34D Core: ${e}`, 'ERROR');
+                };
+                
+                document.head.appendChild(script);
+                
+            } catch (e) {
+                logToPage(`❌ WebGL test failed: ${e.message}`, 'ERROR');
+            }
+        }
+        
+        // Initial page load message
+        logToPage('🚀 Console test page loaded. Click buttons to run tests.', 'INFO');
+    </script>
+</body>
+</html>

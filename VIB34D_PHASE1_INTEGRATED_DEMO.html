@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D - Phase 1 Integrated Central State Demo</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+        
+        .demo-header {
+            text-align: center;
+            padding: 40px 20px 20px;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .demo-title {
+            font-size: 3rem;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        .architecture-info {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        
+        .architecture-title {
+            color: #00ffff;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        .architecture-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .detail-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .detail-label {
+            color: #ffff00;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .state-dashboard {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 20px;
+            z-index: 1000;
+            min-width: 320px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .dashboard-title {
+            color: #00ffff;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .state-section {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .state-label {
+            color: #ffff00;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .state-value {
+            color: #fff;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+        
+        .focus-indicator {
+            padding: 5px;
+            border-radius: 5px;
+            margin: 2px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .focus-indicator.focused {
+            background: rgba(255, 0, 255, 0.3);
+            border: 1px solid #ff00ff;
+        }
+        
+        .focus-indicator.adjacent {
+            background: rgba(255, 255, 0, 0.2);
+            border: 1px solid #ffff00;
+        }
+        
+        .focus-indicator.distant {
+            background: rgba(128, 128, 128, 0.1);
+            border: 1px solid #666;
+        }
+        
+        .visualizer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .visualizer-card {
+            position: relative;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            height: 300px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .visualizer-card:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .visualizer-card.focused {
+            transform: scale(1.15) translateZ(30px);
+            border-color: #ff00ff;
+            box-shadow: 0 0 40px rgba(255, 0, 255, 0.8);
+            z-index: 10;
+        }
+        
+        .visualizer-card.adjacent {
+            transform: scale(0.95) translateZ(15px);
+            border-color: #ffff00;
+            box-shadow: 0 0 25px rgba(255, 255, 0, 0.4);
+        }
+        
+        .visualizer-card.distant {
+            transform: scale(0.8) translateZ(0px);
+            opacity: 0.6;
+            border-color: #666;
+        }
+        
+        .card-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            background: linear-gradient(45deg, 
+                rgba(0,0,0,0.8) 0%, 
+                rgba(0,0,0,0.2) 50%, 
+                rgba(0,0,0,0.8) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+        
+        .card-info {
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .card-geometry {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+        
+        .card-stats {
+            font-family: monospace;
+            font-size: 0.7rem;
+            line-height: 1.4;
+        }
+        
+        .interaction-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .control-button {
+            background: rgba(255, 0, 255, 0.2);
+            border: 1px solid #ff00ff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .control-button:hover {
+            background: rgba(255, 0, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .control-button.active {
+            background: rgba(255, 0, 255, 0.6);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+        
+        .phase1-indicator {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ffff00;
+            border-radius: 15px;
+            padding: 15px;
+            z-index: 1000;
+            min-width: 250px;
+        }
+        
+        .indicator-title {
+            color: #ffff00;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .indicator-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 0.8rem;
+        }
+        
+        .indicator-label {
+            color: #00ffff;
+        }
+        
+        .indicator-value {
+            color: #fff;
+            font-family: monospace;
+        }
+        
+        .error-display {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px;
+            color: #fff;
+        }
+        
+        .success-display {
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1 class="demo-title">VIB34D Phase 1 Integration</h1>
+        <p style="color: #00ffff; font-size: 1.2rem;">Complete Central State + HypercubeCore Architecture</p>
+        <p style="color: #ffff00;">Uses Phase 1 BaseGeometry • GeometryManager • ProjectionManager • ShaderManager • HypercubeCore</p>
+    </div>
+    
+    <!-- Architecture Information -->
+    <div class="architecture-info">
+        <div class="architecture-title">🏗️ Phase 1 Core Architecture Integration</div>
+        <div class="architecture-details">
+            <div class="detail-item">
+                <div class="detail-label">Base Classes</div>
+                BaseGeometry, BaseProjection abstracts with proper inheritance
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Manager System</div>
+                GeometryManager, ProjectionManager, ShaderManager coordination
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Central Core</div>
+                HypercubeCore instances with 17 shader uniforms
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">State Management</div>
+                Central coordination with total environment reactivity
+            </div>
+        </div>
+    </div>
+    
+    <!-- Real-time State Dashboard -->
+    <div class="state-dashboard">
+        <div class="dashboard-title">🎯 Phase 1 State Monitor</div>
+        
+        <div class="state-section">
+            <div class="state-label">Architecture Status</div>
+            <div class="state-value" id="architectureStatus">Checking...</div>
+        </div>
+        
+        <div class="state-section">
+            <div class="state-label">HypercubeCore Count</div>
+            <div class="state-value" id="hypercubeCoreCount">0</div>
+        </div>
+        
+        <div class="state-section">
+            <div class="state-label">Global Interaction</div>
+            <div class="state-value" id="globalInteraction">idle</div>
+        </div>
+        
+        <div class="state-section">
+            <div class="state-label">Focused Element</div>
+            <div class="state-value" id="focusedElement">None</div>
+        </div>
+        
+        <div class="state-section">
+            <div class="state-label">Mouse Position</div>
+            <div class="state-value" id="mousePosition">0.5, 0.5</div>
+        </div>
+        
+        <div class="state-section">
+            <div class="state-label">Interaction Intensity</div>
+            <div class="state-value" id="interactionIntensity">0.0</div>
+        </div>
+        
+        <div class="state-section">
+            <div class="state-label">Focus States</div>
+            <div id="focusStates"></div>
+        </div>
+    </div>
+    
+    <!-- Phase 1 Integration Indicator -->
+    <div class="phase1-indicator">
+        <div class="indicator-title">📊 Phase 1 Integration</div>
+        <div class="indicator-row">
+            <span class="indicator-label">BaseGeometry:</span>
+            <span class="indicator-value" id="baseGeometryStatus">Loading...</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">BaseProjection:</span>
+            <span class="indicator-value" id="baseProjectionStatus">Loading...</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">GeometryManager:</span>
+            <span class="indicator-value" id="geometryManagerStatus">Loading...</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">ProjectionManager:</span>
+            <span class="indicator-value" id="projectionManagerStatus">Loading...</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">ShaderManager:</span>
+            <span class="indicator-value" id="shaderManagerStatus">Loading...</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">HypercubeCore:</span>
+            <span class="indicator-value" id="hypercubeCoreStatus">Loading...</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Central State:</span>
+            <span class="indicator-value" id="centralStateStatus">Loading...</span>
+        </div>
+    </div>
+    
+    <!-- System Status Display -->
+    <div id="system-status"></div>
+    
+    <!-- Visualizer Grid -->
+    <div class="visualizer-grid" id="visualizer-grid"></div>
+    
+    <!-- Interaction Controls -->
+    <div class="interaction-controls">
+        <button class="control-button" id="testHover">Test Hover</button>
+        <button class="control-button" id="testClick">Test Click</button>
+        <button class="control-button" id="testScroll">Test Scroll</button>
+        <button class="control-button" id="testDrag">Test Drag</button>
+        <button class="control-button" id="resetSystem">Reset All</button>
+        <button class="control-button" id="toggleMode">Toggle Mode</button>
+        <button class="control-button" id="debugPhase1">Debug Phase 1</button>
+    </div>
+    
+    <!-- Load Working Core Architecture (Based on proven HyperAV system) -->
+    <script src="VIB34D_WORKING_CORE_ARCHITECTURE.js"></script>
+    <!-- Then Load Enhanced Central State Manager -->
+    <script src="VIB34D_CENTRAL_STATE_MANAGER.js"></script>
+    
+    <script>
+        console.log('🚀 VIB34D Phase 1 Integrated Demo Starting...');
+        
+        // Global system instances
+        let centralStateManager = null;
+        let visualizers = [];
+        let systemStatus = {
+            phase1Available: false,
+            centralStateReady: false,
+            hypercubeCoresCreated: 0,
+            totalErrors: 0
+        };
+        
+        // Geometry configurations for 8 visualizers
+        const visualizerConfigs = [
+            {
+                id: 'hypercube-core',
+                name: 'Hypercube Core',
+                geometry: 'hypercube',
+                projection: 'perspective',
+                position: { x: 0.2, y: 0.8 },
+                role: 'highlight'
+            },
+            {
+                id: 'tetrahedron-tech',
+                name: 'Tetrahedron Tech',
+                geometry: 'hypertetrahedron',
+                projection: 'perspective',
+                position: { x: 0.5, y: 0.8 },
+                role: 'content'
+            },
+            {
+                id: 'sphere-philosophy',
+                name: 'Sphere Philosophy',
+                geometry: 'hypersphere',
+                projection: 'orthographic',
+                position: { x: 0.8, y: 0.8 },
+                role: 'content'
+            },
+            {
+                id: 'torus-flow',
+                name: 'Torus Flow',
+                geometry: 'torus',
+                projection: 'perspective',
+                position: { x: 0.2, y: 0.5 },
+                role: 'content'
+            },
+            {
+                id: 'klein-community',
+                name: 'Klein Community',
+                geometry: 'klein',
+                projection: 'stereographic',
+                position: { x: 0.5, y: 0.5 },
+                role: 'accent'
+            },
+            {
+                id: 'fractal-development',
+                name: 'Fractal Development',
+                geometry: 'fractal',
+                projection: 'perspective',
+                position: { x: 0.8, y: 0.5 },
+                role: 'content'
+            },
+            {
+                id: 'wave-research',
+                name: 'Wave Research',
+                geometry: 'wave',
+                projection: 'orthographic',
+                position: { x: 0.35, y: 0.2 },
+                role: 'background'
+            },
+            {
+                id: 'crystal-innovation',
+                name: 'Crystal Innovation',
+                geometry: 'crystal',
+                projection: 'stereographic',
+                position: { x: 0.65, y: 0.2 },
+                role: 'content'
+            }
+        ];
+        
+        // Check Phase 1 Architecture availability
+        function checkPhase1Architecture() {
+            console.log('🔍 Checking Phase 1 Core Architecture...');
+            
+            const statusEl = document.getElementById('system-status');
+            
+            if (!window.VIB34D_WorkingCore) {
+                systemStatus.phase1Available = false;
+                statusEl.innerHTML = `
+                    <div class="error-display">
+                        <h3>❌ Working Core Architecture Not Found</h3>
+                        <p>VIB34D_WORKING_CORE_ARCHITECTURE.js must be loaded first.</p>
+                        <p>This demo requires the complete class hierarchy:</p>
+                        <ul>
+                            <li>BaseGeometry (abstract)</li>
+                            <li>BaseProjection (abstract)</li>
+                            <li>GeometryManager</li>
+                            <li>ProjectionManager</li>
+                            <li>ShaderManager (17 uniforms)</li>
+                            <li>HypercubeCore (central coordination)</li>
+                        </ul>
+                    </div>
+                `;
+                return false;
+            }
+            
+            // Check all required classes
+            const requiredClasses = [
+                'BaseGeometry', 'BaseProjection', 'GeometryManager', 
+                'ProjectionManager', 'ShaderManager', 'HypercubeCore'
+            ];
+            
+            const missingClasses = [];
+            
+            requiredClasses.forEach(className => {
+                if (!window.VIB34D_WorkingCore[className]) {
+                    missingClasses.push(className);
+                } else {
+                    // Map class names to their correct camelCase ID format
+                    const statusId = className.charAt(0).toLowerCase() + className.slice(1) + 'Status';
+                    const statusElement = document.getElementById(statusId);
+                    if (statusElement) {
+                        statusElement.textContent = '✅ Available';
+                    }
+                }
+            });
+            
+            if (missingClasses.length > 0) {
+                systemStatus.phase1Available = false;
+                statusEl.innerHTML = `
+                    <div class="error-display">
+                        <h3>❌ Incomplete Working Core Architecture</h3>
+                        <p>Missing classes: ${missingClasses.join(', ')}</p>
+                        <p>Load complete VIB34D_WORKING_CORE_ARCHITECTURE.js</p>
+                    </div>
+                `;
+                return false;
+            }
+            
+            systemStatus.phase1Available = true;
+            statusEl.innerHTML = `
+                <div class="success-display">
+                    <h3>✅ Working Core Architecture Ready</h3>
+                    <p>All required classes loaded successfully</p>
+                    <p>Classes: ${requiredClasses.join(', ')}</p>
+                </div>
+            `;
+            
+            document.getElementById('architectureStatus').textContent = '✅ Working Core Ready';
+            return true;
+        }
+        
+        // Initialize Central State Manager
+        function initializeCentralStateManager() {
+            console.log('🎯 Initializing Central State Manager...');
+            
+            try {
+                centralStateManager = new VIB34DCentralStateManager();
+                systemStatus.centralStateReady = true;
+                document.getElementById('centralStateStatus').textContent = '✅ Active';
+                console.log('✅ Central State Manager initialized');
+                return true;
+            } catch (error) {
+                console.error('❌ Central State Manager initialization failed:', error);
+                document.getElementById('centralStateStatus').textContent = '❌ Failed';
+                
+                const statusEl = document.getElementById('system-status');
+                statusEl.innerHTML += `
+                    <div class="error-display">
+                        <h3>❌ Central State Manager Failed</h3>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+                return false;
+            }
+        }
+        
+        // Create visualizer cards and HypercubeCore instances
+        function createVisualizerCards() {
+            console.log('🎨 Creating visualizer cards with HypercubeCore instances...');
+            
+            const visualizerGrid = document.getElementById('visualizer-grid');
+            let successCount = 0;
+            
+            visualizerConfigs.forEach((config, index) => {
+                try {
+                    // Create card element
+                    const card = document.createElement('div');
+                    card.className = 'visualizer-card';
+                    card.id = `card-${config.id}`;
+                    card.innerHTML = `
+                        <canvas class="card-canvas" width="350" height="300"></canvas>
+                        <div class="card-overlay">
+                            <div class="card-info">
+                                <div class="card-title">${config.name}</div>
+                                <div class="card-geometry">
+                                    Geometry: ${config.geometry}<br>
+                                    Projection: ${config.projection}
+                                </div>
+                                <div class="card-stats">
+                                    Position: ${config.position.x.toFixed(1)}, ${config.position.y.toFixed(1)}<br>
+                                    Role: ${config.role}<br>
+                                    Status: <span id="status-${config.id}">Creating HypercubeCore...</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    visualizerGrid.appendChild(card);
+                    
+                    // Get canvas element
+                    const canvas = card.querySelector('.card-canvas');
+                    
+                    // Register with central state manager (which will create HypercubeCore)
+                    const registered = centralStateManager.registerVisualizer(config.id, canvas, config);
+                    
+                    if (registered) {
+                        visualizers.push({
+                            id: config.id,
+                            card: card,
+                            config: config
+                        });
+                        
+                        document.getElementById(`status-${config.id}`).textContent = 'Active HypercubeCore';
+                        systemStatus.hypercubeCoresCreated++;
+                        successCount++;
+                        console.log(`✅ Created HypercubeCore for ${config.id}`);
+                    } else {
+                        document.getElementById(`status-${config.id}`).textContent = 'HypercubeCore Failed';
+                        console.error(`❌ Failed to create HypercubeCore for ${config.id}`);
+                        systemStatus.totalErrors++;
+                    }
+                    
+                } catch (error) {
+                    console.error(`❌ Error creating visualizer ${config.id}:`, error);
+                    systemStatus.totalErrors++;
+                }
+            });
+            
+            document.getElementById('hypercubeCoreCount').textContent = systemStatus.hypercubeCoresCreated;
+            console.log(`🎮 Created ${successCount}/${visualizerConfigs.length} HypercubeCore instances`);
+            
+            return successCount > 0;
+        }
+        
+        // Update UI with real-time state information
+        function startUIUpdates() {
+            function updateUI() {
+                if (!centralStateManager) return;
+                
+                const state = centralStateManager.getDebugState();
+                
+                // Update global state indicators
+                document.getElementById('globalInteraction').textContent = state.globalState.interactionType;
+                document.getElementById('focusedElement').textContent = state.globalState.focusedElement || 'None';
+                document.getElementById('mousePosition').textContent = 
+                    `${state.globalState.mousePosition.x.toFixed(2)}, ${state.globalState.mousePosition.y.toFixed(2)}`;
+                document.getElementById('interactionIntensity').textContent = 
+                    state.globalState.interactionIntensity.toFixed(2);
+                
+                // Update focus states
+                const focusStatesEl = document.getElementById('focusStates');
+                let focusHTML = '';
+                
+                centralStateManager.visualizers.forEach((viz, id) => {
+                    focusHTML += `<div class="focus-indicator ${viz.focusState}">${id}: ${viz.focusState}</div>`;
+                });
+                
+                focusStatesEl.innerHTML = focusHTML;
+                
+                // Update visualizer card classes based on focus state
+                visualizers.forEach(viz => {
+                    const stateViz = centralStateManager.visualizers.get(viz.id);
+                    if (stateViz) {
+                        // Remove all focus classes
+                        viz.card.classList.remove('focused', 'adjacent', 'distant');
+                        // Add current focus class
+                        viz.card.classList.add(stateViz.focusState);
+                    }
+                });
+                
+                requestAnimationFrame(updateUI);
+            }
+            
+            updateUI();
+        }
+        
+        // Setup control button handlers
+        function setupControlHandlers() {
+            document.getElementById('testHover').addEventListener('click', () => {
+                const randomViz = visualizerConfigs[Math.floor(Math.random() * visualizerConfigs.length)];
+                centralStateManager.handleUserEvent('hover', {
+                    targetID: randomViz.id,
+                    intensity: 0.8
+                });
+            });
+            
+            document.getElementById('testClick').addEventListener('click', () => {
+                const randomViz = visualizerConfigs[Math.floor(Math.random() * visualizerConfigs.length)];
+                centralStateManager.handleUserEvent('click', {
+                    targetID: randomViz.id,
+                    intensity: 1.0
+                });
+            });
+            
+            document.getElementById('testScroll').addEventListener('click', () => {
+                centralStateManager.handleUserEvent('scroll', {
+                    velocity: Math.random(),
+                    direction: Math.random() > 0.5 ? 'down' : 'up'
+                });
+            });
+            
+            document.getElementById('testDrag').addEventListener('click', () => {
+                centralStateManager.handleUserEvent('drag', {
+                    intensity: 0.9,
+                    duration: 1000
+                });
+            });
+            
+            document.getElementById('resetSystem').addEventListener('click', () => {
+                centralStateManager.handleUserEvent('idle', {});
+                console.log('🔄 System reset to idle state');
+            });
+            
+            document.getElementById('toggleMode').addEventListener('click', (e) => {
+                const isEnabled = centralStateManager.globalState.totalEnvironmentMode;
+                centralStateManager.setTotalEnvironmentMode(!isEnabled);
+                e.target.textContent = !isEnabled ? 'Disable Mode' : 'Enable Mode';
+                e.target.classList.toggle('active', !isEnabled);
+            });
+            
+            document.getElementById('debugPhase1').addEventListener('click', () => {
+                console.log('🔍 Working Core Debug Information:');
+                console.log('Available classes:', Object.keys(window.VIB34D_WorkingCore));
+                
+                if (centralStateManager) {
+                    centralStateManager.visualizers.forEach((viz, id) => {
+                        const status = viz.hypercubeCore.getStatus();
+                        console.log(`${id} HypercubeCore status:`, status);
+                    });
+                }
+            });
+        }
+        
+        // Main initialization function
+        function initializeDemo() {
+            console.log('🚀 Starting Working Core Integrated Demo initialization...');
+            
+            // Step 1: Check Working Core Architecture
+            if (!checkPhase1Architecture()) {
+                console.error('❌ Working Core Architecture check failed');
+                return;
+            }
+            
+            // Step 2: Initialize Central State Manager
+            if (!initializeCentralStateManager()) {
+                console.error('❌ Central State Manager initialization failed');
+                return;
+            }
+            
+            // Step 3: Create visualizer cards with HypercubeCore instances
+            if (!createVisualizerCards()) {
+                console.error('❌ No visualizer cards created successfully');
+                return;
+            }
+            
+            // Step 4: Start UI updates
+            startUIUpdates();
+            
+            // Step 5: Setup control handlers
+            setupControlHandlers();
+            
+            console.log('✅ Working Core Integrated Demo initialization complete!');
+            console.log(`📊 System Status:`, systemStatus);
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🎯 DOM Ready - Starting VIB34D Working Core Integration...');
+            
+            // Small delay to ensure all scripts are loaded
+            setTimeout(initializeDemo, 100);
+        });
+        
+    </script>
+</body>
+</html>

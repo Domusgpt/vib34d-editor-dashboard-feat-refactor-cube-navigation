@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Integration Diagnostic Test</title>
+    <style>
+        body {
+            background: #000;
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .diagnostic-output {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .run-button {
+            background: rgba(255, 0, 255, 0.2);
+            border: 2px solid #ff00ff;
+            color: #ff00ff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 16px;
+            margin: 10px;
+        }
+        
+        .run-button:hover {
+            background: rgba(255, 0, 255, 0.4);
+        }
+        
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 3px;
+        }
+        
+        .status.working {
+            background: rgba(0, 255, 0, 0.2);
+            border-left: 4px solid #00ff00;
+        }
+        
+        .status.broken {
+            background: rgba(255, 0, 0, 0.2);
+            border-left: 4px solid #ff0000;
+        }
+        
+        .status.unknown {
+            background: rgba(255, 255, 0, 0.2);
+            border-left: 4px solid #ffff00;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 VIB34D Integration Diagnostic</h1>
+    <p>This page tests the integration between all VIB34D phases to identify broken connections.</p>
+    
+    <div>
+        <button class="run-button" onclick="runDiagnostic()">🚀 Run Full Diagnostic</button>
+        <button class="run-button" onclick="runQuickTest()">⚡ Quick Test</button>
+        <button class="run-button" onclick="clearOutput()">🗑️ Clear Output</button>
+    </div>
+    
+    <div id="diagnostic-results" class="diagnostic-output">
+        <p>Click "Run Full Diagnostic" to test integration between phases...</p>
+    </div>
+    
+    <div id="status-summary"></div>
+    
+    <!-- Load required scripts -->
+    <script src="VIB34D_WORKING_CORE_ARCHITECTURE.js"></script>
+    <script src="VIB34D_CENTRAL_STATE_MANAGER.js"></script>
+    <script src="VIB34D_INTEGRATION_DIAGNOSTIC.js"></script>
+    
+    <script>
+        let diagnosticInstance = null;
+        
+        // Capture console output for display
+        const originalConsoleLog = console.log;
+        const outputElement = document.getElementById('diagnostic-results');
+        
+        function captureConsoleLog(...args) {
+            // Call original console.log
+            originalConsoleLog.apply(console, args);
+            
+            // Also display in our output div
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            
+            const line = document.createElement('div');
+            line.textContent = message;
+            outputElement.appendChild(line);
+            outputElement.scrollTop = outputElement.scrollHeight;
+        }
+        
+        // Override console.log
+        console.log = captureConsoleLog;
+        
+        async function runDiagnostic() {
+            clearOutput();
+            console.log('🚀 Starting VIB34D Integration Diagnostic...');
+            
+            try {
+                diagnosticInstance = new VIB34DIntegrationDiagnostic();
+                const results = await diagnosticInstance.runFullDiagnostic();
+                
+                updateStatusSummary(results);
+                console.log('✅ Diagnostic complete!');
+                
+                return results;
+            } catch (error) {
+                console.log('❌ Diagnostic failed:', error.message);
+                console.log('Error details:', error);
+                return null;
+            }
+        }
+        
+        async function runQuickTest() {
+            clearOutput();
+            console.log('⚡ Running quick integration test...');
+            
+            try {
+                // Quick test: Can we create all the core objects?
+                console.log('Testing core object creation...');
+                
+                // Test 1: Core classes exist
+                const coreExists = window.VIB34D_WorkingCore ? 'YES' : 'NO';
+                console.log(`Core classes available: ${coreExists}`);
+                
+                if (coreExists === 'YES') {
+                    // Test 2: Can create managers
+                    try {
+                        const geometryManager = new window.VIB34D_WorkingCore.GeometryManager();
+                        console.log('✅ GeometryManager created successfully');
+                        
+                        const projectionManager = new window.VIB34D_WorkingCore.ProjectionManager();
+                        console.log('✅ ProjectionManager created successfully');
+                        
+                        // Test 3: Can create WebGL context and ShaderManager
+                        const canvas = document.createElement('canvas');
+                        const gl = canvas.getContext('webgl');
+                        
+                        if (gl) {
+                            const shaderManager = new window.VIB34D_WorkingCore.ShaderManager(gl, geometryManager, projectionManager);
+                            console.log('✅ ShaderManager created successfully');
+                            
+                            // Test 4: Can create HypercubeCore
+                            const hypercubeCore = new window.VIB34D_WorkingCore.HypercubeCore(canvas);
+                            console.log('✅ HypercubeCore created successfully');
+                            
+                            console.log('🎉 Quick test PASSED - Core integration working!');
+                        } else {
+                            console.log('❌ WebGL context creation failed');
+                        }
+                        
+                    } catch (error) {
+                        console.log(`❌ Manager creation failed: ${error.message}`);
+                    }
+                } else {
+                    console.log('❌ Core classes not available - check VIB34D_WORKING_CORE_ARCHITECTURE.js');
+                }
+                
+                // Test 5: Central State Manager
+                if (window.VIB34DCentralStateManager) {
+                    try {
+                        const centralState = new VIB34DCentralStateManager();
+                        console.log('✅ Central State Manager created successfully');
+                    } catch (error) {
+                        console.log(`❌ Central State Manager creation failed: ${error.message}`);
+                    }
+                } else {
+                    console.log('❌ Central State Manager not available');
+                }
+                
+            } catch (error) {
+                console.log('❌ Quick test failed:', error.message);
+            }
+        }
+        
+        function updateStatusSummary(results) {
+            if (!results) return;
+            
+            const summaryDiv = document.getElementById('status-summary');
+            summaryDiv.innerHTML = '<h3>🎯 Status Summary</h3>';
+            
+            Object.keys(results).forEach(phase => {
+                const status = results[phase].status;
+                const statusDiv = document.createElement('div');
+                statusDiv.className = `status ${status}`;
+                statusDiv.innerHTML = `
+                    <strong>${phase.toUpperCase()}</strong>: ${status}
+                    <br>Tests: ${Object.keys(results[phase].tests).length}
+                `;
+                summaryDiv.appendChild(statusDiv);
+            });
+        }
+        
+        function clearOutput() {
+            outputElement.innerHTML = '<p>Output cleared...</p>';
+            document.getElementById('status-summary').innerHTML = '';
+        }
+        
+        // Auto-run quick test on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('🔍 VIB34D Integration Test Page Loaded');
+                console.log('Available diagnostic functions:');
+                console.log('- runDiagnostic() - Full integration diagnostic');
+                console.log('- runQuickTest() - Quick integration test');
+            }, 500);
+        });
+    </script>
+</body>
+</html>

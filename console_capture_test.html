@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Console Capture Test</title>
+</head>
+<body>
+    <h1>VIB34D Console Capture Test</h1>
+    <div id="results"></div>
+    
+    <script src="VIB34D_WORKING_CORE_ARCHITECTURE.js"></script>
+    <script>
+        const results = [];
+        
+        // Capture console messages
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            const message = args.join(' ');
+            results.push(`LOG: ${message}`);
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            const message = args.join(' ');
+            results.push(`ERROR: ${message}`);
+            originalError.apply(console, args);
+        };
+        
+        function runTest() {
+            console.log('🔧 Starting VIB34D shader compilation test...');
+            
+            // Create WebGL context
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl');
+            
+            if (!gl) {
+                console.error('❌ WebGL not available');
+                return;
+            }
+            
+            console.log('✅ WebGL context created');
+            
+            // Test VIB34D core
+            if (window.VIB34D_WorkingCore) {
+                console.log('✅ VIB34D_WorkingCore loaded');
+                
+                try {
+                    const core = new window.VIB34D_WorkingCore();
+                    console.log('✅ VIB34D Core instance created');
+                    
+                    // Test geometry manager
+                    if (core.geometryManager) {
+                        console.log('🔧 Testing GeometryManager...');
+                        const geomGLSL = core.geometryManager.generateGLSL('hypercube');
+                        console.log(`📝 Geometry GLSL length: ${geomGLSL ? geomGLSL.length : 'null'}`);
+                        if (geomGLSL) {
+                            console.log(`📝 Geometry GLSL preview: ${geomGLSL.substring(0, 100)}...`);
+                        }
+                    } else {
+                        console.error('❌ GeometryManager not found');
+                    }
+                    
+                    // Test projection manager
+                    if (core.projectionManager) {
+                        console.log('🔧 Testing ProjectionManager...');
+                        const projGLSL = core.projectionManager.generateGLSL('perspective4D');
+                        console.log(`📝 Projection GLSL length: ${projGLSL ? projGLSL.length : 'null'}`);
+                        if (projGLSL) {
+                            console.log(`📝 Projection GLSL preview: ${projGLSL.substring(0, 100)}...`);
+                        }
+                    } else {
+                        console.error('❌ ProjectionManager not found');
+                    }
+                    
+                    // Test shader creation
+                    if (core.createShaderProgram) {
+                        console.log('🔧 Testing shader program creation...');
+                        
+                        const vertexShader = `
+                            attribute vec4 position;
+                            void main() {
+                                gl_Position = position;
+                            }
+                        `;
+                        
+                        const fragmentShader = `
+                            precision mediump float;
+                            void main() {
+                                gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+                            }
+                        `;
+                        
+                        const program = core.createShaderProgram(gl, vertexShader, fragmentShader);
+                        if (program) {
+                            console.log('✅ Basic shader program created successfully');
+                        } else {
+                            console.error('❌ Basic shader program creation failed');
+                        }
+                        
+                        // Test with VIB34D shaders
+                        if (core.geometryManager && core.projectionManager) {
+                            console.log('🔧 Testing VIB34D-generated shaders...');
+                            
+                            const vib3dVertex = core.geometryManager.generateGLSL('hypercube');
+                            const vib3dFragment = core.projectionManager.generateGLSL('perspective4D');
+                            
+                            if (vib3dVertex && vib3dFragment) {
+                                const vib3dProgram = core.createShaderProgram(gl, vib3dVertex, vib3dFragment);
+                                if (vib3dProgram) {
+                                    console.log('✅ VIB34D shader program created successfully');
+                                } else {
+                                    console.error('❌ VIB34D shader program creation failed');
+                                }
+                            } else {
+                                console.error('❌ VIB34D shader generation failed');
+                            }
+                        }
+                    } else {
+                        console.error('❌ createShaderProgram method not found');
+                    }
+                    
+                } catch (e) {
+                    console.error(`❌ VIB34D test failed: ${e.message}`);
+                    console.error(`📍 Stack trace: ${e.stack}`);
+                }
+            } else {
+                console.error('❌ VIB34D_WorkingCore not found');
+            }
+            
+            // Output results to page and try to save
+            setTimeout(() => {
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = '<pre>' + results.join('\\n') + '</pre>';
+                
+                // Try to save results to localStorage
+                try {
+                    localStorage.setItem('vib34d_test_results', JSON.stringify(results));
+                    console.log('📝 Results saved to localStorage');
+                } catch (e) {
+                    console.error('❌ Failed to save results');
+                }
+            }, 1000);
+        }
+        
+        // Run test when page loads
+        window.addEventListener('load', runTest);
+    </script>
+</body>
+</html>

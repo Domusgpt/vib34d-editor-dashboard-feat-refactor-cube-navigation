@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head><title>Shader Debug Test</title></head>
+<body>
+    <canvas id='testCanvas' width='400' height='400'></canvas>
+    <div id='output'></div>
+    <script src='VIB34D_WORKING_CORE_ARCHITECTURE.js'></script>
+    <script>
+        const output = document.getElementById('output');
+        function log(msg) {
+            console.log(msg);
+            output.innerHTML += msg + '<br>';
+        }
+        
+        setTimeout(() => {
+            try {
+                log('Testing VIB34D Core...');
+                const canvas = document.getElementById('testCanvas');
+                
+                if (!window.VIB34D_WorkingCore) {
+                    log('ERROR: VIB34D_WorkingCore not found');
+                    return;
+                }
+                
+                log('VIB34D_WorkingCore found');
+                const { HypercubeCore } = window.VIB34D_WorkingCore;
+                
+                log('Creating HypercubeCore...');
+                const core = new HypercubeCore(canvas);
+                
+                log('Starting render...');
+                core.start();
+                
+                setTimeout(() => {
+                    const status = core.getStatus();
+                    log('Status: ' + JSON.stringify(status, null, 2));
+                }, 1000);
+                
+            } catch (e) {
+                log('ERROR: ' + e.message);
+                log('Stack: ' + e.stack);
+            }
+        }, 500);
+    </script>
+</body>
+</html>

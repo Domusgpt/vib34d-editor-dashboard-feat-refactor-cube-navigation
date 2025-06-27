@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3CODE | Fixed Morphing Blog System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #000000 70%);
+        }
+
+        /* Quick test message */
+        .test-message {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid #00ffff;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        /* Blog cards */
+        .blog-card {
+            position: absolute;
+            width: 300px;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        #blog-card-1 { top: 10%; left: 10%; }
+        #blog-card-2 { top: 30%; left: 40%; }
+        #blog-card-3 { top: 50%; left: 70%; }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: #ff00ff;
+            margin-bottom: 10px;
+        }
+
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: #00ffff;
+            margin-bottom: 15px;
+        }
+
+        .card-content {
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: #cccccc;
+        }
+
+        .tag {
+            background: rgba(0, 255, 255, 0.2);
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-message">
+        <strong>VIB3CODE Fixed System</strong><br>
+        Server: http://localhost:8080<br>
+        Dynamic Content: Loading from site-content.json<br>
+        Status: <span id="status">Initializing...</span>
+    </div>
+
+    <!-- Blog Cards with Dynamic Content -->
+    <div class="blog-card" id="blog-card-1">
+        <div class="card-title" id="card-title-1">Loading...</div>
+        <div class="card-subtitle" id="card-subtitle-1">Please wait</div>
+        <div class="card-content" id="card-content-1">
+            Initializing dynamic content system...
+        </div>
+    </div>
+
+    <div class="blog-card" id="blog-card-2">
+        <div class="card-title" id="card-title-2">Loading...</div>
+        <div class="card-subtitle" id="card-subtitle-2">Please wait</div>
+        <div class="card-content" id="card-content-2">
+            Initializing dynamic content system...
+        </div>
+    </div>
+
+    <div class="blog-card" id="blog-card-3">
+        <div class="card-title" id="card-title-3">Loading...</div>
+        <div class="card-subtitle" id="card-subtitle-3">Please wait</div>
+        <div class="card-content" id="card-content-3">
+            Initializing dynamic content system...
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 VIB3CODE Fixed System Initializing...');
+        
+        // Simple content loader without WebGL errors
+        async function loadSiteContent() {
+            try {
+                console.log('📡 Loading site-content.json...');
+                const response = await fetch('./site-content.json');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('✅ Site content loaded:', data);
+                
+                // Find HOME section
+                const homeSection = data.sections.find(s => s.sectionKey === 'HOME');
+                if (!homeSection) {
+                    throw new Error('HOME section not found in site-content.json');
+                }
+                
+                // Load content into cards
+                homeSection.cards.forEach((card, index) => {
+                    const cardNum = index + 1;
+                    const titleElement = document.getElementById(`card-title-${cardNum}`);
+                    const subtitleElement = document.getElementById(`card-subtitle-${cardNum}`);
+                    const contentElement = document.getElementById(`card-content-${cardNum}`);
+                    
+                    if (titleElement) titleElement.textContent = card.title;
+                    if (subtitleElement) subtitleElement.textContent = card.subtitle;
+                    if (contentElement) {
+                        contentElement.innerHTML = card.content;
+                        
+                        // Add metadata if present
+                        if (card.metadata && card.metadata.tags) {
+                            const metaDiv = document.createElement('div');
+                            metaDiv.style.marginTop = '10px';
+                            card.metadata.tags.forEach(tag => {
+                                const tagSpan = document.createElement('span');
+                                tagSpan.className = 'tag';
+                                tagSpan.textContent = tag;
+                                metaDiv.appendChild(tagSpan);
+                            });
+                            contentElement.appendChild(metaDiv);
+                        }
+                    }
+                });
+                
+                document.getElementById('status').textContent = 'Content Loaded Successfully';
+                console.log('✅ Dynamic content applied to all cards');
+                
+            } catch (error) {
+                console.error('❌ Failed to load content:', error);
+                document.getElementById('status').textContent = `Error: ${error.message}`;
+                
+                // Fallback content
+                document.getElementById('card-title-1').textContent = 'VIB3CODE (Fallback)';
+                document.getElementById('card-subtitle-1').textContent = 'Emergent Interface Architecture';
+                document.getElementById('card-content-1').textContent = 'Dynamic content loading failed. Using fallback content.';
+            }
+        }
+        
+        // Simple navigation test
+        document.addEventListener('keydown', (e) => {
+            console.log(`🔤 Key pressed: ${e.key}`);
+            const status = document.getElementById('status');
+            
+            switch(e.key) {
+                case 'ArrowUp':
+                    status.textContent = 'Navigation: UP → HOME';
+                    break;
+                case 'ArrowRight':
+                    status.textContent = 'Navigation: RIGHT → TECH';
+                    break;
+                case 'ArrowLeft':
+                    status.textContent = 'Navigation: LEFT → RESEARCH';
+                    break;
+                case 'ArrowDown':
+                    status.textContent = 'Navigation: DOWN → MEDIA';
+                    break;
+            }
+        });
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 DOM loaded, initializing content...');
+            loadSiteContent();
+        });
+        
+        // Also try loading immediately in case DOM is already ready
+        if (document.readyState === 'loading') {
+            console.log('⏳ Waiting for DOM...');
+        } else {
+            console.log('🚀 DOM ready, loading content immediately...');
+            loadSiteContent();
+        }
+    </script>
+</body>
+</html>

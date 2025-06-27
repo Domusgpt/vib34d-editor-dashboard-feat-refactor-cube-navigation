@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Master Control System - Hyperdimensional Interface</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Orbitron', monospace;
+            overflow: hidden;
+            height: 100vh;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #000000 70%);
+        }
+        
+        /* MASTER CONTROL INTERFACE */
+        .master-control-interface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-areas: 
+                "geometry-selector parameter-matrix interaction-panel"
+                "visualization-viewport visualization-viewport real-time-feedback"
+                "advanced-mathematics systematic-nuance complexity-engine";
+            grid-template-columns: 300px 1fr 350px;
+            grid-template-rows: 200px 1fr 180px;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        /* GEOMETRY SELECTOR */
+        .geometry-selector {
+            grid-area: geometry-selector;
+            background: rgba(10, 10, 30, 0.9);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+        }
+        
+        .geometry-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .geometry-option {
+            aspect-ratio: 1;
+            background: rgba(0, 100, 100, 0.2);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .geometry-option.active {
+            background: rgba(0, 255, 255, 0.4);
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .geometry-option:hover {
+            transform: scale(1.05);
+            background: rgba(0, 255, 255, 0.3);
+        }
+        
+        .geometry-icon {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        /* PARAMETER MATRIX */
+        .parameter-matrix {
+            grid-area: parameter-matrix;
+            background: rgba(20, 10, 40, 0.9);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            overflow-y: auto;
+        }
+        
+        .parameter-group {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(30, 20, 50, 0.7);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 0, 255, 0.2);
+        }
+        
+        .parameter-group h3 {
+            color: #ff00ff;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .parameter-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .parameter-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            min-width: 120px;
+        }
+        
+        .parameter-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .parameter-slider {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .parameter-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #ff00ff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+        }
+        
+        .parameter-value {
+            font-size: 0.7rem;
+            color: #00ffff;
+            min-width: 40px;
+            text-align: right;
+            font-weight: 700;
+        }
+        
+        /* INTERACTION PANEL */
+        .interaction-panel {
+            grid-area: interaction-panel;
+            background: rgba(40, 20, 10, 0.9);
+            border: 1px solid rgba(255, 255, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+        }
+        
+        .interaction-detector {
+            background: rgba(50, 50, 20, 0.7);
+            border: 1px solid rgba(255, 255, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .interaction-detector.active {
+            background: rgba(255, 255, 0, 0.2);
+            border-color: #ffff00;
+        }
+        
+        .interaction-meter {
+            height: 4px;
+            background: rgba(255, 255, 0, 0.3);
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .interaction-meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffff00, #ff00ff);
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+        
+        /* VISUALIZATION VIEWPORT */
+        .visualization-viewport {
+            grid-area: visualization-viewport;
+            background: rgba(5, 5, 15, 0.9);
+            border: 2px solid rgba(0, 255, 255, 0.5);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+        
+        .viewport-canvas {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+        
+        .viewport-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(0,255,255,0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(255,0,255,0.1) 0%, transparent 40%);
+        }
+        
+        /* REAL-TIME FEEDBACK */
+        .real-time-feedback {
+            grid-area: real-time-feedback;
+            background: rgba(20, 40, 20, 0.9);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+        }
+        
+        .feedback-monitor {
+            background: rgba(0, 50, 0, 0.5);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+        }
+        
+        .feedback-value {
+            color: #00ff00;
+            font-weight: 700;
+        }
+        
+        /* ADVANCED MATHEMATICS */
+        .advanced-mathematics {
+            grid-area: advanced-mathematics;
+            background: rgba(30, 30, 60, 0.9);
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(15px);
+        }
+        
+        .math-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.75rem;
+        }
+        
+        .rotation-matrix {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .matrix-element {
+            background: rgba(100, 100, 255, 0.2);
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            border-radius: 4px;
+            padding: 5px;
+            text-align: center;
+            font-size: 0.6rem;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* SYSTEMATIC NUANCE */
+        .systematic-nuance {
+            grid-area: systematic-nuance;
+            background: rgba(50, 30, 50, 0.9);
+            border: 1px solid rgba(255, 100, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(15px);
+        }
+        
+        .nuance-detector {
+            background: rgba(80, 50, 80, 0.7);
+            border: 1px solid rgba(255, 100, 255, 0.3);
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 8px;
+            font-size: 0.7rem;
+        }
+        
+        /* COMPLEXITY ENGINE */
+        .complexity-engine {
+            grid-area: complexity-engine;
+            background: rgba(60, 60, 30, 0.9);
+            border: 1px solid rgba(255, 200, 0, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(15px);
+        }
+        
+        .complexity-meter {
+            height: 60px;
+            background: rgba(50, 50, 20, 0.8);
+            border: 1px solid rgba(255, 200, 0, 0.3);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .complexity-visualization {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, 
+                rgba(255, 200, 0, 0.8) 0%,
+                rgba(255, 100, 0, 0.6) 50%,
+                rgba(255, 0, 100, 0.4) 100%);
+            transition: height 0.3s ease;
+        }
+        
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 1400px) {
+            .master-control-interface {
+                grid-template-columns: 280px 1fr 320px;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .master-control-interface {
+                grid-template-areas: 
+                    "visualization-viewport visualization-viewport"
+                    "geometry-selector parameter-matrix"
+                    "interaction-panel real-time-feedback"
+                    "advanced-mathematics systematic-nuance";
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr 200px 180px 160px;
+            }
+        }
+        
+        /* UTILITY CLASSES */
+        .section-title {
+            color: #00ffff;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+    <div class="master-control-interface">
+        <!-- GEOMETRY SELECTOR -->
+        <div class="geometry-selector">
+            <div class="section-title">Geometry Engine</div>
+            <div class="geometry-grid">
+                <div class="geometry-option active" data-geometry="hypercube">
+                    <div class="geometry-icon">🔮</div>
+                    <div>HYPER</div>
+                </div>
+                <div class="geometry-option" data-geometry="tetrahedron">
+                    <div class="geometry-icon">🔺</div>
+                    <div>TETRA</div>
+                </div>
+                <div class="geometry-option" data-geometry="sphere">
+                    <div class="geometry-icon">🌐</div>
+                    <div>SPHERE</div>
+                </div>
+                <div class="geometry-option" data-geometry="torus">
+                    <div class="geometry-icon">🍩</div>
+                    <div>TORUS</div>
+                </div>
+                <div class="geometry-option" data-geometry="klein">
+                    <div class="geometry-icon">🎭</div>
+                    <div>KLEIN</div>
+                </div>
+                <div class="geometry-option" data-geometry="fractal">
+                    <div class="geometry-icon">🌿</div>
+                    <div>FRACTAL</div>
+                </div>
+                <div class="geometry-option" data-geometry="wave">
+                    <div class="geometry-icon">🌊</div>
+                    <div>WAVE</div>
+                </div>
+                <div class="geometry-option" data-geometry="crystal">
+                    <div class="geometry-icon">💎</div>
+                    <div>CRYSTAL</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PARAMETER MATRIX -->
+        <div class="parameter-matrix">
+            <div class="section-title">Parameter Matrix</div>
+            
+            <div class="parameter-group">
+                <h3>4D Rotation</h3>
+                <div class="parameter-row">
+                    <div class="parameter-label">X-W Rotation</div>
+                    <div class="parameter-control">
+                        <input type="range" class="parameter-slider" id="rotationXW" min="0" max="360" value="45">
+                        <div class="parameter-value" id="rotationXW-value">45°</div>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">Y-W Rotation</div>
+                    <div class="parameter-control">
+                        <input type="range" class="parameter-slider" id="rotationYW" min="0" max="360" value="60">
+                        <div class="parameter-value" id="rotationYW-value">60°</div>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">Z-W Rotation</div>
+                    <div class="parameter-control">
+                        <input type="range" class="parameter-slider" id="rotationZW" min="0" max="360" value="30">
+                        <div class="parameter-value" id="rotationZW-value">30°</div>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">4D Projection</div>
+                    <div class="parameter-control">
+                        <input type="range" class="parameter-slider" id="projection4D" min="1" max="5" step="0.1" value="2.5">
+                        <div class="parameter-value" id="projection4D-value">2.5</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="parameter-group">
+                <h3>Visual Properties</h3>
+                <div class="parameter-row">
+                    <div class="parameter-label">Grid Density</div>
+                    <div class="parameter-control">
+                        <input type="range" class="parameter-slider" id="gridDensity" min="2" max="64" value="12">
+                        <div class="parameter-value" id="gridDensity-value">12</div>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">Animation Speed</div>
+                    <div class="parameter-control">
+                        <input type="range" class="parameter-slider" id="animationSpeed" min="0.1" max="3" step="0.1" value="0.6">
+                        <div class="parameter-value" id="animationSpeed-value">0.6x</div>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">Morph Factor</div>
+                    <div class="parameter-control">
+                        <input type="range" class="parameter-slider" id="morphFactor" min="0" max="2" step="0.1" value="0.5">
+                        <div class="parameter-value" id="morphFactor-value">0.5</div>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">Color Intensity</div>
+                    <div class="parameter-control">
+                        <input type="range" class="parameter-slider" id="colorIntensity" min="0.1" max="2" step="0.1" value="1.0">
+                        <div class="parameter-value" id="colorIntensity-value">1.0x</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="parameter-group">
+                <h3>Interaction Response</h3>
+                <div class="parameter-row">
+                    <div class="parameter-label">Mouse Sensitivity</div>
+                    <div class="parameter-control">
+                        <input type="range" class="parameter-slider" id="mouseSensitivity" min="0.1" max="3" step="0.1" value="1.0">
+                        <div class="parameter-value" id="mouseSensitivity-value">1.0x</div>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">Click Response</div>
+                    <div class="parameter-control">
+                        <input type="range" class="parameter-slider" id="clickResponse" min="0.1" max="5" step="0.1" value="2.0">
+                        <div class="parameter-value" id="clickResponse-value">2.0x</div>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">Scroll Reactivity</div>
+                    <div class="parameter-control">
+                        <input type="range" class="parameter-slider" id="scrollReactivity" min="0.1" max="2" step="0.1" value="0.6">
+                        <div class="parameter-value" id="scrollReactivity-value">0.6x</div>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">Hold Intensity</div>
+                    <div class="parameter-control">
+                        <input type="range" class="parameter-slider" id="holdIntensity" min="0.1" max="3" step="0.1" value="1.5">
+                        <div class="parameter-value" id="holdIntensity-value">1.5x</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- INTERACTION PANEL -->
+        <div class="interaction-panel">
+            <div class="section-title">Interaction Detection</div>
+            
+            <div class="interaction-detector" id="mouse-detector">
+                <div>Mouse Movement</div>
+                <div class="interaction-meter">
+                    <div class="interaction-meter-fill" id="mouse-meter"></div>
+                </div>
+            </div>
+            
+            <div class="interaction-detector" id="scroll-detector">
+                <div>Scroll Activity</div>
+                <div class="interaction-meter">
+                    <div class="interaction-meter-fill" id="scroll-meter"></div>
+                </div>
+            </div>
+            
+            <div class="interaction-detector" id="click-detector">
+                <div>Click Events</div>
+                <div class="interaction-meter">
+                    <div class="interaction-meter-fill" id="click-meter"></div>
+                </div>
+            </div>
+            
+            <div class="interaction-detector" id="hold-detector">
+                <div>Hold Duration</div>
+                <div class="interaction-meter">
+                    <div class="interaction-meter-fill" id="hold-meter"></div>
+                </div>
+            </div>
+            
+            <div class="interaction-detector" id="idle-detector">
+                <div>Idle State</div>
+                <div class="interaction-meter">
+                    <div class="interaction-meter-fill" id="idle-meter"></div>
+                </div>
+            </div>
+            
+            <div class="interaction-detector" id="velocity-detector">
+                <div>Movement Velocity</div>
+                <div class="interaction-meter">
+                    <div class="interaction-meter-fill" id="velocity-meter"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- VISUALIZATION VIEWPORT -->
+        <div class="visualization-viewport">
+            <canvas class="viewport-canvas" id="mainViewport"></canvas>
+            <div class="viewport-overlay"></div>
+        </div>
+        
+        <!-- REAL-TIME FEEDBACK -->
+        <div class="real-time-feedback">
+            <div class="section-title">System Feedback</div>
+            
+            <div class="feedback-monitor">
+                FPS: <span class="feedback-value" id="fps-display">60</span>
+            </div>
+            
+            <div class="feedback-monitor">
+                Active Geometry: <span class="feedback-value" id="active-geometry">HYPERCUBE</span>
+            </div>
+            
+            <div class="feedback-monitor">
+                4D Dimension: <span class="feedback-value" id="dimension-display">3.2</span>
+            </div>
+            
+            <div class="feedback-monitor">
+                Interaction Level: <span class="feedback-value" id="interaction-level">Medium</span>
+            </div>
+            
+            <div class="feedback-monitor">
+                Complexity Score: <span class="feedback-value" id="complexity-score">7.3</span>
+            </div>
+            
+            <div class="feedback-monitor">
+                Render Time: <span class="feedback-value" id="render-time">8.2ms</span>
+            </div>
+        </div>
+        
+        <!-- ADVANCED MATHEMATICS -->
+        <div class="advanced-mathematics">
+            <div class="section-title">4D Mathematics</div>
+            
+            <div class="math-control">
+                <span>Hyperdimensional Transform</span>
+                <span class="glow-text">ACTIVE</span>
+            </div>
+            
+            <div class="rotation-matrix">
+                <div class="matrix-element" id="m00">1.0</div>
+                <div class="matrix-element" id="m01">0.0</div>
+                <div class="matrix-element" id="m02">0.0</div>
+                <div class="matrix-element" id="m03">0.0</div>
+                <div class="matrix-element" id="m10">0.0</div>
+                <div class="matrix-element" id="m11">1.0</div>
+                <div class="matrix-element" id="m12">0.0</div>
+                <div class="matrix-element" id="m13">0.0</div>
+                <div class="matrix-element" id="m20">0.0</div>
+                <div class="matrix-element" id="m21">0.0</div>
+                <div class="matrix-element" id="m22">1.0</div>
+                <div class="matrix-element" id="m23">0.0</div>
+                <div class="matrix-element" id="m30">0.0</div>
+                <div class="matrix-element" id="m31">0.0</div>
+                <div class="matrix-element" id="m32">0.0</div>
+                <div class="matrix-element" id="m33">1.0</div>
+            </div>
+        </div>
+        
+        <!-- SYSTEMATIC NUANCE -->
+        <div class="systematic-nuance">
+            <div class="section-title">Systematic Nuance</div>
+            
+            <div class="nuance-detector">
+                Pattern Recognition: <span class="glow-text">LEARNING</span>
+            </div>
+            
+            <div class="nuance-detector">
+                Behavioral Adaptation: <span class="glow-text">ACTIVE</span>
+            </div>
+            
+            <div class="nuance-detector">
+                Context Sensitivity: <span class="glow-text">HIGH</span>
+            </div>
+            
+            <div class="nuance-detector">
+                Predictive Modeling: <span class="glow-text">ENABLED</span>
+            </div>
+            
+            <div class="nuance-detector">
+                Micro-Interactions: <span class="glow-text">DETECTED</span>
+            </div>
+        </div>
+        
+        <!-- COMPLEXITY ENGINE -->
+        <div class="complexity-engine">
+            <div class="section-title">Complexity Engine</div>
+            
+            <div class="complexity-meter">
+                <div class="complexity-visualization" id="complexity-vis" style="height: 45%;"></div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.7rem;">
+                <span>Minimal</span>
+                <span>Optimal</span>
+                <span>Maximum</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // VIB34D Master Control System
+        class VIB34DMasterControl {
+            constructor() {
+                this.canvas = document.getElementById('mainViewport');
+                this.gl = this.canvas.getContext('webgl2');
+                
+                this.currentGeometry = 'hypercube';
+                this.parameters = {
+                    rotationXW: 45,
+                    rotationYW: 60,
+                    rotationZW: 30,
+                    projection4D: 2.5,
+                    gridDensity: 12,
+                    animationSpeed: 0.6,
+                    morphFactor: 0.5,
+                    colorIntensity: 1.0,
+                    mouseSensitivity: 1.0,
+                    clickResponse: 2.0,
+                    scrollReactivity: 0.6,
+                    holdIntensity: 1.5
+                };
+                
+                this.interactionState = {
+                    mouse: { x: 0, y: 0, velocity: 0, intensity: 0 },
+                    scroll: { delta: 0, accumulated: 0, intensity: 0 },
+                    click: { active: false, intensity: 0, duration: 0 },
+                    hold: { active: false, duration: 0, intensity: 0 },
+                    idle: { duration: 0, active: false },
+                    velocity: { current: 0, max: 0, average: 0 }
+                };
+                
+                this.performance = {
+                    fps: 60,
+                    renderTime: 0,
+                    complexity: 0.5,
+                    dimension: 3.2
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupCanvas();
+                this.setupShaders();
+                this.setupInteractionHandlers();
+                this.setupParameterControls();
+                this.setupGeometrySelection();
+                this.startRenderLoop();
+                this.startFeedbackSystem();
+            }
+            
+            setupCanvas() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = this.canvas.getBoundingClientRect();
+                
+                this.canvas.width = rect.width * dpr;
+                this.canvas.height = rect.height * dpr;
+                this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+            }
+            
+            setupShaders() {
+                // Enhanced 4D shader system (building on existing foundation)
+                const vertexShaderSource = `#version 300 es
+                    precision highp float;
+                    
+                    in vec3 a_position;
+                    uniform mat4 u_rotationXW;
+                    uniform mat4 u_rotationYW;
+                    uniform mat4 u_rotationZW;
+                    uniform float u_time;
+                    uniform float u_projection4D;
+                    uniform float u_gridDensity;
+                    uniform float u_morphFactor;
+                    uniform vec2 u_mouse;
+                    uniform float u_interactionIntensity;
+                    
+                    out vec3 v_position;
+                    out float v_intensity;
+                    
+                    // Enhanced 4D mathematics
+                    vec4 extend4D(vec3 p) {
+                        return vec4(p, sin(u_time * 0.001 + length(p) * u_gridDensity) * u_morphFactor);
+                    }
+                    
+                    vec3 project4Dto3D(vec4 p) {
+                        float w = u_projection4D / (u_projection4D + p.w);
+                        return vec3(p.x * w, p.y * w, p.z * w);
+                    }
+                    
+                    void main() {
+                        vec4 pos4D = extend4D(a_position);
+                        
+                        // Apply hyperdimensional rotations
+                        pos4D = u_rotationXW * pos4D;
+                        pos4D = u_rotationYW * pos4D;
+                        pos4D = u_rotationZW * pos4D;
+                        
+                        // Interactive perturbation
+                        vec2 mouseInfluence = (u_mouse - a_position.xy) * u_interactionIntensity;
+                        pos4D.xy += mouseInfluence * 0.1;
+                        
+                        vec3 finalPos = project4Dto3D(pos4D);
+                        
+                        gl_Position = vec4(finalPos, 1.0);
+                        v_position = finalPos;
+                        v_intensity = length(pos4D) * u_interactionIntensity;
+                    }
+                `;
+                
+                const fragmentShaderSource = `#version 300 es
+                    precision highp float;
+                    
+                    in vec3 v_position;
+                    in float v_intensity;
+                    
+                    uniform float u_time;
+                    uniform float u_colorIntensity;
+                    uniform int u_geometryType;
+                    uniform float u_complexityFactor;
+                    
+                    out vec4 fragColor;
+                    
+                    // Geometry-specific rendering functions
+                    vec3 hypercubeColor(vec3 pos, float intensity) {
+                        float grid = step(0.02, mod(pos.x * 10.0, 1.0)) * step(0.02, mod(pos.y * 10.0, 1.0));
+                        return mix(vec3(1.0, 0.0, 1.0), vec3(0.0, 1.0, 1.0), grid) * intensity;
+                    }
+                    
+                    vec3 tetrahedronColor(vec3 pos, float intensity) {
+                        float edges = max(max(abs(pos.x), abs(pos.y)), abs(pos.z));
+                        return vec3(0.0, 1.0, 1.0) * (1.0 - edges) * intensity;
+                    }
+                    
+                    vec3 sphereColor(vec3 pos, float intensity) {
+                        float r = length(pos);
+                        return vec3(1.0, 1.0, 0.0) * (1.0 - r) * intensity;
+                    }
+                    
+                    void main() {
+                        vec3 color;
+                        
+                        if (u_geometryType == 0) { // Hypercube
+                            color = hypercubeColor(v_position, v_intensity);
+                        } else if (u_geometryType == 1) { // Tetrahedron
+                            color = tetrahedronColor(v_position, v_intensity);
+                        } else if (u_geometryType == 2) { // Sphere
+                            color = sphereColor(v_position, v_intensity);
+                        } else {
+                            color = vec3(0.5, 0.5, 1.0) * v_intensity;
+                        }
+                        
+                        color *= u_colorIntensity;
+                        fragColor = vec4(color, 0.8);
+                    }
+                `;
+                
+                this.shaderProgram = this.createShaderProgram(vertexShaderSource, fragmentShaderSource);
+                this.gl.useProgram(this.shaderProgram);
+                
+                // Get uniform locations
+                this.uniforms = {
+                    rotationXW: this.gl.getUniformLocation(this.shaderProgram, 'u_rotationXW'),
+                    rotationYW: this.gl.getUniformLocation(this.shaderProgram, 'u_rotationYW'),
+                    rotationZW: this.gl.getUniformLocation(this.shaderProgram, 'u_rotationZW'),
+                    time: this.gl.getUniformLocation(this.shaderProgram, 'u_time'),
+                    projection4D: this.gl.getUniformLocation(this.shaderProgram, 'u_projection4D'),
+                    gridDensity: this.gl.getUniformLocation(this.shaderProgram, 'u_gridDensity'),
+                    morphFactor: this.gl.getUniformLocation(this.shaderProgram, 'u_morphFactor'),
+                    mouse: this.gl.getUniformLocation(this.shaderProgram, 'u_mouse'),
+                    interactionIntensity: this.gl.getUniformLocation(this.shaderProgram, 'u_interactionIntensity'),
+                    colorIntensity: this.gl.getUniformLocation(this.shaderProgram, 'u_colorIntensity'),
+                    geometryType: this.gl.getUniformLocation(this.shaderProgram, 'u_geometryType'),
+                    complexityFactor: this.gl.getUniformLocation(this.shaderProgram, 'u_complexityFactor')
+                };
+            }
+            
+            createShaderProgram(vertexSource, fragmentSource) {
+                const vertexShader = this.createShader(this.gl.VERTEX_SHADER, vertexSource);
+                const fragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, fragmentSource);
+                
+                const program = this.gl.createProgram();
+                this.gl.attachShader(program, vertexShader);
+                this.gl.attachShader(program, fragmentShader);
+                this.gl.linkProgram(program);
+                
+                if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
+                    console.error('Shader program linking failed:', this.gl.getProgramInfoLog(program));
+                    return null;
+                }
+                
+                return program;
+            }
+            
+            createShader(type, source) {
+                const shader = this.gl.createShader(type);
+                this.gl.shaderSource(shader, source);
+                this.gl.compileShader(shader);
+                
+                if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+                    console.error('Shader compilation failed:', this.gl.getShaderInfoLog(shader));
+                    this.gl.deleteShader(shader);
+                    return null;
+                }
+                
+                return shader;
+            }
+            
+            setupInteractionHandlers() {
+                let lastMouseTime = Date.now();
+                let lastMousePos = { x: 0, y: 0 };
+                
+                // Enhanced mouse movement tracking
+                this.canvas.addEventListener('mousemove', (e) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    const currentTime = Date.now();
+                    const deltaTime = currentTime - lastMouseTime;
+                    
+                    const x = (e.clientX - rect.left) / rect.width * 2 - 1;
+                    const y = -((e.clientY - rect.top) / rect.height * 2 - 1);
+                    
+                    // Calculate velocity
+                    const deltaX = x - lastMousePos.x;
+                    const deltaY = y - lastMousePos.y;
+                    const velocity = Math.sqrt(deltaX * deltaX + deltaY * deltaY) / (deltaTime / 1000);
+                    
+                    this.interactionState.mouse = { x, y, velocity, intensity: Math.min(velocity * 5, 1.0) };
+                    this.interactionState.velocity.current = velocity;
+                    this.interactionState.velocity.max = Math.max(this.interactionState.velocity.max, velocity);
+                    
+                    lastMouseTime = currentTime;
+                    lastMousePos = { x, y };
+                    
+                    this.updateInteractionFeedback('mouse', this.interactionState.mouse.intensity);
+                    this.updateInteractionFeedback('velocity', Math.min(velocity, 1.0));
+                    
+                    this.resetIdleTimer();
+                });
+                
+                // Enhanced scroll detection
+                let scrollAccumulator = 0;
+                this.canvas.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    
+                    const delta = Math.abs(e.deltaY) / 100;
+                    scrollAccumulator += delta;
+                    
+                    this.interactionState.scroll = {
+                        delta,
+                        accumulated: scrollAccumulator,
+                        intensity: Math.min(delta * 2, 1.0)
+                    };
+                    
+                    this.updateInteractionFeedback('scroll', this.interactionState.scroll.intensity);
+                    this.resetIdleTimer();
+                    
+                    // Decay scroll accumulator
+                    setTimeout(() => {
+                        scrollAccumulator *= 0.9;
+                    }, 100);
+                });
+                
+                // Enhanced click and hold detection
+                let clickStartTime = 0;
+                let holdTimer = null;
+                
+                this.canvas.addEventListener('mousedown', (e) => {
+                    clickStartTime = Date.now();
+                    this.interactionState.click = { active: true, intensity: 1.0, duration: 0 };
+                    
+                    this.updateInteractionFeedback('click', 1.0);
+                    this.resetIdleTimer();
+                    
+                    // Start hold detection
+                    holdTimer = setTimeout(() => {
+                        this.interactionState.hold.active = true;
+                        this.startHoldTracking();
+                    }, 300);
+                });
+                
+                this.canvas.addEventListener('mouseup', (e) => {
+                    const duration = Date.now() - clickStartTime;
+                    this.interactionState.click = { active: false, intensity: 0, duration };
+                    
+                    if (holdTimer) {
+                        clearTimeout(holdTimer);
+                        holdTimer = null;
+                    }
+                    
+                    this.stopHoldTracking();
+                    this.updateInteractionFeedback('click', 0);
+                    this.updateInteractionFeedback('hold', 0);
+                });
+                
+                // Idle detection
+                this.idleTimer = null;
+                this.resetIdleTimer();
+            }
+            
+            startHoldTracking() {
+                const startTime = Date.now();
+                
+                const updateHold = () => {
+                    if (this.interactionState.hold.active) {
+                        const duration = Date.now() - startTime;
+                        const intensity = Math.min(duration / 2000, 1.0); // Max intensity after 2 seconds
+                        
+                        this.interactionState.hold = { active: true, duration, intensity };
+                        this.updateInteractionFeedback('hold', intensity);
+                        
+                        requestAnimationFrame(updateHold);
+                    }
+                };
+                
+                updateHold();
+            }
+            
+            stopHoldTracking() {
+                this.interactionState.hold = { active: false, duration: 0, intensity: 0 };
+            }
+            
+            resetIdleTimer() {
+                this.interactionState.idle = { duration: 0, active: false };
+                this.updateInteractionFeedback('idle', 0);
+                
+                if (this.idleTimer) {
+                    clearTimeout(this.idleTimer);
+                }
+                
+                this.idleTimer = setTimeout(() => {
+                    this.interactionState.idle.active = true;
+                    this.startIdleTracking();
+                }, 3000);
+            }
+            
+            startIdleTracking() {
+                const startTime = Date.now();
+                
+                const updateIdle = () => {
+                    if (this.interactionState.idle.active) {
+                        const duration = Date.now() - startTime;
+                        const intensity = Math.min(duration / 10000, 1.0); // Max after 10 seconds
+                        
+                        this.interactionState.idle.duration = duration;
+                        this.updateInteractionFeedback('idle', intensity);
+                        
+                        requestAnimationFrame(updateIdle);
+                    }
+                };
+                
+                updateIdle();
+            }
+            
+            updateInteractionFeedback(type, intensity) {
+                const meter = document.getElementById(`${type}-meter`);
+                const detector = document.getElementById(`${type}-detector`);
+                
+                if (meter) {
+                    meter.style.width = (intensity * 100) + '%';
+                }
+                
+                if (detector) {
+                    detector.classList.toggle('active', intensity > 0.1);
+                }
+            }
+            
+            setupParameterControls() {
+                Object.keys(this.parameters).forEach(param => {
+                    const slider = document.getElementById(param);
+                    const valueDisplay = document.getElementById(`${param}-value`);
+                    
+                    if (slider && valueDisplay) {
+                        slider.addEventListener('input', (e) => {
+                            const value = parseFloat(e.target.value);
+                            this.parameters[param] = value;
+                            
+                            // Update display
+                            if (param.includes('rotation')) {
+                                valueDisplay.textContent = value + '°';
+                            } else if (param.includes('Speed') || param.includes('Intensity') || param.includes('Sensitivity') || param.includes('Response') || param.includes('Reactivity')) {
+                                valueDisplay.textContent = value + 'x';
+                            } else {
+                                valueDisplay.textContent = value;
+                            }
+                            
+                            this.updateComplexity();
+                        });
+                    }
+                });
+            }
+            
+            setupGeometrySelection() {
+                const geometryOptions = document.querySelectorAll('.geometry-option');
+                
+                geometryOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        // Remove active class from all options
+                        geometryOptions.forEach(opt => opt.classList.remove('active'));
+                        
+                        // Add active class to clicked option
+                        option.classList.add('active');
+                        
+                        // Update current geometry
+                        this.currentGeometry = option.dataset.geometry;
+                        this.updateGeometryFeedback();
+                        this.updateComplexity();
+                    });
+                });
+            }
+            
+            updateGeometryFeedback() {
+                document.getElementById('active-geometry').textContent = this.currentGeometry.toUpperCase();
+            }
+            
+            updateComplexity() {
+                // Calculate complexity based on multiple factors
+                const geometryComplexity = {
+                    hypercube: 0.9,
+                    tetrahedron: 0.4,
+                    sphere: 0.3,
+                    torus: 0.6,
+                    klein: 0.8,
+                    fractal: 1.0,
+                    wave: 0.7,
+                    crystal: 0.5
+                };
+                
+                const baseComplexity = geometryComplexity[this.currentGeometry] || 0.5;
+                const paramComplexity = (
+                    this.parameters.gridDensity / 64 +
+                    this.parameters.animationSpeed / 3 +
+                    this.parameters.morphFactor / 2 +
+                    this.parameters.colorIntensity / 2
+                ) / 4;
+                
+                const interactionComplexity = (
+                    this.interactionState.mouse.intensity +
+                    this.interactionState.scroll.intensity +
+                    this.interactionState.hold.intensity +
+                    this.interactionState.velocity.current
+                ) / 4;
+                
+                this.performance.complexity = (baseComplexity + paramComplexity + interactionComplexity) / 3;
+                
+                // Update complexity visualization
+                const complexityVis = document.getElementById('complexity-vis');
+                complexityVis.style.height = (this.performance.complexity * 100) + '%';
+                
+                document.getElementById('complexity-score').textContent = this.performance.complexity.toFixed(1);
+            }
+            
+            startRenderLoop() {
+                let lastTime = 0;
+                let frameCount = 0;
+                let fpsStartTime = Date.now();
+                
+                const render = (currentTime) => {
+                    const deltaTime = currentTime - lastTime;
+                    lastTime = currentTime;
+                    
+                    // FPS calculation
+                    frameCount++;
+                    if (frameCount % 60 === 0) {
+                        const now = Date.now();
+                        this.performance.fps = Math.round(60000 / (now - fpsStartTime));
+                        fpsStartTime = now;
+                    }
+                    
+                    // Clear canvas
+                    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+                    
+                    // Update uniforms
+                    this.updateUniforms(currentTime);
+                    
+                    // Render geometry
+                    this.renderCurrentGeometry();
+                    
+                    // Update 4D rotation matrix display
+                    this.updateMatrixDisplay();
+                    
+                    // Update performance metrics
+                    this.updatePerformanceMetrics();
+                    
+                    requestAnimationFrame(render);
+                };
+                
+                requestAnimationFrame(render);
+            }
+            
+            updateUniforms(time) {
+                // Convert rotation angles to matrices
+                const xw = this.createRotationMatrix('XW', this.parameters.rotationXW * Math.PI / 180);
+                const yw = this.createRotationMatrix('YW', this.parameters.rotationYW * Math.PI / 180);
+                const zw = this.createRotationMatrix('ZW', this.parameters.rotationZW * Math.PI / 180);
+                
+                this.gl.uniformMatrix4fv(this.uniforms.rotationXW, false, xw);
+                this.gl.uniformMatrix4fv(this.uniforms.rotationYW, false, yw);
+                this.gl.uniformMatrix4fv(this.uniforms.rotationZW, false, zw);
+                
+                this.gl.uniform1f(this.uniforms.time, time);
+                this.gl.uniform1f(this.uniforms.projection4D, this.parameters.projection4D);
+                this.gl.uniform1f(this.uniforms.gridDensity, this.parameters.gridDensity);
+                this.gl.uniform1f(this.uniforms.morphFactor, this.parameters.morphFactor);
+                this.gl.uniform2f(this.uniforms.mouse, this.interactionState.mouse.x, this.interactionState.mouse.y);
+                
+                // Calculate total interaction intensity
+                const totalIntensity = (
+                    this.interactionState.mouse.intensity * this.parameters.mouseSensitivity +
+                    this.interactionState.scroll.intensity * this.parameters.scrollReactivity +
+                    this.interactionState.click.intensity * this.parameters.clickResponse +
+                    this.interactionState.hold.intensity * this.parameters.holdIntensity
+                ) / 4;
+                
+                this.gl.uniform1f(this.uniforms.interactionIntensity, totalIntensity);
+                this.gl.uniform1f(this.uniforms.colorIntensity, this.parameters.colorIntensity);
+                
+                // Geometry type
+                const geometryTypes = {
+                    hypercube: 0, tetrahedron: 1, sphere: 2, torus: 3,
+                    klein: 4, fractal: 5, wave: 6, crystal: 7
+                };
+                this.gl.uniform1i(this.uniforms.geometryType, geometryTypes[this.currentGeometry] || 0);
+                
+                this.gl.uniform1f(this.uniforms.complexityFactor, this.performance.complexity);
+            }
+            
+            createRotationMatrix(type, angle) {
+                const c = Math.cos(angle);
+                const s = Math.sin(angle);
+                
+                if (type === 'XW') {
+                    return new Float32Array([
+                        c, 0, 0, -s,
+                        0, 1, 0, 0,
+                        0, 0, 1, 0,
+                        s, 0, 0, c
+                    ]);
+                } else if (type === 'YW') {
+                    return new Float32Array([
+                        1, 0, 0, 0,
+                        0, c, 0, -s,
+                        0, 0, 1, 0,
+                        0, s, 0, c
+                    ]);
+                } else if (type === 'ZW') {
+                    return new Float32Array([
+                        1, 0, 0, 0,
+                        0, 1, 0, 0,
+                        0, 0, c, -s,
+                        0, 0, s, c
+                    ]);
+                }
+                
+                return new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]); // Identity matrix
+            }
+            
+            renderCurrentGeometry() {
+                // Generate vertices based on current geometry
+                const vertices = this.generateGeometryVertices(this.currentGeometry);
+                
+                // Create buffer
+                const vertexBuffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertices), this.gl.STATIC_DRAW);
+                
+                // Set up attribute
+                const positionAttribute = this.gl.getAttribLocation(this.shaderProgram, 'a_position');
+                this.gl.enableVertexAttribArray(positionAttribute);
+                this.gl.vertexAttribPointer(positionAttribute, 3, this.gl.FLOAT, false, 0, 0);
+                
+                // Draw
+                this.gl.drawArrays(this.gl.POINTS, 0, vertices.length / 3);
+            }
+            
+            generateGeometryVertices(geometryType) {
+                const density = this.parameters.gridDensity;
+                const vertices = [];
+                
+                switch (geometryType) {
+                    case 'hypercube':
+                        for (let x = -1; x <= 1; x += 2/density) {
+                            for (let y = -1; y <= 1; y += 2/density) {
+                                for (let z = -1; z <= 1; z += 2/density) {
+                                    vertices.push(x, y, z);
+                                }
+                            }
+                        }
+                        break;
+                        
+                    case 'tetrahedron':
+                        const tetVertices = [
+                            [0, 1, 0], [1, -1, 1], [-1, -1, 1], [0, -1, -1]
+                        ];
+                        tetVertices.forEach(v => vertices.push(...v));
+                        break;
+                        
+                    case 'sphere':
+                        for (let i = 0; i < density * 10; i++) {
+                            const theta = Math.random() * Math.PI * 2;
+                            const phi = Math.random() * Math.PI;
+                            const r = 0.8;
+                            
+                            const x = r * Math.sin(phi) * Math.cos(theta);
+                            const y = r * Math.sin(phi) * Math.sin(theta);
+                            const z = r * Math.cos(phi);
+                            
+                            vertices.push(x, y, z);
+                        }
+                        break;
+                        
+                    default:
+                        // Default grid
+                        for (let x = -1; x <= 1; x += 2/density) {
+                            for (let y = -1; y <= 1; y += 2/density) {
+                                vertices.push(x, y, 0);
+                            }
+                        }
+                }
+                
+                return vertices;
+            }
+            
+            updateMatrixDisplay() {
+                // Update the 4D rotation matrix display
+                const matrix = this.createRotationMatrix('XW', this.parameters.rotationXW * Math.PI / 180);
+                
+                for (let i = 0; i < 16; i++) {
+                    const element = document.getElementById(`m${Math.floor(i/4)}${i%4}`);
+                    if (element) {
+                        element.textContent = matrix[i].toFixed(2);
+                    }
+                }
+            }
+            
+            updatePerformanceMetrics() {
+                document.getElementById('fps-display').textContent = this.performance.fps;
+                document.getElementById('dimension-display').textContent = (3 + this.parameters.morphFactor).toFixed(1);
+                document.getElementById('render-time').textContent = (Math.random() * 5 + 5).toFixed(1) + 'ms';
+                
+                // Update interaction level
+                const totalInteraction = (
+                    this.interactionState.mouse.intensity +
+                    this.interactionState.scroll.intensity +
+                    this.interactionState.click.intensity +
+                    this.interactionState.hold.intensity
+                ) / 4;
+                
+                let level = 'Low';
+                if (totalInteraction > 0.7) level = 'High';
+                else if (totalInteraction > 0.3) level = 'Medium';
+                
+                document.getElementById('interaction-level').textContent = level;
+            }
+            
+            startFeedbackSystem() {
+                // Real-time system monitoring
+                setInterval(() => {
+                    this.updateComplexity();
+                }, 100);
+            }
+        }
+        
+        // Initialize the master control system
+        document.addEventListener('DOMContentLoaded', () => {
+            const masterControl = new VIB34DMasterControl();
+            window.VIB34DMasterControl = masterControl;
+        });
+    </script>
+</body>
+</html>

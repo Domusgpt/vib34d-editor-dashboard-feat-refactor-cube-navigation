@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3CODE - Reactive HyperAV Core</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+        
+        /* Full-screen HyperAV Canvas */
+        #reactive-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            transition: filter 0.3s ease;
+        }
+        
+        /* Magazine Content Layer */
+        .magazine-layer {
+            position: relative;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(0.5px);
+        }
+        
+        /* Section Styling */
+        .section {
+            min-height: 100vh;
+            padding: 80px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        
+        .section-content {
+            max-width: 900px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 60px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .section-content:hover {
+            background: rgba(0, 0, 0, 0.6);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Section-specific styling (set by theme) */
+        .section[data-theme="hypercube"] .section-content {
+            border-color: rgba(255, 0, 255, 0.3);
+        }
+        
+        .section[data-theme="tetrahedron"] .section-content {
+            border-color: rgba(0, 255, 255, 0.3);
+        }
+        
+        .section[data-theme="sphere"] .section-content {
+            border-color: rgba(255, 255, 0, 0.3);
+        }
+        
+        .section[data-theme="torus"] .section-content {
+            border-color: rgba(0, 255, 0, 0.3);
+        }
+        
+        .section[data-theme="klein"] .section-content {
+            border-color: rgba(255, 128, 0, 0.3);
+        }
+        
+        .section[data-theme="fractal"] .section-content {
+            border-color: rgba(128, 0, 255, 0.3);
+        }
+        
+        .section[data-theme="wave"] .section-content {
+            border-color: rgba(255, 0, 128, 0.3);
+        }
+        
+        .section[data-theme="crystal"] .section-content {
+            border-color: rgba(0, 255, 128, 0.3);
+        }
+        
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+        
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        
+        p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes titlePulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+        
+        /* Interaction feedback */
+        .interaction-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 1000;
+            font-size: 12px;
+            min-width: 200px;
+        }
+        
+        .indicator-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 3px 0;
+        }
+        
+        .indicator-label {
+            color: #00ffff;
+        }
+        
+        .indicator-value {
+            color: #fff;
+            font-family: monospace;
+        }
+        
+        /* Section navigator */
+        .section-nav {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+        
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-dot.active {
+            background: #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+            transform: scale(1.3);
+        }
+        
+        .nav-dot:hover {
+            background: #fff;
+            transform: scale(1.2);
+        }
+        
+        /* Hold interaction visual */
+        .hold-indicator {
+            position: fixed;
+            pointer-events: none;
+            width: 100px;
+            height: 100px;
+            border: 2px solid #ff00ff;
+            border-radius: 50%;
+            background: rgba(255, 0, 255, 0.1);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+        
+        .hold-indicator.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Reactive HyperAV Canvas -->
+    <canvas id="reactive-canvas"></canvas>
+    
+    <!-- Hold Interaction Indicator -->
+    <div class="hold-indicator" id="holdIndicator"></div>
+    
+    <!-- Magazine Content -->
+    <div class="magazine-layer">
+        <!-- Home Section - Prime Theme (Hypercube) -->
+        <section class="section" data-theme="hypercube" data-section="home">
+            <div class="section-content">
+                <h1>VIB3CODE</h1>
+                <p>Digital Sovereignty Platform</p>
+                <p>Reactive HyperAV Visualization Core</p>
+                <p style="font-size: 0.9rem; color: #888;">Scroll, click, hold, or stay idle to morph the hypercube lattice</p>
+            </div>
+        </section>
+        
+        <!-- HyperAV Section - Tetrahedron Theme -->
+        <section class="section" data-theme="tetrahedron" data-section="hyperav">
+            <div class="section-content">
+                <h2>🔮 HyperAV Technology</h2>
+                <p>Experience reactive 4D geometry that responds to your interaction patterns. Each shape represents a different dimensional perspective.</p>
+                <p>Tetrahedron lattices create stability patterns that adapt to user engagement levels and reading behavior.</p>
+            </div>
+        </section>
+        
+        <!-- EMA Section - Sphere Theme -->
+        <section class="section" data-theme="sphere" data-section="ema">
+            <div class="section-content">
+                <h2>👥 EMA Compliance</h2>
+                <p>Spherical geometries represent infinite potential and user sovereignty. The visualization maintains complete privacy while adapting to interaction.</p>
+                <p>Every parameter change respects digital autonomy and user-controlled data sovereignty.</p>
+            </div>
+        </section>
+        
+        <!-- Audio Section - Torus Theme -->
+        <section class="section" data-theme="torus" data-section="audio">
+            <div class="section-content">
+                <h2>🎵 Audio Integration</h2>
+                <p>Toroidal flow patterns mirror audio waveforms and frequency analysis. ParseHer episodes and Gen-RL-MiLLz content drive the morphology.</p>
+                <p>The torus represents continuous flow between dimensions of sound and visual harmony.</p>
+            </div>
+        </section>
+        
+        <!-- Community Section - Klein Bottle Theme -->
+        <section class="section" data-theme="klein" data-section="community">
+            <div class="section-content">
+                <h2>🏆 Community</h2>
+                <p>Klein bottle topology represents impossible connections - the community that exists both inside and outside traditional boundaries.</p>
+                <p>Developer certification and collaboration patterns flow through non-orientable manifolds.</p>
+            </div>
+        </section>
+        
+        <!-- Development Section - Fractal Theme -->
+        <section class="section" data-theme="fractal" data-section="development">
+            <div class="section-content">
+                <h2>🤖 Agentic Development</h2>
+                <p>Fractal structures represent recursive collaboration between human and AI agents. Self-similar patterns at every scale.</p>
+                <p>Claude Code + Jules workflows create infinite complexity from simple collaboration rules.</p>
+            </div>
+        </section>
+        
+        <!-- Research Section - Wave Function Theme -->
+        <section class="section" data-theme="wave" data-section="research">
+            <div class="section-content">
+                <h2>🧬 Research</h2>
+                <p>Wave function visualization represents probability spaces and quantum-inspired computation patterns.</p>
+                <p>Interference patterns emerge from interaction between user intent and system response.</p>
+            </div>
+        </section>
+        
+        <!-- Innovation Section - Crystal Lattice Theme -->
+        <section class="section" data-theme="crystal" data-section="innovation">
+            <div class="section-content">
+                <h2>💎 Innovation</h2>
+                <p>Crystal lattice structures represent systematic growth and ordered complexity. Each innovation builds upon previous discoveries.</p>
+                <p>The visualization crystallizes ideas into geometric form, creating lasting patterns of technological advancement.</p>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Interaction Feedback -->
+    <div class="interaction-indicator">
+        <div class="indicator-row">
+            <span class="indicator-label">Theme:</span>
+            <span class="indicator-value" id="currentTheme">Hypercube</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Interaction:</span>
+            <span class="indicator-value" id="interactionType">Idle</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Morph Level:</span>
+            <span class="indicator-value" id="morphLevel">0.5</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Grid Density:</span>
+            <span class="indicator-value" id="gridDensity">12.0</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Dimension:</span>
+            <span class="indicator-value" id="dimensionLevel">3.5</span>
+        </div>
+    </div>
+    
+    <!-- Section Navigation -->
+    <div class="section-nav">
+        <div class="nav-dot active" data-section="home" title="Home - Hypercube"></div>
+        <div class="nav-dot" data-section="hyperav" title="HyperAV - Tetrahedron"></div>
+        <div class="nav-dot" data-section="ema" title="EMA - Sphere"></div>
+        <div class="nav-dot" data-section="audio" title="Audio - Torus"></div>
+        <div class="nav-dot" data-section="community" title="Community - Klein"></div>
+        <div class="nav-dot" data-section="development" title="Development - Fractal"></div>
+        <div class="nav-dot" data-section="research" title="Research - Wave"></div>
+        <div class="nav-dot" data-section="innovation" title="Innovation - Crystal"></div>
+    </div>
+
+    <script>
+        console.log('🔮 VIB3CODE Reactive HyperAV Core Loading...');
+        
+        // Reactive HyperAV Visualization System
+        class ReactiveHyperAVCore {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                
+                if (!this.gl) {
+                    console.error('WebGL not supported');
+                    return;
+                }
+                
+                // Core state
+                this.startTime = Date.now();
+                this.currentTheme = 'hypercube';
+                this.interactionState = {
+                    type: 'idle',
+                    intensity: 0,
+                    lastActivity: Date.now(),
+                    holdStart: 0,
+                    isHolding: false,
+                    scrollVelocity: 0,
+                    mouseX: 0.5,
+                    mouseY: 0.5
+                };
+                
+                // Theme configurations (editor-controlled)
+                this.themeConfigs = {
+                    hypercube: {
+                        baseColor: [1.0, 0.0, 1.0],      // Magenta
+                        gridDensity: 12.0,
+                        morphFactor: 0.5,
+                        dimension: 3.5,
+                        glitchIntensity: 0.3,
+                        rotationSpeed: 0.5,
+                        geometry: 'hypercube'
+                    },
+                    tetrahedron: {
+                        baseColor: [0.0, 1.0, 1.0],      // Cyan
+                        gridDensity: 8.0,
+                        morphFactor: 0.7,
+                        dimension: 3.2,
+                        glitchIntensity: 0.2,
+                        rotationSpeed: 0.7,
+                        geometry: 'tetrahedron'
+                    },
+                    sphere: {
+                        baseColor: [1.0, 1.0, 0.0],      // Yellow
+                        gridDensity: 15.0,
+                        morphFactor: 0.3,
+                        dimension: 3.8,
+                        glitchIntensity: 0.1,
+                        rotationSpeed: 0.3,
+                        geometry: 'sphere'
+                    },
+                    torus: {
+                        baseColor: [0.0, 1.0, 0.0],      // Green
+                        gridDensity: 10.0,
+                        morphFactor: 0.8,
+                        dimension: 3.6,
+                        glitchIntensity: 0.4,
+                        rotationSpeed: 0.6,
+                        geometry: 'torus'
+                    },
+                    klein: {
+                        baseColor: [1.0, 0.5, 0.0],      // Orange
+                        gridDensity: 14.0,
+                        morphFactor: 0.9,
+                        dimension: 3.9,
+                        glitchIntensity: 0.5,
+                        rotationSpeed: 0.4,
+                        geometry: 'klein'
+                    },
+                    fractal: {
+                        baseColor: [0.5, 0.0, 1.0],      // Purple
+                        gridDensity: 20.0,
+                        morphFactor: 0.6,
+                        dimension: 3.7,
+                        glitchIntensity: 0.6,
+                        rotationSpeed: 0.8,
+                        geometry: 'fractal'
+                    },
+                    wave: {
+                        baseColor: [1.0, 0.0, 0.5],      // Pink
+                        gridDensity: 16.0,
+                        morphFactor: 0.4,
+                        dimension: 3.3,
+                        glitchIntensity: 0.3,
+                        rotationSpeed: 0.9,
+                        geometry: 'wave'
+                    },
+                    crystal: {
+                        baseColor: [0.0, 1.0, 0.5],      // Mint
+                        gridDensity: 18.0,
+                        morphFactor: 0.2,
+                        dimension: 3.1,
+                        glitchIntensity: 0.2,
+                        rotationSpeed: 0.2,
+                        geometry: 'crystal'
+                    }
+                };
+                
+                // Current parameters (reactive)
+                this.params = { ...this.themeConfigs.hypercube };
+                
+                this.initShaders();
+                this.initBuffers();
+                this.setupInteractions();
+                this.setupSectionTracking();
+                this.resize();
+                this.animate();
+                
+                console.log('✅ Reactive HyperAV Core initialized');
+            }
+            
+            initShaders() {
+                const vertexShaderSource = `
+                  attribute vec2 a_position;
+                  void main() {
+                    gl_Position = vec4(a_position, 0.0, 1.0);
+                  }
+                `;
+                
+                // Enhanced fragment shader with multiple geometries
+                const fragmentShaderSource = `
+                  precision highp float;
+                  
+                  uniform vec2 u_resolution;
+                  uniform float u_time;
+                  uniform vec2 u_mouse;
+                  uniform float u_morphFactor;
+                  uniform float u_glitchIntensity;
+                  uniform float u_rotationSpeed;
+                  uniform float u_dimension;
+                  uniform float u_gridDensity;
+                  uniform vec3 u_baseColor;
+                  uniform float u_interactionIntensity;
+                  uniform float u_geometry; // 0=hypercube, 1=tetrahedron, 2=sphere, 3=torus, 4=klein, 5=fractal, 6=wave, 7=crystal
+                  
+                  // 4D rotation matrices
+                  mat4 rotateXW(float theta) {
+                    float c = cos(theta);
+                    float s = sin(theta);
+                    return mat4(c, 0, 0, -s, 0, 1, 0, 0, 0, 0, 1, 0, s, 0, 0, c);
+                  }
+                  
+                  mat4 rotateYW(float theta) {
+                    float c = cos(theta);
+                    float s = sin(theta);
+                    return mat4(1, 0, 0, 0, 0, c, 0, -s, 0, 0, 1, 0, 0, s, 0, c);
+                  }
+                  
+                  mat4 rotateZW(float theta) {
+                    float c = cos(theta);
+                    float s = sin(theta);
+                    return mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, c, -s, 0, 0, s, c);
+                  }
+                  
+                  vec3 project4Dto3D(vec4 p) {
+                    float w = 2.0 / (2.0 + p.w);
+                    return vec3(p.x * w, p.y * w, p.z * w);
+                  }
+                  
+                  // Geometry generators
+                  float hypercubeLattice(vec3 p, float gridSize) {
+                    vec3 grid = fract(p * gridSize);
+                    vec3 edges = 1.0 - smoothstep(0.0, 0.03, abs(grid - 0.5));
+                    return max(max(edges.x, edges.y), edges.z);
+                  }
+                  
+                  float tetrahedronLattice(vec3 p, float gridSize) {
+                    vec3 q = fract(p * gridSize) - 0.5;
+                    float d1 = length(q);
+                    float d2 = length(q - vec3(0.5, 0.0, 0.0));
+                    float d3 = length(q - vec3(0.0, 0.5, 0.0));
+                    float d4 = length(q - vec3(0.0, 0.0, 0.5));
+                    return 1.0 - smoothstep(0.0, 0.1, min(min(d1, d2), min(d3, d4)));
+                  }
+                  
+                  float sphereLattice(vec3 p, float gridSize) {
+                    vec3 q = fract(p * gridSize) - 0.5;
+                    float r = length(q);
+                    return 1.0 - smoothstep(0.2, 0.5, r);
+                  }
+                  
+                  float torusLattice(vec3 p, float gridSize) {
+                    vec3 q = fract(p * gridSize) - 0.5;
+                    float r1 = sqrt(q.x*q.x + q.y*q.y);
+                    float r2 = sqrt((r1 - 0.3)*(r1 - 0.3) + q.z*q.z);
+                    return 1.0 - smoothstep(0.0, 0.1, r2);
+                  }
+                  
+                  float kleinLattice(vec3 p, float gridSize) {
+                    vec3 q = fract(p * gridSize);
+                    float u = q.x * 2.0 * 3.14159;
+                    float v = q.y * 2.0 * 3.14159;
+                    float x = cos(u) * (3.0 + cos(u/2.0) * sin(v) - sin(u/2.0) * sin(2.0*v));
+                    float klein = length(vec2(x, q.z)) - 0.1;
+                    return 1.0 - smoothstep(0.0, 0.05, abs(klein));
+                  }
+                  
+                  float fractalLattice(vec3 p, float gridSize) {
+                    vec3 q = p * gridSize;
+                    float scale = 1.0;
+                    float fractal = 0.0;
+                    for(int i = 0; i < 4; i++) {
+                      q = fract(q) - 0.5;
+                      fractal += abs(length(q)) / scale;
+                      scale *= 2.0;
+                      q *= 2.0;
+                    }
+                    return 1.0 - smoothstep(0.0, 1.0, fractal);
+                  }
+                  
+                  float waveLattice(vec3 p, float gridSize) {
+                    vec3 q = p * gridSize;
+                    float wave = sin(q.x * 2.0) * sin(q.y * 2.0) * sin(q.z * 2.0 + u_time);
+                    return smoothstep(-0.5, 0.5, wave);
+                  }
+                  
+                  float crystalLattice(vec3 p, float gridSize) {
+                    vec3 q = fract(p * gridSize) - 0.5;
+                    float d = max(max(abs(q.x), abs(q.y)), abs(q.z));
+                    return 1.0 - smoothstep(0.3, 0.5, d);
+                  }
+                  
+                  float getGeometryValue(vec3 p, float gridSize, float geomType) {
+                    if (geomType < 0.5) return hypercubeLattice(p, gridSize);
+                    else if (geomType < 1.5) return tetrahedronLattice(p, gridSize);
+                    else if (geomType < 2.5) return sphereLattice(p, gridSize);
+                    else if (geomType < 3.5) return torusLattice(p, gridSize);
+                    else if (geomType < 4.5) return kleinLattice(p, gridSize);
+                    else if (geomType < 5.5) return fractalLattice(p, gridSize);
+                    else if (geomType < 6.5) return waveLattice(p, gridSize);
+                    else return crystalLattice(p, gridSize);
+                  }
+                  
+                  void main() {
+                    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+                    float aspectRatio = u_resolution.x / u_resolution.y;
+                    uv.x *= aspectRatio;
+                    
+                    vec2 center = vec2(u_mouse.x * aspectRatio, u_mouse.y);
+                    vec3 p = vec3(uv - center, 0.0);
+                    
+                    // Interaction-driven rotation
+                    float timeRotation = u_time * 0.2 * u_rotationSpeed * (1.0 + u_interactionIntensity);
+                    mat2 rotation = mat2(cos(timeRotation), -sin(timeRotation), sin(timeRotation), cos(timeRotation));
+                    p.xy = rotation * p.xy;
+                    p.z = sin(u_time * 0.1) * 0.5;
+                    
+                    // Apply 4D transformations based on interaction
+                    if (u_dimension > 3.0) {
+                      float w = sin(length(p) * 3.0 + u_time * 0.3) * (u_dimension - 3.0) * (1.0 + u_interactionIntensity * 0.5);
+                      vec4 p4d = vec4(p, w);
+                      
+                      p4d = rotateXW(timeRotation * 0.31) * p4d;
+                      p4d = rotateYW(timeRotation * 0.27) * p4d;
+                      p4d = rotateZW(timeRotation * 0.23) * p4d;
+                      
+                      p = project4Dto3D(p4d);
+                    }
+                    
+                    // Dynamic grid density based on interaction
+                    float dynamicGridDensity = u_gridDensity * (1.0 + u_interactionIntensity * 0.3);
+                    
+                    // Get geometry value
+                    float lattice = getGeometryValue(p, dynamicGridDensity, u_geometry);
+                    
+                    // Interaction-driven glitch effects
+                    float glitchAmount = u_glitchIntensity * (0.1 + 0.1 * sin(u_time * 5.0)) * (1.0 + u_interactionIntensity);
+                    
+                    vec2 rOffset = vec2(glitchAmount, glitchAmount * 0.5);
+                    vec2 gOffset = vec2(-glitchAmount * 0.3, glitchAmount * 0.2);
+                    vec2 bOffset = vec2(glitchAmount * 0.1, -glitchAmount * 0.4);
+                    
+                    float r = getGeometryValue(vec3(p.xy + rOffset, p.z), dynamicGridDensity, u_geometry);
+                    float g = getGeometryValue(vec3(p.xy + gOffset, p.z), dynamicGridDensity, u_geometry);
+                    float b = getGeometryValue(vec3(p.xy + bOffset, p.z), dynamicGridDensity, u_geometry);
+                    
+                    // Base colors with theme-specific tinting
+                    vec3 baseColor = vec3(0.02, 0.05, 0.1);
+                    vec3 latticeColor = u_baseColor * (0.8 + 0.2 * u_interactionIntensity);
+                    
+                    vec3 color = mix(baseColor, latticeColor, vec3(r, g, b));
+                    
+                    // Interaction-responsive glow
+                    color += u_baseColor * 0.1 * (0.5 + 0.5 * sin(u_time * 0.5)) * u_interactionIntensity;
+                    
+                    // Vignette
+                    float vignette = 1.0 - smoothstep(0.4, 1.4, length(uv - vec2(center.x, center.y)));
+                    color *= vignette;
+                    
+                    gl_FragColor = vec4(color, 0.95);
+                  }
+                `;
+                
+                const vertexShader = this.createShader(this.gl.VERTEX_SHADER, vertexShaderSource);
+                const fragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
+                this.program = this.createProgram(vertexShader, fragmentShader);
+                
+                // Get uniform locations
+                this.uniforms = {
+                    resolution: this.gl.getUniformLocation(this.program, 'u_resolution'),
+                    time: this.gl.getUniformLocation(this.program, 'u_time'),
+                    mouse: this.gl.getUniformLocation(this.program, 'u_mouse'),
+                    morphFactor: this.gl.getUniformLocation(this.program, 'u_morphFactor'),
+                    glitchIntensity: this.gl.getUniformLocation(this.program, 'u_glitchIntensity'),
+                    rotationSpeed: this.gl.getUniformLocation(this.program, 'u_rotationSpeed'),
+                    dimension: this.gl.getUniformLocation(this.program, 'u_dimension'),
+                    gridDensity: this.gl.getUniformLocation(this.program, 'u_gridDensity'),
+                    baseColor: this.gl.getUniformLocation(this.program, 'u_baseColor'),
+                    interactionIntensity: this.gl.getUniformLocation(this.program, 'u_interactionIntensity'),
+                    geometry: this.gl.getUniformLocation(this.program, 'u_geometry')
+                };
+                
+                this.positionAttributeLocation = this.gl.getAttribLocation(this.program, 'a_position');
+            }
+            
+            createShader(type, source) {
+                const shader = this.gl.createShader(type);
+                this.gl.shaderSource(shader, source);
+                this.gl.compileShader(shader);
+                
+                if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+                    console.error("Shader error:", this.gl.getShaderInfoLog(shader));
+                    this.gl.deleteShader(shader);
+                    return null;
+                }
+                return shader;
+            }
+            
+            createProgram(vertexShader, fragmentShader) {
+                const program = this.gl.createProgram();
+                this.gl.attachShader(program, vertexShader);
+                this.gl.attachShader(program, fragmentShader);
+                this.gl.linkProgram(program);
+                
+                if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
+                    console.error("Program error:", this.gl.getProgramInfoLog(program));
+                    this.gl.deleteProgram(program);
+                    return null;
+                }
+                return program;
+            }
+            
+            initBuffers() {
+                this.positionBuffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+                this.gl.bufferData(
+                    this.gl.ARRAY_BUFFER,
+                    new Float32Array([-1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0]),
+                    this.gl.STATIC_DRAW
+                );
+            }
+            
+            setupInteractions() {
+                let lastScrollY = window.scrollY;
+                let lastScrollTime = Date.now();
+                
+                // Mouse movement
+                this.canvas.addEventListener('mousemove', (e) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    this.interactionState.mouseX = (e.clientX - rect.left) / rect.width;
+                    this.interactionState.mouseY = 1.0 - (e.clientY - rect.top) / rect.height;
+                    this.interactionState.lastActivity = Date.now();
+                    this.updateInteractionState('move', 0.3);
+                });
+                
+                // Click/Touch interactions
+                const startHold = (e) => {
+                    this.interactionState.isHolding = true;
+                    this.interactionState.holdStart = Date.now();
+                    
+                    const rect = this.canvas.getBoundingClientRect();
+                    const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                    const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                    
+                    const indicator = document.getElementById('holdIndicator');
+                    indicator.style.left = x + 'px';
+                    indicator.style.top = y + 'px';
+                    indicator.classList.add('active');
+                    
+                    this.updateInteractionState('hold', 1.0);
+                    e.preventDefault();
+                };
+                
+                const endHold = () => {
+                    this.interactionState.isHolding = false;
+                    document.getElementById('holdIndicator').classList.remove('active');
+                    this.updateInteractionState('release', 0.1);
+                };
+                
+                this.canvas.addEventListener('mousedown', startHold);
+                this.canvas.addEventListener('mouseup', endHold);
+                this.canvas.addEventListener('touchstart', startHold, { passive: false });
+                this.canvas.addEventListener('touchend', endHold);
+                
+                // Scroll tracking
+                window.addEventListener('scroll', () => {
+                    const currentTime = Date.now();
+                    const currentY = window.scrollY;
+                    const deltaY = Math.abs(currentY - lastScrollY);
+                    const deltaTime = currentTime - lastScrollTime;
+                    
+                    if (deltaTime > 0) {
+                        this.interactionState.scrollVelocity = deltaY / deltaTime * 100;
+                        this.updateInteractionState('scroll', Math.min(this.interactionState.scrollVelocity / 20, 1.0));
+                    }
+                    
+                    lastScrollY = currentY;
+                    lastScrollTime = currentTime;
+                    this.interactionState.lastActivity = currentTime;
+                });
+                
+                // Inactivity detection
+                setInterval(() => {
+                    const timeSinceActivity = Date.now() - this.interactionState.lastActivity;
+                    if (timeSinceActivity > 3000) { // 3 seconds of inactivity
+                        this.updateInteractionState('idle', 0.0);
+                    }
+                }, 1000);
+                
+                window.addEventListener('resize', () => this.resize());
+            }
+            
+            setupSectionTracking() {
+                // Section navigation
+                document.querySelectorAll('.nav-dot').forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        const section = dot.dataset.section;
+                        document.querySelector(`[data-section="${section}"]`).scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    });
+                });
+                
+                // Intersection observer for theme changes
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const theme = entry.target.dataset.theme;
+                            this.setTheme(theme);
+                            
+                            // Update navigation
+                            document.querySelectorAll('.nav-dot').forEach(dot => dot.classList.remove('active'));
+                            const activeSection = entry.target.dataset.section;
+                            document.querySelector(`[data-section="${activeSection}"]`).scrollIntoView;
+                            document.querySelector(`[data-section="${activeSection}"]`)?.classList.add('active');
+                        }
+                    });
+                }, { threshold: 0.5 });
+                
+                document.querySelectorAll('.section').forEach(section => {
+                    observer.observe(section);
+                });
+            }
+            
+            updateInteractionState(type, intensity) {
+                this.interactionState.type = type;
+                this.interactionState.intensity = Math.max(this.interactionState.intensity * 0.9, intensity);
+                
+                // Update UI
+                document.getElementById('interactionType').textContent = type.charAt(0).toUpperCase() + type.slice(1);
+                document.getElementById('morphLevel').textContent = this.params.morphFactor.toFixed(2);
+                document.getElementById('gridDensity').textContent = this.params.gridDensity.toFixed(1);
+                document.getElementById('dimensionLevel').textContent = this.params.dimension.toFixed(2);
+            }
+            
+            setTheme(themeName) {
+                if (this.currentTheme === themeName) return;
+                
+                this.currentTheme = themeName;
+                const config = this.themeConfigs[themeName];
+                
+                // Smooth transition to new theme
+                const startParams = { ...this.params };
+                const targetParams = { ...config };
+                
+                const transitionDuration = 1000; // 1 second
+                const startTime = Date.now();
+                
+                const transition = () => {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / transitionDuration, 1.0);
+                    const eased = 0.5 - 0.5 * Math.cos(progress * Math.PI); // Smooth ease
+                    
+                    // Interpolate parameters
+                    Object.keys(targetParams).forEach(key => {
+                        if (typeof targetParams[key] === 'number') {
+                            this.params[key] = startParams[key] + (targetParams[key] - startParams[key]) * eased;
+                        } else if (Array.isArray(targetParams[key])) {
+                            this.params[key] = startParams[key].map((val, i) => 
+                                val + (targetParams[key][i] - val) * eased
+                            );
+                        } else {
+                            this.params[key] = targetParams[key];
+                        }
+                    });
+                    
+                    if (progress < 1.0) {
+                        requestAnimationFrame(transition);
+                    }
+                };
+                
+                transition();
+                
+                // Update UI
+                document.getElementById('currentTheme').textContent = themeName.charAt(0).toUpperCase() + themeName.slice(1);
+                
+                console.log(`🎨 Theme changed to: ${themeName}`);
+            }
+            
+            resize() {
+                const displayWidth = this.canvas.clientWidth;
+                const displayHeight = this.canvas.clientHeight;
+                
+                if (this.canvas.width !== displayWidth || this.canvas.height !== displayHeight) {
+                    this.canvas.width = displayWidth;
+                    this.canvas.height = displayHeight;
+                    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+                }
+            }
+            
+            render() {
+                // Apply interaction effects to parameters
+                const interactionMultiplier = 1.0 + this.interactionState.intensity * 0.5;
+                const currentMorphFactor = this.params.morphFactor * interactionMultiplier;
+                const currentGridDensity = this.params.gridDensity * (1.0 + this.interactionState.intensity * 0.2);
+                
+                // Handle hold interactions (dimensional shift)
+                let holdEffect = 0;
+                if (this.interactionState.isHolding) {
+                    const holdDuration = Date.now() - this.interactionState.holdStart;
+                    holdEffect = Math.min(holdDuration / 2000, 1.0); // 2 second max hold
+                }
+                const currentDimension = this.params.dimension + holdEffect * 0.5;
+                
+                // Map geometry name to number
+                const geometryMap = {
+                    'hypercube': 0, 'tetrahedron': 1, 'sphere': 2, 'torus': 3,
+                    'klein': 4, 'fractal': 5, 'wave': 6, 'crystal': 7
+                };
+                const geometryIndex = geometryMap[this.params.geometry] || 0;
+                
+                this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+                this.gl.useProgram(this.program);
+                
+                // Setup vertex attributes
+                this.gl.enableVertexAttribArray(this.positionAttributeLocation);
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+                this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
+                
+                // Set uniforms
+                this.gl.uniform2f(this.uniforms.resolution, this.canvas.width, this.canvas.height);
+                this.gl.uniform1f(this.uniforms.time, (Date.now() - this.startTime) / 1000);
+                this.gl.uniform2f(this.uniforms.mouse, this.interactionState.mouseX, this.interactionState.mouseY);
+                this.gl.uniform1f(this.uniforms.morphFactor, currentMorphFactor);
+                this.gl.uniform1f(this.uniforms.glitchIntensity, this.params.glitchIntensity);
+                this.gl.uniform1f(this.uniforms.rotationSpeed, this.params.rotationSpeed);
+                this.gl.uniform1f(this.uniforms.dimension, currentDimension);
+                this.gl.uniform1f(this.uniforms.gridDensity, currentGridDensity);
+                this.gl.uniform3fv(this.uniforms.baseColor, this.params.baseColor);
+                this.gl.uniform1f(this.uniforms.interactionIntensity, this.interactionState.intensity);
+                this.gl.uniform1f(this.uniforms.geometry, geometryIndex);
+                
+                this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+            }
+            
+            animate() {
+                this.render();
+                
+                // Decay interaction intensity
+                this.interactionState.intensity *= 0.98;
+                
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+        
+        // Initialize the reactive system
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Initializing VIB3CODE Reactive HyperAV Core...');
+            
+            const canvas = document.getElementById('reactive-canvas');
+            if (canvas) {
+                window.reactiveCore = new ReactiveHyperAVCore(canvas);
+                console.log('✅ Reactive HyperAV Core loaded successfully!');
+                console.log('🎯 Interaction Guide:');
+                console.log('   • Scroll: Changes grid density and morphology');
+                console.log('   • Mouse: Shifts lattice center');
+                console.log('   • Click/Hold: Increases dimensional parameters');
+                console.log('   • Inactivity: Returns to base state');
+                console.log('   • Section changes: Switches geometric themes');
+            }
+        });
+    </script>
+</body>
+</html>

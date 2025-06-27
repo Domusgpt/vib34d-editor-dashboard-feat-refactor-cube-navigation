@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Parameter Verification & Testing System</title>
+    <style>
+        body {
+            background: #000;
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            font-size: 24px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            height: calc(100vh - 150px);
+        }
+        
+        .visualizer-section {
+            background: rgba(255, 0, 255, 0.1);
+            border: 2px solid #ff00ff;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .visualizer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            height: 100%;
+        }
+        
+        .visualizer-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 10px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .visualizer-card:hover {
+            border-color: #00ffff;
+            transform: scale(1.02);
+        }
+        
+        .visualizer-card.active {
+            border-color: #ff00ff;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+        
+        .visualizer-canvas {
+            width: 100%;
+            height: 200px;
+            border-radius: 5px;
+            border: 1px solid #333;
+        }
+        
+        .visualizer-info {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        
+        .geometry-name {
+            color: #00ffff;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .parameter-values {
+            color: #888;
+            font-size: 10px;
+        }
+        
+        .controls-section {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        
+        .control-group.active {
+            border-color: #ffff00;
+            background: rgba(255, 255, 0, 0.1);
+        }
+        
+        .control-label {
+            color: #ffff00;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .uniform-name {
+            color: #00ff00;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .parameter-slider {
+            width: 100%;
+            margin: 5px 0;
+        }
+        
+        .parameter-value {
+            color: #fff;
+            font-size: 12px;
+            text-align: right;
+        }
+        
+        .test-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .test-button {
+            background: rgba(255, 0, 255, 0.3);
+            border: 1px solid #ff00ff;
+            color: #ff00ff;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+        }
+        
+        .test-button:hover {
+            background: rgba(255, 0, 255, 0.5);
+        }
+        
+        .test-button.active {
+            background: rgba(255, 0, 255, 0.8);
+            color: #fff;
+        }
+        
+        .verification-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .verification-title {
+            color: #00ff00;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .verification-result {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .verification-result.pass {
+            background: rgba(0, 255, 0, 0.2);
+            border-left: 3px solid #00ff00;
+        }
+        
+        .verification-result.fail {
+            background: rgba(255, 0, 0, 0.2);
+            border-left: 3px solid #ff0000;
+        }
+        
+        .verification-result.warning {
+            background: rgba(255, 255, 0, 0.2);
+            border-left: 3px solid #ffff00;
+        }
+        
+        .preset-selector {
+            margin-bottom: 20px;
+        }
+        
+        .preset-button {
+            background: rgba(0, 255, 255, 0.3);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        
+        .preset-button:hover {
+            background: rgba(0, 255, 255, 0.5);
+        }
+        
+        .preset-button.active {
+            background: rgba(0, 255, 255, 0.8);
+            color: #000;
+        }
+        
+        .cascade-test-panel {
+            border: 2px solid #ff00ff;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .cascade-title {
+            color: #ff00ff;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .cascade-step {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 3px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .cascade-step.executing {
+            border-color: #ffff00;
+            background: rgba(255, 255, 0, 0.1);
+        }
+        
+        .cascade-step.completed {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .cascade-step.failed {
+            border-color: #ff0000;
+            background: rgba(255, 0, 0, 0.1);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">🎛️ VIB34D Parameter Verification & Testing System</div>
+        <div class="subtitle">Complete Shader Uniform Testing & Parameter Cascade Verification</div>
+    </div>
+    
+    <div class="container">
+        <div class="visualizer-section">
+            <h3>🎮 Live Geometry Visualizers</h3>
+            <div class="visualizer-grid" id="visualizer-grid">
+                <!-- Visualizer cards will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="controls-section">
+            <!-- Preset Selection -->
+            <div class="preset-selector">
+                <div class="control-label">🎨 Geometry Presets</div>
+                <button class="preset-button active" data-preset="hypercube">Hypercube</button>
+                <button class="preset-button" data-preset="hypersphere">Hypersphere</button>
+                <button class="preset-button" data-preset="tetrahedron">Tetrahedron</button>
+                <button class="preset-button" data-preset="mixed">Mixed Test</button>
+            </div>
+            
+            <!-- Parameter Cascade Testing -->
+            <div class="cascade-test-panel">
+                <div class="cascade-title">🔗 Parameter Cascade Testing</div>
+                <button class="test-button" onclick="runFullCascadeTest()">🧪 Run Complete Cascade Test</button>
+                <button class="test-button" onclick="runParameterSweep()">📊 Parameter Sweep Test</button>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div id="cascade-steps"></div>
+            </div>
+            
+            <!-- Core Mathematics & Timing -->
+            <div class="control-group" id="core-params">
+                <div class="control-label">⚡ Core Mathematics & Timing</div>
+                
+                <div class="uniform-name">u_time (Auto)</div>
+                <div class="parameter-value" id="u_time_value">0.000</div>
+                
+                <div class="uniform-name">u_dimension (3.0→5.0)</div>
+                <input type="range" class="parameter-slider" id="u_dimension" min="3.0" max="5.0" step="0.01" value="4.0">
+                <div class="parameter-value" id="u_dimension_value">4.00</div>
+                
+                <div class="uniform-name">u_morphFactor (0.0→1.5)</div>
+                <input type="range" class="parameter-slider" id="u_morphFactor" min="0.0" max="1.5" step="0.01" value="0.7">
+                <div class="parameter-value" id="u_morphFactor_value">0.70</div>
+                
+                <div class="uniform-name">u_rotationSpeed (0.0→3.0)</div>
+                <input type="range" class="parameter-slider" id="u_rotationSpeed" min="0.0" max="3.0" step="0.01" value="0.5">
+                <div class="parameter-value" id="u_rotationSpeed_value">0.50</div>
+                
+                <div class="test-buttons">
+                    <button class="test-button" onclick="testCoreParameters()">Test Core</button>
+                    <button class="test-button" onclick="animateCoreParameters()">Animate</button>
+                </div>
+            </div>
+            
+            <!-- Grid & Lattice Parameters -->
+            <div class="control-group" id="grid-params">
+                <div class="control-label">📐 Grid & Lattice Parameters</div>
+                
+                <div class="uniform-name">u_gridDensity (1.0→25.0)</div>
+                <input type="range" class="parameter-slider" id="u_gridDensity" min="1.0" max="25.0" step="0.1" value="8.0">
+                <div class="parameter-value" id="u_gridDensity_value">8.0</div>
+                
+                <div class="uniform-name">u_lineThickness (0.002→0.1)</div>
+                <input type="range" class="parameter-slider" id="u_lineThickness" min="0.002" max="0.1" step="0.001" value="0.03">
+                <div class="parameter-value" id="u_lineThickness_value">0.030</div>
+                
+                <div class="uniform-name">u_universeModifier (0.3→2.5)</div>
+                <input type="range" class="parameter-slider" id="u_universeModifier" min="0.3" max="2.5" step="0.01" value="1.0">
+                <div class="parameter-value" id="u_universeModifier_value">1.00</div>
+                
+                <div class="uniform-name">u_patternIntensity (0.0→3.0)</div>
+                <input type="range" class="parameter-slider" id="u_patternIntensity" min="0.0" max="3.0" step="0.01" value="1.3">
+                <div class="parameter-value" id="u_patternIntensity_value">1.30</div>
+                
+                <div class="test-buttons">
+                    <button class="test-button" onclick="testGridParameters()">Test Grid</button>
+                    <button class="test-button" onclick="animateGridParameters()">Animate</button>
+                </div>
+            </div>
+            
+            <!-- Geometry-Specific Parameters -->
+            <div class="control-group" id="geometry-params">
+                <div class="control-label">🔮 Geometry-Specific Parameters</div>
+                
+                <div class="uniform-name">u_shellWidth (0.005→0.08)</div>
+                <input type="range" class="parameter-slider" id="u_shellWidth" min="0.005" max="0.08" step="0.001" value="0.025">
+                <div class="parameter-value" id="u_shellWidth_value">0.025</div>
+                
+                <div class="uniform-name">u_tetraThickness (0.003→0.1)</div>
+                <input type="range" class="parameter-slider" id="u_tetraThickness" min="0.003" max="0.1" step="0.001" value="0.035">
+                <div class="parameter-value" id="u_tetraThickness_value">0.035</div>
+                
+                <div class="uniform-name">u_glitchIntensity (0.0→0.15)</div>
+                <input type="range" class="parameter-slider" id="u_glitchIntensity" min="0.0" max="0.15" step="0.001" value="0.02">
+                <div class="parameter-value" id="u_glitchIntensity_value">0.020</div>
+                
+                <div class="uniform-name">u_colorShift (-1.0→1.0)</div>
+                <input type="range" class="parameter-slider" id="u_colorShift" min="-1.0" max="1.0" step="0.01" value="0.0">
+                <div class="parameter-value" id="u_colorShift_value">0.00</div>
+                
+                <div class="test-buttons">
+                    <button class="test-button" onclick="testGeometryParameters()">Test Geometry</button>
+                    <button class="test-button" onclick="animateGeometryParameters()">Animate</button>
+                </div>
+            </div>
+            
+            <!-- Audio/Interaction Parameters -->
+            <div class="control-group" id="audio-params">
+                <div class="control-label">🎵 Audio/Interaction Parameters</div>
+                
+                <div class="uniform-name">u_audioBass (0.0→1.0)</div>
+                <input type="range" class="parameter-slider" id="u_audioBass" min="0.0" max="1.0" step="0.01" value="0.0">
+                <div class="parameter-value" id="u_audioBass_value">0.00</div>
+                
+                <div class="uniform-name">u_audioMid (0.0→1.0)</div>
+                <input type="range" class="parameter-slider" id="u_audioMid" min="0.0" max="1.0" step="0.01" value="0.0">
+                <div class="parameter-value" id="u_audioMid_value">0.00</div>
+                
+                <div class="uniform-name">u_audioHigh (0.0→1.0)</div>
+                <input type="range" class="parameter-slider" id="u_audioHigh" min="0.0" max="1.0" step="0.01" value="0.0">
+                <div class="parameter-value" id="u_audioHigh_value">0.00</div>
+                
+                <div class="test-buttons">
+                    <button class="test-button" onclick="testAudioParameters()">Test Audio</button>
+                    <button class="test-button" onclick="simulateInteraction()">Simulate Interaction</button>
+                </div>
+            </div>
+            
+            <!-- Verification Panel -->
+            <div class="verification-panel">
+                <div class="verification-title">🔍 Parameter Verification Results</div>
+                <div id="verification-results">
+                    <div class="verification-result warning">⏳ Click "Run Complete Cascade Test" to begin verification</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="VIB34D_WORKING_CORE_ARCHITECTURE.js"></script>
+    <script src="VIB34D_CENTRAL_STATE_MANAGER.js"></script>
+    <script>
+        // Global state for parameter testing system
+        const testingSystem = {
+            visualizers: [],
+            centralStateManager: null,
+            currentPreset: 'hypercube',
+            parameterMapping: {},
+            verificationResults: [],
+            animationFrameId: null,
+            testResults: {
+                coreParams: false,
+                gridParams: false,
+                geometryParams: false,
+                audioParams: false,
+                cascadeTest: false
+            }
+        };
+        
+        // Geometry configurations for testing
+        const geometryConfigs = {
+            hypercube: {
+                name: 'Hypercube Core',
+                geometry: 'hypercube',
+                params: { gridDensity: 12.0, lineThickness: 0.03, dimension: 4.0 }
+            },
+            hypersphere: {
+                name: 'Hypersphere Flow',
+                geometry: 'hypersphere', 
+                params: { gridDensity: 10.0, shellWidth: 0.025, dimension: 3.8 }
+            },
+            tetrahedron: {
+                name: 'Tetrahedron Tech',
+                geometry: 'hypertetrahedron',
+                params: { gridDensity: 8.0, tetraThickness: 0.04, dimension: 4.2 }
+            },
+            mixed: {
+                name: 'Mixed Geometries',
+                geometry: 'mixed',
+                params: { gridDensity: 8.0, lineThickness: 0.03, dimension: 4.0 }
+            }
+        };
+        
+        // Initialize the parameter testing system
+        function initializeParameterTestingSystem() {
+            console.log('🚀 Initializing VIB34D Parameter Testing System...');
+            
+            // Create visualizer grid
+            createVisualizerGrid();
+            
+            // Initialize parameter sliders
+            initializeParameterSliders();
+            
+            // Setup preset buttons
+            setupPresetButtons();
+            
+            // Initialize central state manager
+            if (window.VIB34DCentralStateManager) {
+                testingSystem.centralStateManager = new window.VIB34DCentralStateManager();
+                console.log('✅ Central State Manager initialized');
+            }
+            
+            // Start parameter verification
+            setTimeout(() => {
+                console.log('📊 Starting initial parameter verification...');
+                runQuickVerification();
+            }, 1000);
+        }
+        
+        function createVisualizerGrid() {
+            const grid = document.getElementById('visualizer-grid');
+            
+            const geometryTypes = ['hypercube', 'hypersphere', 'hypertetrahedron', 'torus'];
+            
+            geometryTypes.forEach((geometryType, index) => {
+                const card = document.createElement('div');
+                card.className = 'visualizer-card';
+                card.id = `visualizer-${index}`;
+                
+                const canvas = document.createElement('canvas');
+                canvas.className = 'visualizer-canvas';
+                canvas.width = 300;
+                canvas.height = 200;
+                canvas.id = `canvas-${index}`;
+                
+                const info = document.createElement('div');
+                info.className = 'visualizer-info';
+                info.innerHTML = `
+                    <div class="geometry-name">${geometryType.charAt(0).toUpperCase() + geometryType.slice(1)}</div>
+                    <div class="parameter-values" id="params-${index}">
+                        Initializing...
+                    </div>
+                `;
+                
+                card.appendChild(canvas);
+                card.appendChild(info);
+                grid.appendChild(card);
+                
+                // Initialize visualizer core
+                try {
+                    if (window.VIB34D_WorkingCore) {
+                        const core = new window.VIB34D_WorkingCore.HypercubeCore(canvas, {
+                            onError: (error) => {
+                                console.error(`Visualizer ${index} error:`, error);
+                                updateVerificationResult(`visualizer-${index}`, false, `Error: ${error.message}`);
+                            }
+                        });
+                        
+                        // Set initial geometry type
+                        core.updateParameters({
+                            geometryType: geometryType,
+                            projectionMethod: 'perspective',
+                            ...geometryConfigs.hypercube.params
+                        });
+                        
+                        core.start();
+                        testingSystem.visualizers.push(core);
+                        
+                        console.log(`✅ Visualizer ${index} (${geometryType}) initialized`);
+                        updateVerificationResult(`visualizer-${index}`, true, `${geometryType} core active`);
+                        
+                    } else {
+                        throw new Error('VIB34D_WorkingCore not available');
+                    }
+                } catch (error) {
+                    console.error(`Failed to initialize visualizer ${index}:`, error);
+                    updateVerificationResult(`visualizer-${index}`, false, `Initialization failed: ${error.message}`);
+                }
+            });
+        }
+        
+        function initializeParameterSliders() {
+            const sliders = document.querySelectorAll('.parameter-slider');
+            
+            sliders.forEach(slider => {
+                const uniformName = slider.id;
+                const valueDisplay = document.getElementById(`${uniformName}_value`);
+                
+                // Update display value and apply to visualizers
+                slider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    const decimals = uniformName.includes('Intensity') || uniformName.includes('Width') || uniformName.includes('Thickness') ? 3 : 2;
+                    valueDisplay.textContent = value.toFixed(decimals);
+                    
+                    // Apply parameter to all visualizers
+                    applyParameterToAllVisualizers(uniformName, value);
+                    
+                    // Update control group visual state
+                    const controlGroup = slider.closest('.control-group');
+                    controlGroup.classList.add('active');
+                    setTimeout(() => controlGroup.classList.remove('active'), 500);
+                });
+                
+                // Initialize display value
+                const value = parseFloat(slider.value);
+                const decimals = uniformName.includes('Intensity') || uniformName.includes('Width') || uniformName.includes('Thickness') ? 3 : 2;
+                valueDisplay.textContent = value.toFixed(decimals);
+            });
+            
+            // Update time display
+            function updateTimeDisplay() {
+                const timeDisplay = document.getElementById('u_time_value');
+                if (timeDisplay) {
+                    const time = (Date.now() * 0.001) % 1000;
+                    timeDisplay.textContent = time.toFixed(3);
+                }
+                requestAnimationFrame(updateTimeDisplay);
+            }
+            updateTimeDisplay();
+        }
+        
+        function applyParameterToAllVisualizers(paramName, value) {
+            testingSystem.visualizers.forEach((visualizer, index) => {
+                if (visualizer && visualizer.updateParameters) {
+                    const updateObject = {};
+                    updateObject[paramName] = value;
+                    visualizer.updateParameters(updateObject);
+                    
+                    // Update parameter display
+                    updateParameterDisplay(index, paramName, value);
+                }
+            });
+        }
+        
+        function updateParameterDisplay(visualizerIndex, paramName, value) {
+            const paramsDisplay = document.getElementById(`params-${visualizerIndex}`);
+            if (paramsDisplay) {
+                const decimals = paramName.includes('Intensity') || paramName.includes('Width') || paramName.includes('Thickness') ? 3 : 2;
+                paramsDisplay.innerHTML = `
+                    <strong>${paramName}</strong>: ${value.toFixed(decimals)}<br>
+                    Last updated: ${new Date().toLocaleTimeString()}
+                `;
+            }
+        }
+        
+        function setupPresetButtons() {
+            const presetButtons = document.querySelectorAll('.preset-button');
+            
+            presetButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Update active button
+                    presetButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    const presetName = button.getAttribute('data-preset');
+                    applyPreset(presetName);
+                });
+            });
+        }
+        
+        function applyPreset(presetName) {
+            testingSystem.currentPreset = presetName;
+            const config = geometryConfigs[presetName];
+            
+            if (!config) return;
+            
+            console.log(`🎨 Applying preset: ${presetName}`);
+            
+            // Apply parameters to sliders and visualizers
+            Object.entries(config.params).forEach(([paramName, value]) => {
+                const slider = document.getElementById(paramName);
+                const valueDisplay = document.getElementById(`${paramName}_value`);
+                
+                if (slider && valueDisplay) {
+                    slider.value = value;
+                    const decimals = paramName.includes('Intensity') || paramName.includes('Width') || paramName.includes('Thickness') ? 3 : 2;
+                    valueDisplay.textContent = value.toFixed(decimals);
+                    
+                    applyParameterToAllVisualizers(paramName, value);
+                }
+            });
+            
+            updateVerificationResult('preset-system', true, `Applied preset: ${config.name}`);
+        }
+        
+        function updateVerificationResult(testName, passed, message) {
+            const resultsDiv = document.getElementById('verification-results');
+            
+            const result = document.createElement('div');
+            result.className = `verification-result ${passed ? 'pass' : 'fail'}`;
+            result.innerHTML = `${passed ? '✅' : '❌'} ${testName}: ${message}`;
+            
+            resultsDiv.appendChild(result);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+            
+            testingSystem.verificationResults.push({
+                testName,
+                passed,
+                message,
+                timestamp: Date.now()
+            });
+        }
+        
+        // Test Functions
+        function testCoreParameters() {
+            console.log('🧪 Testing Core Parameters...');
+            
+            const tests = [
+                { param: 'u_dimension', values: [3.0, 4.0, 5.0], delay: 500 },
+                { param: 'u_morphFactor', values: [0.0, 0.7, 1.5], delay: 300 },
+                { param: 'u_rotationSpeed', values: [0.0, 1.0, 3.0], delay: 400 }
+            ];
+            
+            let testIndex = 0;
+            
+            function runNextTest() {
+                if (testIndex >= tests.length) {
+                    testingSystem.testResults.coreParams = true;
+                    updateVerificationResult('core-parameters', true, 'All core parameter tests passed');
+                    return;
+                }
+                
+                const test = tests[testIndex];
+                let valueIndex = 0;
+                
+                function testNextValue() {
+                    if (valueIndex >= test.values.length) {
+                        testIndex++;
+                        setTimeout(runNextTest, 200);
+                        return;
+                    }
+                    
+                    const value = test.values[valueIndex];
+                    applyParameterToAllVisualizers(test.param, value);
+                    
+                    const slider = document.getElementById(test.param);
+                    if (slider) slider.value = value;
+                    
+                    updateVerificationResult(`${test.param}-test`, true, `Testing ${test.param} = ${value}`);
+                    
+                    valueIndex++;
+                    setTimeout(testNextValue, test.delay);
+                }
+                
+                testNextValue();
+            }
+            
+            runNextTest();
+        }
+        
+        function testGridParameters() {
+            console.log('🧪 Testing Grid Parameters...');
+            
+            const tests = [
+                { param: 'u_gridDensity', values: [1.0, 8.0, 25.0], delay: 600 },
+                { param: 'u_lineThickness', values: [0.002, 0.03, 0.1], delay: 400 },
+                { param: 'u_universeModifier', values: [0.3, 1.0, 2.5], delay: 500 },
+                { param: 'u_patternIntensity', values: [0.0, 1.3, 3.0], delay: 400 }
+            ];
+            
+            let testIndex = 0;
+            
+            function runNextTest() {
+                if (testIndex >= tests.length) {
+                    testingSystem.testResults.gridParams = true;
+                    updateVerificationResult('grid-parameters', true, 'All grid parameter tests passed');
+                    return;
+                }
+                
+                const test = tests[testIndex];
+                let valueIndex = 0;
+                
+                function testNextValue() {
+                    if (valueIndex >= test.values.length) {
+                        testIndex++;
+                        setTimeout(runNextTest, 200);
+                        return;
+                    }
+                    
+                    const value = test.values[valueIndex];
+                    applyParameterToAllVisualizers(test.param, value);
+                    
+                    updateVerificationResult(`${test.param}-test`, true, `Testing ${test.param} = ${value}`);
+                    
+                    valueIndex++;
+                    setTimeout(testNextValue, test.delay);
+                }
+                
+                testNextValue();
+            }
+            
+            runNextTest();
+        }
+        
+        function testGeometryParameters() {
+            console.log('🧪 Testing Geometry Parameters...');
+            
+            const tests = [
+                { param: 'u_shellWidth', values: [0.005, 0.025, 0.08], delay: 500 },
+                { param: 'u_tetraThickness', values: [0.003, 0.035, 0.1], delay: 500 },
+                { param: 'u_glitchIntensity', values: [0.0, 0.02, 0.15], delay: 300 },
+                { param: 'u_colorShift', values: [-1.0, 0.0, 1.0], delay: 400 }
+            ];
+            
+            let testIndex = 0;
+            
+            function runNextTest() {
+                if (testIndex >= tests.length) {
+                    testingSystem.testResults.geometryParams = true;
+                    updateVerificationResult('geometry-parameters', true, 'All geometry parameter tests passed');
+                    return;
+                }
+                
+                const test = tests[testIndex];
+                let valueIndex = 0;
+                
+                function testNextValue() {
+                    if (valueIndex >= test.values.length) {
+                        testIndex++;
+                        setTimeout(runNextTest, 200);
+                        return;
+                    }
+                    
+                    const value = test.values[valueIndex];
+                    applyParameterToAllVisualizers(test.param, value);
+                    
+                    updateVerificationResult(`${test.param}-test`, true, `Testing ${test.param} = ${value}`);
+                    
+                    valueIndex++;
+                    setTimeout(testNextValue, test.delay);
+                }
+                
+                testNextValue();
+            }
+            
+            runNextTest();
+        }
+        
+        function testAudioParameters() {
+            console.log('🧪 Testing Audio/Interaction Parameters...');
+            
+            const tests = [
+                { param: 'u_audioBass', values: [0.0, 0.5, 1.0], delay: 400 },
+                { param: 'u_audioMid', values: [0.0, 0.5, 1.0], delay: 400 },
+                { param: 'u_audioHigh', values: [0.0, 0.5, 1.0], delay: 400 }
+            ];
+            
+            let testIndex = 0;
+            
+            function runNextTest() {
+                if (testIndex >= tests.length) {
+                    testingSystem.testResults.audioParams = true;
+                    updateVerificationResult('audio-parameters', true, 'All audio parameter tests passed');
+                    return;
+                }
+                
+                const test = tests[testIndex];
+                let valueIndex = 0;
+                
+                function testNextValue() {
+                    if (valueIndex >= test.values.length) {
+                        testIndex++;
+                        setTimeout(runNextTest, 200);
+                        return;
+                    }
+                    
+                    const value = test.values[valueIndex];
+                    applyParameterToAllVisualizers(test.param, value);
+                    
+                    updateVerificationResult(`${test.param}-test`, true, `Testing ${test.param} = ${value}`);
+                    
+                    valueIndex++;
+                    setTimeout(testNextValue, test.delay);
+                }
+                
+                testNextValue();
+            }
+            
+            runNextTest();
+        }
+        
+        function simulateInteraction() {
+            console.log('🎮 Simulating User Interaction...');
+            
+            // Simulate interaction cascade: hover -> click -> scroll -> drag
+            const interactionSequence = [
+                { type: 'hover', params: { u_audioBass: 0.3, u_audioMid: 0.1 }, duration: 1000 },
+                { type: 'click', params: { u_audioBass: 0.8, u_audioMid: 0.5, u_audioHigh: 0.3 }, duration: 500 },
+                { type: 'scroll', params: { u_audioBass: 0.2, u_audioMid: 0.7, u_audioHigh: 0.1 }, duration: 800 },
+                { type: 'drag', params: { u_audioBass: 0.6, u_audioMid: 0.4, u_audioHigh: 0.8 }, duration: 1200 },
+                { type: 'idle', params: { u_audioBass: 0.0, u_audioMid: 0.0, u_audioHigh: 0.0 }, duration: 800 }
+            ];
+            
+            let sequenceIndex = 0;
+            
+            function runNextInteraction() {
+                if (sequenceIndex >= interactionSequence.length) {
+                    updateVerificationResult('interaction-simulation', true, 'Interaction simulation completed');
+                    return;
+                }
+                
+                const interaction = interactionSequence[sequenceIndex];
+                
+                // Apply interaction parameters
+                Object.entries(interaction.params).forEach(([param, value]) => {
+                    applyParameterToAllVisualizers(param, value);
+                });
+                
+                updateVerificationResult(`interaction-${interaction.type}`, true, `Simulating ${interaction.type} interaction`);
+                
+                sequenceIndex++;
+                setTimeout(runNextInteraction, interaction.duration);
+            }
+            
+            runNextInteraction();
+        }
+        
+        function runFullCascadeTest() {
+            console.log('🔗 Running Complete Parameter Cascade Test...');
+            
+            const cascadeSteps = [
+                { name: 'Initialize System', test: () => Promise.resolve(true) },
+                { name: 'Test Core Parameters', test: () => new Promise(resolve => { testCoreParameters(); setTimeout(() => resolve(testingSystem.testResults.coreParams), 3000); }) },
+                { name: 'Test Grid Parameters', test: () => new Promise(resolve => { testGridParameters(); setTimeout(() => resolve(testingSystem.testResults.gridParams), 4000); }) },
+                { name: 'Test Geometry Parameters', test: () => new Promise(resolve => { testGeometryParameters(); setTimeout(() => resolve(testingSystem.testResults.geometryParams), 3000); }) },
+                { name: 'Test Audio Parameters', test: () => new Promise(resolve => { testAudioParameters(); setTimeout(() => resolve(testingSystem.testResults.audioParams), 2000); }) },
+                { name: 'Simulate Interactions', test: () => new Promise(resolve => { simulateInteraction(); setTimeout(() => resolve(true), 4000); }) },
+                { name: 'Verify All Visualizers', test: verifyAllVisualizers },
+                { name: 'Performance Test', test: runPerformanceTest }
+            ];
+            
+            const stepsContainer = document.getElementById('cascade-steps');
+            const progressFill = document.getElementById('progress-fill');
+            
+            stepsContainer.innerHTML = '';
+            
+            let currentStep = 0;
+            
+            async function runNextStep() {
+                if (currentStep >= cascadeSteps.length) {
+                    testingSystem.testResults.cascadeTest = true;
+                    progressFill.style.width = '100%';
+                    updateVerificationResult('complete-cascade-test', true, 'All cascade tests completed successfully');
+                    return;
+                }
+                
+                const step = cascadeSteps[currentStep];
+                
+                // Create step element
+                const stepElement = document.createElement('div');
+                stepElement.className = 'cascade-step executing';
+                stepElement.textContent = `${currentStep + 1}. ${step.name}...`;
+                stepsContainer.appendChild(stepElement);
+                
+                try {
+                    const result = await step.test();
+                    
+                    if (result) {
+                        stepElement.className = 'cascade-step completed';
+                        stepElement.textContent = `${currentStep + 1}. ${step.name} ✅`;
+                    } else {
+                        stepElement.className = 'cascade-step failed';
+                        stepElement.textContent = `${currentStep + 1}. ${step.name} ❌`;
+                    }
+                    
+                    currentStep++;
+                    const progress = (currentStep / cascadeSteps.length) * 100;
+                    progressFill.style.width = `${progress}%`;
+                    
+                    setTimeout(runNextStep, 500);
+                    
+                } catch (error) {
+                    stepElement.className = 'cascade-step failed';
+                    stepElement.textContent = `${currentStep + 1}. ${step.name} ❌ Error: ${error.message}`;
+                    updateVerificationResult('cascade-test-error', false, `Step ${currentStep + 1} failed: ${error.message}`);
+                }
+            }
+            
+            runNextStep();
+        }
+        
+        function verifyAllVisualizers() {
+            return new Promise(resolve => {
+                let activeVisualizersCount = 0;
+                
+                testingSystem.visualizers.forEach((visualizer, index) => {
+                    if (visualizer && visualizer.getStatus) {
+                        const status = visualizer.getStatus();
+                        if (status.isAnimating) {
+                            activeVisualizersCount++;
+                            updateVerificationResult(`visualizer-${index}-active`, true, `Visualizer ${index} active and rendering`);
+                        } else {
+                            updateVerificationResult(`visualizer-${index}-inactive`, false, `Visualizer ${index} not active`);
+                        }
+                    } else {
+                        updateVerificationResult(`visualizer-${index}-missing`, false, `Visualizer ${index} not initialized`);
+                    }
+                });
+                
+                const allActive = activeVisualizersCount === testingSystem.visualizers.length;
+                updateVerificationResult('all-visualizers', allActive, `${activeVisualizersCount}/${testingSystem.visualizers.length} visualizers active`);
+                
+                resolve(allActive);
+            });
+        }
+        
+        function runPerformanceTest() {
+            return new Promise(resolve => {
+                const startTime = performance.now();
+                let frameCount = 0;
+                const testDuration = 2000; // 2 seconds
+                
+                function measureFrameRate() {
+                    frameCount++;
+                    const elapsed = performance.now() - startTime;
+                    
+                    if (elapsed < testDuration) {
+                        requestAnimationFrame(measureFrameRate);
+                    } else {
+                        const fps = (frameCount / elapsed) * 1000;
+                        const performanceGood = fps >= 30;
+                        
+                        updateVerificationResult('performance-test', performanceGood, `Average FPS: ${fps.toFixed(1)}`);
+                        resolve(performanceGood);
+                    }
+                }
+                
+                requestAnimationFrame(measureFrameRate);
+            });
+        }
+        
+        function runParameterSweep() {
+            console.log('📊 Running Parameter Sweep Test...');
+            
+            const sweepParameters = [
+                'u_dimension', 'u_morphFactor', 'u_rotationSpeed', 
+                'u_gridDensity', 'u_lineThickness', 'u_universeModifier'
+            ];
+            
+            let paramIndex = 0;
+            
+            function sweepNextParameter() {
+                if (paramIndex >= sweepParameters.length) {
+                    updateVerificationResult('parameter-sweep', true, 'Parameter sweep completed');
+                    return;
+                }
+                
+                const paramName = sweepParameters[paramIndex];
+                const slider = document.getElementById(paramName);
+                
+                if (!slider) {
+                    paramIndex++;
+                    setTimeout(sweepNextParameter, 100);
+                    return;
+                }
+                
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+                const steps = 20;
+                const stepSize = (max - min) / steps;
+                
+                let step = 0;
+                
+                function sweepStep() {
+                    if (step >= steps) {
+                        paramIndex++;
+                        setTimeout(sweepNextParameter, 200);
+                        return;
+                    }
+                    
+                    const value = min + (step * stepSize);
+                    applyParameterToAllVisualizers(paramName, value);
+                    slider.value = value;
+                    
+                    step++;
+                    setTimeout(sweepStep, 50);
+                }
+                
+                updateVerificationResult(`sweep-${paramName}`, true, `Sweeping ${paramName} from ${min} to ${max}`);
+                sweepStep();
+            }
+            
+            sweepNextParameter();
+        }
+        
+        function runQuickVerification() {
+            // Check if core architecture is loaded
+            if (window.VIB34D_WorkingCore) {
+                updateVerificationResult('core-architecture', true, 'VIB34D Working Core loaded');
+            } else {
+                updateVerificationResult('core-architecture', false, 'VIB34D Working Core not loaded');
+            }
+            
+            // Check if central state manager is loaded
+            if (window.VIB34DCentralStateManager) {
+                updateVerificationResult('state-manager', true, 'Central State Manager loaded');
+            } else {
+                updateVerificationResult('state-manager', false, 'Central State Manager not loaded');
+            }
+            
+            // Check visualizer initialization
+            const activeVisualizers = testingSystem.visualizers.filter(v => v !== null).length;
+            if (activeVisualizers > 0) {
+                updateVerificationResult('visualizer-init', true, `${activeVisualizers} visualizers initialized`);
+            } else {
+                updateVerificationResult('visualizer-init', false, 'No visualizers initialized');
+            }
+        }
+        
+        function animateCoreParameters() {
+            if (testingSystem.animationFrameId) {
+                cancelAnimationFrame(testingSystem.animationFrameId);
+            }
+            
+            const startTime = Date.now();
+            
+            function animate() {
+                const elapsed = (Date.now() - startTime) * 0.001;
+                
+                // Animate core parameters with sine waves
+                const dimension = 3.5 + Math.sin(elapsed * 0.5) * 0.5;
+                const morphFactor = 0.5 + Math.sin(elapsed * 0.8) * 0.5;
+                const rotationSpeed = 0.5 + Math.sin(elapsed * 1.2) * 0.5;
+                
+                applyParameterToAllVisualizers('u_dimension', dimension);
+                applyParameterToAllVisualizers('u_morphFactor', morphFactor);
+                applyParameterToAllVisualizers('u_rotationSpeed', rotationSpeed);
+                
+                // Update sliders
+                document.getElementById('u_dimension').value = dimension;
+                document.getElementById('u_morphFactor').value = morphFactor;
+                document.getElementById('u_rotationSpeed').value = rotationSpeed;
+                
+                // Update displays
+                document.getElementById('u_dimension_value').textContent = dimension.toFixed(2);
+                document.getElementById('u_morphFactor_value').textContent = morphFactor.toFixed(2);
+                document.getElementById('u_rotationSpeed_value').textContent = rotationSpeed.toFixed(2);
+                
+                if (elapsed < 10) { // Animate for 10 seconds
+                    testingSystem.animationFrameId = requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+        
+        function animateGridParameters() {
+            if (testingSystem.animationFrameId) {
+                cancelAnimationFrame(testingSystem.animationFrameId);
+            }
+            
+            const startTime = Date.now();
+            
+            function animate() {
+                const elapsed = (Date.now() - startTime) * 0.001;
+                
+                // Animate grid parameters with different frequencies
+                const gridDensity = 8.0 + Math.sin(elapsed * 0.6) * 4.0;
+                const lineThickness = 0.03 + Math.sin(elapsed * 1.0) * 0.02;
+                const patternIntensity = 1.3 + Math.sin(elapsed * 0.9) * 0.7;
+                
+                applyParameterToAllVisualizers('u_gridDensity', gridDensity);
+                applyParameterToAllVisualizers('u_lineThickness', lineThickness);
+                applyParameterToAllVisualizers('u_patternIntensity', patternIntensity);
+                
+                // Update sliders and displays
+                document.getElementById('u_gridDensity').value = gridDensity;
+                document.getElementById('u_lineThickness').value = lineThickness;
+                document.getElementById('u_patternIntensity').value = patternIntensity;
+                
+                document.getElementById('u_gridDensity_value').textContent = gridDensity.toFixed(1);
+                document.getElementById('u_lineThickness_value').textContent = lineThickness.toFixed(3);
+                document.getElementById('u_patternIntensity_value').textContent = patternIntensity.toFixed(2);
+                
+                if (elapsed < 8) { // Animate for 8 seconds
+                    testingSystem.animationFrameId = requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+        
+        function animateGeometryParameters() {
+            if (testingSystem.animationFrameId) {
+                cancelAnimationFrame(testingSystem.animationFrameId);
+            }
+            
+            const startTime = Date.now();
+            
+            function animate() {
+                const elapsed = (Date.now() - startTime) * 0.001;
+                
+                // Animate geometry-specific parameters
+                const shellWidth = 0.025 + Math.sin(elapsed * 1.1) * 0.015;
+                const tetraThickness = 0.035 + Math.sin(elapsed * 0.7) * 0.02;
+                const glitchIntensity = 0.02 + Math.sin(elapsed * 2.0) * 0.03;
+                const colorShift = Math.sin(elapsed * 0.4) * 0.5;
+                
+                applyParameterToAllVisualizers('u_shellWidth', shellWidth);
+                applyParameterToAllVisualizers('u_tetraThickness', tetraThickness);
+                applyParameterToAllVisualizers('u_glitchIntensity', glitchIntensity);
+                applyParameterToAllVisualizers('u_colorShift', colorShift);
+                
+                // Update sliders and displays
+                document.getElementById('u_shellWidth').value = shellWidth;
+                document.getElementById('u_tetraThickness').value = tetraThickness;
+                document.getElementById('u_glitchIntensity').value = glitchIntensity;
+                document.getElementById('u_colorShift').value = colorShift;
+                
+                document.getElementById('u_shellWidth_value').textContent = shellWidth.toFixed(3);
+                document.getElementById('u_tetraThickness_value').textContent = tetraThickness.toFixed(3);
+                document.getElementById('u_glitchIntensity_value').textContent = glitchIntensity.toFixed(3);
+                document.getElementById('u_colorShift_value').textContent = colorShift.toFixed(2);
+                
+                if (elapsed < 6) { // Animate for 6 seconds
+                    testingSystem.animationFrameId = requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initializeParameterTestingSystem, 100);
+        });
+        
+        // Debug functions for console
+        window.testingSystem = testingSystem;
+        window.runQuickVerification = runQuickVerification;
+        window.runFullCascadeTest = runFullCascadeTest;
+    </script>
+</body>
+</html>

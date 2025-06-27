@@ -1,0 +1,1082 @@
+{
+  "testTimestamp": "2025-06-24T14:05:29.583Z",
+  "systemOverview": {
+    "status": "NOT_INITIALIZED",
+    "webglSupport": "NOT_AVAILABLE",
+    "bezelCount": 4,
+    "visualizerCount": 11,
+    "interactionEngineStatus": "ACTIVE"
+  },
+  "detailedResults": {
+    "bezels": {
+      "left": {
+        "direction": "left",
+        "tensionDetected": false,
+        "foldingDetected": false,
+        "currentFaceGeometry": "hypercube",
+        "visualizerCount": 11,
+        "consoleMessages": []
+      },
+      "right": {
+        "direction": "right",
+        "tensionDetected": false,
+        "foldingDetected": false,
+        "currentFaceGeometry": "hypercube",
+        "visualizerCount": 11,
+        "consoleMessages": []
+      },
+      "top": {
+        "direction": "top",
+        "tensionDetected": false,
+        "foldingDetected": false,
+        "currentFaceGeometry": "hypercube",
+        "visualizerCount": 11,
+        "consoleMessages": []
+      },
+      "bottom": {
+        "direction": "bottom",
+        "tensionDetected": false,
+        "foldingDetected": false,
+        "currentFaceGeometry": "hypercube",
+        "visualizerCount": 11,
+        "consoleMessages": []
+      }
+    },
+    "uniforms": {
+      "canvasResults": {
+        "canvas_0": {
+          "canvasId": "board-visualizer",
+          "hasWebGL": false,
+          "error": "No WebGL context"
+        },
+        "canvas_1": {
+          "canvasId": "card-visualizer-1",
+          "hasWebGL": false,
+          "error": "No WebGL context"
+        },
+        "canvas_2": {
+          "canvasId": "card-visualizer-2",
+          "hasWebGL": false,
+          "error": "No WebGL context"
+        },
+        "canvas_3": {
+          "canvasId": "card-visualizer-3",
+          "hasWebGL": false,
+          "error": "No WebGL context"
+        },
+        "canvas_4": {
+          "canvasId": "card-visualizer-4",
+          "hasWebGL": false,
+          "error": "No WebGL context"
+        },
+        "canvas_5": {
+          "canvasId": "card-visualizer-5",
+          "hasWebGL": false,
+          "error": "No WebGL context"
+        },
+        "canvas_6": {
+          "canvasId": "card-visualizer-6",
+          "hasWebGL": false,
+          "error": "No WebGL context"
+        },
+        "canvas_7": {
+          "canvasId": "bezel-visualizer-left",
+          "hasWebGL": false,
+          "error": "No WebGL context"
+        },
+        "canvas_8": {
+          "canvasId": "bezel-visualizer-right",
+          "hasWebGL": false,
+          "error": "No WebGL context"
+        },
+        "canvas_9": {
+          "canvasId": "bezel-visualizer-top",
+          "hasWebGL": false,
+          "error": "No WebGL context"
+        },
+        "canvas_10": {
+          "canvasId": "bezel-visualizer-bottom",
+          "hasWebGL": false,
+          "error": "No WebGL context"
+        }
+      },
+      "globalUniforms": {
+        "time": "not found",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "mouse": "not found"
+      },
+      "uniformCount": 11
+    },
+    "interactions": {
+      "scroll": {
+        "scrollY": 3,
+        "interactionData": "not available",
+        "scrollDetected": true
+      },
+      "click": {
+        "clicksDetected": true,
+        "interactionData": "not available"
+      },
+      "mouse": {
+        "mouseMovementDetected": true,
+        "interactionData": "not available"
+      }
+    },
+    "geometries": {},
+    "performance": {
+      "renderTime": 0.5,
+      "memoryUsage": {
+        "usedJSHeapSize": 2881195,
+        "totalJSHeapSize": 4401223,
+        "jsHeapSizeLimit": 4294705152
+      },
+      "navigationTiming": {
+        "loadEventEnd": 1750773871798,
+        "navigationStart": 1750773871330,
+        "totalLoadTime": 468
+      },
+      "resourceCount": 19
+    },
+    "errors": [],
+    "initialization": {
+      "hasVIB34DSystem": false,
+      "hasVIB3HomeMaster": false,
+      "hasVIB34DCore": false,
+      "tesseractContainer": true,
+      "bezelsPresent": 4,
+      "visualizersPresent": 11,
+      "webglSupported": false,
+      "cssVariables": {
+        "globalEnergy": "NaN",
+        "sectionFocus": "",
+        "visualizerOpacity": ""
+      },
+      "currentURL": "https://domusgpt.github.io/vib3stylepack-v2-production/vib3code-morphing-blog.html",
+      "documentReady": "complete"
+    },
+    "chromatic": {
+      "colors": {
+        "hue": "",
+        "saturation": "",
+        "primaryColor": "",
+        "secondaryColor": ""
+      },
+      "blendModes": [
+        {
+          "element": "DIV",
+          "className": "moire-interference",
+          "blendMode": "overlay"
+        },
+        {
+          "element": "DIV",
+          "className": "moire-interference",
+          "blendMode": "overlay"
+        },
+        {
+          "element": "DIV",
+          "className": "moire-interference",
+          "blendMode": "overlay"
+        },
+        {
+          "element": "DIV",
+          "className": "moire-interference",
+          "blendMode": "overlay"
+        },
+        {
+          "element": "DIV",
+          "className": "moire-interference",
+          "blendMode": "overlay"
+        }
+      ],
+      "chromaticEngineActive": false
+    },
+    "vib3Integration": {
+      "hasVIB3HomeMaster": false,
+      "hasReactivityBridge": false,
+      "parameterSync": "not available",
+      "bridgeConnected": false
+    },
+    "editorDashboard": {
+      "available": false,
+      "reason": "No editor dashboard found"
+    },
+    "moireRGB": {
+      "cardCount": 6,
+      "rgbEffects": [
+        {
+          "index": 0,
+          "hasBorder": true,
+          "hasBoxShadow": false,
+          "filter": "none",
+          "backdropFilter": "none"
+        },
+        {
+          "index": 1,
+          "hasBorder": true,
+          "hasBoxShadow": false,
+          "filter": "none",
+          "backdropFilter": "none"
+        },
+        {
+          "index": 2,
+          "hasBorder": true,
+          "hasBoxShadow": false,
+          "filter": "none",
+          "backdropFilter": "none"
+        },
+        {
+          "index": 3,
+          "hasBorder": true,
+          "hasBoxShadow": false,
+          "filter": "none",
+          "backdropFilter": "none"
+        },
+        {
+          "index": 4,
+          "hasBorder": true,
+          "hasBoxShadow": false,
+          "filter": "none",
+          "backdropFilter": "none"
+        },
+        {
+          "index": 5,
+          "hasBorder": true,
+          "hasBoxShadow": false,
+          "filter": "none",
+          "backdropFilter": "none"
+        }
+      ],
+      "moireDetected": false
+    },
+    "emergingButtons": {
+      "elementCount": 10,
+      "crystallizationEffects": [
+        {
+          "index": 0,
+          "transform": "none",
+          "filter": "none",
+          "boxShadow": "none",
+          "hasHoverEffect": false
+        },
+        {
+          "index": 1,
+          "transform": "none",
+          "filter": "none",
+          "boxShadow": "none",
+          "hasHoverEffect": false
+        },
+        {
+          "index": 2,
+          "transform": "none",
+          "filter": "none",
+          "boxShadow": "none",
+          "hasHoverEffect": false
+        },
+        {
+          "index": 3,
+          "transform": "none",
+          "filter": "none",
+          "boxShadow": "none",
+          "hasHoverEffect": false
+        },
+        {
+          "index": 4,
+          "transform": "none",
+          "filter": "none",
+          "boxShadow": "none",
+          "hasHoverEffect": false
+        },
+        {
+          "index": 5,
+          "transform": "none",
+          "filter": "none",
+          "boxShadow": "none",
+          "hasHoverEffect": false
+        },
+        {
+          "index": 6,
+          "transform": "matrix(1, 0, 0, 1, 0, 0)",
+          "filter": "none",
+          "boxShadow": "rgba(0, 255, 255, 0.3) 0px 0px 20px 0px, rgba(255, 255, 255, 0.1) 0px 0px 20px 0px inset",
+          "hasHoverEffect": false
+        },
+        {
+          "index": 7,
+          "transform": "matrix(1, 0, 0, 1, 0, 0)",
+          "filter": "none",
+          "boxShadow": "rgba(0, 255, 255, 0.3) 0px 0px 20px 0px, rgba(255, 255, 255, 0.1) 0px 0px 20px 0px inset",
+          "hasHoverEffect": false
+        },
+        {
+          "index": 8,
+          "transform": "matrix(1, 0, 0, 1, 0, 0)",
+          "filter": "none",
+          "boxShadow": "rgba(0, 255, 255, 0.3) 0px 0px 20px 0px, rgba(255, 255, 255, 0.1) 0px 0px 20px 0px inset",
+          "hasHoverEffect": false
+        },
+        {
+          "index": 9,
+          "transform": "matrix(1, 0, 0, 1, 0, 0)",
+          "filter": "none",
+          "boxShadow": "rgba(0, 255, 255, 0.3) 0px 0px 20px 0px, rgba(255, 255, 255, 0.1) 0px 0px 20px 0px inset",
+          "hasHoverEffect": false
+        }
+      ],
+      "emergingSystemActive": true
+    },
+    "errorConditions": {
+      "webglErrors": [],
+      "stressTestCompleted": true,
+      "rapidInteractionHandled": true
+    },
+    "consoleMessages": [
+      {
+        "type": "log",
+        "text": "🌌 VIB3CODE MORPHING BLOG SYSTEM",
+        "timestamp": 1750773871657
+      },
+      {
+        "type": "log",
+        "text": "✅ VIB34D Phase 1 Core Architecture loaded successfully",
+        "timestamp": 1750773871693
+      },
+      {
+        "type": "log",
+        "text": "📊 Available classes: JSHandle@array",
+        "timestamp": 1750773871693
+      },
+      {
+        "type": "log",
+        "text": "✅ VIB34D Phase 2 Geometry Implementations loaded successfully",
+        "timestamp": 1750773871693
+      },
+      {
+        "type": "log",
+        "text": "🎨 Available geometries: JSHandle@array",
+        "timestamp": 1750773871693
+      },
+      {
+        "type": "log",
+        "text": "📊 Total geometry classes: 8 complete with full 4D mathematics",
+        "timestamp": 1750773871694
+      },
+      {
+        "type": "log",
+        "text": "✅ Enhanced BaseProjection with Phase 3 validation features",
+        "timestamp": 1750773871694
+      },
+      {
+        "type": "log",
+        "text": "✅ VIB34D Phase 3 Projection System loaded successfully",
+        "timestamp": 1750773871694
+      },
+      {
+        "type": "log",
+        "text": "📐 Available projections: JSHandle@array",
+        "timestamp": 1750773871694
+      },
+      {
+        "type": "log",
+        "text": "🎯 Projection system ready for Phase 4 integration",
+        "timestamp": 1750773871694
+      },
+      {
+        "type": "log",
+        "text": "✅ VIB34D Phase 4 Shader Uniform System loaded successfully",
+        "timestamp": 1750773871695
+      },
+      {
+        "type": "log",
+        "text": "🎛️ Complete uniform system with 17 parameters ready",
+        "timestamp": 1750773871695
+      },
+      {
+        "type": "log",
+        "text": "🧪 Testing utilities available for validation",
+        "timestamp": 1750773871695
+      },
+      {
+        "type": "log",
+        "text": "🚀 VIB34D Phase 5: Interaction System Integration - COMPLETE",
+        "timestamp": 1750773871695
+      },
+      {
+        "type": "log",
+        "text": "✅ VIB34DInteractionEngine created with parameter system integration",
+        "timestamp": 1750773871695
+      },
+      {
+        "type": "log",
+        "text": "✅ Scroll → u_audioBass mapping implemented",
+        "timestamp": 1750773871695
+      },
+      {
+        "type": "log",
+        "text": "✅ Click → u_audioMid mapping implemented",
+        "timestamp": 1750773871695
+      },
+      {
+        "type": "log",
+        "text": "✅ Mouse → u_audioHigh + u_mouse mapping implemented",
+        "timestamp": 1750773871695
+      },
+      {
+        "type": "log",
+        "text": "✅ Idle state detection and parameter decay implemented",
+        "timestamp": 1750773871695
+      },
+      {
+        "type": "log",
+        "text": "✅ Parameter smoothing system implemented",
+        "timestamp": 1750773871695
+      },
+      {
+        "type": "log",
+        "text": "✅ Shader manager integration complete",
+        "timestamp": 1750773871695
+      },
+      {
+        "type": "log",
+        "text": "✅ Integration testing framework created",
+        "timestamp": 1750773871695
+      },
+      {
+        "type": "log",
+        "text": "🚀 VIB34D Phase 6: Chromatic Emergence System Integration - COMPLETE",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ VIB34DChromaticParameterBridge created for shader integration",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ Chromatic parameters mapped to shader uniforms (colorShift, patternIntensity, morphFactor, universeModifier, glitchIntensity)",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ CSS custom property system for real-time color updates",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ Enhanced chromatic engine with parameter system integration",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ Color classification system for automatic hue→name mapping",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ Blend mode controller with dynamic emergence detection",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ Real-time parameter smoothing and transition system",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ Emergent color history tracking and analysis",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ Integration with existing VIB34DChromaticEngine via enhancement pattern",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ Proper fallback system when base chromatic engine unavailable",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "🚀 VIB34D Phase 7: VIB3 Integration System - COMPLETE",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ VIB34DVIb3IntegrationBridge for seamless VIB3HomeMaster integration",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ Section-to-geometry mapping (HOME→hypercube, TECH→tetrahedron, etc.)",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ VIB3→VIB34D parameter mapping and synchronization",
+        "timestamp": 1750773871696
+      },
+      {
+        "type": "log",
+        "text": "✅ Enhanced VIB34D core with VIB3 integration",
+        "timestamp": 1750773871697
+      },
+      {
+        "type": "log",
+        "text": "✅ Blog integration manager for vib3code-morphing-blog.html",
+        "timestamp": 1750773871697
+      },
+      {
+        "type": "log",
+        "text": "✅ Real-time section transitions and geometry switching",
+        "timestamp": 1750773871697
+      },
+      {
+        "type": "log",
+        "text": "✅ Complete system analysis and debugging capabilities",
+        "timestamp": 1750773871697
+      },
+      {
+        "type": "log",
+        "text": "✅ Integration testing framework with comprehensive coverage",
+        "timestamp": 1750773871697
+      },
+      {
+        "type": "log",
+        "text": "🌈 VIB34D Enhanced Moiré Integration script loaded",
+        "timestamp": 1750773871697
+      },
+      {
+        "type": "log",
+        "text": "🌈 Moiré RGB console helpers: vib34dMoire.status(), .enable(), .disable(), .test()",
+        "timestamp": 1750773871697
+      },
+      {
+        "type": "log",
+        "text": "💎 VIB34D Emerging Button System loaded and exported to window",
+        "timestamp": 1750773871697
+      },
+      {
+        "type": "log",
+        "text": "🔮⚡ VIB34D REAL WebGL Integration script loaded",
+        "timestamp": 1750773871698
+      },
+      {
+        "type": "log",
+        "text": "🔮⚡ VIB34D REAL Console helpers available at: window.vib34dReal",
+        "timestamp": 1750773871698
+      },
+      {
+        "type": "log",
+        "text": "🔮⚡ Try: vib34dReal.status(), vib34dReal.instances(), vib34dReal.interact(1,1,1)",
+        "timestamp": 1750773871698
+      },
+      {
+        "type": "log",
+        "text": "🔮⚡ Checking for blog systems...",
+        "timestamp": 1750773871699
+      },
+      {
+        "type": "log",
+        "text": "🔮⚡ Blog systems not ready - setting up quick watchers...",
+        "timestamp": 1750773871699
+      },
+      {
+        "type": "log",
+        "text": "🚀 Initializing Morphing Blog System...",
+        "timestamp": 1750773871799
+      },
+      {
+        "type": "log",
+        "text": "🏠 Initializing VIB3HomeMaster...",
+        "timestamp": 1750773871805
+      },
+      {
+        "type": "log",
+        "text": "🏠 VIB3HomeMaster - Single Source of Truth Initializing...",
+        "timestamp": 1750773871805
+      },
+      {
+        "type": "log",
+        "text": "🔄 VIB3HomeMaster update loop started - Managing 13 visualizers hierarchically",
+        "timestamp": 1750773871805
+      },
+      {
+        "type": "log",
+        "text": "🌉 Initializing UnifiedReactivityBridge...",
+        "timestamp": 1750773871805
+      },
+      {
+        "type": "log",
+        "text": "🌉 UnifiedReactivityBridge - Synchronizing multi-layer reactions...",
+        "timestamp": 1750773871805
+      },
+      {
+        "type": "log",
+        "text": "🔄 UnifiedReactivityBridge update loop started - Multi-layer synchronization active",
+        "timestamp": 1750773871806
+      },
+      {
+        "type": "log",
+        "text": "✅ UnifiedReactivityBridge initialized - Multi-layer synchronization active",
+        "timestamp": 1750773871806
+      },
+      {
+        "type": "log",
+        "text": "🎨 Initializing Morphing Blog System...",
+        "timestamp": 1750773871806
+      },
+      {
+        "type": "error",
+        "text": "WebGL not supported",
+        "timestamp": 1750773871807
+      },
+      {
+        "type": "error",
+        "text": "WebGL not supported",
+        "timestamp": 1750773871807
+      },
+      {
+        "type": "error",
+        "text": "WebGL not supported",
+        "timestamp": 1750773871808
+      },
+      {
+        "type": "error",
+        "text": "WebGL not supported",
+        "timestamp": 1750773871808
+      },
+      {
+        "type": "error",
+        "text": "WebGL not supported",
+        "timestamp": 1750773871809
+      },
+      {
+        "type": "error",
+        "text": "WebGL not supported",
+        "timestamp": 1750773871809
+      },
+      {
+        "type": "error",
+        "text": "WebGL not supported",
+        "timestamp": 1750773871810
+      },
+      {
+        "type": "error",
+        "text": "WebGL not supported",
+        "timestamp": 1750773871811
+      },
+      {
+        "type": "error",
+        "text": "WebGL not supported",
+        "timestamp": 1750773871811
+      },
+      {
+        "type": "error",
+        "text": "WebGL not supported",
+        "timestamp": 1750773871812
+      },
+      {
+        "type": "error",
+        "text": "WebGL not supported",
+        "timestamp": 1750773871812
+      },
+      {
+        "type": "log",
+        "text": "🔳 Setting up 4D Cube Navigation System...",
+        "timestamp": 1750773871812
+      },
+      {
+        "type": "log",
+        "text": "✅ 4D Cube Navigation ready - drag edges to rotate cube faces",
+        "timestamp": 1750773871813
+      },
+      {
+        "type": "log",
+        "text": "🎬 Morphing blog render loop started",
+        "timestamp": 1750773871813
+      },
+      {
+        "type": "log",
+        "text": "✅ Morphing Blog System ready - 11 visualizers with dynamic content",
+        "timestamp": 1750773871813
+      },
+      {
+        "type": "log",
+        "text": "🎲 Initializing DualNavigationSystem with proper architecture...",
+        "timestamp": 1750773871814
+      },
+      {
+        "type": "log",
+        "text": "🎲 Dual Navigation System initializing...",
+        "timestamp": 1750773871814
+      },
+      {
+        "type": "log",
+        "text": "✅ Dual Navigation System ready - Tesseract folding + Scroll mechanics",
+        "timestamp": 1750773871814
+      },
+      {
+        "type": "log",
+        "text": "🌈 Initializing VIB34D Moiré RGB System...",
+        "timestamp": 1750773871814
+      },
+      {
+        "type": "log",
+        "text": "💎 Initializing VIB34D Emerging Button System...",
+        "timestamp": 1750773871814
+      },
+      {
+        "type": "log",
+        "text": "✅ All systems initialized with proper architecture",
+        "timestamp": 1750773871814
+      },
+      {
+        "type": "log",
+        "text": "💎 VIB34D Emerging Button Engine initialized",
+        "timestamp": 1750773871815
+      },
+      {
+        "type": "log",
+        "text": "💎 Emerging Button Crystallization System activated",
+        "timestamp": 1750773871858
+      },
+      {
+        "type": "log",
+        "text": "💎 Emerging Button Engine initialized - crystallization active",
+        "timestamp": 1750773871858
+      },
+      {
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 404 ()",
+        "timestamp": 1750773871939
+      },
+      {
+        "type": "log",
+        "text": "📊 Editor configuration loaded: 1.0.0",
+        "timestamp": 1750773871940
+      },
+      {
+        "type": "log",
+        "text": "🎛️ Master controls applied from editor config",
+        "timestamp": 1750773871940
+      },
+      {
+        "type": "log",
+        "text": "🔮⚡ Initializing REAL VIB34D after 1 checks...",
+        "timestamp": 1750773872000
+      },
+      {
+        "type": "log",
+        "text": "🔮⚡ Initializing REAL VIB34D WebGL Integration...",
+        "timestamp": 1750773872001
+      },
+      {
+        "type": "log",
+        "text": "🔮🌟 VIB34D REAL WebGL Integration initializing...",
+        "timestamp": 1750773872001
+      },
+      {
+        "type": "log",
+        "text": "🏠 VIB3 systems detected, proceeding with REAL integration",
+        "timestamp": 1750773872001
+      },
+      {
+        "type": "log",
+        "text": "🔮⚡ REAL VIB34D Integration available at: window.vib34dRealIntegration",
+        "timestamp": 1750773872001
+      },
+      {
+        "type": "log",
+        "text": "🔮⚡ Status: JSHandle@object",
+        "timestamp": 1750773872001
+      },
+      {
+        "type": "warn",
+        "text": "🔮⚠️ WebGL not supported for board-visualizer, skipping",
+        "timestamp": 1750773872002
+      },
+      {
+        "type": "warn",
+        "text": "🔮⚠️ WebGL not supported for card-visualizer-1, skipping",
+        "timestamp": 1750773872003
+      },
+      {
+        "type": "warn",
+        "text": "🔮⚠️ WebGL not supported for card-visualizer-2, skipping",
+        "timestamp": 1750773872004
+      },
+      {
+        "type": "warn",
+        "text": "🔮⚠️ WebGL not supported for card-visualizer-3, skipping",
+        "timestamp": 1750773872004
+      },
+      {
+        "type": "warn",
+        "text": "🔮⚠️ WebGL not supported for card-visualizer-4, skipping",
+        "timestamp": 1750773872005
+      },
+      {
+        "type": "warn",
+        "text": "🔮⚠️ WebGL not supported for card-visualizer-5, skipping",
+        "timestamp": 1750773872005
+      },
+      {
+        "type": "warn",
+        "text": "🔮⚠️ WebGL not supported for card-visualizer-6, skipping",
+        "timestamp": 1750773872006
+      },
+      {
+        "type": "warn",
+        "text": "🔮⚠️ WebGL not supported for bezel-visualizer-left, skipping",
+        "timestamp": 1750773872006
+      },
+      {
+        "type": "warn",
+        "text": "🔮⚠️ WebGL not supported for bezel-visualizer-right, skipping",
+        "timestamp": 1750773872007
+      },
+      {
+        "type": "warn",
+        "text": "🔮⚠️ WebGL not supported for bezel-visualizer-top, skipping",
+        "timestamp": 1750773872007
+      },
+      {
+        "type": "warn",
+        "text": "🔮⚠️ WebGL not supported for bezel-visualizer-bottom, skipping",
+        "timestamp": 1750773872008
+      },
+      {
+        "type": "log",
+        "text": "🔮⚡ Converted 0 canvases to REAL VIB34D WebGL",
+        "timestamp": 1750773872008
+      },
+      {
+        "type": "log",
+        "text": "🎮⚡ REAL VIB34D interaction tracking established (bezel-focused)",
+        "timestamp": 1750773872008
+      },
+      {
+        "type": "log",
+        "text": "🎬⚡ REAL VIB34D WebGL render loop started",
+        "timestamp": 1750773872009
+      },
+      {
+        "type": "log",
+        "text": "🔮🌟 VIB34D REAL WebGL Integration completed successfully!",
+        "timestamp": 1750773872009
+      },
+      {
+        "type": "log",
+        "text": "🌈 Existing VIB34D system detected - integrating Moiré RGB effects...",
+        "timestamp": 1750773872201
+      },
+      {
+        "type": "log",
+        "text": "🌈 VIB34D Enhanced Moiré Integration initialized",
+        "timestamp": 1750773872201
+      },
+      {
+        "type": "log",
+        "text": "🌈 VIB34D Moiré RGB Engine initialized",
+        "timestamp": 1750773872201
+      },
+      {
+        "type": "log",
+        "text": "🌈 Moiré RGB system fully initialized",
+        "timestamp": 1750773872224
+      },
+      {
+        "type": "log",
+        "text": "🌈 Enhanced Moiré integration complete",
+        "timestamp": 1750773872230
+      },
+      {
+        "type": "log",
+        "text": "🌈 Moiré RGB integration complete! Status: JSHandle@object",
+        "timestamp": 1750773872230
+      },
+      {
+        "type": "log",
+        "text": "🔍 DRAG START DEBUG: x=50, y=400, window=1920x1080",
+        "timestamp": 1750773879421
+      },
+      {
+        "type": "log",
+        "text": "🔍 EDGE ZONE RESULT: JSHandle@object",
+        "timestamp": 1750773879422
+      },
+      {
+        "type": "log",
+        "text": "🔳 CUBE DRAG START: left → research",
+        "timestamp": 1750773879422
+      },
+      {
+        "type": "log",
+        "text": "🔳 CUBE DRAG END: tension=0.00",
+        "timestamp": 1750773882404
+      },
+      {
+        "type": "log",
+        "text": "🔍 DRAG START DEBUG: x=1870, y=400, window=1920x1080",
+        "timestamp": 1750773887575
+      },
+      {
+        "type": "log",
+        "text": "🔍 EDGE ZONE RESULT: JSHandle@object",
+        "timestamp": 1750773887575
+      },
+      {
+        "type": "log",
+        "text": "🔳 CUBE DRAG START: right → tech",
+        "timestamp": 1750773887575
+      },
+      {
+        "type": "log",
+        "text": "🔳 CUBE DRAG END: tension=0.00",
+        "timestamp": 1750773888144
+      },
+      {
+        "type": "log",
+        "text": "🔍 DRAG START DEBUG: x=960, y=50, window=1920x1080",
+        "timestamp": 1750773893143
+      },
+      {
+        "type": "log",
+        "text": "🔍 EDGE ZONE RESULT: JSHandle@object",
+        "timestamp": 1750773893144
+      },
+      {
+        "type": "log",
+        "text": "🔳 CUBE DRAG START: up → home",
+        "timestamp": 1750773893144
+      },
+      {
+        "type": "log",
+        "text": "🔳 CUBE DRAG END: tension=0.00",
+        "timestamp": 1750773895424
+      },
+      {
+        "type": "log",
+        "text": "🔍 DRAG START DEBUG: x=960, y=1030, window=1920x1080",
+        "timestamp": 1750773900466
+      },
+      {
+        "type": "log",
+        "text": "🔍 EDGE ZONE RESULT: JSHandle@object",
+        "timestamp": 1750773900467
+      },
+      {
+        "type": "log",
+        "text": "🔳 CUBE DRAG START: down → context",
+        "timestamp": 1750773900467
+      },
+      {
+        "type": "log",
+        "text": "🔳 CUBE DRAG END: tension=0.00",
+        "timestamp": 1750773903131
+      },
+      {
+        "type": "log",
+        "text": "🔍 DRAG START DEBUG: x=960, y=540, window=1920x1080",
+        "timestamp": 1750773908356
+      },
+      {
+        "type": "log",
+        "text": "🔍 EDGE ZONE RESULT: ",
+        "timestamp": 1750773908356
+      },
+      {
+        "type": "log",
+        "text": "❌ No edge zone detected at 960, 540",
+        "timestamp": 1750773908356
+      },
+      {
+        "type": "log",
+        "text": "🔍 DRAG START DEBUG: x=960, y=540, window=1920x1080",
+        "timestamp": 1750773908748
+      },
+      {
+        "type": "log",
+        "text": "🔍 EDGE ZONE RESULT: ",
+        "timestamp": 1750773908748
+      },
+      {
+        "type": "log",
+        "text": "❌ No edge zone detected at 960, 540",
+        "timestamp": 1750773908748
+      },
+      {
+        "type": "log",
+        "text": "🔍 DRAG START DEBUG: x=960, y=540, window=1920x1080",
+        "timestamp": 1750773908992
+      },
+      {
+        "type": "log",
+        "text": "🔍 EDGE ZONE RESULT: ",
+        "timestamp": 1750773908992
+      },
+      {
+        "type": "log",
+        "text": "❌ No edge zone detected at 960, 540",
+        "timestamp": 1750773908992
+      },
+      {
+        "type": "log",
+        "text": "🔍 DRAG START DEBUG: x=50, y=400, window=1920x1080",
+        "timestamp": 1750773928727
+      },
+      {
+        "type": "log",
+        "text": "🔍 EDGE ZONE RESULT: JSHandle@object",
+        "timestamp": 1750773928727
+      },
+      {
+        "type": "log",
+        "text": "🔳 CUBE DRAG START: left → research",
+        "timestamp": 1750773928727
+      },
+      {
+        "type": "log",
+        "text": "🔳 CUBE DRAG END: tension=0.00",
+        "timestamp": 1750773929547
+      },
+      {
+        "type": "log",
+        "text": "🔍 DRAG START DEBUG: x=300, y=300, window=1920x1080",
+        "timestamp": 1750773929573
+      },
+      {
+        "type": "log",
+        "text": "🔍 EDGE ZONE RESULT: ",
+        "timestamp": 1750773929573
+      },
+      {
+        "type": "log",
+        "text": "❌ No edge zone detected at 300, 300",
+        "timestamp": 1750773929573
+      }
+    ]
+  },
+  "workingFeatures": [
+    "Tesseract Container",
+    "Navigation Bezels",
+    "Scroll Detection",
+    "Click Detection"
+  ],
+  "brokenFeatures": [
+    "VIB34D Main System",
+    "VIB3HomeMaster"
+  ],
+  "missingFeatures": [
+    "Editor Dashboard",
+    "Reactivity Bridge"
+  ],
+  "recommendations": [
+    "Implement VIB34D system initialization in HTML",
+    "Integrate VIB3HomeMaster parameter derivation system",
+    "Add VIB34D Phase 8 Editor Dashboard for real-time parameter control"
+  ]
+}

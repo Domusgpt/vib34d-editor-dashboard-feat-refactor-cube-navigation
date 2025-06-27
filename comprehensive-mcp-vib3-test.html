@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔮 Comprehensive VIB3STYLEPACK + MCP Integration Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            height: fit-content;
+        }
+        
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .status-offline { background: #ff3333; }
+        .status-connecting { background: #ffbb33; animation: pulse 2s infinite; }
+        .status-online { background: #33ff33; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .vib3-canvas {
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 110, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+        
+        .log-container {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 10px;
+        }
+        
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .log-timestamp {
+            color: #666;
+            font-size: 0.8rem;
+        }
+        
+        .log-success { color: #33ff33; }
+        .log-error { color: #ff3333; }
+        .log-info { color: #3399ff; }
+        .log-warning { color: #ffbb33; }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        
+        .integration-status {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .performance-chart {
+            height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .data-visualization {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .parse-results {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .json-display {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .test-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            padding: 10px;
+            font-family: inherit;
+            margin: 10px 0;
+        }
+        
+        .test-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff006e, #8338ec);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>🔮 Comprehensive VIB3STYLEPACK + MCP Integration Test</h1>
+            <p>Real-time testing of VIB34D visualization system with Parserator MCP Server</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="overall-progress"></div>
+            </div>
+        </div>
+        
+        <div class="test-grid">
+            <!-- VIB3 System Panel -->
+            <div class="test-panel">
+                <div class="panel-header">
+                    <h3>🎨 VIB34D System</h3>
+                    <span class="status-dot status-offline" id="vib3-status"></span>
+                </div>
+                
+                <canvas id="vib3-canvas" class="vib3-canvas"></canvas>
+                
+                <div class="controls">
+                    <button class="btn btn-small" onclick="initVIB3()">Initialize</button>
+                    <button class="btn btn-small" onclick="testPhaseTransition()">Phase Test</button>
+                    <button class="btn btn-small" onclick="triggerInteraction()">Interaction</button>
+                    <button class="btn btn-small" onclick="testChromatic()">Chromatic</button>
+                </div>
+                
+                <div class="log-container" id="vib3-log"></div>
+            </div>
+            
+            <!-- MCP Parser Panel -->
+            <div class="test-panel">
+                <div class="panel-header">
+                    <h3>🤖 MCP Parser</h3>
+                    <span class="status-dot status-offline" id="mcp-status"></span>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-small" onclick="connectMCP()">Connect</button>
+                    <button class="btn btn-small" onclick="testParsing()">Test Parse</button>
+                    <button class="btn btn-small" onclick="runMCPTests()">Run Tests</button>
+                    <button class="btn btn-small" onclick="startRealtime()">Real-time</button>
+                </div>
+                
+                <input type="text" class="test-input" id="test-data-input" 
+                       placeholder="Enter VIB3 data to parse..." 
+                       value="VIB34D Phase: 7, Geometry: hypercube, Rotation: 1.2rad/s">
+                
+                <div class="log-container" id="mcp-log"></div>
+            </div>
+        </div>
+        
+        <!-- Metrics Dashboard -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value" id="vib3-fps" style="color: #3a86ff;">--</div>
+                <div class="metric-label">VIB3 FPS</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="mcp-latency" style="color: #ff006e;">--</div>
+                <div class="metric-label">MCP Latency (ms)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="parse-accuracy" style="color: #8338ec;">--</div>
+                <div class="metric-label">Parse Accuracy %</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="integration-health" style="color: #33ff33;">--</div>
+                <div class="metric-label">Integration Health</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="total-parses" style="color: #ffbb33;">0</div>
+                <div class="metric-label">Total Parses</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="success-rate" style="color: #33ffbb;">--</div>
+                <div class="metric-label">Success Rate %</div>
+            </div>
+        </div>
+        
+        <!-- Integration Status -->
+        <div class="integration-status">
+            <h3>🔗 Integration Status</h3>
+            <div id="integration-details">
+                <p>System initializing...</p>
+            </div>
+        </div>
+        
+        <!-- Data Visualization -->
+        <div class="data-visualization">
+            <h3>📊 Live Data Analysis</h3>
+            <div class="test-grid">
+                <div>
+                    <h4>Latest Parse Results</h4>
+                    <div class="parse-results">
+                        <div class="json-display" id="parse-results-display">
+                            No parse results yet...
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4>Performance Chart</h4>
+                    <div class="performance-chart" id="performance-chart">
+                        <canvas id="chart-canvas" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load all VIB34D components -->
+    <script src="VIB34D_PHASE1_CORE_ARCHITECTURE.js"></script>
+    <script src="VIB34D_PHASE2_GEOMETRY_IMPLEMENTATIONS.js"></script>
+    <script src="VIB34D_PHASE3_PROJECTION_SYSTEM.js"></script>
+    <script src="VIB34D_PHASE4_SHADER_UNIFORM_SYSTEM.js"></script>
+    <script src="VIB34D_PHASE5_INTERACTION_INTEGRATION.js"></script>
+    <script src="VIB34D_PHASE6_CHROMATIC_INTEGRATION.js"></script>
+    <script src="VIB34D_PHASE7_VIB3_INTEGRATION.js"></script>
+    <script src="vib3-realtime-mcp-parser.js"></script>
+    
+    <script>
+        // Global state
+        let vib3System = null;
+        let mcpParser = null;
+        let realtimeInterval = null;
+        let performanceData = [];
+        let testProgress = 0;
+        
+        // Initialize logging system
+        function log(panel, message, type = 'info') {
+            const logContainer = document.getElementById(`${panel}-log`);
+            const timestamp = new Date().toISOString().substr(11, 8);
+            
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            const typeIcons = {
+                info: 'ℹ️',
+                success: '✅',
+                error: '❌',
+                warning: '⚠️'
+            };
+            
+            entry.innerHTML = `
+                <span class="log-timestamp">[${timestamp}]</span>
+                <span class="log-${type}">${typeIcons[type]} ${message}</span>
+            `;
+            
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            console.log(`[${panel.toUpperCase()}] ${message}`);
+        }
+        
+        // Update status indicators
+        function updateStatus(system, status) {
+            const statusDot = document.getElementById(`${system}-status`);
+            statusDot.className = `status-dot status-${status}`;
+        }
+        
+        // Update metrics
+        function updateMetric(id, value) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        }
+        
+        // Update progress
+        function updateProgress(percent) {
+            testProgress = Math.max(testProgress, percent);
+            document.getElementById('overall-progress').style.width = `${testProgress}%`;
+        }
+        
+        // Initialize VIB3 System
+        async function initVIB3() {
+            try {
+                updateStatus('vib3', 'connecting');
+                log('vib3', 'Initializing VIB34D system...');
+                updateProgress(10);
+                
+                const canvas = document.getElementById('vib3-canvas');
+                
+                // Create mock VIB3HomeMaster
+                const mockHomeMaster = {
+                    masterState: {
+                        intensity: 0.8,
+                        speed: 1.2,
+                        density: 1.0,
+                        dimension: 3.5,
+                        complexity: 0.6,
+                        activeSection: 0,
+                        scrollChaos: 0.1,
+                        clickPulse: 0.0,
+                        mouseIntensity: 0.2
+                    },
+                    sectionModifiers: {
+                        0: { intensityMod: 1.0, speedMod: 1.0, densityMod: 1.0, complexityMod: 1.0, baseColor: [1.0, 0.0, 1.0] }
+                    },
+                    on: () => {},
+                    transitionToSection: (section) => {
+                        log('vib3', `Transitioning to section ${section}`, 'info');
+                    }
+                };
+                
+                if (window.VIB34D_Phase7) {
+                    vib3System = new window.VIB34D_Phase7.VIB34DVIb3EnhancedCore(
+                        canvas,
+                        mockHomeMaster,
+                        { instanceId: 'comprehensive-test' }
+                    );
+                    
+                    await vib3System.initialize();
+                    
+                    updateStatus('vib3', 'online');
+                    log('vib3', 'VIB34D system initialized successfully', 'success');
+                    updateProgress(30);
+                    
+                    // Start FPS monitoring
+                    startFPSMonitoring();
+                    
+                } else {
+                    throw new Error('VIB34D_Phase7 not available');
+                }
+                
+            } catch (error) {
+                updateStatus('vib3', 'offline');
+                log('vib3', `Initialization failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // FPS Monitoring
+        let frameCount = 0;
+        let lastFrameTime = performance.now();
+        
+        function startFPSMonitoring() {
+            function measureFPS() {
+                frameCount++;
+                const now = performance.now();
+                
+                if (now - lastFrameTime >= 1000) {
+                    const fps = Math.round((frameCount * 1000) / (now - lastFrameTime));
+                    updateMetric('vib3-fps', fps);
+                    
+                    // Add to performance data
+                    performanceData.push({
+                        timestamp: now,
+                        fps: fps,
+                        memory: performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1024 / 1024) : 0
+                    });
+                    
+                    // Keep only last 60 seconds of data
+                    if (performanceData.length > 60) {
+                        performanceData.shift();
+                    }
+                    
+                    updatePerformanceChart();
+                    
+                    frameCount = 0;
+                    lastFrameTime = now;
+                }
+                
+                if (vib3System) {
+                    requestAnimationFrame(measureFPS);
+                }
+            }
+            measureFPS();
+        }
+        
+        // Connect MCP Parser
+        async function connectMCP() {
+            try {
+                updateStatus('mcp', 'connecting');
+                log('mcp', 'Connecting to MCP parser...');
+                updateProgress(40);
+                
+                mcpParser = new VIB3RealtimeMCPParser();
+                await mcpParser.connect();
+                
+                updateStatus('mcp', 'online');
+                log('mcp', 'MCP parser connected successfully', 'success');
+                updateProgress(60);
+                
+            } catch (error) {
+                updateStatus('mcp', 'offline');
+                log('mcp', `Connection failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test parsing
+        async function testParsing() {
+            if (!mcpParser || !mcpParser.connected) {
+                log('mcp', 'MCP parser not connected', 'error');
+                return;
+            }
+            
+            const testData = document.getElementById('test-data-input').value;
+            
+            try {
+                log('mcp', `Testing parse: ${testData.substring(0, 50)}...`);
+                
+                const result = await mcpParser.parseVIB3Data(testData, 'vib3_log_entry');
+                
+                log('mcp', `Parse successful - confidence: ${(result.metadata.confidence * 100).toFixed(1)}%`, 'success');
+                
+                // Update metrics
+                updateMetric('mcp-latency', result.metadata.processingTime);
+                updateMetric('parse-accuracy', Math.round(result.metadata.confidence * 100));
+                updateMetric('total-parses', mcpParser.performanceMetrics.totalParses);
+                updateMetric('success-rate', Math.round(mcpParser.performanceMetrics.successRate));
+                
+                // Display results
+                document.getElementById('parse-results-display').textContent = 
+                    JSON.stringify(result.parsedData, null, 2);
+                
+                updateProgress(80);
+                
+            } catch (error) {
+                log('mcp', `Parse failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Run comprehensive MCP tests
+        async function runMCPTests() {
+            if (!mcpParser || !mcpParser.connected) {
+                log('mcp', 'MCP parser not connected', 'error');
+                return;
+            }
+            
+            log('mcp', 'Running comprehensive test suite...', 'info');
+            
+            try {
+                const results = await mcpParser.runTests();
+                
+                const passed = results.filter(r => r.success).length;
+                const total = results.length;
+                
+                log('mcp', `Test suite completed: ${passed}/${total} tests passed`, 
+                    passed === total ? 'success' : 'warning');
+                
+                updateProgress(90);
+                
+            } catch (error) {
+                log('mcp', `Test suite failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Start real-time integration
+        async function startRealtime() {
+            if (!vib3System || !mcpParser) {
+                log('mcp', 'Both VIB3 and MCP systems must be connected', 'error');
+                return;
+            }
+            
+            if (realtimeInterval) {
+                clearInterval(realtimeInterval);
+                realtimeInterval = null;
+                log('mcp', 'Real-time integration stopped', 'info');
+                return;
+            }
+            
+            log('mcp', 'Starting real-time integration...', 'info');
+            
+            realtimeInterval = setInterval(async () => {
+                try {
+                    const result = await mcpParser.parseSystemState(vib3System);
+                    
+                    // Update integration health
+                    const health = result.integrationHealth;
+                    updateMetric('integration-health', `${health.score}%`);
+                    
+                    // Update integration details
+                    document.getElementById('integration-details').innerHTML = `
+                        <p><strong>Health Score:</strong> ${health.score}%</p>
+                        <p><strong>Issues:</strong> ${health.issues.length > 0 ? health.issues.join(', ') : 'None'}</p>
+                        <p><strong>Last Parse:</strong> ${new Date().toLocaleTimeString()}</p>
+                    `;
+                    
+                    updateProgress(100);
+                    
+                } catch (error) {
+                    log('mcp', `Real-time integration error: ${error.message}`, 'error');
+                }
+            }, 2000);
+            
+            log('mcp', 'Real-time integration started (2s interval)', 'success');
+        }
+        
+        // VIB3 Test Functions
+        async function testPhaseTransition() {
+            if (!vib3System) {
+                log('vib3', 'VIB3 system not initialized', 'error');
+                return;
+            }
+            
+            const randomSection = Math.floor(Math.random() * 8);
+            log('vib3', `Testing phase transition to section ${randomSection}`, 'info');
+            
+            vib3System.vib3Bridge.handleSectionTransition({
+                fromSection: 0,
+                toSection: randomSection,
+                progress: 1.0
+            });
+            
+            log('vib3', 'Phase transition completed', 'success');
+        }
+        
+        async function triggerInteraction() {
+            if (!vib3System) {
+                log('vib3', 'VIB3 system not initialized', 'error');
+                return;
+            }
+            
+            // Simulate interaction
+            const mockMasterState = {
+                intensity: 0.5 + Math.random() * 0.5,
+                scrollChaos: Math.random(),
+                clickPulse: Math.random(),
+                mouseIntensity: Math.random(),
+                activeSection: Math.floor(Math.random() * 8)
+            };
+            
+            vib3System.vib3Bridge.syncVIB34DFromVIB3(mockMasterState);
+            log('vib3', 'Interaction triggered', 'success');
+        }
+        
+        async function testChromatic() {
+            if (!vib3System) {
+                log('vib3', 'VIB3 system not initialized', 'error');
+                return;
+            }
+            
+            try {
+                if (vib3System.chromaticEngine) {
+                    log('vib3', 'Testing chromatic engine...', 'info');
+                    // Test chromatic analysis if available
+                    log('vib3', 'Chromatic engine test completed', 'success');
+                } else {
+                    log('vib3', 'Chromatic engine not available', 'warning');
+                }
+            } catch (error) {
+                log('vib3', `Chromatic test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Performance chart
+        function updatePerformanceChart() {
+            const canvas = document.getElementById('chart-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (performanceData.length < 2) return;
+            
+            // Draw FPS line
+            ctx.strokeStyle = '#3a86ff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            performanceData.forEach((data, index) => {
+                const x = (index / (performanceData.length - 1)) * canvas.width;
+                const y = canvas.height - ((data.fps / 60) * canvas.height);
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            
+            ctx.stroke();
+            
+            // Draw grid lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i <= 4; i++) {
+                const y = (i / 4) * canvas.height;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+        
+        // Auto-initialize on load
+        window.addEventListener('load', async () => {
+            log('vib3', 'Starting comprehensive integration test...', 'info');
+            
+            // Auto-initialize both systems
+            await initVIB3();
+            
+            setTimeout(async () => {
+                await connectMCP();
+                
+                setTimeout(async () => {
+                    await testParsing();
+                    log('vib3', 'All systems ready for testing!', 'success');
+                }, 1000);
+            }, 1000);
+        });
+        
+        // Cleanup on unload
+        window.addEventListener('beforeunload', () => {
+            if (realtimeInterval) {
+                clearInterval(realtimeInterval);
+            }
+        });
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Complete Style System Demo</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        /* MAIN LAYOUT CONTAINERS */
+        .demo-container {
+            position: relative;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .demo-section {
+            position: relative;
+            margin: 40px 0;
+            padding: 40px;
+            border-radius: 20px;
+            background: rgba(10, 10, 30, 0.8);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+        
+        /* BORDER VISUALIZER CONTAINERS */
+        .border-demo {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: rgba(20, 20, 50, 0.5);
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .border-top-container,
+        .border-bottom-container {
+            position: absolute;
+            width: 100%;
+            height: 8px;
+            left: 0;
+        }
+        
+        .border-top-container {
+            top: 0;
+        }
+        
+        .border-bottom-container {
+            bottom: 0;
+        }
+        
+        .border-sides-container {
+            position: absolute;
+            width: 8px;
+            height: 100%;
+            top: 0;
+        }
+        
+        .border-left {
+            left: 0;
+        }
+        
+        .border-right {
+            right: 0;
+        }
+        
+        /* SHADOW VISUALIZER CONTAINERS */
+        .shadow-demo {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background: rgba(50, 50, 100, 0.8);
+            border-radius: 25px;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+        }
+        
+        .shadow-depth-container,
+        .shadow-glow-container {
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            top: -10%;
+            left: -10%;
+        }
+        
+        /* BACKGROUND VISUALIZER CONTAINERS */
+        .background-demo {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .background-full-container,
+        .background-section-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        
+        /* INTERACTIVE ELEMENT CONTAINERS */
+        .button-demo {
+            position: relative;
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(0, 100, 100, 0.3);
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .button-interactive-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        
+        /* NAVIGATION DEMO */
+        .nav-demo {
+            position: relative;
+            width: 100%;
+            height: 80px;
+            background: rgba(30, 30, 60, 0.9);
+            border-radius: 40px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            overflow: hidden;
+        }
+        
+        .nav-item {
+            position: relative;
+            padding: 12px 24px;
+            border-radius: 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .nav-crystal-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        
+        /* CONTENT DEMO */
+        .content-demo {
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        .text-content {
+            position: relative;
+            padding: 30px;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            background: rgba(20, 20, 40, 0.6);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .content-text-container {
+            position: absolute;
+            width: 110%;
+            height: 110%;
+            top: -5%;
+            left: -5%;
+        }
+        
+        .media-content {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: rgba(40, 20, 60, 0.8);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .content-media-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        
+        /* CONTROL PANEL */
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+        }
+        
+        .control-group {
+            margin: 15px 0;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #00ffff;
+        }
+        
+        .control-group select,
+        .control-group input[type="range"] {
+            width: 100%;
+            background: rgba(20, 20, 40, 0.8);
+            color: white;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 5px;
+            padding: 5px;
+        }
+        
+        .control-group button {
+            width: 100%;
+            padding: 8px;
+            background: rgba(0, 100, 100, 0.5);
+            color: white;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .control-group button:hover {
+            background: rgba(0, 150, 150, 0.7);
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .control-panel {
+                position: relative;
+                width: 100%;
+                margin: 20px 0;
+            }
+            
+            .demo-section {
+                padding: 20px;
+            }
+            
+            .shadow-demo {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        /* UTILITY CLASSES */
+        .text-center { text-align: center; }
+        .mb-20 { margin-bottom: 20px; }
+        .mt-20 { margin-top: 20px; }
+        
+        h1, h2, h3 {
+            margin-bottom: 20px;
+            color: #00ffff;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            font-size: 1.3rem;
+            color: #ff00ff;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>VIB34D Complete Style System</h1>
+        
+        <!-- CONTROL PANEL -->
+        <div class="control-panel">
+            <h3>Live Controls</h3>
+            
+            <div class="control-group">
+                <label>Global Preset</label>
+                <select id="globalPreset">
+                    <option value="minimal">Minimal</option>
+                    <option value="standard" selected>Standard</option>
+                    <option value="dense">Dense</option>
+                    <option value="maximum">Maximum</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>Interaction Style</label>
+                <select id="interactionStyle">
+                    <option value="passive">Passive</option>
+                    <option value="responsive" selected>Responsive</option>
+                    <option value="highly_reactive">Highly Reactive</option>
+                    <option value="hypersensitive">Hypersensitive</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>Global Speed: <span id="speedValue">1.0</span></label>
+                <input type="range" id="globalSpeed" min="0.1" max="3.0" step="0.1" value="1.0">
+            </div>
+            
+            <div class="control-group">
+                <label>Global Intensity: <span id="intensityValue">1.0</span></label>
+                <input type="range" id="globalIntensity" min="0.1" max="2.0" step="0.1" value="1.0">
+            </div>
+            
+            <div class="control-group">
+                <button onclick="triggerGlobalEffect()">Global Reality Inversion</button>
+            </div>
+            
+            <div class="control-group">
+                <button onclick="createCustomPreset()">Save Current as Preset</button>
+            </div>
+        </div>
+        
+        <!-- BORDER VISUALIZERS DEMO -->
+        <div class="demo-section">
+            <h2>Border Visualizers</h2>
+            <p>Visualizers stretched along edges with directional flow patterns</p>
+            
+            <div class="border-demo">
+                <div class="border-top-container" data-style="border-top"></div>
+                <div class="border-bottom-container" data-style="border-bottom"></div>
+                <div class="border-sides-container border-left" data-style="border-sides"></div>
+                <div class="border-sides-container border-right" data-style="border-sides"></div>
+                
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                    <h3>Hover over this area</h3>
+                    <p>Watch borders react to mouse movement</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SHADOW VISUALIZERS DEMO -->
+        <div class="demo-section">
+            <h2>Shadow Visualizers</h2>
+            <p>Depth and glow effects with layered shadow systems</p>
+            
+            <div style="display: flex; gap: 40px; flex-wrap: wrap; justify-content: center;">
+                <div class="shadow-demo">
+                    <div class="shadow-depth-container" data-style="shadow-depth"></div>
+                    <div style="z-index: 10; position: relative;">
+                        <h3>Depth Shadow</h3>
+                        <p>Multi-layered depth effect</p>
+                    </div>
+                </div>
+                
+                <div class="shadow-demo">
+                    <div class="shadow-glow-container" data-style="shadow-glow"></div>
+                    <div style="z-index: 10; position: relative;">
+                        <h3>Glow Shadow</h3>
+                        <p>Rhythmic pulse effect</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- BACKGROUND VISUALIZERS DEMO -->
+        <div class="demo-section">
+            <h2>Background Visualizers</h2>
+            <p>Full coverage patterns that adapt to content</p>
+            
+            <div class="background-demo">
+                <div class="background-full-container" data-style="background-full"></div>
+                <div style="z-index: 10; position: relative; text-align: center;">
+                    <h3>Full Coverage Background</h3>
+                    <p>Tessellation pattern with continuous flow</p>
+                    <p>Scroll the page to see adaptation</p>
+                </div>
+            </div>
+            
+            <div class="background-demo mt-20">
+                <div class="background-section-container" data-style="background-section"></div>
+                <div style="z-index: 10; position: relative; text-align: center;">
+                    <h3>Section Background</h3>
+                    <p>Organic flow pattern contained to section</p>
+                    <p>Changes based on section content</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- INTERACTIVE ELEMENTS DEMO -->
+        <div class="demo-section">
+            <h2>Interactive Elements</h2>
+            <p>Buttons and controls with dynamic visualizer responses</p>
+            
+            <div style="text-align: center;">
+                <button class="button-demo" onclick="buttonAction(this)">
+                    <div class="button-interactive-container" data-style="button-interactive"></div>
+                    <span style="position: relative; z-index: 10;">Interactive Button</span>
+                </button>
+                
+                <button class="button-demo" onclick="buttonAction(this)">
+                    <div class="button-interactive-container" data-style="button-interactive"></div>
+                    <span style="position: relative; z-index: 10;">Another Button</span>
+                </button>
+                
+                <button class="button-demo" onclick="buttonAction(this)">
+                    <div class="button-interactive-container" data-style="button-interactive"></div>
+                    <span style="position: relative; z-index: 10;">Third Button</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- NAVIGATION DEMO -->
+        <div class="demo-section">
+            <h2>Navigation Visualizers</h2>
+            <p>Uniform crystal geometry with synchronized states</p>
+            
+            <div class="nav-demo">
+                <div class="nav-item active" onclick="navAction(this)" data-section="home">
+                    <div class="nav-crystal-container" data-style="navigation-crystal"></div>
+                    <span style="position: relative; z-index: 10;">HOME</span>
+                </div>
+                <div class="nav-item" onclick="navAction(this)" data-section="tech">
+                    <div class="nav-crystal-container" data-style="navigation-crystal"></div>
+                    <span style="position: relative; z-index: 10;">TECH</span>
+                </div>
+                <div class="nav-item" onclick="navAction(this)" data-section="media">
+                    <div class="nav-crystal-container" data-style="navigation-crystal"></div>
+                    <span style="position: relative; z-index: 10;">MEDIA</span>
+                </div>
+                <div class="nav-item" onclick="navAction(this)" data-section="about">
+                    <div class="nav-crystal-container" data-style="navigation-crystal"></div>
+                    <span style="position: relative; z-index: 10;">ABOUT</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CONTENT VISUALIZERS DEMO -->
+        <div class="demo-section">
+            <h2>Content-Adaptive Visualizers</h2>
+            <p>Visualizers that enhance readability and media experience</p>
+            
+            <div class="content-demo">
+                <h3>Text Content Enhancement</h3>
+                <div class="text-content">
+                    <div class="content-text-container" data-style="content-text"></div>
+                    <div style="position: relative; z-index: 10;">
+                        <p>This is an example of text content with an adaptive background visualizer. The visualization responds to reading rhythm and enhances readability without being distracting.</p>
+                        <p>The pattern flows gently behind the text, creating depth and visual interest while maintaining excellent contrast for easy reading. Try selecting some text to see how the visualizer responds.</p>
+                        <p>This approach can be used for blog posts, documentation, articles, and any text-heavy content where you want to add visual sophistication without compromising usability.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-demo">
+                <h3>Media Content Enhancement</h3>
+                <div class="media-content">
+                    <div class="content-media-container" data-style="content-media"></div>
+                    <div style="position: relative; z-index: 10; text-align: center;">
+                        <h3>🎵 Media Player</h3>
+                        <p>Click to simulate play/pause</p>
+                        <button onclick="toggleMedia(this)" style="padding: 10px 20px; background: rgba(0,255,255,0.3); border: 1px solid #00ffff; color: white; border-radius: 5px; cursor: pointer;">
+                            ▶ Play
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ADVANCED DEMO -->
+        <div class="demo-section">
+            <h2>Advanced Combinations</h2>
+            <p>Multiple visualizer types working together</p>
+            
+            <div style="position: relative; padding: 40px; border-radius: 20px; background: rgba(50, 20, 80, 0.3); overflow: hidden;">
+                <!-- Combined border + shadow + background -->
+                <div class="border-top-container" data-style="border-top"></div>
+                <div class="border-bottom-container" data-style="border-bottom"></div>
+                <div class="shadow-glow-container" data-style="shadow-glow"></div>
+                <div class="background-section-container" data-style="background-section"></div>
+                
+                <div style="position: relative; z-index: 10; text-align: center;">
+                    <h3>Combined Effects</h3>
+                    <p>Border + Shadow + Background visualizers working in harmony</p>
+                    
+                    <div style="margin: 20px 0;">
+                        <button class="button-demo" onclick="buttonAction(this)">
+                            <div class="button-interactive-container" data-style="button-interactive"></div>
+                            <span style="position: relative; z-index: 10;">Interact with me!</span>
+                        </button>
+                    </div>
+                    
+                    <p>All visualizers coordinate their responses to create a unified experience</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include core system files -->
+    <script src="core/interaction-coordinator.js"></script>
+    <script src="core/preset-manager.js"></script>
+    <script src="core/transition-coordinator.js"></script>
+    <script src="core/vib34d-style-system.js"></script>
+    
+    <script>
+        // Initialize the complete system
+        let visualizerInstances = [];
+        let interactionCoordinator;
+        let presetManager;
+        let isMediaPlaying = false;
+        
+        // Initialize system when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeVIB34DSystem();
+            setupControlPanelHandlers();
+        });
+        
+        function initializeVIB34DSystem() {
+            console.log('Initializing VIB34D Complete Style System...');
+            
+            // Find all containers with data-style attributes
+            const containers = document.querySelectorAll('[data-style]');
+            
+            containers.forEach(container => {
+                const styleClass = container.dataset.style;
+                console.log(`Creating visualizer for style: ${styleClass}`);
+                
+                try {
+                    const visualizer = window.VIB34DStyleSystem.createStyledVisualizer(styleClass, container);
+                    if (visualizer) {
+                        visualizerInstances.push(visualizer);
+                        console.log(`Successfully created ${styleClass} visualizer`);
+                    } else {
+                        console.warn(`Failed to create visualizer for ${styleClass}`);
+                    }
+                } catch (error) {
+                    console.error(`Error creating visualizer for ${styleClass}:`, error);
+                }
+            });
+            
+            // Initialize coordination systems
+            if (visualizerInstances.length > 0) {
+                interactionCoordinator = new VIB34DInteractionCoordinator(visualizerInstances);
+                presetManager = new VIB34DPresetManager({ visualizers: visualizerInstances });
+                
+                console.log(`Initialized system with ${visualizerInstances.length} visualizers`);
+            } else {
+                console.error('No visualizers were created successfully');
+            }
+        }
+        
+        function setupControlPanelHandlers() {
+            // Global preset selector
+            document.getElementById('globalPreset').addEventListener('change', function(e) {
+                if (presetManager) {
+                    presetManager.switchPreset('visualizer', e.target.value);
+                }
+            });
+            
+            // Interaction style selector
+            document.getElementById('interactionStyle').addEventListener('change', function(e) {
+                if (presetManager) {
+                    presetManager.switchPreset('interactions', e.target.value);
+                }
+            });
+            
+            // Global speed control
+            document.getElementById('globalSpeed').addEventListener('input', function(e) {
+                const value = parseFloat(e.target.value);
+                document.getElementById('speedValue').textContent = value.toFixed(1);
+                
+                visualizerInstances.forEach(visualizer => {
+                    if (visualizer.updateParameters) {
+                        const baseSpeed = visualizer.config.baseSpeed || 0.6;
+                        visualizer.updateParameters({ speed: baseSpeed * value });
+                    }
+                });
+            });
+            
+            // Global intensity control
+            document.getElementById('globalIntensity').addEventListener('input', function(e) {
+                const value = parseFloat(e.target.value);
+                document.getElementById('intensityValue').textContent = value.toFixed(1);
+                
+                visualizerInstances.forEach(visualizer => {
+                    if (visualizer.updateParameters) {
+                        const baseIntensity = visualizer.config.baseColorIntensity || 1.0;
+                        visualizer.updateParameters({ colorIntensity: baseIntensity * value });
+                    }
+                });
+            });
+        }
+        
+        function triggerGlobalEffect() {
+            if (interactionCoordinator) {
+                // Simulate a click at center of screen
+                const event = {
+                    clientX: window.innerWidth / 2,
+                    clientY: window.innerHeight / 2
+                };
+                interactionCoordinator.handleClick(event);
+            }
+        }
+        
+        function createCustomPreset() {
+            if (presetManager) {
+                const presetName = `custom_${Date.now()}`;
+                presetManager.createCustomPreset(presetName, 'User created preset');
+                alert(`Custom preset "${presetName}" saved!`);
+            }
+        }
+        
+        function buttonAction(button) {
+            console.log('Button clicked:', button);
+            
+            // Add visual feedback
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = 'scale(1)';
+            }, 150);
+            
+            // Find associated visualizer
+            const container = button.querySelector('.button-interactive-container');
+            if (container && container.dataset.visualizerIndex) {
+                const index = parseInt(container.dataset.visualizerIndex);
+                const visualizer = visualizerInstances[index];
+                if (visualizer && visualizer.updateParameters) {
+                    // Trigger dramatic effect
+                    visualizer.updateParameters({
+                        gridDensity: visualizer.config.gridDensity * 3,
+                        speed: visualizer.config.speed * 2,
+                        morphFactor: 2.0
+                    }, { duration: 300 });
+                    
+                    // Return to normal
+                    setTimeout(() => {
+                        const styleConfig = window.VIB34DStyleSystem.getStyleClassConfig('button-interactive');
+                        if (styleConfig) {
+                            visualizer.updateParameters(styleConfig.parameters, { duration: 800 });
+                        }
+                    }, 300);
+                }
+            }
+        }
+        
+        function navAction(navItem) {
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked item
+            navItem.classList.add('active');
+            
+            const section = navItem.dataset.section;
+            console.log('Navigation to section:', section);
+            
+            // Trigger section-specific effects
+            visualizerInstances.forEach(visualizer => {
+                if (visualizer.styleClass === 'navigation-crystal') {
+                    // Sync all navigation visualizers
+                    if (visualizer.updateParameters) {
+                        visualizer.updateParameters({
+                            gridDensity: 15.0,
+                            speed: 0.8,
+                            colorIntensity: 1.5
+                        }, { duration: 400 });
+                        
+                        setTimeout(() => {
+                            const styleConfig = window.VIB34DStyleSystem.getStyleClassConfig('navigation-crystal');
+                            if (styleConfig) {
+                                visualizer.updateParameters(styleConfig.parameters, { duration: 600 });
+                            }
+                        }, 400);
+                    }
+                }
+            });
+        }
+        
+        function toggleMedia(button) {
+            isMediaPlaying = !isMediaPlaying;
+            button.innerHTML = isMediaPlaying ? '⏸ Pause' : '▶ Play';
+            
+            // Find media visualizers and update them
+            visualizerInstances.forEach(visualizer => {
+                if (visualizer.styleClass === 'content-media') {
+                    if (visualizer.updateParameters) {
+                        if (isMediaPlaying) {
+                            visualizer.updateParameters({
+                                speed: 1.5,
+                                gridDensity: 20.0,
+                                morphFactor: 1.2,
+                                colorIntensity: 1.8
+                            }, { duration: 300 });
+                        } else {
+                            const styleConfig = window.VIB34DStyleSystem.getStyleClassConfig('content-media');
+                            if (styleConfig) {
+                                visualizer.updateParameters(styleConfig.parameters, { duration: 500 });
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Add text selection handler for content-text visualizers
+        document.addEventListener('selectionchange', function() {
+            const selection = window.getSelection();
+            if (selection.toString().length > 0) {
+                visualizerInstances.forEach(visualizer => {
+                    if (visualizer.styleClass === 'content-text') {
+                        if (visualizer.updateParameters) {
+                            visualizer.updateParameters({
+                                gridDensity: 5.0,
+                                speed: 0.2,
+                                colorIntensity: 0.8
+                            }, { duration: 200 });
+                        }
+                    }
+                });
+            } else {
+                visualizerInstances.forEach(visualizer => {
+                    if (visualizer.styleClass === 'content-text') {
+                        const styleConfig = window.VIB34DStyleSystem.getStyleClassConfig('content-text');
+                        if (styleConfig && visualizer.updateParameters) {
+                            visualizer.updateParameters(styleConfig.parameters, { duration: 400 });
+                        }
+                    }
+                });
+            }
+        });
+        
+        // Error handling and debugging
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript error:', e.error);
+        });
+        
+        // Performance monitoring
+        setInterval(() => {
+            const activeCount = visualizerInstances.filter(v => v.isActive).length;
+            console.log(`Performance check: ${activeCount} active visualizers`);
+        }, 10000);
+    </script>
+</body>
+</html>

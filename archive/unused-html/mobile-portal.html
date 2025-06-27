@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3STYLEPACK - Enhanced Mobile Portal System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #000000 70%);
+            touch-action: pan-y;
+        }
+        
+        /* CRYSTAL NAVIGATION DOME SYSTEM */
+        .crystal-nav-dome {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            
+            display: flex;
+            gap: 15px;
+            padding: 20px 30px;
+            
+            background: linear-gradient(135deg, 
+                rgba(255,255,255,0.12) 0%,
+                rgba(255,255,255,0.06) 50%,
+                rgba(0,0,0,0.08) 100%);
+            
+            backdrop-filter: blur(25px) saturate(180%);
+            border-radius: 50px 50px 25px 25px;
+            
+            box-shadow: 
+                /* Outer dome shadow */
+                0 25px 80px rgba(0,0,0,0.4),
+                /* Inner crystal highlights */
+                inset 0 2px 4px rgba(255,255,255,0.3),
+                inset 0 -3px 6px rgba(0,0,0,0.15),
+                /* Refractive rim */
+                0 0 0 1px rgba(255,255,255,0.25),
+                /* Holographic glow */
+                0 0 50px rgba(0,255,255,0.15);
+            
+            /* Crystal dome curve */
+            transform: translateX(-50%) perspective(1000px) rotateX(8deg);
+            transform-style: preserve-3d;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .crystal-nav-dome:hover {
+            transform: translateX(-50%) perspective(1000px) rotateX(5deg) translateY(-3px);
+            box-shadow: 
+                0 35px 100px rgba(0,0,0,0.5),
+                inset 0 3px 6px rgba(255,255,255,0.4),
+                inset 0 -4px 8px rgba(0,0,0,0.2),
+                0 0 0 2px rgba(255,255,255,0.35),
+                0 0 80px rgba(0,255,255,0.25);
+        }
+        
+        .crystal-nav-item {
+            padding: 12px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+            
+            background: linear-gradient(135deg,
+                rgba(255,255,255,0.1) 0%,
+                rgba(255,255,255,0.05) 100%);
+            
+            border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.9);
+            
+            box-shadow: 
+                inset 0 1px 2px rgba(255,255,255,0.2),
+                inset 0 -1px 1px rgba(0,0,0,0.1);
+        }
+        
+        .crystal-nav-item.active {
+            background: linear-gradient(135deg,
+                rgba(0,255,255,0.3) 0%,
+                rgba(255,0,255,0.2) 100%);
+            
+            box-shadow: 
+                0 0 20px rgba(0,255,255,0.4),
+                inset 0 2px 4px rgba(255,255,255,0.3),
+                inset 0 -2px 2px rgba(0,0,0,0.15);
+            
+            color: white;
+            text-shadow: 0 0 10px rgba(0,255,255,0.8);
+        }
+        
+        .crystal-nav-item:hover {
+            transform: translateY(-2px) scale(1.05);
+            background: linear-gradient(135deg,
+                rgba(255,255,255,0.15) 0%,
+                rgba(255,255,255,0.08) 100%);
+        }
+        
+        /* GLASSMORPHIC CONTENT BOUNDARIES */
+        .content-boundary {
+            position: relative;
+        }
+        
+        .content-boundary::before {
+            content: '';
+            position: absolute;
+            top: -15px; left: -15px; right: -15px; bottom: -15px;
+            background: linear-gradient(45deg,
+                transparent 20%,
+                rgba(255,255,255,0.04) 30%,
+                rgba(0,255,255,0.02) 50%,
+                rgba(255,255,255,0.04) 70%,
+                transparent 80%);
+            backdrop-filter: blur(1px);
+            border-radius: 30px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .content-boundary.active::before {
+            opacity: 1;
+        }
+        
+        /* VHS/GLITCH TRANSITION SYSTEM */
+        .vhs-scanlines {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(255,255,255,0.02) 2px,
+                rgba(255,255,255,0.02) 4px
+            );
+            animation: vhs-track 0.1s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 500;
+            pointer-events: none;
+        }
+        
+        .transitioning .vhs-scanlines {
+            opacity: 1;
+        }
+        
+        @keyframes vhs-track {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(4px); }
+        }
+        
+        .glitch-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 600;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .glitch-overlay.active {
+            opacity: 1;
+            animation: glitch-intensity 0.15s infinite;
+        }
+        
+        @keyframes glitch-intensity {
+            0% { 
+                filter: hue-rotate(0deg) saturate(100%);
+                transform: translateX(0px);
+            }
+            10% {
+                filter: hue-rotate(90deg) saturate(300%);
+                transform: translateX(-2px);
+            }
+            25% {
+                filter: hue-rotate(180deg) saturate(50%);
+                transform: translateX(2px);
+            }
+            50% {
+                filter: hue-rotate(270deg) saturate(200%);
+                transform: translateX(-1px);
+            }
+            75% {
+                filter: hue-rotate(360deg) saturate(150%);
+                transform: translateX(1px);
+            }
+            100% {
+                filter: hue-rotate(0deg) saturate(100%);
+                transform: translateX(0px);
+            }
+        }
+        
+        /* CHROMATIC ABERRATION PORTAL EFFECT */
+        .portal-transition {
+            animation: chromatic-portal 0.8s ease-out;
+        }
+        
+        @keyframes chromatic-portal {
+            0% { filter: none; }
+            15% { 
+                filter: 
+                    drop-shadow(3px 0px 0px rgba(255,0,0,0.7))
+                    drop-shadow(-3px 0px 0px rgba(0,255,255,0.7));
+            }
+            35% {
+                filter: 
+                    drop-shadow(6px 0px 0px rgba(255,0,0,0.5))
+                    drop-shadow(-6px 0px 0px rgba(0,255,255,0.5))
+                    drop-shadow(0px 3px 0px rgba(0,255,0,0.3));
+            }
+            65% {
+                filter: 
+                    drop-shadow(2px 0px 0px rgba(255,0,0,0.3))
+                    drop-shadow(-2px 0px 0px rgba(0,255,255,0.3));
+            }
+            100% { filter: none; }
+        }
+        
+        /* COLOR INVERSION SYSTEM */
+        .reality-inverted {
+            filter: invert(1) hue-rotate(180deg) saturate(150%) contrast(110%);
+            transition: filter 0.5s ease;
+        }
+        
+        .sparkle-effect {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: sparkle 1s ease-out forwards;
+            z-index: 2000;
+            pointer-events: none;
+        }
+        
+        @keyframes sparkle {
+            0% {
+                opacity: 1;
+                transform: scale(0) rotate(0deg);
+                box-shadow: 0 0 0px white;
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1) rotate(180deg);
+                box-shadow: 0 0 20px white;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0) rotate(360deg);
+                box-shadow: 0 0 40px white;
+            }
+        }
+        
+        /* ENHANCED HOLOGRAPHIC CARDS */
+        .holographic-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 1500px;
+            transform-style: preserve-3d;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .depth-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.4s ease-out;
+        }
+        
+        .depth-layer.background {
+            z-index: 1;
+            transform: translateZ(-150px);
+        }
+        
+        .depth-layer.midground {
+            z-index: 5;
+            transform: translateZ(-50px);
+        }
+        
+        .depth-layer.foreground {
+            z-index: 10;
+            transform: translateZ(25px);
+        }
+        
+        .depth-layer.accent {
+            z-index: 15;
+            transform: translateZ(75px);
+        }
+        
+        .enhanced-card {
+            position: absolute;
+            backdrop-filter: blur(25px) saturate(150%);
+            border-radius: 30px;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+            transform-style: preserve-3d;
+            
+            background: linear-gradient(135deg,
+                rgba(255,255,255,0.08) 0%,
+                rgba(255,255,255,0.04) 50%,
+                rgba(0,0,0,0.06) 100%);
+            
+            box-shadow: 
+                /* Outer depth shadows */
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 10px 20px rgba(0, 0, 0, 0.3),
+                /* Inner glass highlights */
+                inset 0 2px 4px rgba(255, 255, 255, 0.12),
+                inset 0 -2px 2px rgba(0, 0, 0, 0.12),
+                /* Holographic rim */
+                0 0 0 1px rgba(255, 255, 255, 0.15),
+                0 0 30px rgba(0, 255, 255, 0.08);
+            
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .enhanced-card:hover {
+            transform: translateY(-10px) rotateX(3deg) rotateY(2deg);
+            box-shadow: 
+                0 40px 80px rgba(0, 0, 0, 0.5),
+                0 15px 30px rgba(0, 0, 0, 0.4),
+                inset 0 3px 6px rgba(255, 255, 255, 0.18),
+                inset 0 -3px 3px rgba(0, 0, 0, 0.18),
+                0 0 0 2px rgba(255, 255, 255, 0.25),
+                0 0 60px rgba(0, 255, 255, 0.15),
+                0 0 100px rgba(255, 0, 255, 0.08);
+        }
+        
+        /* VISUALIZER CANVAS SYSTEM */
+        .visualizer-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        /* MOBILE MOMENTUM CONTROLS */
+        .momentum-indicator {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 25px;
+            
+            background: linear-gradient(135deg,
+                rgba(0,0,0,0.8) 0%,
+                rgba(25,0,50,0.7) 100%);
+            
+            border-radius: 25px;
+            border: 1px solid rgba(0,255,255,0.3);
+            backdrop-filter: blur(20px);
+            
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.6),
+                inset 0 1px 2px rgba(255,255,255,0.1);
+            
+            font-size: 0.8rem;
+            color: #00ffff;
+            z-index: 800;
+        }
+        
+        .momentum-bar {
+            width: 100px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .momentum-fill {
+            height: 100%;
+            background: linear-gradient(90deg,
+                #00ffff 0%,
+                #ff00ff 50%,
+                #ffff00 100%);
+            width: 0%;
+            transition: width 0.1s ease;
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(0,255,255,0.6);
+        }
+        
+        /* SECTION LAYOUTS WITH ENHANCED EFFECTS */
+        
+        /* HOME - Cosmic Divergence */
+        .layout-home .enhanced-card:nth-child(1) {
+            top: 8%; left: 50%; transform: translateX(-50%);
+            width: 80%; height: 20%;
+        }
+        
+        .layout-home .enhanced-card:nth-child(2) {
+            top: 32%; left: 10%;
+            width: 35%; height: 55%;
+        }
+        
+        .layout-home .enhanced-card:nth-child(3) {
+            top: 32%; right: 10%;
+            width: 35%; height: 55%;
+        }
+        
+        .layout-home .enhanced-card:nth-child(4) {
+            bottom: 8%; left: 50%; transform: translateX(-50%);
+            width: 70%; height: 15%;
+        }
+        
+        /* TECH - Structural Stability */
+        .layout-tech .enhanced-card:nth-child(1) {
+            top: 5%; left: 5%;
+            width: 90%; height: 12%;
+        }
+        
+        .layout-tech .enhanced-card:nth-child(2) {
+            top: 20%; left: 5%;
+            width: 25%; height: 75%;
+        }
+        
+        .layout-tech .enhanced-card:nth-child(3) {
+            top: 20%; right: 5%;
+            width: 45%; height: 75%;
+        }
+        
+        .layout-tech .enhanced-card:nth-child(4) {
+            top: 20%; left: 32%;
+            width: 25%; height: 35%;
+            border-radius: 15px;
+        }
+        
+        /* MEDIA - Radial Flow */
+        .layout-media .enhanced-card:nth-child(1) {
+            top: 50%; left: 50%; 
+            transform: translate(-50%, -50%);
+            width: 45%; height: 50%;
+            border-radius: 50%;
+        }
+        
+        .layout-media .enhanced-card:nth-child(2) {
+            top: 15%; left: 15%;
+            width: 30%; height: 25%;
+            border-radius: 40px;
+            transform: rotate(-10deg);
+        }
+        
+        .layout-media .enhanced-card:nth-child(3) {
+            top: 15%; right: 15%;
+            width: 30%; height: 25%;
+            border-radius: 40px;
+            transform: rotate(10deg);
+        }
+        
+        .layout-media .enhanced-card:nth-child(4) {
+            bottom: 15%; left: 15%;
+            width: 30%; height: 25%;
+            border-radius: 40px;
+            transform: rotate(10deg);
+        }
+        
+        /* STATUS DISPLAY */
+        .enhanced-status {
+            position: fixed;
+            top: 90px;
+            left: 20px;
+            background: linear-gradient(135deg,
+                rgba(0,0,0,0.9) 0%,
+                rgba(25,0,50,0.8) 100%);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid #00ffff;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.7rem;
+            z-index: 1500;
+            min-width: 200px;
+            backdrop-filter: blur(20px);
+            
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.6),
+                inset 0 1px 2px rgba(255,255,255,0.1);
+        }
+        
+        .status-row {
+            margin: 3px 0;
+            color: #00ffff;
+            text-shadow: 0 0 5px #00ffff;
+        }
+        
+        .status-value {
+            color: #ffffff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- VHS SCANLINES -->
+    <div class="vhs-scanlines" id="vhsScanlines"></div>
+    
+    <!-- GLITCH OVERLAY -->
+    <div class="glitch-overlay" id="glitchOverlay"></div>
+    
+    <!-- CRYSTAL NAVIGATION DOME -->
+    <nav class="crystal-nav-dome" id="crystalNav">
+        <div class="crystal-nav-item active" data-section="0">HOME</div>
+        <div class="crystal-nav-item" data-section="1">TECH</div>
+        <div class="crystal-nav-item" data-section="2">MEDIA</div>
+        <div class="crystal-nav-item" data-section="3">AUDIO</div>
+        <div class="crystal-nav-item" data-section="4">QUANTUM</div>
+    </nav>
+    
+    <!-- ENHANCED STATUS DISPLAY -->
+    <div class="enhanced-status">
+        <div class="status-row">Section: <span class="status-value" id="current-section">HOME</span></div>
+        <div class="status-row">Behavior: <span class="status-value" id="current-behavior">center_divergence</span></div>
+        <div class="status-row">Momentum: <span class="status-value" id="momentum-level">0</span></div>
+        <div class="status-row">Reality: <span class="status-value" id="reality-state">normal</span></div>
+        <div class="status-row">Visualizers: <span class="status-value" id="active-visualizers">13</span></div>
+    </div>
+    
+    <!-- MOMENTUM INDICATOR -->
+    <div class="momentum-indicator">
+        <span>MOMENTUM</span>
+        <div class="momentum-bar">
+            <div class="momentum-fill" id="momentumFill"></div>
+        </div>
+        <span id="momentumText">0%</span>
+    </div>
+    
+    <!-- HOLOGRAPHIC CONTAINER -->
+    <div class="holographic-container layout-home" id="holoContainer">
+        
+        <!-- BACKGROUND LAYER -->
+        <div class="depth-layer background">
+            <canvas class="visualizer-canvas" id="background-visualizer"></canvas>
+        </div>
+        
+        <!-- MIDGROUND LAYER -->
+        <div class="depth-layer midground">
+            <canvas class="visualizer-canvas" id="shadow-visualizer"></canvas>
+        </div>
+        
+        <!-- FOREGROUND LAYER -->
+        <div class="depth-layer foreground">
+            <!-- Enhanced Cards -->
+            <div class="enhanced-card content-boundary" id="card-1">
+                <canvas class="visualizer-canvas" id="card-visualizer-1"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; text-align: center;">
+                    <h2>Cosmic Divergence</h2>
+                    <p>Visualizers spread from center</p>
+                </div>
+            </div>
+            
+            <div class="enhanced-card content-boundary" id="card-2">
+                <canvas class="visualizer-canvas" id="card-visualizer-2"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; text-align: center;">
+                    <h2>Left Portal</h2>
+                    <p>Technical Documentation</p>
+                </div>
+            </div>
+            
+            <div class="enhanced-card content-boundary" id="card-3">
+                <canvas class="visualizer-canvas" id="card-visualizer-3"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; text-align: center;">
+                    <h2>Right Portal</h2>
+                    <p>Creative Media</p>
+                </div>
+            </div>
+            
+            <div class="enhanced-card content-boundary" id="card-4">
+                <canvas class="visualizer-canvas" id="card-visualizer-4"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; text-align: center;">
+                    <h2>Status Bridge</h2>
+                    <p>System Information</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ACCENT LAYER -->
+        <div class="depth-layer accent">
+            <canvas class="visualizer-canvas" id="accent-visualizer"></canvas>
+        </div>
+        
+    </div>
+
+    <script>
+        // ENHANCED MOBILE PORTAL SYSTEM
+        class EnhancedMobilePortalSystem {
+            constructor() {
+                this.visualizers = [];
+                this.currentSection = 0;
+                this.momentum = 0;
+                this.velocityThreshold = 800;
+                this.isTransitioning = false;
+                this.realityInverted = false;
+                this.lastTouchY = 0;
+                this.touchStartTime = 0;
+                this.longPressTimer = null;
+                this.gestureState = 'idle';
+                
+                // Section behaviors
+                this.sectionBehaviors = {
+                    0: 'center_divergence',   // HOME - Cosmic Divergence
+                    1: 'geometric_precision', // TECH - Structural Stability  
+                    2: 'spherical_flow',      // MEDIA - Radial Flow
+                    3: 'torus_flow',          // AUDIO - Temporal Oscillation
+                    4: 'wave_function'        // QUANTUM - Probability Collapse
+                };
+                
+                this.sectionNames = ['HOME', 'TECH', 'MEDIA', 'AUDIO', 'QUANTUM'];
+                this.layoutClasses = ['layout-home', 'layout-tech', 'layout-media', 'layout-audio', 'layout-quantum'];
+                
+                this.initialize();
+            }
+            
+            initialize() {
+                console.log('🚀 Initializing Enhanced Mobile Portal System...');
+                
+                this.createVisualizers();
+                this.setupMobileInteractions();
+                this.setupNavigation();
+                this.startRenderLoop();
+                
+                console.log('✅ Enhanced Mobile Portal System ready');
+            }
+            
+            createVisualizers() {
+                const configs = [
+                    { id: 'background-visualizer', role: 'background', reactivity: 0.5 },
+                    { id: 'shadow-visualizer', role: 'shadow', reactivity: 0.7 },
+                    { id: 'card-visualizer-1', role: 'content', reactivity: 1.0 },
+                    { id: 'card-visualizer-2', role: 'content', reactivity: 1.1 },
+                    { id: 'card-visualizer-3', role: 'content', reactivity: 0.9 },
+                    { id: 'card-visualizer-4', role: 'content', reactivity: 1.2 },
+                    { id: 'accent-visualizer', role: 'accent', reactivity: 1.5 }
+                ];
+                
+                configs.forEach(config => {
+                    const visualizer = new EnhancedVisualizer(config.id, config.role, config.reactivity);
+                    this.visualizers.push(visualizer);
+                });
+            }
+            
+            setupMobileInteractions() {
+                let touchStartY = 0;
+                let touchStartTime = 0;
+                let touchVelocity = 0;
+                
+                // Enhanced touch handling
+                document.addEventListener('touchstart', (e) => {
+                    touchStartY = e.touches[0].clientY;
+                    touchStartTime = Date.now();
+                    this.gestureState = 'touching';
+                    
+                    // Long press detection
+                    this.longPressTimer = setTimeout(() => {
+                        this.triggerLongPress(e.touches[0].clientX, e.touches[0].clientY);
+                    }, 800);
+                    
+                    e.preventDefault();
+                }, { passive: false });
+                
+                document.addEventListener('touchmove', (e) => {
+                    if (this.longPressTimer) {
+                        clearTimeout(this.longPressTimer);
+                        this.longPressTimer = null;
+                    }
+                    
+                    const currentY = e.touches[0].clientY;
+                    const deltaY = currentY - touchStartY;
+                    const currentTime = Date.now();
+                    const deltaTime = currentTime - touchStartTime;
+                    
+                    touchVelocity = Math.abs(deltaY) / (deltaTime + 1) * 1000;
+                    
+                    this.updateMomentum(touchVelocity);
+                    this.applySectionBehavior(deltaY, touchVelocity);
+                    
+                    e.preventDefault();
+                }, { passive: false });
+                
+                document.addEventListener('touchend', (e) => {
+                    if (this.longPressTimer) {
+                        clearTimeout(this.longPressTimer);
+                        this.longPressTimer = null;
+                    }
+                    
+                    const touchEndY = e.changedTouches[0].clientY;
+                    const totalDelta = touchEndY - touchStartY;
+                    const direction = totalDelta > 0 ? 1 : -1;
+                    
+                    this.gestureState = 'releasing';
+                    
+                    if (touchVelocity > this.velocityThreshold) {
+                        this.triggerPortalBurst(direction, touchVelocity);
+                    } else if (Math.abs(totalDelta) > 100) {
+                        this.snapToSection(direction);
+                    }
+                    
+                    setTimeout(() => {
+                        this.momentum = 0;
+                        this.updateMomentumDisplay();
+                        this.gestureState = 'idle';
+                    }, 1000);
+                    
+                    e.preventDefault();
+                }, { passive: false });
+                
+                // Desktop wheel fallback
+                document.addEventListener('wheel', (e) => {
+                    const direction = e.deltaY > 0 ? 1 : -1;
+                    const velocity = Math.abs(e.deltaY) * 10;
+                    
+                    this.updateMomentum(velocity);
+                    this.applySectionBehavior(e.deltaY, velocity);
+                    
+                    if (velocity > 500) {
+                        this.triggerPortalBurst(direction, velocity);
+                    }
+                    
+                    e.preventDefault();
+                }, { passive: false });
+            }
+            
+            updateMomentum(velocity) {
+                this.momentum = Math.min(1.0, velocity / 2000);
+                this.updateMomentumDisplay();
+                
+                // Trigger VHS effects at high momentum
+                if (this.momentum > 0.6) {
+                    this.activateVHSEffects();
+                } else {
+                    this.deactivateVHSEffects();
+                }
+            }
+            
+            updateMomentumDisplay() {
+                const fill = document.getElementById('momentumFill');
+                const text = document.getElementById('momentumText');
+                
+                const percentage = Math.round(this.momentum * 100);
+                fill.style.width = `${percentage}%`;
+                text.textContent = `${percentage}%`;
+                
+                document.getElementById('momentum-level').textContent = percentage;
+            }
+            
+            applySectionBehavior(deltaY, velocity) {
+                const behavior = this.sectionBehaviors[this.currentSection];
+                const direction = deltaY > 0 ? 1 : -1;
+                const intensity = Math.min(1.0, velocity / 1000);
+                
+                switch(behavior) {
+                    case 'center_divergence':
+                        this.applyCenterDivergence(direction, intensity);
+                        break;
+                    case 'geometric_precision':
+                        this.applyGeometricPrecision(direction, intensity);
+                        break;
+                    case 'spherical_flow':
+                        this.applySphericalFlow(direction, intensity);
+                        break;
+                    case 'torus_flow':
+                        this.applyTorusFlow(direction, intensity);
+                        break;
+                    case 'wave_function':
+                        this.applyWaveFunction(direction, intensity);
+                        break;
+                }
+            }
+            
+            applyCenterDivergence(direction, intensity) {
+                // HOME: Visualizers spread from/to center
+                this.visualizers.forEach((viz, index) => {
+                    const angle = (index / this.visualizers.length) * Math.PI * 2;
+                    const distance = direction > 0 ? intensity * 100 : -intensity * 50;
+                    
+                    viz.addDirectionalOffset(
+                        Math.cos(angle) * distance,
+                        Math.sin(angle) * distance
+                    );
+                    viz.updateSpeed(1.0 + intensity);
+                    viz.updateDensity(1.0 + intensity * 0.5);
+                });
+            }
+            
+            applyGeometricPrecision(direction, intensity) {
+                // TECH: Tetrahedral rotation and grid crystallization
+                this.visualizers.forEach(viz => {
+                    viz.updateRotationSpeed(direction > 0 ? 1.0 + intensity : 0.5 + intensity * 0.5);
+                    viz.updateGridPrecision(1.0 + intensity);
+                    viz.enhanceEdgeHighlighting(intensity);
+                });
+            }
+            
+            applySphericalFlow(direction, intensity) {
+                // MEDIA: Radial expansion/contraction with trails
+                this.visualizers.forEach(viz => {
+                    if (direction > 0) {
+                        viz.triggerRadialExpansion(intensity);
+                        viz.addMotionTrails(intensity);
+                    } else {
+                        viz.triggerVortexConvergence(intensity);
+                    }
+                    viz.updateTranslucency(0.7 + intensity * 0.3);
+                });
+            }
+            
+            applyTorusFlow(direction, intensity) {
+                // AUDIO: Oscillation frequency changes
+                this.visualizers.forEach(viz => {
+                    const frequency = direction > 0 ? 1.0 + intensity * 2.0 : 0.5 + intensity * 0.5;
+                    const amplitude = direction < 0 ? 1.0 + intensity : 0.8;
+                    
+                    viz.updateOscillation(frequency, amplitude);
+                    viz.syncToTempo(60 + intensity * 60); // BPM increase
+                });
+            }
+            
+            applyWaveFunction(direction, intensity) {
+                // QUANTUM: Probability dispersion/collapse
+                this.visualizers.forEach(viz => {
+                    if (direction > 0) {
+                        viz.triggerProbabilityDispersion(intensity);
+                        viz.addRandomFluctuation(intensity * 0.3);
+                    } else {
+                        viz.triggerQuantumCollapse(intensity);
+                        viz.stabilizeParameters();
+                    }
+                    
+                    // Random reality glitches
+                    if (Math.random() < intensity * 0.1) {
+                        viz.triggerRealityGlitch();
+                    }
+                });
+            }
+            
+            triggerPortalBurst(direction, velocity) {
+                if (this.isTransitioning) return;
+                
+                console.log(`💥 PORTAL BURST! Direction: ${direction}, Velocity: ${velocity}`);
+                
+                this.isTransitioning = true;
+                
+                // Determine new section
+                const newSection = (this.currentSection + direction + 5) % 5;
+                
+                // Trigger VHS/Glitch effects
+                this.activatePortalEffects(velocity);
+                
+                // Apply chromatic aberration
+                document.body.classList.add('portal-transition');
+                
+                // Burst all visualizers
+                this.visualizers.forEach(viz => {
+                    viz.triggerBurst(direction, velocity / 2000);
+                });
+                
+                // Transition to new section
+                setTimeout(() => {
+                    this.transitionToSection(newSection);
+                }, 200);
+                
+                setTimeout(() => {
+                    this.isTransitioning = false;
+                    document.body.classList.remove('portal-transition');
+                    this.deactivatePortalEffects();
+                }, 800);
+            }
+            
+            snapToSection(direction) {
+                const newSection = (this.currentSection + direction + 5) % 5;
+                this.transitionToSection(newSection);
+            }
+            
+            transitionToSection(sectionIndex) {
+                if (sectionIndex === this.currentSection) return;
+                
+                console.log(`🌀 Transitioning to: ${this.sectionNames[sectionIndex]}`);
+                
+                this.currentSection = sectionIndex;
+                
+                // Update layout
+                const container = document.getElementById('holoContainer');
+                container.className = `holographic-container ${this.layoutClasses[sectionIndex]}`;
+                
+                // Update all visualizers
+                this.visualizers.forEach(viz => {
+                    viz.transitionToSection(sectionIndex);
+                });
+                
+                // Update navigation
+                this.updateNavigation();
+                
+                // Update status
+                document.getElementById('current-section').textContent = this.sectionNames[sectionIndex];
+                document.getElementById('current-behavior').textContent = this.sectionBehaviors[sectionIndex];
+            }
+            
+            activateVHSEffects() {
+                document.getElementById('vhsScanlines').style.opacity = '1';
+            }
+            
+            deactivateVHSEffects() {
+                document.getElementById('vhsScanlines').style.opacity = '0';
+            }
+            
+            activatePortalEffects(velocity) {
+                const intensity = Math.min(1.0, velocity / 2000);
+                
+                // VHS scanlines
+                this.activateVHSEffects();
+                
+                // Glitch overlay
+                const glitch = document.getElementById('glitchOverlay');
+                glitch.classList.add('active');
+                glitch.style.opacity = intensity.toString();
+                
+                // Mark as transitioning
+                document.body.classList.add('transitioning');
+            }
+            
+            deactivatePortalEffects() {
+                this.deactivateVHSEffects();
+                
+                const glitch = document.getElementById('glitchOverlay');
+                glitch.classList.remove('active');
+                
+                document.body.classList.remove('transitioning');
+            }
+            
+            triggerLongPress(x, y) {
+                console.log('🎭 Long press detected - Inverting reality!');
+                
+                this.realityInverted = !this.realityInverted;
+                
+                if (this.realityInverted) {
+                    document.body.classList.add('reality-inverted');
+                    this.createSparkleEffect(x, y);
+                    
+                    // Invert all visualizers
+                    this.visualizers.forEach(viz => {
+                        viz.invertColors();
+                        viz.increaseSpeed(1.5);
+                    });
+                    
+                    document.getElementById('reality-state').textContent = 'inverted';
+                } else {
+                    document.body.classList.remove('reality-inverted');
+                    
+                    this.visualizers.forEach(viz => {
+                        viz.normalizeColors();
+                        viz.normalizeSpeed();
+                    });
+                    
+                    document.getElementById('reality-state').textContent = 'normal';
+                }
+            }
+            
+            createSparkleEffect(x, y) {
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        const sparkle = document.createElement('div');
+                        sparkle.className = 'sparkle-effect';
+                        sparkle.style.left = (x + (Math.random() - 0.5) * 100) + 'px';
+                        sparkle.style.top = (y + (Math.random() - 0.5) * 100) + 'px';
+                        document.body.appendChild(sparkle);
+                        
+                        setTimeout(() => {
+                            document.body.removeChild(sparkle);
+                        }, 1000);
+                    }, i * 50);
+                }
+            }
+            
+            setupNavigation() {
+                document.querySelectorAll('.crystal-nav-item').forEach((item, index) => {
+                    item.addEventListener('click', () => {
+                        this.transitionToSection(index);
+                    });
+                });
+            }
+            
+            updateNavigation() {
+                document.querySelectorAll('.crystal-nav-item').forEach((item, index) => {
+                    if (index === this.currentSection) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+            
+            startRenderLoop() {
+                const render = () => {
+                    this.visualizers.forEach(viz => viz.render());
+                    requestAnimationFrame(render);
+                };
+                render();
+            }
+        }
+        
+        // ENHANCED VISUALIZER CLASS
+        class EnhancedVisualizer {
+            constructor(canvasId, role, reactivity) {
+                this.canvas = document.getElementById(canvasId);
+                this.gl = this.canvas.getContext('webgl');
+                this.role = role;
+                this.reactivity = reactivity;
+                
+                // Enhanced properties
+                this.directionalOffset = { x: 0, y: 0 };
+                this.rotationSpeed = 1.0;
+                this.gridPrecision = 1.0;
+                this.translucency = 1.0;
+                this.oscillationFreq = 1.0;
+                this.oscillationAmp = 1.0;
+                this.colorsInverted = false;
+                this.burstIntensity = 0.0;
+                
+                // Section states (0-4 for different geometries)
+                this.currentSection = 0;
+                this.transitionProgress = 1.0;
+                
+                this.initWebGL();
+            }
+            
+            initWebGL() {
+                // Simplified WebGL setup for demo
+                this.resize();
+                this.render();
+            }
+            
+            resize() {
+                this.canvas.width = this.canvas.clientWidth;
+                this.canvas.height = this.canvas.clientHeight;
+                if (this.gl) {
+                    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+                }
+            }
+            
+            // Enhanced behavior methods
+            addDirectionalOffset(x, y) {
+                this.directionalOffset.x += x * this.reactivity;
+                this.directionalOffset.y += y * this.reactivity;
+            }
+            
+            updateSpeed(multiplier) {
+                this.speedMultiplier = multiplier * this.reactivity;
+            }
+            
+            updateDensity(multiplier) {
+                this.densityMultiplier = multiplier;
+            }
+            
+            updateRotationSpeed(speed) {
+                this.rotationSpeed = speed * this.reactivity;
+            }
+            
+            updateGridPrecision(precision) {
+                this.gridPrecision = precision;
+            }
+            
+            enhanceEdgeHighlighting(intensity) {
+                this.edgeHighlight = intensity;
+            }
+            
+            triggerRadialExpansion(intensity) {
+                this.radialExpansion = intensity * this.reactivity;
+            }
+            
+            addMotionTrails(intensity) {
+                this.motionTrails = intensity;
+            }
+            
+            triggerVortexConvergence(intensity) {
+                this.vortexConvergence = intensity * this.reactivity;
+            }
+            
+            updateTranslucency(alpha) {
+                this.translucency = alpha;
+            }
+            
+            updateOscillation(frequency, amplitude) {
+                this.oscillationFreq = frequency * this.reactivity;
+                this.oscillationAmp = amplitude;
+            }
+            
+            syncToTempo(bpm) {
+                this.tempoBPM = bpm;
+            }
+            
+            triggerProbabilityDispersion(intensity) {
+                this.probabilityDispersion = intensity * this.reactivity;
+            }
+            
+            addRandomFluctuation(intensity) {
+                this.randomFluctuation = intensity;
+            }
+            
+            triggerQuantumCollapse(intensity) {
+                this.quantumCollapse = intensity * this.reactivity;
+            }
+            
+            stabilizeParameters() {
+                this.parameterStability = 1.0;
+            }
+            
+            triggerRealityGlitch() {
+                this.realityGlitch = 1.0;
+                setTimeout(() => this.realityGlitch = 0.0, 150);
+            }
+            
+            triggerBurst(direction, intensity) {
+                this.burstIntensity = intensity;
+                this.burstDirection = direction;
+                
+                setTimeout(() => {
+                    this.burstIntensity *= 0.9;
+                    if (this.burstIntensity > 0.01) {
+                        setTimeout(() => this.triggerBurst(direction, this.burstIntensity), 50);
+                    }
+                }, 50);
+            }
+            
+            invertColors() {
+                this.colorsInverted = true;
+            }
+            
+            normalizeColors() {
+                this.colorsInverted = false;
+            }
+            
+            increaseSpeed(multiplier) {
+                this.speedBoost = multiplier;
+            }
+            
+            normalizeSpeed() {
+                this.speedBoost = 1.0;
+            }
+            
+            transitionToSection(sectionIndex) {
+                this.targetSection = sectionIndex;
+                this.transitionProgress = 0.0;
+            }
+            
+            render() {
+                if (!this.gl) return;
+                
+                this.resize();
+                
+                // Smooth transitions
+                if (this.transitionProgress < 1.0) {
+                    this.transitionProgress = Math.min(1.0, this.transitionProgress + 0.02);
+                }
+                
+                if (this.targetSection !== undefined && this.transitionProgress >= 1.0) {
+                    this.currentSection = this.targetSection;
+                }
+                
+                // Apply all visual effects based on current state
+                const time = Date.now() * 0.001;
+                
+                // Create visual effects (simplified for demo)
+                this.gl.clearColor(
+                    0.1 + Math.sin(time * this.oscillationFreq) * 0.1,
+                    0.0 + Math.cos(time * this.rotationSpeed) * 0.1,
+                    0.2 + Math.sin(time * 0.5) * 0.1,
+                    this.translucency
+                );
+                this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+                
+                // Decay directional offsets
+                this.directionalOffset.x *= 0.95;
+                this.directionalOffset.y *= 0.95;
+            }
+        }
+        
+        // Initialize the system
+        window.addEventListener('DOMContentLoaded', () => {
+            window.portalSystem = new EnhancedMobilePortalSystem();
+        });
+    </script>
+</body>
+</html>

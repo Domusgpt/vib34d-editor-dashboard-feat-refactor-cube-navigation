@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D FIXED - Adaptive Card System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Orbitron', monospace;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .debug-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+        
+        .debug-title {
+            color: #00ff00;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .debug-item {
+            margin: 5px 0;
+            padding: 2px 0;
+        }
+        
+        .debug-success {
+            color: #00ff00;
+        }
+        
+        .debug-error {
+            color: #ff0000;
+        }
+        
+        .debug-warning {
+            color: #ffaa00;
+        }
+        
+        .debug-info {
+            color: #00aaff;
+        }
+        
+        .error-display {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .demo-title {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .demo-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            height: 250px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-5px);
+        }
+        
+        .card-visualizer-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .card-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .card-subtitle {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+        
+        .card-description {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .geometry-info {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            font-family: monospace;
+        }
+        
+        .controls {
+            margin: 40px auto;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .control-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- REAL-TIME DEBUG PANEL -->
+    <div class="debug-panel" id="debug-panel">
+        <div class="debug-title">🔧 VIB34D DEBUG PANEL</div>
+        <div id="debug-content">
+            <div class="debug-info">⏳ System initializing...</div>
+        </div>
+    </div>
+    
+    <div class="demo-header">
+        <h1 class="demo-title">VIB34D FIXED - Adaptive Card System</h1>
+        <p style="color: #00ff00; font-weight: bold;">✅ Enhanced with real-time debugging and error handling</p>
+    </div>
+    
+    <div id="error-container"></div>
+    
+    <div class="card-grid" id="card-grid">
+        <!-- Cards will be dynamically generated -->
+    </div>
+    
+    <div class="controls">
+        <h3 style="margin-bottom: 20px; text-align: center;">Master Control System</h3>
+        
+        <div class="control-row">
+            <div class="control-group">
+                <label for="master-key-control">Master Key: <span id="master-key-value">1.0</span></label>
+                <input type="range" id="master-key-control" min="0.1" max="3.0" step="0.1" value="1.0">
+            </div>
+            
+            <div class="control-group">
+                <label for="intensity-control">Intensity: <span id="intensity-value">1.0</span></label>
+                <input type="range" id="intensity-control" min="0.1" max="2.0" step="0.1" value="1.0">
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        console.log('🚀 VIB34D FIXED DEMO Starting...');
+        
+        // ENHANCED DEBUG SYSTEM
+        class DebugPanel {
+            constructor() {
+                this.panel = document.getElementById('debug-content');
+                this.errors = [];
+                this.warnings = [];
+                this.successes = [];
+                this.update();
+            }
+            
+            log(type, message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const entry = { type, message, timestamp };
+                
+                switch(type) {
+                    case 'error':
+                        this.errors.push(entry);
+                        console.error('🔴', message);
+                        break;
+                    case 'warning':
+                        this.warnings.push(entry);
+                        console.warn('🟡', message);
+                        break;
+                    case 'success':
+                        this.successes.push(entry);
+                        console.log('🟢', message);
+                        break;
+                    case 'info':
+                        console.log('🔵', message);
+                        break;
+                }
+                
+                this.update();
+            }
+            
+            update() {
+                const content = `
+                    <div class="debug-success">✅ Successes: ${this.successes.length}</div>
+                    <div class="debug-warning">⚠️ Warnings: ${this.warnings.length}</div>
+                    <div class="debug-error">❌ Errors: ${this.errors.length}</div>
+                    <div class="debug-info">🕐 Last Update: ${new Date().toLocaleTimeString()}</div>
+                    ${this.errors.length > 0 ? '<hr style="margin: 10px 0;">' : ''}
+                    ${this.errors.slice(-3).map(e => 
+                        `<div class="debug-error">${e.timestamp}: ${e.message}</div>`
+                    ).join('')}
+                `;
+                
+                this.panel.innerHTML = content;
+            }
+        }
+        
+        const debug = new DebugPanel();
+        
+        // GEOMETRY DATA
+        const geometryData = [
+            { name: 'Hypercube', subtitle: 'Core Identity', description: 'Foundational geometry for sovereignty and data ownership.' },
+            { name: 'Tetrahedron', subtitle: 'Technology', description: 'Precision-focused geometry for technical content.' },
+            { name: 'Sphere', subtitle: 'Philosophy', description: 'Infinite potential geometry expressing boundless creativity.' },
+            { name: 'Torus', subtitle: 'Flow & Content', description: 'Continuous circulation patterns for media content.' },
+            { name: 'Klein Bottle', subtitle: 'Community', description: 'Boundary-transcendent topology for community features.' },
+            { name: 'Fractal', subtitle: 'Development', description: 'Recursive complexity structures for innovation.' },
+            { name: 'Wave Function', subtitle: 'Research', description: 'Probability field geometry for experimental features.' },
+            { name: 'Crystal Lattice', subtitle: 'Innovation', description: 'Ordered complexity for systematic advancement.' }
+        ];
+        
+        let cardVisualizers = [];
+        
+        // CHECK WEBGL SUPPORT
+        function checkWebGLSupport() {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                
+                if (gl) {
+                    debug.log('success', 'WebGL supported and available');
+                    return true;
+                } else {
+                    debug.log('warning', 'WebGL not supported - will use Canvas 2D fallback');
+                    return false;
+                }
+            } catch (error) {
+                debug.log('error', `WebGL check failed: ${error.message}`);
+                return false;
+            }
+        }
+        
+        // CREATE DEMO CARDS
+        function createDemoCards() {
+            debug.log('info', 'Creating demo cards...');
+            const cardGrid = document.getElementById('card-grid');
+            
+            geometryData.forEach((geometry, index) => {
+                const card = document.createElement('div');
+                card.className = 'demo-card';
+                card.id = `demo-card-${index}`;
+                
+                card.innerHTML = `
+                    <div class="card-visualizer-container" id="visualizer-container-${index}"></div>
+                    <div class="card-content">
+                        <div>
+                            <div class="card-title">${geometry.name}</div>
+                            <div class="card-subtitle">${geometry.subtitle}</div>
+                            <div class="card-description">${geometry.description}</div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="geometry-info">Geometry ${index} | Status: <span id="status-${index}">Loading...</span></div>
+                        </div>
+                    </div>
+                `;
+                
+                cardGrid.appendChild(card);
+            });
+            
+            debug.log('success', `Created ${geometryData.length} demo cards`);
+        }
+        
+        // SIMPLE CANVAS 2D VISUALIZER (FALLBACK)
+        function createSimpleVisualizer(container, geometry, index) {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 300;
+                canvas.height = 200;
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+                container.appendChild(canvas);
+                
+                const ctx = canvas.getContext('2d');
+                let time = 0;
+                
+                function animate() {
+                    time += 0.03;
+                    
+                    // Clear with fade
+                    ctx.globalAlpha = 0.1;
+                    ctx.fillStyle = '#000000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.globalAlpha = 1.0;
+                    
+                    const centerX = canvas.width / 2;
+                    const centerY = canvas.height / 2;
+                    const radius = 60;
+                    const hue = (index * 45 + time * 50) % 360;
+                    
+                    // Different patterns for each geometry
+                    switch(index) {
+                        case 0: // Hypercube
+                            drawRotatingSquares(ctx, centerX, centerY, radius, hue, time);
+                            break;
+                        case 1: // Tetrahedron  
+                            drawTriangle(ctx, centerX, centerY, radius, hue, time);
+                            break;
+                        case 2: // Sphere
+                            drawConcentriCircles(ctx, centerX, centerY, radius, hue, time);
+                            break;
+                        case 3: // Torus
+                            drawFlowingRings(ctx, centerX, centerY, radius, hue, time);
+                            break;
+                        case 4: // Klein
+                            drawTwistingCurve(ctx, centerX, centerY, radius, hue, time);
+                            break;
+                        case 5: // Fractal
+                            drawFractalTree(ctx, centerX, centerY, radius, hue, time);
+                            break;
+                        case 6: // Wave
+                            drawWavePattern(ctx, centerX, centerY, radius, hue, time);
+                            break;
+                        case 7: // Crystal
+                            drawCrystalLattice(ctx, centerX, centerY, radius, hue, time);
+                            break;
+                    }
+                    
+                    requestAnimationFrame(animate);
+                }
+                
+                animate();
+                
+                document.getElementById(`status-${index}`).textContent = 'Canvas 2D Active';
+                debug.log('success', `Simple visualizer created for ${geometryData[index].name}`);
+                
+                return { canvas, animate };
+                
+            } catch (error) {
+                debug.log('error', `Failed to create simple visualizer for geometry ${index}: ${error.message}`);
+                document.getElementById(`status-${index}`).textContent = 'Failed';
+                return null;
+            }
+        }
+        
+        // DRAWING FUNCTIONS
+        function drawRotatingSquares(ctx, centerX, centerY, radius, hue, time) {
+            ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
+            ctx.lineWidth = 2;
+            
+            for (let i = 0; i < 2; i++) {
+                const r = radius * (0.5 + i * 0.5);
+                const rotation = time * (i === 0 ? 1 : -1);
+                
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(rotation);
+                ctx.strokeRect(-r/2, -r/2, r, r);
+                ctx.restore();
+            }
+        }
+        
+        function drawTriangle(ctx, centerX, centerY, radius, hue, time) {
+            ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            for (let i = 0; i < 3; i++) {
+                const angle = (i / 3) * Math.PI * 2 + time;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+        }
+        
+        function drawConcentriCircles(ctx, centerX, centerY, radius, hue, time) {
+            for (let i = 1; i <= 4; i++) {
+                const r = radius * (i / 4);
+                const alpha = 1 - (i / 5);
+                ctx.strokeStyle = `hsla(${hue + i * 10}, 100%, 60%, ${alpha})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+        
+        function drawFlowingRings(ctx, centerX, centerY, radius, hue, time) {
+            ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
+            ctx.lineWidth = 2;
+            
+            const segments = 12;
+            for (let i = 0; i < segments; i++) {
+                const angle1 = (i / segments) * Math.PI * 2 + time;
+                const angle2 = ((i + 1) / segments) * Math.PI * 2 + time;
+                const r1 = radius + Math.sin(angle1 * 3) * radius * 0.3;
+                const r2 = radius + Math.sin(angle2 * 3) * radius * 0.3;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX + Math.cos(angle1) * r1, centerY + Math.sin(angle1) * r1);
+                ctx.lineTo(centerX + Math.cos(angle2) * r2, centerY + Math.sin(angle2) * r2);
+                ctx.stroke();
+            }
+        }
+        
+        function drawTwistingCurve(ctx, centerX, centerY, radius, hue, time) {
+            ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            const segments = 20;
+            for (let i = 0; i <= segments; i++) {
+                const t = (i / segments) * Math.PI * 4 + time;
+                const x = centerX + radius * Math.cos(t) * (1 + Math.cos(t / 2) * 0.5);
+                const y = centerY + radius * Math.sin(t) * Math.sin(t / 2) * 0.5;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+        
+        function drawFractalTree(ctx, centerX, centerY, radius, hue, time) {
+            function drawBranch(x, y, length, angle, depth) {
+                if (depth === 0) return;
+                
+                const endX = x + Math.cos(angle) * length;
+                const endY = y + Math.sin(angle) * length;
+                
+                ctx.strokeStyle = `hsl(${hue + depth * 30}, 100%, 60%)`;
+                ctx.lineWidth = depth;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+                
+                const newLength = length * 0.7;
+                drawBranch(endX, endY, newLength, angle - 0.5 + Math.sin(time) * 0.2, depth - 1);
+                drawBranch(endX, endY, newLength, angle + 0.5 - Math.sin(time) * 0.2, depth - 1);
+            }
+            
+            drawBranch(centerX, centerY + radius * 0.3, radius * 0.6, -Math.PI / 2, 3);
+        }
+        
+        function drawWavePattern(ctx, centerX, centerY, radius, hue, time) {
+            ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            const segments = 40;
+            for (let i = 0; i <= segments; i++) {
+                const x = centerX - radius + (i / segments) * radius * 2;
+                const y = centerY + Math.sin((i / segments) * Math.PI * 4 + time * 2) * radius * 0.4;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+        
+        function drawCrystalLattice(ctx, centerX, centerY, radius, hue, time) {
+            const points = 6;
+            ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
+            ctx.lineWidth = 2;
+            
+            for (let ring = 1; ring <= 2; ring++) {
+                const r = radius * (ring / 2);
+                for (let i = 0; i < points; i++) {
+                    const angle = (i / points) * Math.PI * 2 + time * 0.5;
+                    const x = centerX + Math.cos(angle) * r;
+                    const y = centerY + Math.sin(angle) * r;
+                    
+                    // Draw connections to center
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    
+                    // Draw connections to adjacent points
+                    const nextAngle = ((i + 1) / points) * Math.PI * 2 + time * 0.5;
+                    const nextX = centerX + Math.cos(nextAngle) * r;
+                    const nextY = centerY + Math.sin(nextAngle) * r;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(nextX, nextY);
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        // INITIALIZE VISUALIZERS
+        function initializeVisualizers() {
+            debug.log('info', 'Initializing visualizers...');
+            const webglSupported = checkWebGLSupport();
+            
+            let successCount = 0;
+            
+            geometryData.forEach((geometry, index) => {
+                const container = document.getElementById(`visualizer-container-${index}`);
+                
+                if (container) {
+                    try {
+                        // Always use Canvas 2D for maximum compatibility
+                        const visualizer = createSimpleVisualizer(container, geometry, index);
+                        
+                        if (visualizer) {
+                            cardVisualizers.push({
+                                visualizer: visualizer,
+                                index: index,
+                                geometry: geometry.name
+                            });
+                            successCount++;
+                        }
+                        
+                    } catch (error) {
+                        debug.log('error', `Failed to create visualizer for ${geometry.name}: ${error.message}`);
+                        document.getElementById(`status-${index}`).textContent = 'Error';
+                    }
+                }
+            });
+            
+            debug.log('success', `Initialized ${successCount}/${geometryData.length} visualizers`);
+            
+            if (successCount === 0) {
+                showErrorMessage('No visualizers could be initialized. Check browser compatibility.');
+            }
+        }
+        
+        // SETUP CONTROLS
+        function setupControls() {
+            debug.log('info', 'Setting up controls...');
+            
+            const masterKeyControl = document.getElementById('master-key-control');
+            const masterKeyValue = document.getElementById('master-key-value');
+            const intensityControl = document.getElementById('intensity-control');
+            const intensityValue = document.getElementById('intensity-value');
+            
+            if (masterKeyControl) {
+                masterKeyControl.addEventListener('input', () => {
+                    const value = parseFloat(masterKeyControl.value);
+                    masterKeyValue.textContent = value;
+                    debug.log('info', `Master Key updated to ${value}`);
+                });
+            }
+            
+            if (intensityControl) {
+                intensityControl.addEventListener('input', () => {
+                    const value = parseFloat(intensityControl.value);
+                    intensityValue.textContent = value;
+                    debug.log('info', `Intensity updated to ${value}`);
+                });
+            }
+            
+            debug.log('success', 'Controls setup complete');
+        }
+        
+        // ERROR DISPLAY
+        function showErrorMessage(message) {
+            const errorContainer = document.getElementById('error-container');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-display';
+            errorDiv.innerHTML = `<strong>Error:</strong> ${message}`;
+            errorContainer.appendChild(errorDiv);
+        }
+        
+        // MAIN INITIALIZATION
+        function initialize() {
+            debug.log('info', 'Starting VIB34D Fixed Demo initialization...');
+            
+            try {
+                createDemoCards();
+                
+                // Wait a bit for DOM to settle
+                setTimeout(() => {
+                    initializeVisualizers();
+                    setupControls();
+                    debug.log('success', 'VIB34D Fixed Demo initialization complete!');
+                }, 100);
+                
+            } catch (error) {
+                debug.log('error', `Initialization failed: ${error.message}`);
+                showErrorMessage(`Initialization failed: ${error.message}`);
+            }
+        }
+        
+        // START WHEN DOM IS READY
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initialize);
+        } else {
+            initialize();
+        }
+        
+        // Global debug access
+        window.debugPanel = debug;
+        window.cardVisualizers = cardVisualizers;
+        
+    </script>
+</body>
+</html>

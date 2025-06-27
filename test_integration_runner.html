@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3STYLEPACK Integration Test Runner</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-frame {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #00ff00;
+            background: #000;
+            margin: 20px 0;
+        }
+        .console-output {
+            background: #111;
+            border: 1px solid #333;
+            padding: 10px;
+            height: 400px;
+            overflow-y: scroll;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        .test-controls {
+            margin: 20px 0;
+        }
+        button {
+            background: #000;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        button:hover {
+            background: #00ff00;
+            color: #000;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #00ff00;
+            background: #111;
+        }
+        .error {
+            border-left-color: #ff0000;
+            color: #ff0000;
+        }
+        .success {
+            border-left-color: #00ff00;
+            color: #00ff00;
+        }
+        .warning {
+            border-left-color: #ffff00;
+            color: #ffff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 VIB3STYLEPACK Integration Test Runner</h1>
+        
+        <div class="status" id="status">
+            <strong>Status:</strong> Initializing test environment...
+        </div>
+        
+        <div class="test-controls">
+            <button onclick="runTest()">🚀 Run Integration Test</button>
+            <button onclick="clearConsole()">🧹 Clear Console</button>
+            <button onclick="openBlogDirect()">🔗 Open Blog Direct</button>
+            <button onclick="checkSystems()">🔍 Check Systems</button>
+        </div>
+        
+        <div class="test-frame-container">
+            <h3>Blog Test Frame:</h3>
+            <iframe id="blogFrame" class="test-frame" src="about:blank"></iframe>
+        </div>
+        
+        <div class="console-output" id="consoleOutput">
+            <div>🔍 Console output will appear here...</div>
+        </div>
+    </div>
+
+    <script>
+        let testFrame = null;
+        let consoleOutput = null;
+        let statusDiv = null;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            testFrame = document.getElementById('blogFrame');
+            consoleOutput = document.getElementById('consoleOutput');
+            statusDiv = document.getElementById('status');
+            
+            log('✅ Test runner initialized');
+            updateStatus('Ready to run tests', 'success');
+        });
+        
+        // Console logging
+        function log(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'warn' ? 'warning' : '';
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = className;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            consoleOutput.appendChild(logEntry);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            
+            // Also log to browser console
+            console[type](message);
+        }
+        
+        function updateStatus(message, type = 'info') {
+            statusDiv.innerHTML = `<strong>Status:</strong> ${message}`;
+            statusDiv.className = `status ${type}`;
+        }
+        
+        function clearConsole() {
+            consoleOutput.innerHTML = '<div>🧹 Console cleared</div>';
+        }
+        
+        // Test functions
+        function runTest() {
+            log('🚀 Starting VIB3STYLEPACK integration test...');
+            updateStatus('Running integration test...', 'warning');
+            
+            // Load the blog in the iframe
+            const blogUrl = 'vib3code-morphing-blog.html';
+            testFrame.src = blogUrl;
+            
+            // Wait for frame to load
+            testFrame.onload = () => {
+                log('📱 Blog loaded in test frame');
+                
+                // Wait a moment for scripts to initialize
+                setTimeout(() => {
+                    runFrameTests();
+                }, 2000);
+            };
+            
+            testFrame.onerror = () => {
+                log('❌ Failed to load blog in test frame', 'error');
+                updateStatus('Blog load failed', 'error');
+            };
+        }
+        
+        function runFrameTests() {
+            try {
+                const frameWindow = testFrame.contentWindow;
+                const frameDocument = testFrame.contentDocument;
+                
+                if (!frameWindow || !frameDocument) {
+                    log('❌ Cannot access frame content - security restriction', 'error');
+                    updateStatus('Frame access denied', 'error');
+                    return;
+                }
+                
+                log('🔍 Analyzing blog integration...');
+                
+                // Test 1: Check for required scripts
+                const scripts = frameDocument.querySelectorAll('script[src]');
+                const scriptSources = Array.from(scripts).map(s => s.src);
+                const requiredScripts = [
+                    'VIB34D_BLOG_INTEGRATION_INJECT.js',
+                    'VIB34D_ADAPTIVE_INTEGRATION.js',
+                    'VIB34D_ADAPTIVE_CARD_VISUALIZER.js'
+                ];
+                
+                log(`📜 Found ${scripts.length} script tags`);
+                
+                const loadedRequired = requiredScripts.filter(req => 
+                    scriptSources.some(src => src.includes(req))
+                );
+                
+                log(`✅ Required scripts loaded: ${loadedRequired.length}/${requiredScripts.length}`);
+                loadedRequired.forEach(script => log(`   - ${script}`));
+                
+                // Test 2: Check DOM elements
+                const blogCards = frameDocument.querySelectorAll('.blog-card');
+                const canvases = frameDocument.querySelectorAll('canvas');
+                const bezelElements = frameDocument.querySelectorAll('.navigation-bezel, .bezel-visualizer');
+                
+                log(`🏗️ DOM Elements found:`);
+                log(`   - Blog cards: ${blogCards.length}`);
+                log(`   - Canvas elements: ${canvases.length}`);
+                log(`   - Bezel elements: ${bezelElements.length}`);
+                
+                // Test 3: Check for integration objects
+                const hasAdaptiveVisualizer = !!(
+                    frameWindow.AdaptiveCardVisualizer || 
+                    (frameWindow.VIB34D && frameWindow.VIB34D.AdaptiveCardVisualizer)
+                );
+                
+                const hasWebGLIntegration = !!(frameWindow.vib34dRealIntegration);
+                const hasCardVisualizers = !!(frameWindow.vib34dCardVisualizers);
+                
+                log(`🔧 Integration objects:`);
+                log(`   - AdaptiveCardVisualizer: ${hasAdaptiveVisualizer ? '✅' : '❌'}`);
+                log(`   - WebGL Integration: ${hasWebGLIntegration ? '✅' : '❌'}`);
+                log(`   - Card Visualizers: ${hasCardVisualizers ? frameWindow.vib34dCardVisualizers.length : 0}`);
+                
+                // Test 4: Check for visual containers
+                const adaptiveContainers = frameDocument.querySelectorAll('.adaptive-visualizer-container');
+                const webglCanvas = frameDocument.querySelectorAll('canvas[id*="vib34d"]');
+                
+                log(`🎨 Visual elements:`);
+                log(`   - Adaptive containers: ${adaptiveContainers.length}`);
+                log(`   - WebGL canvases: ${webglCanvas.length}`);
+                
+                // Test 5: Check for errors in frame console
+                // Note: We can't access the frame's console directly due to security restrictions
+                
+                // Generate test summary
+                const testsTotal = 5;
+                let testsPassed = 0;
+                
+                if (loadedRequired.length >= 2) testsPassed++;
+                if (blogCards.length > 0) testsPassed++;
+                if (hasAdaptiveVisualizer || hasWebGLIntegration) testsPassed++;
+                if (adaptiveContainers.length > 0 || webglCanvas.length > 0) testsPassed++;
+                if (bezelElements.length > 0) testsPassed++;
+                
+                const successRate = (testsPassed / testsTotal * 100).toFixed(1);
+                
+                log(`\n📊 Test Summary:`);
+                log(`   Tests passed: ${testsPassed}/${testsTotal} (${successRate}%)`);
+                
+                if (testsPassed >= 4) {
+                    log('🎉 Integration test: SUCCESS', 'success');
+                    updateStatus(`Integration test passed (${successRate}%)`, 'success');
+                } else if (testsPassed >= 2) {
+                    log('⚠️ Integration test: PARTIAL SUCCESS', 'warn');
+                    updateStatus(`Integration test partially successful (${successRate}%)`, 'warning');
+                } else {
+                    log('❌ Integration test: FAILED', 'error');
+                    updateStatus(`Integration test failed (${successRate}%)`, 'error');
+                }
+                
+                // Test 6: Try to trigger an interaction
+                if (bezelElements.length > 0) {
+                    log('🎮 Testing bezel interaction...');
+                    try {
+                        const testBezel = bezelElements[0];
+                        const clickEvent = new MouseEvent('click', { bubbles: true });
+                        testBezel.dispatchEvent(clickEvent);
+                        log('✅ Bezel click simulation successful');
+                    } catch (error) {
+                        log(`❌ Bezel interaction failed: ${error.message}`, 'error');
+                    }
+                }
+                
+            } catch (error) {
+                log(`❌ Frame test error: ${error.message}`, 'error');
+                updateStatus('Frame test failed', 'error');
+            }
+        }
+        
+        function openBlogDirect() {
+            log('🔗 Opening blog in new window...');
+            window.open('vib3code-morphing-blog.html', '_blank');
+        }
+        
+        function checkSystems() {
+            log('🔍 Checking local systems...');
+            
+            // Check if we can access the blog file
+            fetch('vib3code-morphing-blog.html')
+                .then(response => {
+                    if (response.ok) {
+                        log('✅ Blog file accessible');
+                        return response.text();
+                    } else {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                })
+                .then(html => {
+                    // Parse and analyze the HTML
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    const scripts = doc.querySelectorAll('script[src]');
+                    const scriptCount = scripts.length;
+                    
+                    log(`📜 Blog HTML contains ${scriptCount} script references`);
+                    
+                    // Check for required scripts
+                    const requiredScripts = [
+                        'VIB34D_BLOG_INTEGRATION_INJECT.js',
+                        'VIB34D_ADAPTIVE_INTEGRATION.js',
+                        'VIB34D_ADAPTIVE_CARD_VISUALIZER.js'
+                    ];
+                    
+                    const scriptSources = Array.from(scripts).map(s => s.src);
+                    const foundScripts = requiredScripts.filter(req => 
+                        scriptSources.some(src => src.includes(req))
+                    );
+                    
+                    log(`✅ Required scripts in HTML: ${foundScripts.length}/${requiredScripts.length}`);
+                    foundScripts.forEach(script => log(`   - ${script}`));
+                    
+                    updateStatus('System check complete', 'success');
+                })
+                .catch(error => {
+                    log(`❌ Cannot access blog file: ${error.message}`, 'error');
+                    updateStatus('System check failed', 'error');
+                });
+        }
+        
+        // Auto-run system check on load
+        window.addEventListener('load', () => {
+            setTimeout(checkSystems, 1000);
+        });
+    </script>
+</body>
+</html>

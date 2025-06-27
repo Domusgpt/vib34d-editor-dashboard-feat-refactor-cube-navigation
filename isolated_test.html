@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>VIB34D Isolated Test</title>
+    <style>
+        body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #333; }
+        .pass { border-color: #0f0; }
+        .fail { border-color: #f00; color: #f00; }
+        .visualizer-card { 
+            width: 300px; 
+            height: 200px; 
+            border: 2px solid #fff; 
+            margin: 10px; 
+            display: inline-block; 
+            position: relative;
+        }
+        canvas { width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+    <h1>VIB34D Isolated Component Test</h1>
+    <div id="log"></div>
+    <div id="test-area"></div>
+    
+    <!-- Load Working Core Architecture -->
+    <script src="VIB34D_WORKING_CORE_ARCHITECTURE.js"></script>
+    <!-- Load Central State Manager -->
+    <script src="VIB34D_CENTRAL_STATE_MANAGER.js"></script>
+    
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const div = document.createElement('div');
+            div.className = 'test';
+            div.textContent = message;
+            logDiv.appendChild(div);
+            console.log(message);
+        }
+        
+        function runTest() {
+            log('🚀 Starting isolated test...');
+            
+            // Test 1: Check Working Core
+            if (window.VIB34D_WorkingCore) {
+                log('✅ Working Core Architecture loaded');
+                log('Available classes: ' + Object.keys(window.VIB34D_WorkingCore).join(', '));
+            } else {
+                log('❌ Working Core Architecture not loaded');
+                return;
+            }
+            
+            // Test 2: Check Central State Manager
+            if (window.VIB34DCentralStateManager) {
+                log('✅ Central State Manager loaded');
+            } else {
+                log('❌ Central State Manager not loaded');
+                return;
+            }
+            
+            // Test 3: Create HypercubeCore instance
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 300;
+                canvas.height = 200;
+                const hypercubeCore = new window.VIB34D_WorkingCore.HypercubeCore(canvas);
+                log('✅ HypercubeCore created successfully');
+                
+                // Add to test area
+                const card = document.createElement('div');
+                card.className = 'visualizer-card';
+                card.appendChild(canvas);
+                document.getElementById('test-area').appendChild(card);
+                
+                // Start the visualizer
+                hypercubeCore.start();
+                log('✅ HypercubeCore started');
+                
+            } catch (error) {
+                log('❌ HypercubeCore creation failed: ' + error.message);
+                console.error(error);
+            }
+            
+            // Test 4: Create Central State Manager
+            try {
+                const centralState = new window.VIB34DCentralStateManager();
+                log('✅ Central State Manager created successfully');
+                
+                // Test 5: Register a visualizer
+                const canvas2 = document.createElement('canvas');
+                canvas2.width = 300;
+                canvas2.height = 200;
+                
+                const registered = centralState.registerVisualizer('test-viz', canvas2, {
+                    geometry: 'hypercube',
+                    projection: 'perspective',
+                    position: { x: 0.5, y: 0.5 }
+                });
+                
+                if (registered) {
+                    log('✅ Visualizer registered successfully');
+                    
+                    // Add to test area
+                    const card2 = document.createElement('div');
+                    card2.className = 'visualizer-card';
+                    card2.appendChild(canvas2);
+                    document.getElementById('test-area').appendChild(card2);
+                    
+                    // Start the registered visualizer
+                    const viz = centralState.visualizers.get('test-viz');
+                    if (viz && viz.hypercubeCore) {
+                        viz.hypercubeCore.start();
+                        log('✅ Registered visualizer started');
+                    }
+                } else {
+                    log('❌ Visualizer registration failed');
+                }
+                
+            } catch (error) {
+                log('❌ Central State Manager creation failed: ' + error.message);
+                console.error(error);
+            }
+            
+            log('🏁 Test completed');
+        }
+        
+        // Run test when page loads
+        document.addEventListener('DOMContentLoaded', runTest);
+    </script>
+</body>
+</html>

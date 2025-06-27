@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integration Status Test</title>
+    <style>
+        body {
+            background: #000;
+            color: #0ff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+        .status { margin: 10px 0; }
+        .success { color: #0f0; }
+        .error { color: #f00; }
+        .warning { color: #ff0; }
+    </style>
+</head>
+<body>
+    <h1>🎴 VIB34D Production Blog Integration Status</h1>
+    <div id="status"></div>
+
+    <!-- Load core scripts in order -->
+    <script src="VIB34D_ADAPTIVE_CARD_VISUALIZER.js"></script>
+    <script src="VIB34D_ADAPTIVE_INTEGRATION.js"></script>
+    
+    <script>
+        const statusDiv = document.getElementById('status');
+        
+        function addStatus(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = message;
+            statusDiv.appendChild(div);
+            console.log(message);
+        }
+        
+        // Test integration status
+        setTimeout(() => {
+            addStatus('=== INTEGRATION STATUS CHECK ===');
+            
+            // Check if AdaptiveCardVisualizer is available
+            if (window.AdaptiveCardVisualizer) {
+                addStatus('✅ AdaptiveCardVisualizer found in window.AdaptiveCardVisualizer', 'success');
+            } else {
+                addStatus('❌ AdaptiveCardVisualizer NOT found in window.AdaptiveCardVisualizer', 'error');
+            }
+            
+            // Check VIB34D namespace
+            if (window.VIB34D && window.VIB34D.AdaptiveCardVisualizer) {
+                addStatus('✅ AdaptiveCardVisualizer found in window.VIB34D.AdaptiveCardVisualizer', 'success');
+            } else {
+                addStatus('❌ AdaptiveCardVisualizer NOT found in window.VIB34D.AdaptiveCardVisualizer', 'error');
+            }
+            
+            // Test creating an instance
+            try {
+                const testContainer = document.createElement('div');
+                const visualizer = new window.AdaptiveCardVisualizer(testContainer, {
+                    width: 200,
+                    height: 150,
+                    geometry: 0
+                });
+                addStatus('✅ AdaptiveCardVisualizer instance created successfully', 'success');
+                
+                // Test initialization
+                try {
+                    visualizer.initialize();
+                    addStatus('✅ AdaptiveCardVisualizer initialized successfully', 'success');
+                } catch (initError) {
+                    addStatus(`⚠️ AdaptiveCardVisualizer initialization issue: ${initError.message}`, 'warning');
+                }
+                
+                visualizer.destroy();
+            } catch (error) {
+                addStatus(`❌ Failed to create AdaptiveCardVisualizer instance: ${error.message}`, 'error');
+            }
+            
+            // Check for canvas support
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (gl) {
+                addStatus('✅ WebGL support detected', 'success');
+            } else {
+                addStatus('❌ WebGL NOT supported', 'error');
+            }
+            
+            // Check for blog cards in production file
+            addStatus('=== PRODUCTION BLOG STATUS ===');
+            
+            // We can't directly test the production blog from here, but we can check if scripts load
+            const scripts = [
+                'VIB34D_ADAPTIVE_CARD_VISUALIZER.js',
+                'VIB34D_ADAPTIVE_INTEGRATION.js'
+            ];
+            
+            scripts.forEach(script => {
+                const scriptElement = document.querySelector(`script[src="${script}"]`);
+                if (scriptElement) {
+                    addStatus(`✅ ${script} loaded`, 'success');
+                } else {
+                    addStatus(`❌ ${script} NOT loaded`, 'error');
+                }
+            });
+            
+            addStatus('=== TEST COMPLETE ===');
+            addStatus('🔗 Open production blog: http://localhost:8000/vib3code-morphing-blog.html');
+            addStatus('Press F12 in production blog to check console for integration messages');
+            
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Blog Integration Test</title>
+    <style>
+        body {
+            background: #000;
+            color: #0ff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+        .test-section { 
+            margin: 20px 0; 
+            border: 1px solid #333;
+            padding: 15px;
+        }
+        .status { margin: 5px 0; }
+        .success { color: #0f0; }
+        .error { color: #f00; }
+        .warning { color: #ff0; }
+        .info { color: #0ff; }
+        .mock-card {
+            width: 200px;
+            height: 150px;
+            border: 1px solid #555;
+            margin: 10px;
+            display: inline-block;
+            position: relative;
+        }
+        .mock-card canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎴 Production Blog Integration Test</h1>
+    <p>This simulates what should happen in the production blog...</p>
+    
+    <div class="test-section">
+        <h2>📝 Expected Production Blog Flow</h2>
+        <div id="flow-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎨 Mock Card Visualizations</h2>
+        <div id="mock-cards"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔍 Integration Check Results</h2>
+        <div id="integration-results"></div>
+    </div>
+
+    <!-- Load the same scripts as production blog -->
+    <script src="VIB34D_ADAPTIVE_CARD_VISUALIZER.js"></script>
+    <script src="VIB34D_ADAPTIVE_INTEGRATION.js"></script>
+    
+    <script>
+        function addStatus(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = message;
+            container.appendChild(div);
+            console.log(`[${containerId}] ${message}`);
+        }
+        
+        // Simulate the production blog flow
+        function simulateProductionFlow() {
+            addStatus('flow-status', '1. Production blog loads vib3code-morphing-blog.html', 'info');
+            addStatus('flow-status', '2. All VIB34D_PHASE*.js scripts load', 'info');
+            addStatus('flow-status', '3. VIB34D_ADAPTIVE_CARD_VISUALIZER.js loads', 'info');
+            addStatus('flow-status', '4. VIB34D_ADAPTIVE_INTEGRATION.js loads', 'info');
+            addStatus('flow-status', '5. DOMContentLoaded event fires', 'info');
+            addStatus('flow-status', '6. Adaptive integration checks for AdaptiveCardVisualizer', 'info');
+            
+            if (window.AdaptiveCardVisualizer) {
+                addStatus('flow-status', '7. ✅ AdaptiveCardVisualizer found!', 'success');
+                addStatus('flow-status', '8. Integration scans for canvas.card-visualizer elements', 'info');
+                addStatus('flow-status', '9. Found 6 blog cards with canvas elements', 'info');
+                addStatus('flow-status', '10. Replaces each canvas with AdaptiveCardVisualizer', 'success');
+                addStatus('flow-status', '11. Each card shows animated geometric patterns', 'success');
+                addStatus('flow-status', '12. Cards respond to hover/interaction', 'success');
+            } else {
+                addStatus('flow-status', '7. ❌ AdaptiveCardVisualizer NOT found', 'error');
+                addStatus('flow-status', '8. Integration falls back to basic canvases', 'warning');
+            }
+        }
+        
+        // Create mock cards to demonstrate the effect
+        function createMockCards() {
+            const container = document.getElementById('mock-cards');
+            const cardGeometries = ['hypercube', 'tetrahedron', 'sphere', 'torus', 'klein', 'fractal'];
+            
+            cardGeometries.forEach((geometry, index) => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'mock-card';
+                cardDiv.innerHTML = `<canvas class="card-visualizer" id="mock-card-${index}"></canvas>`;
+                container.appendChild(cardDiv);
+                
+                // Try to initialize with AdaptiveCardVisualizer
+                if (window.AdaptiveCardVisualizer) {
+                    try {
+                        const canvas = cardDiv.querySelector('canvas');
+                        const visualizer = new AdaptiveCardVisualizer(canvas, {
+                            width: 200,
+                            height: 150,
+                            geometry: index,
+                            theme: geometry
+                        });
+                        visualizer.initialize();
+                        addStatus('integration-results', `✅ Mock card ${index} (${geometry}) initialized`, 'success');
+                    } catch (error) {
+                        addStatus('integration-results', `❌ Mock card ${index} failed: ${error.message}`, 'error');
+                    }
+                } else {
+                    addStatus('integration-results', `⚠️ Mock card ${index} - no AdaptiveCardVisualizer`, 'warning');
+                }
+            });
+        }
+        
+        // Run integration check
+        function runIntegrationCheck() {
+            addStatus('integration-results', '=== INTEGRATION CHECK ===', 'info');
+            
+            // Check if class is available
+            if (window.AdaptiveCardVisualizer) {
+                addStatus('integration-results', '✅ AdaptiveCardVisualizer class available', 'success');
+                
+                // Test class functionality
+                try {
+                    const testDiv = document.createElement('div');
+                    const testVisualizer = new AdaptiveCardVisualizer(testDiv);
+                    addStatus('integration-results', '✅ Can create AdaptiveCardVisualizer instances', 'success');
+                    testVisualizer.destroy();
+                } catch (error) {
+                    addStatus('integration-results', `❌ Error creating instance: ${error.message}`, 'error');
+                }
+            } else {
+                addStatus('integration-results', '❌ AdaptiveCardVisualizer class NOT available', 'error');
+            }
+            
+            // Check WebGL support
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (gl) {
+                addStatus('integration-results', '✅ WebGL support available', 'success');
+            } else {
+                addStatus('integration-results', '❌ WebGL NOT supported', 'error');
+            }
+            
+            // Production blog specific checks
+            addStatus('integration-results', '=== PRODUCTION BLOG CHECKS ===', 'info');
+            addStatus('integration-results', '📍 Expected blog cards:', 'info');
+            addStatus('integration-results', '  • blog-card-1: Header/Navigation', 'info');
+            addStatus('integration-results', '  • blog-card-2: Featured Article', 'info');
+            addStatus('integration-results', '  • blog-card-3: Secondary Content', 'info');
+            addStatus('integration-results', '  • blog-card-4: Sidebar/Navigation', 'info');
+            addStatus('integration-results', '  • blog-card-5: Article List', 'info');
+            addStatus('integration-results', '  • blog-card-6: Footer/Meta', 'info');
+            
+            addStatus('integration-results', '📍 Expected canvas elements:', 'info');
+            addStatus('integration-results', '  • card-visualizer-1 through card-visualizer-6', 'info');
+            addStatus('integration-results', '  • bezel-visualizer-left, right, top, bottom', 'info');
+            addStatus('integration-results', '  • board-visualizer (background)', 'info');
+        }
+        
+        // Initialize everything
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                simulateProductionFlow();
+                runIntegrationCheck();
+                createMockCards();
+                
+                addStatus('integration-results', '=== TESTING COMPLETE ===', 'success');
+                addStatus('integration-results', '🔗 Now test the actual production blog:', 'info');
+                addStatus('integration-results', '   http://localhost:8000/vib3code-morphing-blog.html', 'info');
+                addStatus('integration-results', '🔍 Look for these console messages:', 'info');
+                addStatus('integration-results', '   "🎴 VIB34D Adaptive Integration System Initializing..."', 'info');
+                addStatus('integration-results', '   "✅ AdaptiveCardVisualizer found"', 'info');
+                addStatus('integration-results', '   "🔄 Replacing canvas visualizers..."', 'info');
+            }, 500);
+        });
+    </script>
+</body>
+</html>

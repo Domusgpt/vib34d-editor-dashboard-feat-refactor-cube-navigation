@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VIB34D Demo Diagnostic</title>
+    <style>
+        body { font-family: monospace; background: #000; color: #0f0; padding: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #333; }
+        .pass { border-color: #0f0; }
+        .fail { border-color: #f00; color: #f00; }
+        .warn { border-color: #ff0; color: #ff0; }
+    </style>
+</head>
+<body>
+    <h1>VIB34D Demo Diagnostic Results</h1>
+    <div id="results"></div>
+    
+    <script>
+        function runDiagnostic() {
+            const results = [];
+            
+            // Test 1: Check if we can access the demo page
+            results.push({
+                test: 'Demo Page Access',
+                status: 'running',
+                details: 'Testing access to main demo...'
+            });
+            
+            // Create iframe to load demo
+            const iframe = document.createElement('iframe');
+            iframe.src = '/VIB34D_PHASE1_INTEGRATED_DEMO.html';
+            iframe.style.width = '1px';
+            iframe.style.height = '1px';
+            iframe.style.opacity = '0';
+            document.body.appendChild(iframe);
+            
+            iframe.onload = function() {
+                setTimeout(() => {
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        
+                        // Test 2: Check Working Core Architecture
+                        const hasWorkingCore = iframe.contentWindow.VIB34D_WorkingCore;
+                        results.push({
+                            test: 'Working Core Architecture',
+                            status: hasWorkingCore ? 'pass' : 'fail',
+                            details: hasWorkingCore ? 'VIB34D_WorkingCore loaded' : 'VIB34D_WorkingCore not found'
+                        });
+                        
+                        // Test 3: Check Central State Manager
+                        const hasCentralState = iframe.contentWindow.VIB34DCentralStateManager;
+                        results.push({
+                            test: 'Central State Manager',
+                            status: hasCentralState ? 'pass' : 'fail',
+                            details: hasCentralState ? 'VIB34DCentralStateManager loaded' : 'VIB34DCentralStateManager not found'
+                        });
+                        
+                        // Test 4: Check DOM elements
+                        const grid = iframeDoc.getElementById('visualizer-grid');
+                        results.push({
+                            test: 'Visualizer Grid Element',
+                            status: grid ? 'pass' : 'fail',
+                            details: grid ? 'visualizer-grid found' : 'visualizer-grid not found'
+                        });
+                        
+                        // Test 5: Check cards in grid
+                        const cardCount = grid ? grid.children.length : 0;
+                        results.push({
+                            test: 'Visualizer Cards',
+                            status: cardCount > 0 ? 'pass' : 'fail',
+                            details: `${cardCount} cards found in grid`
+                        });
+                        
+                        // Test 6: Try creating HypercubeCore
+                        if (hasWorkingCore) {
+                            try {
+                                const testCanvas = iframeDoc.createElement('canvas');
+                                testCanvas.width = 100;
+                                testCanvas.height = 100;
+                                const testCore = new iframe.contentWindow.VIB34D_WorkingCore.HypercubeCore(testCanvas);
+                                results.push({
+                                    test: 'HypercubeCore Creation',
+                                    status: 'pass',
+                                    details: 'HypercubeCore created successfully'
+                                });
+                            } catch (error) {
+                                results.push({
+                                    test: 'HypercubeCore Creation',
+                                    status: 'fail',
+                                    details: `Error: ${error.message}`
+                                });
+                            }
+                        }
+                        
+                        // Test 7: Try creating Central State Manager
+                        if (hasCentralState) {
+                            try {
+                                const testState = new iframe.contentWindow.VIB34DCentralStateManager();
+                                results.push({
+                                    test: 'Central State Manager Creation',
+                                    status: 'pass',
+                                    details: 'Central State Manager created successfully'
+                                });
+                            } catch (error) {
+                                results.push({
+                                    test: 'Central State Manager Creation',
+                                    status: 'fail',
+                                    details: `Error: ${error.message}`
+                                });
+                            }
+                        }
+                        
+                        // Test 8: Check system status
+                        const systemStatus = iframeDoc.getElementById('system-status');
+                        const statusHTML = systemStatus ? systemStatus.innerHTML : '';
+                        results.push({
+                            test: 'System Status',
+                            status: statusHTML.includes('Ready') ? 'pass' : 'warn',
+                            details: statusHTML || 'No system status found'
+                        });
+                        
+                        // Update first test result
+                        results[0].status = 'pass';
+                        results[0].details = 'Demo page loaded successfully';
+                        
+                    } catch (error) {
+                        results.push({
+                            test: 'Demo Analysis',
+                            status: 'fail',
+                            details: `Error accessing demo: ${error.message}`
+                        });
+                    }
+                    
+                    displayResults(results);
+                }, 3000); // Wait 3 seconds for demo to initialize
+            };
+            
+            iframe.onerror = function() {
+                results[0].status = 'fail';
+                results[0].details = 'Failed to load demo page';
+                displayResults(results);
+            };
+        }
+        
+        function displayResults(results) {
+            const container = document.getElementById('results');
+            container.innerHTML = '';
+            
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.className = `test ${result.status}`;
+                div.innerHTML = `
+                    <strong>${result.test}</strong>: ${result.status.toUpperCase()}<br>
+                    <small>${result.details}</small>
+                `;
+                container.appendChild(div);
+            });
+            
+            // Summary
+            const summary = document.createElement('div');
+            const passCount = results.filter(r => r.status === 'pass').length;
+            const failCount = results.filter(r => r.status === 'fail').length;
+            const warnCount = results.filter(r => r.status === 'warn').length;
+            
+            summary.className = 'test';
+            summary.innerHTML = `
+                <strong>SUMMARY</strong><br>
+                <small>Passed: ${passCount}, Failed: ${failCount}, Warnings: ${warnCount}</small>
+            `;
+            container.appendChild(summary);
+            
+            // Recommendations if cards are missing
+            if (results.find(r => r.test === 'Visualizer Cards' && r.status === 'fail')) {
+                const recommendations = document.createElement('div');
+                recommendations.className = 'test warn';
+                recommendations.innerHTML = `
+                    <strong>ISSUE IDENTIFIED: Missing Visualizer Cards</strong><br>
+                    <small>
+                    Likely causes:<br>
+                    1. JavaScript initialization error<br>
+                    2. Working Core Architecture not loading properly<br>
+                    3. Central State Manager failing to create HypercubeCore instances<br>
+                    4. WebGL context issues<br>
+                    5. createVisualizerCards() function not executing
+                    </small>
+                `;
+                container.appendChild(recommendations);
+            }
+        }
+        
+        // Start diagnostic
+        runDiagnostic();
+    </script>
+</body>
+</html>

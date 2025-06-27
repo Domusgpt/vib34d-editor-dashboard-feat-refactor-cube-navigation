@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3STYLEPACK Editor Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            background: linear-gradient(45deg, #0a0a0a, #1a1a2e);
+            color: #00ffff;
+            overflow-x: hidden;
+        }
+        
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            height: 100vh;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .panel {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+        
+        .panel h2 {
+            color: #ff00ff;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid rgba(255, 0, 255, 0.5);
+            padding-bottom: 10px;
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        
+        .control-label {
+            display: block;
+            color: #ffff00;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+        
+        .slider-container {
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 255, 255, 0.2);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .value-display {
+            color: #00ff00;
+            font-size: 14px;
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        .toggle-button {
+            width: 60px;
+            height: 30px;
+            background: rgba(255, 0, 0, 0.3);
+            border: 2px solid #ff0000;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-button.active {
+            background: rgba(0, 255, 0, 0.3);
+            border-color: #00ff00;
+        }
+        
+        .toggle-button::after {
+            content: '';
+            width: 22px;
+            height: 22px;
+            background: #ff0000;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+        }
+        
+        .toggle-button.active::after {
+            background: #00ff00;
+            transform: translateX(28px);
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+        }
+        
+        .preview-container {
+            position: relative;
+            height: 300px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            background: radial-gradient(circle, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1));
+        }
+        
+        .preview-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .status-display {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 0, 0.5);
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-family: monospace;
+            font-size: 11px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            color: #00ff00;
+        }
+        
+        .page-modifier {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid rgba(255, 255, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .page-modifier h3 {
+            color: #ffff00;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .modifier-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .modifier-value {
+            font-size: 12px;
+            color: #00ffff;
+        }
+        
+        .live-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+            border-radius: 20px;
+            padding: 10px 20px;
+            color: #00ff00;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.7); }
+        }
+        
+        .apply-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .apply-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 0, 255, 0.4);
+        }
+        
+        .config-display {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 10px;
+            color: #ffffff;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="live-indicator">🎛️ LIVE EDITOR</div>
+    
+    <div class="dashboard-container">
+        <!-- LEFT PANEL: Master Controls -->
+        <div class="panel">
+            <h2>🎯 Master Controls</h2>
+            
+            <div class="control-group">
+                <label class="control-label">Visual Intensity</label>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="visualIntensity" 
+                           min="0.1" max="2.0" step="0.1" value="0.8">
+                    <div class="value-display" id="visualIntensityValue">0.8</div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Grid Complexity</label>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="gridComplexity" 
+                           min="1" max="5" step="1" value="3">
+                    <div class="value-display" id="gridComplexityValue">3</div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Animation Speed</label>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="animationSpeed" 
+                           min="0.5" max="3.0" step="0.1" value="1.0">
+                    <div class="value-display" id="animationSpeedValue">1.0</div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Color Vibrancy</label>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="colorVibrancy" 
+                           min="0.3" max="1.5" step="0.1" value="0.9">
+                    <div class="value-display" id="colorVibrancyValue">0.9</div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Crystal Accents</label>
+                <div class="toggle-button" id="crystallineAccents"></div>
+            </div>
+            
+            <div class="status-display">
+                <div class="status-item">
+                    <span>System Status:</span>
+                    <span class="status-value" id="systemStatus">READY</span>
+                </div>
+                <div class="status-item">
+                    <span>Active Section:</span>
+                    <span class="status-value" id="activeSection">HOME</span>
+                </div>
+                <div class="status-item">
+                    <span>Performance:</span>
+                    <span class="status-value" id="performance">OPTIMAL</span>
+                </div>
+                <div class="status-item">
+                    <span>Visualizers:</span>
+                    <span class="status-value" id="visualizerCount">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CENTER PANEL: Live Preview -->
+        <div class="panel">
+            <h2>🎬 Live Preview</h2>
+            <div class="preview-container">
+                <canvas class="preview-canvas" id="previewCanvas"></canvas>
+            </div>
+            
+            <h3 style="color: #00ffff; margin: 20px 0 10px;">Current Configuration</h3>
+            <div class="config-display" id="configDisplay">
+                Loading configuration...
+            </div>
+            
+            <button class="apply-button" id="applyToMain">
+                🚀 Apply to Main System
+            </button>
+        </div>
+        
+        <!-- RIGHT PANEL: Page Relations -->
+        <div class="panel">
+            <h2>🌐 Page Relations</h2>
+            
+            <div class="page-modifier">
+                <h3>🏠 Home (Master)</h3>
+                <div class="modifier-grid">
+                    <div>Intensity: <span class="modifier-value">1.0</span></div>
+                    <div>Grid: <span class="modifier-value">1.0</span></div>
+                    <div>Speed: <span class="modifier-value">1.0</span></div>
+                    <div>Geometry: <span class="modifier-value">Hypercube</span></div>
+                </div>
+            </div>
+            
+            <div class="page-modifier">
+                <h3>💻 Tech</h3>
+                <div class="modifier-grid">
+                    <div>Intensity: <span class="modifier-value" id="techIntensity">0.7</span></div>
+                    <div>Grid: <span class="modifier-value" id="techGrid">0.6</span></div>
+                    <div>Speed: <span class="modifier-value" id="techSpeed">1.2</span></div>
+                    <div>Geometry: <span class="modifier-value">Tetrahedron</span></div>
+                </div>
+            </div>
+            
+            <div class="page-modifier">
+                <h3>🎬 Media</h3>
+                <div class="modifier-grid">
+                    <div>Intensity: <span class="modifier-value" id="mediaIntensity">1.3</span></div>
+                    <div>Grid: <span class="modifier-value" id="mediaGrid">1.4</span></div>
+                    <div>Speed: <span class="modifier-value" id="mediaSpeed">0.8</span></div>
+                    <div>Geometry: <span class="modifier-value">Sphere</span></div>
+                </div>
+            </div>
+            
+            <div class="page-modifier">
+                <h3>🎵 Audio</h3>
+                <div class="modifier-grid">
+                    <div>Intensity: <span class="modifier-value" id="audioIntensity">0.9</span></div>
+                    <div>Grid: <span class="modifier-value" id="audioGrid">0.9</span></div>
+                    <div>Speed: <span class="modifier-value" id="audioSpeed">1.1</span></div>
+                    <div>Geometry: <span class="modifier-value">Torus</span></div>
+                </div>
+            </div>
+            
+            <div class="page-modifier">
+                <h3>🌊 Quantum</h3>
+                <div class="modifier-grid">
+                    <div>Intensity: <span class="modifier-value" id="quantumIntensity">1.1</span></div>
+                    <div>Grid: <span class="modifier-value" id="quantumGrid">1.2</span></div>
+                    <div>Speed: <span class="modifier-value" id="quantumSpeed">0.9</span></div>
+                    <div>Geometry: <span class="modifier-value">Wave</span></div>
+                </div>
+            </div>
+            
+            <h3 style="color: #ffff00; margin: 20px 0 10px;">Interaction Presets</h3>
+            
+            <div class="control-group">
+                <label class="control-label">Cube Navigation</label>
+                <div class="toggle-button active" id="cubeNavigation"></div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Content Gravity</label>
+                <div class="toggle-button active" id="contentGravity"></div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Hover Effects</label>
+                <div class="toggle-button active" id="hoverEffects"></div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Portal Transitions</label>
+                <div class="toggle-button active" id="portalTransitions"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Editor Dashboard Control System
+        class EditorDashboard {
+            constructor() {
+                this.config = null;
+                this.homeMaster = null;
+                this.reactivityBridge = null;
+                
+                this.init();
+            }
+            
+            async init() {
+                console.log('🎛️ Editor Dashboard initializing...');
+                
+                // Load configuration
+                await this.loadConfiguration();
+                
+                // Setup controls
+                this.setupSliderControls();
+                this.setupToggleControls();
+                this.setupPreviewCanvas();
+                this.setupStatusMonitoring();
+                
+                // Try to connect to main system
+                this.attemptSystemConnection();
+                
+                console.log('✅ Editor Dashboard ready');
+            }
+            
+            async loadConfiguration() {
+                try {
+                    const response = await fetch('./presets/editor-dashboard-config.json');
+                    this.config = await response.json();
+                    this.updateConfigDisplay();
+                } catch (error) {
+                    console.warn('⚠️ Could not load configuration:', error);
+                }
+            }
+            
+            setupSliderControls() {
+                const sliders = ['visualIntensity', 'gridComplexity', 'animationSpeed', 'colorVibrancy'];
+                
+                sliders.forEach(sliderId => {
+                    const slider = document.getElementById(sliderId);
+                    const valueDisplay = document.getElementById(sliderId + 'Value');
+                    
+                    slider.addEventListener('input', (e) => {
+                        const value = parseFloat(e.target.value);
+                        valueDisplay.textContent = value;
+                        this.updateParameter(sliderId, value);
+                        this.updateRelationalDisplays();
+                    });
+                });
+            }
+            
+            setupToggleControls() {
+                const toggles = [
+                    'crystallineAccents', 'cubeNavigation', 'contentGravity', 
+                    'hoverEffects', 'portalTransitions'
+                ];
+                
+                toggles.forEach(toggleId => {
+                    const toggle = document.getElementById(toggleId);
+                    
+                    toggle.addEventListener('click', () => {
+                        toggle.classList.toggle('active');
+                        const isActive = toggle.classList.contains('active');
+                        this.updateParameter(toggleId, isActive);
+                    });
+                });
+            }
+            
+            setupPreviewCanvas() {
+                const canvas = document.getElementById('previewCanvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Resize canvas to container
+                const resizeCanvas = () => {
+                    const container = canvas.parentElement;
+                    canvas.width = container.clientWidth;
+                    canvas.height = container.clientHeight;
+                };
+                
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+                
+                // Simple preview visualization
+                this.startPreviewAnimation(ctx, canvas);
+            }
+            
+            startPreviewAnimation(ctx, canvas) {
+                let time = 0;
+                
+                const animate = () => {
+                    time += 0.02;
+                    
+                    // Clear canvas
+                    ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Get current parameters
+                    const intensity = parseFloat(document.getElementById('visualIntensity').value);
+                    const complexity = parseInt(document.getElementById('gridComplexity').value);
+                    const speed = parseFloat(document.getElementById('animationSpeed').value);
+                    const vibrancy = parseFloat(document.getElementById('colorVibrancy').value);
+                    
+                    // Draw grid pattern based on parameters
+                    ctx.strokeStyle = `rgba(0, 255, 255, ${intensity * vibrancy})`;
+                    ctx.lineWidth = 1;
+                    
+                    const gridSize = 20 + (complexity * 10);
+                    const animOffset = Math.sin(time * speed) * 10;
+                    
+                    // Vertical lines
+                    for (let x = 0; x < canvas.width; x += gridSize) {
+                        ctx.beginPath();
+                        ctx.moveTo(x + animOffset, 0);
+                        ctx.lineTo(x + animOffset, canvas.height);
+                        ctx.stroke();
+                    }
+                    
+                    // Horizontal lines
+                    for (let y = 0; y < canvas.height; y += gridSize) {
+                        ctx.beginPath();
+                        ctx.moveTo(0, y + animOffset);
+                        ctx.lineTo(canvas.width, y + animOffset);
+                        ctx.stroke();
+                    }
+                    
+                    // Central hypercube-style pattern
+                    const centerX = canvas.width / 2;
+                    const centerY = canvas.height / 2;
+                    const size = 50 + (intensity * 30);
+                    
+                    ctx.strokeStyle = `rgba(255, 0, 255, ${vibrancy})`;
+                    ctx.lineWidth = 2;
+                    
+                    // Rotating cube projection
+                    const rotation = time * speed;
+                    const cos = Math.cos(rotation);
+                    const sin = Math.sin(rotation);
+                    
+                    // Draw 3D cube projection
+                    const points = [
+                        [-size, -size, -size], [size, -size, -size], 
+                        [size, size, -size], [-size, size, -size],
+                        [-size, -size, size], [size, -size, size], 
+                        [size, size, size], [-size, size, size]
+                    ];
+                    
+                    const projected = points.map(([x, y, z]) => {
+                        // Rotate around Y axis
+                        const rotX = x * cos - z * sin;
+                        const rotZ = x * sin + z * cos;
+                        
+                        // Project to 2D
+                        const scale = 200 / (200 + rotZ);
+                        return [
+                            centerX + rotX * scale,
+                            centerY + y * scale
+                        ];
+                    });
+                    
+                    // Draw cube edges
+                    const edges = [
+                        [0,1], [1,2], [2,3], [3,0], // back face
+                        [4,5], [5,6], [6,7], [7,4], // front face
+                        [0,4], [1,5], [2,6], [3,7]  // connecting edges
+                    ];
+                    
+                    edges.forEach(([a, b]) => {
+                        ctx.beginPath();
+                        ctx.moveTo(projected[a][0], projected[a][1]);
+                        ctx.lineTo(projected[b][0], projected[b][1]);
+                        ctx.stroke();
+                    });
+                    
+                    requestAnimationFrame(animate);
+                };
+                
+                animate();
+            }
+            
+            setupStatusMonitoring() {
+                setInterval(() => {
+                    // Update status display
+                    if (this.homeMaster && this.reactivityBridge) {
+                        const systemState = this.reactivityBridge.getSystemState();
+                        
+                        document.getElementById('systemStatus').textContent = 'CONNECTED';
+                        document.getElementById('performance').textContent = systemState.performanceProfile.toUpperCase();
+                        document.getElementById('visualizerCount').textContent = systemState.visualizerCount;
+                    } else {
+                        document.getElementById('systemStatus').textContent = 'STANDALONE';
+                    }
+                }, 1000);
+            }
+            
+            updateParameter(parameter, value) {
+                console.log(`🎛️ Parameter update: ${parameter} = ${value}`);
+                
+                // Update main system if connected
+                if (this.reactivityBridge) {
+                    this.reactivityBridge.updateFromEditor(parameter, value);
+                }
+                
+                this.updateConfigDisplay();
+            }
+            
+            updateRelationalDisplays() {
+                const masterIntensity = parseFloat(document.getElementById('visualIntensity').value);
+                
+                // Update tech modifiers
+                document.getElementById('techIntensity').textContent = (masterIntensity * 0.7).toFixed(2);
+                document.getElementById('techGrid').textContent = (masterIntensity * 0.6).toFixed(2);
+                
+                // Update media modifiers  
+                document.getElementById('mediaIntensity').textContent = (masterIntensity * 1.3).toFixed(2);
+                document.getElementById('mediaGrid').textContent = (masterIntensity * 1.4).toFixed(2);
+                
+                // Update audio modifiers
+                document.getElementById('audioIntensity').textContent = (masterIntensity * 0.9).toFixed(2);
+                document.getElementById('audioGrid').textContent = (masterIntensity * 0.9).toFixed(2);
+                
+                // Update quantum modifiers
+                document.getElementById('quantumIntensity').textContent = (masterIntensity * 1.1).toFixed(2);
+                document.getElementById('quantumGrid').textContent = (masterIntensity * 1.2).toFixed(2);
+            }
+            
+            updateConfigDisplay() {
+                const currentConfig = {
+                    masterControls: {
+                        visualIntensity: parseFloat(document.getElementById('visualIntensity').value),
+                        gridComplexity: parseInt(document.getElementById('gridComplexity').value),
+                        animationSpeed: parseFloat(document.getElementById('animationSpeed').value),
+                        colorVibrancy: parseFloat(document.getElementById('colorVibrancy').value),
+                        crystallineAccents: document.getElementById('crystallineAccents').classList.contains('active')
+                    },
+                    interactionPresets: {
+                        cubeNavigation: document.getElementById('cubeNavigation').classList.contains('active'),
+                        contentGravity: document.getElementById('contentGravity').classList.contains('active'),
+                        hoverEffects: document.getElementById('hoverEffects').classList.contains('active'),
+                        portalTransitions: document.getElementById('portalTransitions').classList.contains('active')
+                    },
+                    timestamp: new Date().toISOString()
+                };
+                
+                document.getElementById('configDisplay').textContent = JSON.stringify(currentConfig, null, 2);
+            }
+            
+            attemptSystemConnection() {
+                // Try to connect to parent window system
+                if (window.parent && window.parent.vib3HomeMaster) {
+                    this.homeMaster = window.parent.vib3HomeMaster;
+                    this.reactivityBridge = window.parent.vib3Bridge;
+                    console.log('🔗 Connected to main system');
+                }
+                
+                // Setup apply button
+                document.getElementById('applyToMain').addEventListener('click', () => {
+                    this.applyToMainSystem();
+                });
+            }
+            
+            applyToMainSystem() {
+                if (!this.reactivityBridge) {
+                    alert('🚨 Not connected to main system. Open this dashboard in a tab alongside the main application.');
+                    return;
+                }
+                
+                // Force sync all parameters
+                const sliders = ['visualIntensity', 'gridComplexity', 'animationSpeed', 'colorVibrancy'];
+                sliders.forEach(sliderId => {
+                    const value = parseFloat(document.getElementById(sliderId).value);
+                    this.reactivityBridge.updateFromEditor(sliderId, value);
+                });
+                
+                console.log('🚀 Configuration applied to main system');
+                alert('✅ Configuration applied successfully!');
+            }
+        }
+        
+        // Initialize dashboard when page loads
+        new EditorDashboard();
+    </script>
+</body>
+</html>

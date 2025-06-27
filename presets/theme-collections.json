@@ -1,0 +1,269 @@
+{
+  "vib3code-blog": {
+    "name": "VIB3CODE Magazine Blog",
+    "description": "Complete theme for technical blog with optimal reading experience",
+    "version": "1.0.0",
+    "target": "blog_content",
+    
+    "sections": {
+      "hero": {
+        "style": "vib3code-hero",
+        "reactivity": "interactive-focus",
+        "layout": "full_viewport",
+        "content_zones": ["title", "subtitle", "navigation"]
+      },
+      
+      "article_list": {
+        "style": "article-ambient", 
+        "reactivity": "reading-ambient",
+        "layout": "card_grid",
+        "content_zones": ["preview_cards", "pagination"]
+      },
+      
+      "article_content": {
+        "style": "article-ambient",
+        "reactivity": "reading-ambient", 
+        "layout": "reading_optimized",
+        "content_zones": ["main_text", "code_blocks", "images"]
+      },
+      
+      "interactive_cards": {
+        "style": "interactive-card",
+        "reactivity": "interactive-focus",
+        "layout": "hover_responsive",
+        "content_zones": ["project_previews", "tool_showcases"]
+      },
+      
+      "technical_deep": {
+        "style": "technical-precision",
+        "reactivity": "reading-ambient",
+        "layout": "documentation",
+        "content_zones": ["api_docs", "tutorials", "guides"]
+      },
+      
+      "sidebar": {
+        "style": "navigation-flow",
+        "reactivity": "interactive-focus",
+        "layout": "fixed_navigation",
+        "content_zones": ["categories", "recent_posts", "tools"]
+      },
+      
+      "footer": {
+        "style": "minimal-grid",
+        "reactivity": "reading-ambient",
+        "layout": "information_dense",
+        "content_zones": ["links", "social", "legal"]
+      }
+    },
+    
+    "transitions": {
+      "hero_to_content": {
+        "type": "fade_morph_density",
+        "duration": 1200,
+        "easing": "ease_out_expo"
+      },
+      "card_hover": {
+        "type": "magnetic_attraction",
+        "duration": 300,
+        "easing": "ease_out_quart"
+      },
+      "scroll_response": {
+        "type": "momentum_density",
+        "sensitivity": 0.8,
+        "physics": true
+      },
+      "section_change": {
+        "type": "geometry_morph",
+        "duration": 800,
+        "preserve_readability": true
+      }
+    },
+    
+    "responsive": {
+      "mobile": {
+        "performance_mode": "optimized",
+        "reduced_complexity": 0.6,
+        "touch_optimization": true
+      },
+      "tablet": {
+        "performance_mode": "balanced",
+        "hover_simulation": true
+      },
+      "desktop": {
+        "performance_mode": "full",
+        "advanced_effects": true
+      }
+    }
+  },
+
+  "parserator-marketing": {
+    "name": "Parserator Marketing Suite",
+    "description": "High-conversion marketing site with EMA sovereignty emphasis",
+    "version": "1.0.0",
+    "target": "marketing_conversion",
+    
+    "sections": {
+      "landing_hero": {
+        "style": "parserator-authority",
+        "reactivity": "high-energy",
+        "layout": "conversion_focused",
+        "content_zones": ["value_prop", "cta_primary", "trust_signals"]
+      },
+      
+      "features_showcase": {
+        "style": "technical-precision", 
+        "reactivity": "interactive-focus",
+        "layout": "feature_grid",
+        "content_zones": ["feature_cards", "demos", "benefits"]
+      },
+      
+      "ema_manifesto": {
+        "style": "creative-showcase",
+        "reactivity": "ema-sovereignty",
+        "layout": "narrative_flow",
+        "content_zones": ["principles", "examples", "movement"]
+      },
+      
+      "pricing_clarity": {
+        "style": "announcement-crystal",
+        "reactivity": "conversion-focused",
+        "layout": "pricing_table",
+        "content_zones": ["plans", "calculator", "enterprise"]
+      },
+      
+      "social_proof": {
+        "style": "interactive-card",
+        "reactivity": "interactive-focus",
+        "layout": "testimonial_carousel",
+        "content_zones": ["testimonials", "case_studies", "metrics"]
+      },
+      
+      "technical_depth": {
+        "style": "fractal-deep",
+        "reactivity": "reading-ambient",
+        "layout": "documentation",
+        "content_zones": ["api_explorer", "code_examples", "integration_guides"]
+      }
+    },
+    
+    "transitions": {
+      "attention_grabbing": {
+        "type": "reality_glitch",
+        "duration": 100,
+        "impact": "high"
+      },
+      "trust_building": {
+        "type": "stable_morphing",
+        "duration": 600,
+        "reliability": "emphasized"
+      },
+      "conversion_moments": {
+        "type": "golden_highlight",
+        "duration": 2000,
+        "psychology": "urgency"
+      }
+    },
+    
+    "psychology": {
+      "sovereignty_emphasis": true,
+      "liberation_messaging": true,
+      "technical_authority": true,
+      "movement_leadership": true
+    }
+  },
+
+  "minimal-documentation": {
+    "name": "Clean Documentation Theme",
+    "description": "Maximum readability for technical documentation",
+    "version": "1.0.0",
+    "target": "documentation",
+    
+    "sections": {
+      "docs_background": {
+        "style": "minimal-grid",
+        "reactivity": "accessibility-compliant",
+        "layout": "reading_optimized"
+      },
+      "code_sections": {
+        "style": "technical-precision",
+        "reactivity": "reading-ambient", 
+        "layout": "code_focused"
+      },
+      "navigation": {
+        "style": "navigation-flow",
+        "reactivity": "interactive-focus",
+        "layout": "sidebar_navigation"
+      }
+    },
+    
+    "accessibility": {
+      "wcag_compliance": "AAA",
+      "screen_reader_optimized": true,
+      "keyboard_navigation": true,
+      "reduced_motion_support": true
+    }
+  },
+
+  "portfolio-showcase": {
+    "name": "Creative Portfolio Showcase",
+    "description": "High-impact visual portfolio presentation",
+    "version": "1.0.0",
+    "target": "creative_portfolio",
+    
+    "sections": {
+      "portfolio_hero": {
+        "style": "creative-showcase",
+        "reactivity": "high-energy",
+        "layout": "immersive_hero"
+      },
+      "project_gallery": {
+        "style": "interactive-card",
+        "reactivity": "interactive-focus",
+        "layout": "masonry_grid"
+      },
+      "project_detail": {
+        "style": "fractal-deep",
+        "reactivity": "momentum-physics",
+        "layout": "full_immersion"
+      }
+    },
+    
+    "artistic": {
+      "creative_freedom": true,
+      "experimental_effects": true,
+      "performance_secondary": true
+    }
+  },
+
+  "performance-first": {
+    "name": "Performance First Theme", 
+    "description": "Minimal resource usage with maximum impact",
+    "version": "1.0.0",
+    "target": "mobile_optimized",
+    
+    "global_settings": {
+      "performance_mode": "performance-optimized",
+      "max_complexity": 0.4,
+      "frame_rate_target": 30,
+      "memory_limit": "25MB"
+    },
+    
+    "sections": {
+      "lightweight_hero": {
+        "style": "minimal-grid",
+        "reactivity": "performance-optimized"
+      },
+      "efficient_content": {
+        "style": "article-ambient",
+        "reactivity": "accessibility-compliant"
+      }
+    },
+    
+    "optimization": {
+      "lazy_loading": true,
+      "progressive_enhancement": true,
+      "graceful_degradation": true,
+      "offline_support": true
+    }
+  }
+}

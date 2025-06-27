@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Demo Status Test</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: monospace;
+            padding: 20px;
+        }
+        .status-box {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+        }
+        .error { border-color: #ff0000; background: rgba(255, 0, 0, 0.1); }
+        .success { border-color: #00ff00; background: rgba(0, 255, 0, 0.1); }
+        .warning { border-color: #ffff00; background: rgba(255, 255, 0, 0.1); }
+    </style>
+</head>
+<body>
+    <h1>VIB34D Demo Status Test</h1>
+    <div id="status-container"></div>
+    
+    <script>
+        const statusContainer = document.getElementById('status-container');
+        
+        function addStatus(message, type = 'status') {
+            const div = document.createElement('div');
+            div.className = `status-box ${type}`;
+            div.innerHTML = message;
+            statusContainer.appendChild(div);
+        }
+        
+        function testDemoStatus() {
+            addStatus('🔍 Testing VIB34D Demo Status...');
+            
+            // Create iframe to load the demo
+            const iframe = document.createElement('iframe');
+            iframe.src = 'VIB34D_PHASE1_INTEGRATED_DEMO.html';
+            iframe.style.width = '1px';
+            iframe.style.height = '1px';
+            iframe.style.visibility = 'hidden';
+            document.body.appendChild(iframe);
+            
+            iframe.onload = function() {
+                setTimeout(() => {
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        
+                        // Check if visualizer grid exists and has content
+                        const visualizerGrid = iframeDoc.getElementById('visualizer-grid');
+                        const gridChildren = visualizerGrid ? visualizerGrid.children.length : 0;
+                        
+                        // Check system status
+                        const systemStatus = iframeDoc.getElementById('system-status');
+                        const systemStatusContent = systemStatus ? systemStatus.innerHTML : 'Not found';
+                        
+                        // Check architecture status
+                        const archStatus = iframeDoc.getElementById('architectureStatus');
+                        const archStatusText = archStatus ? archStatus.textContent : 'Not found';
+                        
+                        // Check hypercube core count
+                        const coreCount = iframeDoc.getElementById('hypercubeCoreCount');
+                        const coreCountText = coreCount ? coreCount.textContent : 'Not found';
+                        
+                        // Check if there are any error displays
+                        const errorDisplays = iframeDoc.querySelectorAll('.error-display');
+                        const successDisplays = iframeDoc.querySelectorAll('.success-display');
+                        
+                        // Report findings
+                        addStatus(`📊 <strong>Demo Analysis Results:</strong><br>
+                                   • Visualizer Grid Children: ${gridChildren}<br>
+                                   • Architecture Status: ${archStatusText}<br>
+                                   • HypercubeCore Count: ${coreCountText}<br>
+                                   • Error Displays: ${errorDisplays.length}<br>
+                                   • Success Displays: ${successDisplays.length}`, 
+                                   gridChildren > 0 ? 'success' : 'warning');
+                        
+                        if (systemStatusContent !== 'Not found') {
+                            addStatus(`🖥️ <strong>System Status Content:</strong><br>${systemStatusContent}`);
+                        }
+                        
+                        if (errorDisplays.length > 0) {
+                            errorDisplays.forEach((error, index) => {
+                                addStatus(`❌ <strong>Error ${index + 1}:</strong><br>${error.innerHTML}`, 'error');
+                            });
+                        }
+                        
+                        if (successDisplays.length > 0) {
+                            successDisplays.forEach((success, index) => {
+                                addStatus(`✅ <strong>Success ${index + 1}:</strong><br>${success.innerHTML}`, 'success');
+                            });
+                        }
+                        
+                        // Check console errors from iframe
+                        addStatus(`🔍 <strong>Final Assessment:</strong><br>
+                                   ${gridChildren === 8 ? '✅ All 8 visualizer cards should be showing' : 
+                                     gridChildren > 0 ? `⚠️ Only ${gridChildren}/8 visualizer cards created` : 
+                                     '❌ No visualizer cards visible - likely stuck in loading/error state'}`);
+                        
+                    } catch (error) {
+                        addStatus(`❌ <strong>Error accessing iframe:</strong><br>${error.message}`, 'error');
+                    }
+                }, 2000); // Wait 2 seconds for initialization
+            };
+            
+            iframe.onerror = function() {
+                addStatus('❌ Failed to load demo iframe', 'error');
+            };
+        }
+        
+        // Start test
+        testDemoStatus();
+    </script>
+</body>
+</html>

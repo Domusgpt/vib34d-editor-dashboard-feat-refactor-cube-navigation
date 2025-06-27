@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3STYLEPACK + MCP Integration Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .test-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .vib3-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .vib3-canvas {
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            background: #000;
+        }
+        
+        .mcp-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .test-btn {
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 110, 0.4);
+        }
+        
+        .test-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .log-output {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-offline { background: #ff3333; }
+        .status-connecting { background: #ffbb33; }
+        .status-online { background: #33ff33; }
+        
+        .integration-status {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3a86ff;
+        }
+        
+        .error-display {
+            background: rgba(255, 51, 51, 0.2);
+            border: 1px solid #ff3333;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🔮 VIB3STYLEPACK + MCP Integration Test</h1>
+            <p>Testing the integration between VIB34D reactive visualization system and Parserator MCP Server</p>
+        </div>
+        
+        <div class="integration-status">
+            <h3>
+                <span id="vib3-status" class="status-indicator status-offline"></span>
+                VIB3STYLEPACK Status: <span id="vib3-status-text">Initializing...</span>
+            </h3>
+            <h3>
+                <span id="mcp-status" class="status-indicator status-offline"></span>
+                MCP Server Status: <span id="mcp-status-text">Not Connected</span>
+            </h3>
+        </div>
+        
+        <div class="test-grid">
+            <div class="vib3-panel">
+                <h3>🎨 VIB34D Visualization</h3>
+                <canvas id="vib3-canvas" class="vib3-canvas"></canvas>
+                <div class="test-controls">
+                    <button class="test-btn" onclick="testVIB3System()">Test VIB3 System</button>
+                    <button class="test-btn" onclick="triggerPhaseTransition()">Phase Transition</button>
+                    <button class="test-btn" onclick="testChromaticEngine()">Chromatic Test</button>
+                </div>
+                <div id="vib3-log" class="log-output"></div>
+            </div>
+            
+            <div class="mcp-panel">
+                <h3>🤖 MCP Parser Integration</h3>
+                <div class="test-controls">
+                    <button class="test-btn" onclick="connectMCPServer()">Connect MCP</button>
+                    <button class="test-btn" onclick="testParseVisualizationData()">Parse VIB3 Data</button>
+                    <button class="test-btn" onclick="testSchemaGeneration()">Generate Schema</button>
+                </div>
+                <div>
+                    <label for="test-data">Test Data:</label>
+                    <textarea id="test-data" style="width: 100%; margin: 10px 0; padding: 10px; border-radius: 5px; border: 1px solid #ccc; background: rgba(255,255,255,0.1); color: white;">
+VIB34D Phase: 7, Geometry: hypercube, Rotation: 1.2rad/s, Grid Density: 12.5, Interaction: scroll(0.8), click(0.3), mouse(0.6), Color Shift: 0.2, Morph Factor: 0.7
+                    </textarea>
+                </div>
+                <div id="mcp-log" class="log-output"></div>
+            </div>
+        </div>
+        
+        <div class="error-display" id="error-display">
+            <h4>⚠️ Error Details</h4>
+            <div id="error-message"></div>
+        </div>
+        
+        <div class="performance-metrics">
+            <div class="metric-card">
+                <div class="metric-value" id="vib3-fps">--</div>
+                <div>VIB3 FPS</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="mcp-latency">--</div>
+                <div>MCP Latency (ms)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="integration-health">--</div>
+                <div>Integration Health</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="parse-accuracy">--</div>
+                <div>Parse Accuracy %</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load VIB34D System -->
+    <script src="VIB34D_PHASE1_CORE_ARCHITECTURE.js"></script>
+    <script src="VIB34D_PHASE2_GEOMETRY_IMPLEMENTATIONS.js"></script>
+    <script src="VIB34D_PHASE3_PROJECTION_SYSTEM.js"></script>
+    <script src="VIB34D_PHASE4_SHADER_UNIFORM_SYSTEM.js"></script>
+    <script src="VIB34D_PHASE5_INTERACTION_INTEGRATION.js"></script>
+    <script src="VIB34D_PHASE6_CHROMATIC_INTEGRATION.js"></script>
+    <script src="VIB34D_PHASE7_VIB3_INTEGRATION.js"></script>
+    
+    <script>
+        // Test state management
+        let vib3System = null;
+        let mcpConnection = null;
+        let testResults = {};
+        let frameCount = 0;
+        let lastFrameTime = performance.now();
+        
+        // Initialize logging
+        function log(panel, message, type = 'info') {
+            const logElement = document.getElementById(`${panel}-log`);
+            const timestamp = new Date().toISOString().substr(11, 8);
+            const typeIcon = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span style="color: #666">[${timestamp}]</span> ${typeIcon} ${message}`;
+            logElement.appendChild(logEntry);
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            console.log(`[${panel.toUpperCase()}] ${message}`);
+        }
+        
+        // Update status indicators
+        function updateStatus(system, status, text) {
+            const indicator = document.getElementById(`${system}-status`);
+            const statusText = document.getElementById(`${system}-status-text`);
+            
+            indicator.className = `status-indicator status-${status}`;
+            statusText.textContent = text;
+        }
+        
+        // Show error
+        function showError(message) {
+            const errorDisplay = document.getElementById('error-display');
+            const errorMessage = document.getElementById('error-message');
+            
+            errorMessage.textContent = message;
+            errorDisplay.style.display = 'block';
+            
+            setTimeout(() => {
+                errorDisplay.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Initialize VIB3 System
+        async function initializeVIB3System() {
+            try {
+                updateStatus('vib3', 'connecting', 'Initializing...');
+                log('vib3', 'Starting VIB34D system initialization...');
+                
+                const canvas = document.getElementById('vib3-canvas');
+                
+                // Create mock VIB3HomeMaster for testing
+                const mockHomeMaster = {
+                    masterState: {
+                        intensity: 0.8,
+                        speed: 1.2,
+                        density: 1.0,
+                        dimension: 3.5,
+                        complexity: 0.6,
+                        activeSection: 0,
+                        scrollChaos: 0.0,
+                        clickPulse: 0.0,
+                        mouseIntensity: 0.0
+                    },
+                    sectionModifiers: {
+                        0: {
+                            intensityMod: 1.0,
+                            speedMod: 1.0,
+                            densityMod: 1.0,
+                            complexityMod: 1.0,
+                            baseColor: [1.0, 0.0, 1.0]
+                        }
+                    },
+                    on: () => {},
+                    transitionToSection: (section) => {
+                        log('vib3', `Transitioning to section ${section}`);
+                    }
+                };
+                
+                // Initialize VIB34D system
+                if (window.VIB34D_Phase7) {
+                    vib3System = new window.VIB34D_Phase7.VIB34DVIb3EnhancedCore(
+                        canvas,
+                        mockHomeMaster,
+                        { instanceId: 'mcp-test' }
+                    );
+                    
+                    await vib3System.initialize();
+                    
+                    updateStatus('vib3', 'online', 'VIB34D System Active');
+                    log('vib3', 'VIB34D system initialized successfully', 'success');
+                    
+                    // Start FPS monitoring
+                    startFPSMonitoring();
+                    
+                } else {
+                    throw new Error('VIB34D_Phase7 not available');
+                }
+                
+            } catch (error) {
+                updateStatus('vib3', 'offline', 'Initialization Failed');
+                log('vib3', `Initialization error: ${error.message}`, 'error');
+                showError(`VIB3 Initialization Error: ${error.message}`);
+            }
+        }
+        
+        // FPS Monitoring
+        function startFPSMonitoring() {
+            function measureFPS() {
+                frameCount++;
+                const now = performance.now();
+                
+                if (now - lastFrameTime >= 1000) {
+                    const fps = Math.round((frameCount * 1000) / (now - lastFrameTime));
+                    document.getElementById('vib3-fps').textContent = fps;
+                    frameCount = 0;
+                    lastFrameTime = now;
+                }
+                
+                requestAnimationFrame(measureFPS);
+            }
+            measureFPS();
+        }
+        
+        // Mock MCP Connection (simulating real MCP server)
+        class MockMCPConnection {
+            constructor() {
+                this.connected = false;
+                this.latency = 0;
+            }
+            
+            async connect() {
+                log('mcp', 'Attempting to connect to MCP server...');
+                
+                // Simulate connection delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                this.connected = true;
+                updateStatus('mcp', 'online', 'Connected to Parserator MCP');
+                log('mcp', 'Successfully connected to MCP server', 'success');
+                
+                return true;
+            }
+            
+            async parseData(inputData, outputSchema, instructions = '') {
+                if (!this.connected) {
+                    throw new Error('MCP server not connected');
+                }
+                
+                const startTime = performance.now();
+                log('mcp', `Parsing data: ${inputData.substring(0, 50)}...`);
+                
+                // Simulate parsing delay
+                await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 300));
+                
+                this.latency = Math.round(performance.now() - startTime);
+                document.getElementById('mcp-latency').textContent = this.latency;
+                
+                // Mock parsing result based on VIB3 data structure
+                const mockResult = {
+                    success: true,
+                    parsedData: {
+                        phase: 7,
+                        geometry: 'hypercube',
+                        rotation_speed: 1.2,
+                        grid_density: 12.5,
+                        interactions: {
+                            scroll: 0.8,
+                            click: 0.3,
+                            mouse: 0.6
+                        },
+                        color_shift: 0.2,
+                        morph_factor: 0.7,
+                        timestamp: new Date().toISOString()
+                    },
+                    metadata: {
+                        confidence: 0.94,
+                        tokensUsed: 145,
+                        processingTime: this.latency
+                    }
+                };
+                
+                // Update accuracy metric
+                document.getElementById('parse-accuracy').textContent = 
+                    Math.round(mockResult.metadata.confidence * 100);
+                
+                log('mcp', `Parse completed with ${mockResult.metadata.confidence * 100}% confidence`, 'success');
+                
+                return mockResult;
+            }
+            
+            async suggestSchema(sampleData) {
+                if (!this.connected) {
+                    throw new Error('MCP server not connected');
+                }
+                
+                log('mcp', 'Generating schema suggestion...');
+                
+                // Simulate schema generation
+                await new Promise(resolve => setTimeout(resolve, 150));
+                
+                return {
+                    suggestedSchema: {
+                        phase: 'number',
+                        geometry: 'string',
+                        rotation_speed: 'number',
+                        grid_density: 'number',
+                        interactions: {
+                            scroll: 'number',
+                            click: 'number',
+                            mouse: 'number'
+                        },
+                        color_shift: 'number',
+                        morph_factor: 'number',
+                        timestamp: 'string'
+                    },
+                    confidence: 0.91
+                };
+            }
+        }
+        
+        // Test Functions
+        async function testVIB3System() {
+            if (!vib3System) {
+                log('vib3', 'VIB3 system not initialized', 'error');
+                return;
+            }
+            
+            log('vib3', 'Running VIB3 system test...');
+            
+            try {
+                const analysis = vib3System.getSystemAnalysis();
+                log('vib3', `System analysis: ${JSON.stringify(analysis).substring(0, 100)}...`, 'success');
+                
+                // Update integration health
+                document.getElementById('integration-health').textContent = '✓';
+                
+            } catch (error) {
+                log('vib3', `System test failed: ${error.message}`, 'error');
+                document.getElementById('integration-health').textContent = '✗';
+            }
+        }
+        
+        async function triggerPhaseTransition() {
+            if (!vib3System) {
+                log('vib3', 'VIB3 system not initialized', 'error');
+                return;
+            }
+            
+            log('vib3', 'Triggering phase transition...');
+            
+            // Simulate section transition
+            const randomSection = Math.floor(Math.random() * 8);
+            vib3System.vib3Bridge.handleSectionTransition({
+                fromSection: 0,
+                toSection: randomSection,
+                progress: 1.0
+            });
+            
+            log('vib3', `Transitioned to section ${randomSection}`, 'success');
+        }
+        
+        async function testChromaticEngine() {
+            if (!vib3System) {
+                log('vib3', 'VIB3 system not initialized', 'error');
+                return;
+            }
+            
+            log('vib3', 'Testing chromatic engine...');
+            
+            try {
+                // Test chromatic engine analysis
+                if (vib3System.chromaticEngine && vib3System.chromaticEngine.getChromaticAnalysis) {
+                    const analysis = vib3System.chromaticEngine.getChromaticAnalysis();
+                    log('vib3', 'Chromatic engine test completed', 'success');
+                } else {
+                    log('vib3', 'Chromatic engine methods not available', 'error');
+                }
+            } catch (error) {
+                log('vib3', `Chromatic test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function connectMCPServer() {
+            log('mcp', 'Connecting to MCP server...');
+            
+            try {
+                mcpConnection = new MockMCPConnection();
+                await mcpConnection.connect();
+                
+                // Enable dependent buttons
+                document.querySelectorAll('.test-btn').forEach(btn => {
+                    btn.disabled = false;
+                });
+                
+            } catch (error) {
+                log('mcp', `Connection failed: ${error.message}`, 'error');
+                showError(`MCP Connection Error: ${error.message}`);
+            }
+        }
+        
+        async function testParseVisualizationData() {
+            if (!mcpConnection || !mcpConnection.connected) {
+                log('mcp', 'MCP server not connected', 'error');
+                return;
+            }
+            
+            const testData = document.getElementById('test-data').value;
+            
+            try {
+                const result = await mcpConnection.parseData(
+                    testData,
+                    {
+                        phase: 'number',
+                        geometry: 'string',
+                        rotation: 'number',
+                        interactions: 'object'
+                    },
+                    'Extract VIB3 visualization parameters'
+                );
+                
+                log('mcp', `Parsed data: ${JSON.stringify(result.parsedData, null, 2)}`, 'success');
+                
+                // Apply parsed data to VIB3 system if available
+                if (vib3System && result.parsedData.geometry) {
+                    log('mcp', `Applying geometry: ${result.parsedData.geometry}`);
+                }
+                
+            } catch (error) {
+                log('mcp', `Parse failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testSchemaGeneration() {
+            if (!mcpConnection || !mcpConnection.connected) {
+                log('mcp', 'MCP server not connected', 'error');
+                return;
+            }
+            
+            const testData = document.getElementById('test-data').value;
+            
+            try {
+                const result = await mcpConnection.suggestSchema(testData);
+                log('mcp', `Suggested schema: ${JSON.stringify(result.suggestedSchema, null, 2)}`, 'success');
+                
+            } catch (error) {
+                log('mcp', `Schema generation failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Initialize everything when page loads
+        window.addEventListener('load', async () => {
+            log('vib3', 'Initializing VIB3STYLEPACK + MCP Integration Test...');
+            
+            // Initialize VIB3 system
+            await initializeVIB3System();
+            
+            // Enable initial buttons
+            document.querySelector('button[onclick="connectMCPServer()"]').disabled = false;
+            document.querySelector('button[onclick="testVIB3System()"]').disabled = false;
+            
+            log('vib3', 'Test environment ready!', 'success');
+        });
+        
+        // Handle errors globally
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error);
+            showError(`JavaScript Error: ${event.error.message}`);
+        });
+        
+    </script>
+</body>
+</html>

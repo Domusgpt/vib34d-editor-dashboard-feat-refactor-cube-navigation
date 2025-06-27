@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3STYLEPACK Integration Test</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+        
+        .test-card {
+            border: 1px solid #ff00ff;
+            margin: 20px;
+            padding: 20px;
+            position: relative;
+            width: 300px;
+            height: 200px;
+        }
+        
+        .card-visualizer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #111;
+        }
+        
+        #console-output {
+            border: 1px solid #00ff00;
+            padding: 10px;
+            height: 400px;
+            overflow-y: scroll;
+            white-space: pre-wrap;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 VIB3STYLEPACK Integration Test</h1>
+    
+    <h2>🔍 Console Output Monitor</h2>
+    <div id="console-output"></div>
+    
+    <h2>🎴 Test Cards for AdaptiveCardVisualizer</h2>
+    
+    <div class="blog-card test-card" id="blog-card-1">
+        <canvas class="card-visualizer" width="300" height="200"></canvas>
+        <h3>Test Card 1 - Hypercube</h3>
+    </div>
+    
+    <div class="blog-card test-card" id="blog-card-2">
+        <canvas class="card-visualizer" width="300" height="200"></canvas>
+        <h3>Test Card 2 - Tetrahedron</h3>
+    </div>
+    
+    <div class="blog-card test-card" id="blog-card-3">
+        <canvas class="card-visualizer" width="300" height="200"></canvas>
+        <h3>Test Card 3 - Torus</h3>
+    </div>
+    
+    <!-- Load VIB34D Systems -->
+    <script src="VIB34D_ADAPTIVE_CARD_VISUALIZER.js"></script>
+    <script src="VIB34D_ADAPTIVE_INTEGRATION.js"></script>
+    
+    <script>
+        // Console output monitor
+        const consoleOutput = document.getElementById('console-output');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addToConsole(type, ...args) {
+            const timestamp = new Date().toLocaleTimeString();
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            
+            consoleOutput.textContent += `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole('log', ...args);
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole('error', ...args);
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole('warn', ...args);
+        };
+        
+        // Test information
+        console.log('🎯 VIB3STYLEPACK Integration Test Started');
+        console.log('📊 Test Environment:', {
+            blogCards: document.querySelectorAll('.blog-card').length,
+            canvases: document.querySelectorAll('canvas').length,
+            AdaptiveCardVisualizer: typeof AdaptiveCardVisualizer,
+            VIB34D: typeof window.VIB34D
+        });
+        
+        // Debug helpers
+        window.testHelpers = {
+            checkClasses: () => {
+                console.log('🔍 Available Classes:', {
+                    AdaptiveCardVisualizer: typeof AdaptiveCardVisualizer,
+                    'window.AdaptiveCardVisualizer': typeof window.AdaptiveCardVisualizer,
+                    'window.VIB34D': typeof window.VIB34D,
+                    'window.VIB34D.AdaptiveCardVisualizer': window.VIB34D ? typeof window.VIB34D.AdaptiveCardVisualizer : 'N/A'
+                });
+            },
+            
+            checkIntegration: () => {
+                console.log('🎴 Integration Status:', {
+                    cardVisualizers: window.vib34dCardVisualizers ? window.vib34dCardVisualizers.length : 'Not found',
+                    adaptiveContainers: document.querySelectorAll('.adaptive-visualizer-container').length,
+                    originalCanvases: document.querySelectorAll('.card-visualizer').length
+                });
+            },
+            
+            forceIntegration: () => {
+                if (window.integrateAdaptiveVisualizers) {
+                    console.log('🔄 Force running integration...');
+                    const VisualizerClass = window.AdaptiveCardVisualizer || (window.VIB34D && window.VIB34D.AdaptiveCardVisualizer);
+                    if (VisualizerClass) {
+                        window.integrateAdaptiveVisualizers(VisualizerClass, 'manual');
+                    } else {
+                        console.error('❌ No AdaptiveCardVisualizer class found');
+                    }
+                } else {
+                    console.error('❌ integrateAdaptiveVisualizers function not found');
+                }
+            }
+        };
+        
+        console.log('🛠️ Test helpers available: window.testHelpers');
+        console.log('   - testHelpers.checkClasses()');
+        console.log('   - testHelpers.checkIntegration()');
+        console.log('   - testHelpers.forceIntegration()');
+    </script>
+</body>
+</html>

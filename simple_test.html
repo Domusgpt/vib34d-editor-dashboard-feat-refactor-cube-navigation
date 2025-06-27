@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VIB34D Simple Test</title>
+    <style>
+        body { background: #000; color: #00ff00; font-family: monospace; padding: 20px; }
+        .test-result { margin: 5px 0; }
+        .pass { color: #00ff00; }
+        .fail { color: #ff0000; }
+        .warn { color: #ffff00; }
+    </style>
+</head>
+<body>
+    <h1>🔍 VIB34D System Test</h1>
+    <div id="output"></div>
+    
+    <script>
+        const output = document.getElementById('output');
+        let testResults = [];
+        
+        function log(message, status = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${status}`;
+            div.textContent = message;
+            output.appendChild(div);
+            testResults.push(`${status.toUpperCase()}: ${message}`);
+            console.log(message);
+        }
+        
+        function runTests() {
+            log('🚀 Starting VIB34D system tests...', 'info');
+            
+            // Test 1: Check script loading
+            log('\n📋 TEST 1: Script Loading', 'info');
+            const scripts = Array.from(document.scripts);
+            const phaseScripts = scripts.filter(s => s.src.includes('VIB34D_PHASE'));
+            log(`Found ${phaseScripts.length} Phase scripts`, phaseScripts.length === 8 ? 'pass' : 'fail');
+            
+            // Test 2: Check class definitions
+            log('\n🏗️ TEST 2: Class Definitions', 'info');
+            const classes = ['BaseGeometry', 'GeometryManager', 'HypercubeCore', 'HypercubeGeometry'];
+            classes.forEach(className => {
+                const exists = typeof window[className] !== 'undefined';
+                log(`${className}: ${exists ? 'DEFINED' : 'MISSING'}`, exists ? 'pass' : 'fail');
+            });
+            
+            // Test 3: Try to instantiate core classes
+            log('\n⚙️ TEST 3: Class Instantiation', 'info');
+            try {
+                if (typeof GeometryManager !== 'undefined') {
+                    const gm = new GeometryManager();
+                    log('GeometryManager: CREATED', 'pass');
+                } else {
+                    log('GeometryManager: NOT AVAILABLE', 'fail');
+                }
+            } catch (e) {
+                log(`GeometryManager ERROR: ${e.message}`, 'fail');
+            }
+            
+            try {
+                if (typeof HypercubeCore !== 'undefined') {
+                    const core = new HypercubeCore();
+                    log('HypercubeCore: CREATED', 'pass');
+                } else {
+                    log('HypercubeCore: NOT AVAILABLE', 'fail');
+                }
+            } catch (e) {
+                log(`HypercubeCore ERROR: ${e.message}`, 'fail');
+            }
+            
+            // Test 4: WebGL availability
+            log('\n🎮 TEST 4: WebGL Support', 'info');
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+                if (gl) {
+                    log(`WebGL: AVAILABLE (${gl.getParameter(gl.VERSION)})`, 'pass');
+                } else {
+                    log('WebGL: NOT AVAILABLE', 'fail');
+                }
+            } catch (e) {
+                log(`WebGL ERROR: ${e.message}`, 'fail');
+            }
+            
+            // Summary
+            log('\n📊 TEST SUMMARY:', 'info');
+            const passed = testResults.filter(r => r.startsWith('PASS')).length;
+            const failed = testResults.filter(r => r.startsWith('FAIL')).length;
+            log(`Passed: ${passed}, Failed: ${failed}`, failed === 0 ? 'pass' : 'fail');
+            
+            // Save results to console for extraction
+            console.log('=== FINAL RESULTS ===');
+            testResults.forEach(result => console.log(result));
+            console.log('=== END RESULTS ===');
+        }
+        
+        // Handle script load errors
+        window.addEventListener('error', (e) => {
+            log(`SCRIPT ERROR: ${e.message} in ${e.filename}:${e.lineno}`, 'fail');
+        });
+        
+        // Run tests after a delay to allow scripts to load
+        setTimeout(runTests, 1000);
+    </script>
+    
+    <!-- Load VIB34D Phase Files -->
+    <script src="VIB34D_PHASE1_CORE_ARCHITECTURE.js" onload="console.log('✅ Phase 1 loaded')" onerror="console.log('❌ Phase 1 failed')"></script>
+    <script src="VIB34D_PHASE2_GEOMETRY_IMPLEMENTATIONS.js" onload="console.log('✅ Phase 2 loaded')" onerror="console.log('❌ Phase 2 failed')"></script>
+    <script src="VIB34D_PHASE3_PROJECTION_SYSTEM.js" onload="console.log('✅ Phase 3 loaded')" onerror="console.log('❌ Phase 3 failed')"></script>
+    <script src="VIB34D_PHASE4_SHADER_UNIFORM_SYSTEM.js" onload="console.log('✅ Phase 4 loaded')" onerror="console.log('❌ Phase 4 failed')"></script>
+    <script src="VIB34D_PHASE5_INTERACTION_INTEGRATION.js" onload="console.log('✅ Phase 5 loaded')" onerror="console.log('❌ Phase 5 failed')"></script>
+    <script src="VIB34D_PHASE6_CHROMATIC_INTEGRATION.js" onload="console.log('✅ Phase 6 loaded')" onerror="console.log('❌ Phase 6 failed')"></script>
+    <script src="VIB34D_PHASE7_VIB3_INTEGRATION.js" onload="console.log('✅ Phase 7 loaded')" onerror="console.log('❌ Phase 7 failed')"></script>
+    <script src="VIB34D_PHASE8_EDITOR_DASHBOARD.js" onload="console.log('✅ Phase 8 loaded')" onerror="console.log('❌ Phase 8 failed')"></script>
+</body>
+</html>

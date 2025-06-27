@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Shader Compilation Test</title>
+    <style>
+        body {
+            background: #000;
+            color: #00ffff;
+            font-family: monospace;
+            padding: 20px;
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+        }
+        
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+        }
+        
+        .info {
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid #00ffff;
+        }
+        
+        canvas {
+            border: 1px solid #00ffff;
+            margin: 10px 0;
+        }
+        
+        #console-output {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #333;
+            padding: 10px;
+            margin: 20px 0;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 VIB34D Shader Compilation Test</h1>
+    
+    <div id="test-results"></div>
+    
+    <canvas id="test-canvas" width="400" height="300"></canvas>
+    
+    <h3>Console Output:</h3>
+    <div id="console-output"></div>
+    
+    <script src="VIB34D_WORKING_CORE_ARCHITECTURE.js"></script>
+    <script src="VIB34D_WEBGL_FALLBACK.js"></script>
+    
+    <script>
+        // Capture console messages
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn
+        };
+        
+        const consoleOutput = document.getElementById('console-output');
+        
+        function logToPage(type, ...args) {
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            
+            const div = document.createElement('div');
+            div.style.color = type === 'error' ? '#ff6666' : 
+                             type === 'warn' ? '#ffff66' : '#66ff66';
+            div.textContent = `[${type.toUpperCase()}] ${message}`;
+            consoleOutput.appendChild(div);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            
+            // Also call original console method
+            originalConsole[type](...args);
+        }
+        
+        console.log = (...args) => logToPage('log', ...args);
+        console.error = (...args) => logToPage('error', ...args);
+        console.warn = (...args) => logToPage('warn', ...args);
+        
+        // Test Results Container
+        const resultsContainer = document.getElementById('test-results');
+        
+        function addTestResult(title, success, details = '') {
+            const div = document.createElement('div');
+            div.className = `test-result ${success ? 'success' : 'error'}`;
+            div.innerHTML = `
+                <strong>${success ? '✅' : '❌'} ${title}</strong>
+                ${details ? `<br><small>${details}</small>` : ''}
+            `;
+            resultsContainer.appendChild(div);
+        }
+        
+        function addInfoResult(title, info = '') {
+            const div = document.createElement('div');
+            div.className = 'test-result info';
+            div.innerHTML = `
+                <strong>ℹ️ ${title}</strong>
+                ${info ? `<br><small>${info}</small>` : ''}
+            `;
+            resultsContainer.appendChild(div);
+        }
+        
+        // Run Tests
+        async function runShaderCompilationTests() {
+            console.log('🧪 Starting VIB34D Shader Compilation Tests...');
+            
+            // Test 1: Check if WebGL is available
+            const canvas = document.getElementById('test-canvas');
+            const gl = canvas.getContext('webgl');
+            
+            if (!gl) {
+                addTestResult('WebGL Context', false, 'WebGL not supported - will use fallback system');
+                
+                // Test fallback system
+                if (window.VIB34D_WEBGL_FALLBACK) {
+                    const fallbackRenderer = window.VIB34D_WEBGL_FALLBACK.createFallbackVisualizer(canvas, {
+                        geometryType: 'hypercube',
+                        gridDensity: 12.0,
+                        rotationSpeed: 0.8
+                    });
+                    
+                    if (fallbackRenderer) {
+                        fallbackRenderer.start();
+                        addTestResult('Fallback Renderer', true, 'Canvas 2D fallback working correctly');
+                    } else {
+                        addTestResult('Fallback Renderer', false, 'Fallback system failed');
+                    }
+                }
+                return;
+            }
+            
+            addTestResult('WebGL Context', true, 'WebGL context created successfully');
+            
+            // Test 2: Check if VIB34D Working Core is loaded
+            if (!window.VIB34D_WorkingCore) {
+                addTestResult('VIB34D Core Loading', false, 'VIB34D_WorkingCore not found');
+                return;
+            }
+            
+            addTestResult('VIB34D Core Loading', true, 'VIB34D_WorkingCore loaded successfully');
+            
+            // Test 3: Try to create HypercubeCore
+            try {
+                console.log('🔧 Testing HypercubeCore creation...');
+                
+                const hypercubeCore = new window.VIB34D_WorkingCore.HypercubeCore(canvas, {
+                    geometryType: 'hypercube',
+                    projectionMethod: 'perspective',
+                    onError: (error) => {
+                        console.error('HypercubeCore Error:', error);
+                        addTestResult('HypercubeCore Error Callback', true, `Error handler called: ${error.message || error}`);
+                    }
+                });
+                
+                addTestResult('HypercubeCore Creation', true, 'HypercubeCore instance created');
+                
+                // Test 4: Try to start the visualizer
+                console.log('🔧 Testing visualizer start...');
+                
+                hypercubeCore.start();
+                addTestResult('Visualizer Start', true, 'Visualizer started successfully');
+                
+                // Test 5: Try parameter updates
+                setTimeout(() => {
+                    try {
+                        hypercubeCore.updateParameters({
+                            u_dimension: 4.0,
+                            u_morphFactor: 0.7,
+                            u_gridDensity: 15.0,
+                            u_rotationSpeed: 1.0,
+                            u_patternIntensity: 1.5
+                        });
+                        addTestResult('Parameter Updates', true, 'Parameters updated successfully');
+                    } catch (error) {
+                        addTestResult('Parameter Updates', false, `Parameter update failed: ${error.message}`);
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('HypercubeCore creation failed:', error);
+                addTestResult('HypercubeCore Creation', false, `Creation failed: ${error.message}`);
+                
+                // Try fallback system
+                if (window.VIB34D_WEBGL_FALLBACK) {
+                    console.log('🔧 Testing fallback after WebGL failure...');
+                    const fallbackRenderer = window.VIB34D_WEBGL_FALLBACK.createFallbackVisualizer(canvas, {
+                        geometryType: 'hypercube',
+                        gridDensity: 12.0,
+                        rotationSpeed: 0.8
+                    });
+                    
+                    if (fallbackRenderer) {
+                        fallbackRenderer.start();
+                        addTestResult('Fallback After WebGL Failure', true, 'Fallback system working after WebGL failure');
+                    } else {
+                        addTestResult('Fallback After WebGL Failure', false, 'Fallback system also failed');
+                    }
+                }
+            }
+            
+            console.log('✅ Shader compilation tests completed');
+        }
+        
+        // Add some system info
+        window.addEventListener('DOMContentLoaded', () => {
+            // System info
+            addInfoResult('Browser Info', `${navigator.userAgent}`);
+            addInfoResult('WebGL Support', window.WebGLRenderingContext ? 'Available' : 'Not Available');
+            addInfoResult('Hardware Acceleration', 'Testing during shader compilation...');
+            
+            // Run tests after short delay
+            setTimeout(runShaderCompilationTests, 500);
+        });
+    </script>
+</body>
+</html>

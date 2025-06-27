@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebGL Shader Compilation Test</title>
+    <style>
+        body { 
+            background: #000; 
+            color: #00ff00; 
+            font-family: monospace; 
+            padding: 20px; 
+            margin: 0;
+        }
+        .result { margin: 5px 0; }
+        .pass { color: #00ff00; }
+        .fail { color: #ff0000; }
+        .warn { color: #ffff00; }
+        .info { color: #00ffff; }
+        #canvas { border: 1px solid #333; margin: 10px 0; }
+        #output { max-height: 400px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 WebGL Shader Compilation Test</h1>
+    <canvas id="canvas" width="400" height="400"></canvas>
+    <div id="output"></div>
+    
+    <script src="VIB34D_WORKING_CORE_ARCHITECTURE.js"></script>
+    <script>
+        const output = document.getElementById('output');
+        let testResults = [];
+        
+        function log(message, status = 'info') {
+            const div = document.createElement('div');
+            div.className = `result ${status}`;
+            div.textContent = message;
+            output.appendChild(div);
+            testResults.push(`${status.toUpperCase()}: ${message}`);
+            console.log(`[${status.toUpperCase()}] ${message}`);
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function runWebGLShaderTest() {
+            log('🚀 Starting WebGL Shader Compilation Test...', 'info');
+            
+            try {
+                // Test 1: Check VIB34D availability
+                log('\n1️⃣ Testing VIB34D Core Loading...', 'info');
+                if (!window.VIB34D_WorkingCore) {
+                    log('❌ VIB34D_WorkingCore not found', 'fail');
+                    return;
+                }
+                log('✅ VIB34D_WorkingCore loaded', 'pass');
+                
+                // Test 2: WebGL Context
+                log('\n2️⃣ Testing WebGL Context...', 'info');
+                const canvas = document.getElementById('canvas');
+                const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+                
+                if (!gl) {
+                    log('❌ WebGL not available', 'fail');
+                    return;
+                }
+                log(`✅ WebGL context created: ${gl.getParameter(gl.VERSION)}`, 'pass');
+                
+                // Test 3: Managers
+                log('\n3️⃣ Testing Managers...', 'info');
+                const { GeometryManager, ProjectionManager, ShaderManager } = window.VIB34D_WorkingCore;
+                
+                const geometryManager = new GeometryManager();
+                log('✅ GeometryManager created', 'pass');
+                
+                const projectionManager = new ProjectionManager();
+                log('✅ ProjectionManager created', 'pass');
+                
+                const shaderManager = new ShaderManager(gl, geometryManager, projectionManager);
+                log('✅ ShaderManager created', 'pass');
+                
+                // Test 4: Shader Sources
+                log('\n4️⃣ Testing Shader Sources...', 'info');
+                
+                // Check base vertex shader
+                const vsSource = shaderManager._getBaseVertexShaderSource();
+                log(`Vertex shader length: ${vsSource.length} chars`, 'info');
+                log(`VS preview: ${vsSource.substring(0, 60)}...`, 'info');
+                
+                // Check base fragment shader  
+                const fsSource = shaderManager._getBaseFragmentShaderSource();
+                log(`Fragment shader length: ${fsSource.length} chars`, 'info');
+                
+                // Test 5: Individual Shader Compilation
+                log('\n5️⃣ Testing Individual Shader Compilation...', 'info');
+                
+                // Test vertex shader compilation
+                const vs = gl.createShader(gl.VERTEX_SHADER);
+                gl.shaderSource(vs, vsSource);
+                gl.compileShader(vs);
+                
+                if (gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
+                    log('✅ Vertex shader compiled successfully', 'pass');
+                } else {
+                    const vsError = gl.getShaderInfoLog(vs);
+                    log(`❌ Vertex shader compilation failed: ${vsError}`, 'fail');
+                }
+                
+                // Create complete fragment shader with geometry/projection code
+                const hypercubeGeom = geometryManager.getGeometry('hypercube');
+                const perspectiveProj = projectionManager.getProjection('perspective');
+                
+                let completeFsSource = fsSource;
+                completeFsSource = completeFsSource.replace('//__PROJECTION_CODE_INJECTION_POINT__', perspectiveProj.getShaderCode());
+                completeFsSource = completeFsSource.replace('//__GEOMETRY_CODE_INJECTION_POINT__', hypercubeGeom.getShaderCode());
+                
+                log(`Complete fragment shader length: ${completeFsSource.length} chars`, 'info');
+                
+                // Test fragment shader compilation
+                const fs = gl.createShader(gl.FRAGMENT_SHADER);
+                gl.shaderSource(fs, completeFsSource);
+                gl.compileShader(fs);
+                
+                if (gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
+                    log('✅ Fragment shader compiled successfully', 'pass');
+                } else {
+                    const fsError = gl.getShaderInfoLog(fs);
+                    log(`❌ Fragment shader compilation failed:`, 'fail');
+                    log(`Error: ${fsError}`, 'fail');
+                    
+                    // Log fragment shader source for debugging
+                    log('Fragment shader source:', 'info');
+                    const lines = completeFsSource.split('\\n');
+                    lines.forEach((line, i) => {
+                        log(`${(i+1).toString().padStart(3)}: ${line}`, 'info');
+                    });
+                    return;
+                }
+                
+                // Test 6: Program Linking
+                log('\n6️⃣ Testing Program Linking...', 'info');
+                
+                const program = gl.createProgram();
+                gl.attachShader(program, vs);
+                gl.attachShader(program, fs);
+                gl.linkProgram(program);
+                
+                if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                    log('✅ Program linked successfully', 'pass');
+                } else {
+                    const linkError = gl.getProgramInfoLog(program);
+                    log(`❌ Program linking failed: ${linkError}`, 'fail');
+                    
+                    // Check individual shader compile status again
+                    log('Re-checking shader compile status:', 'info');
+                    log(`VS compiled: ${gl.getShaderParameter(vs, gl.COMPILE_STATUS)}`, 'info');
+                    log(`FS compiled: ${gl.getShaderParameter(fs, gl.COMPILE_STATUS)}`, 'info');
+                    
+                    // Check if shaders are attached
+                    const attachedShaders = gl.getAttachedShaders(program);
+                    log(`Attached shaders count: ${attachedShaders ? attachedShaders.length : 0}`, 'info');
+                    
+                    return;
+                }
+                
+                // Test 7: ShaderManager createDynamicProgram
+                log('\n7️⃣ Testing ShaderManager Dynamic Program...', 'info');
+                
+                const dynamicProgram = shaderManager.createDynamicProgram('testProgram', 'hypercube', 'perspective');
+                
+                if (dynamicProgram) {
+                    log('✅ Dynamic program created successfully', 'pass');
+                } else {
+                    log('❌ Dynamic program creation failed', 'fail');
+                }
+                
+                // Test 8: HypercubeCore Creation
+                log('\n8️⃣ Testing HypercubeCore Creation...', 'info');
+                
+                try {
+                    const { HypercubeCore } = window.VIB34D_WorkingCore;
+                    const core = new HypercubeCore(canvas);
+                    log('✅ HypercubeCore created successfully', 'pass');
+                    
+                    // Try to start rendering
+                    log('\n9️⃣ Testing Render Start...', 'info');
+                    core.start();
+                    
+                    setTimeout(() => {
+                        if (core.state.isRendering) {
+                            log('✅ Rendering started successfully', 'pass');
+                            core.stop();
+                            log('✅ Rendering stopped', 'pass');
+                        } else {
+                            log('❌ Rendering failed to start', 'fail');
+                        }
+                        
+                        // Final summary
+                        log('\n📊 TEST SUMMARY:', 'info');
+                        const passed = testResults.filter(r => r.startsWith('PASS')).length;
+                        const failed = testResults.filter(r => r.startsWith('FAIL')).length;
+                        log(`Passed: ${passed}, Failed: ${failed}`, failed === 0 ? 'pass' : (failed > passed ? 'fail' : 'warn'));
+                        
+                    }, 100);
+                    
+                } catch (coreError) {
+                    log(`❌ HypercubeCore creation failed: ${coreError.message}`, 'fail');
+                    log(`Stack: ${coreError.stack}`, 'fail');
+                }
+                
+            } catch (error) {
+                log(`❌ Test failed with error: ${error.message}`, 'fail');
+                log(`Stack: ${error.stack}`, 'fail');
+            }
+        }
+        
+        // Wait for script to load then run test  
+        setTimeout(runWebGLShaderTest, 1000);
+    </script>
+</body>
+</html>

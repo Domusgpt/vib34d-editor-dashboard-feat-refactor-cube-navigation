@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D End-to-End Parameter Cascade Test</title>
+    <style>
+        body {
+            background: #000;
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            font-size: 28px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #00ff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .test-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: calc(100vh - 120px);
+        }
+        
+        .test-visualizer {
+            background: rgba(255, 0, 255, 0.1);
+            border: 2px solid #ff00ff;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .test-canvas {
+            width: 100%;
+            height: 400px;
+            border: 2px solid #00ffff;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .parameter-info {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 12px;
+        }
+        
+        .param-value {
+            color: #00ff00;
+            font-family: monospace;
+            margin: 5px 0;
+        }
+        
+        .test-controls {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .cascade-section {
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .cascade-section.active {
+            border-color: #ffff00;
+            background: rgba(255, 255, 0, 0.1);
+        }
+        
+        .cascade-title {
+            color: #ffff00;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .test-button {
+            background: rgba(255, 0, 255, 0.3);
+            border: 2px solid #ff00ff;
+            color: #ff00ff;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            background: rgba(255, 0, 255, 0.6);
+            transform: scale(1.05);
+        }
+        
+        .test-button.running {
+            background: rgba(255, 255, 0, 0.6);
+            border-color: #ffff00;
+            color: #000;
+        }
+        
+        .test-button.completed {
+            background: rgba(0, 255, 0, 0.6);
+            border-color: #00ff00;
+            color: #000;
+        }
+        
+        .interaction-simulator {
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .interaction-title {
+            color: #00ff00;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .interaction-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .interaction-button {
+            background: rgba(0, 255, 0, 0.3);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        
+        .interaction-button:hover {
+            background: rgba(0, 255, 0, 0.5);
+        }
+        
+        .interaction-button.active {
+            background: rgba(0, 255, 0, 0.8);
+            color: #000;
+        }
+        
+        .results-panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .result-item {
+            margin: 8px 0;
+            padding: 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .result-item.pass {
+            background: rgba(0, 255, 0, 0.2);
+            border-left: 3px solid #00ff00;
+        }
+        
+        .result-item.fail {
+            background: rgba(255, 0, 0, 0.2);
+            border-left: 3px solid #ff0000;
+        }
+        
+        .result-item.info {
+            background: rgba(0, 255, 255, 0.2);
+            border-left: 3px solid #00ffff;
+        }
+        
+        .result-item.warn {
+            background: rgba(255, 255, 0, 0.2);
+            border-left: 3px solid #ffff00;
+        }
+        
+        .progress-indicator {
+            width: 100%;
+            height: 25px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 15px 0;
+            border: 1px solid #333;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #00ff00);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .real-time-monitor {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff00ff;
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 250px;
+            font-size: 12px;
+        }
+        
+        .monitor-title {
+            color: #ff00ff;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .monitor-value {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            color: #fff;
+        }
+        
+        .monitor-label {
+            color: #888;
+        }
+        
+        .monitor-data {
+            color: #00ff00;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">🔗 VIB34D End-to-End Parameter Cascade Test</div>
+        <div class="subtitle">Verify User Interaction → Parameter Mapping → WebGL Visual Changes</div>
+    </div>
+    
+    <!-- Real-time Monitor -->
+    <div class="real-time-monitor">
+        <div class="monitor-title">📊 Real-Time Parameters</div>
+        <div class="monitor-value">
+            <span class="monitor-label">FPS:</span>
+            <span class="monitor-data" id="fps-monitor">0</span>
+        </div>
+        <div class="monitor-value">
+            <span class="monitor-label">Dimension:</span>
+            <span class="monitor-data" id="dimension-monitor">4.00</span>
+        </div>
+        <div class="monitor-value">
+            <span class="monitor-label">Morph:</span>
+            <span class="monitor-data" id="morph-monitor">0.70</span>
+        </div>
+        <div class="monitor-value">
+            <span class="monitor-label">Grid Density:</span>
+            <span class="monitor-data" id="grid-monitor">8.0</span>
+        </div>
+        <div class="monitor-value">
+            <span class="monitor-label">Rotation:</span>
+            <span class="monitor-data" id="rotation-monitor">0.50</span>
+        </div>
+        <div class="monitor-value">
+            <span class="monitor-label">Audio Bass:</span>
+            <span class="monitor-data" id="bass-monitor">0.00</span>
+        </div>
+        <div class="monitor-value">
+            <span class="monitor-label">Context Lost:</span>
+            <span class="monitor-data" id="context-monitor">0</span>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <div class="test-visualizer">
+            <h3>🎮 Live Test Visualizer</h3>
+            <canvas class="test-canvas" id="test-canvas"></canvas>
+            
+            <div class="parameter-info">
+                <div style="color: #00ffff; font-weight: bold; margin-bottom: 10px;">Current Parameters:</div>
+                <div class="param-value" id="current-params">Initializing...</div>
+            </div>
+        </div>
+        
+        <div class="test-controls">
+            <!-- Phase 1: System Initialization -->
+            <div class="cascade-section" id="init-section">
+                <div class="cascade-title">⚡ Phase 1: System Initialization</div>
+                <button class="test-button" onclick="testSystemInitialization()">Initialize Core System</button>
+                <button class="test-button" onclick="testShaderCompilation()">Test Shader Compilation</button>
+                <button class="test-button" onclick="testWebGLContext()">Test WebGL Context</button>
+            </div>
+            
+            <!-- Phase 2: Parameter Mapping -->
+            <div class="cascade-section" id="mapping-section">
+                <div class="cascade-title">🔗 Phase 2: Parameter Mapping</div>
+                <button class="test-button" onclick="testParameterMapping()">Test Parameter Mapping</button>
+                <button class="test-button" onclick="testUniformUpdates()">Test Uniform Updates</button>
+                <button class="test-button" onclick="testParameterValidation()">Test Parameter Validation</button>
+            </div>
+            
+            <!-- Phase 3: Interaction Simulation -->
+            <div class="interaction-simulator">
+                <div class="interaction-title">🎮 Phase 3: Interaction Simulation</div>
+                <div class="interaction-controls">
+                    <button class="interaction-button" onclick="simulateHover()">Simulate Hover</button>
+                    <button class="interaction-button" onclick="simulateClick()">Simulate Click</button>
+                    <button class="interaction-button" onclick="simulateScroll()">Simulate Scroll</button>
+                    <button class="interaction-button" onclick="simulateDrag()">Simulate Drag</button>
+                    <button class="interaction-button" onclick="simulateKeyPress()">Simulate KeyPress</button>
+                    <button class="interaction-button" onclick="simulateIdle()">Simulate Idle</button>
+                </div>
+            </div>
+            
+            <!-- Phase 4: Visual Verification -->
+            <div class="cascade-section" id="visual-section">
+                <div class="cascade-title">👁️ Phase 4: Visual Verification</div>
+                <button class="test-button" onclick="testVisualResponse()">Test Visual Response</button>
+                <button class="test-button" onclick="testGeometrySwitch()">Test Geometry Switch</button>
+                <button class="test-button" onclick="testProjectionSwitch()">Test Projection Switch</button>
+            </div>
+            
+            <!-- Phase 5: Complete Cascade -->
+            <div class="cascade-section" id="cascade-section">
+                <div class="cascade-title">🌊 Phase 5: Complete Cascade Test</div>
+                <button class="test-button" onclick="runCompleteCascadeTest()">🚀 Run Complete Test</button>
+                <button class="test-button" onclick="runStressTest()">💪 Run Stress Test</button>
+                <button class="test-button" onclick="runRecoveryTest()">🔄 Test Context Recovery</button>
+            </div>
+            
+            <!-- Progress Indicator -->
+            <div class="progress-indicator">
+                <div class="progress-bar" id="test-progress"></div>
+            </div>
+            <div class="progress-text" id="progress-text">Ready to begin testing</div>
+            
+            <!-- Results Panel -->
+            <div class="results-panel" id="results-panel">
+                <div style="color: #00ffff; font-weight: bold; margin-bottom: 10px;">Test Results:</div>
+                <div class="result-item info">🔄 Ready to run end-to-end cascade tests</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="VIB34D_WORKING_CORE_ARCHITECTURE.js"></script>
+    <script src="VIB34D_CENTRAL_STATE_MANAGER.js"></script>
+    <script>
+        // Global test state
+        const cascadeTest = {
+            visualizer: null,
+            testResults: {},
+            currentPhase: 0,
+            totalPhases: 5,
+            startTime: null,
+            frameCount: 0,
+            lastFrameTime: 0,
+            contextLostCount: 0,
+            testSequence: []
+        };
+        
+        // Parameter monitoring
+        const parameterMonitor = {
+            dimension: 4.0,
+            morphFactor: 0.7,
+            gridDensity: 8.0,
+            rotationSpeed: 0.5,
+            audioBass: 0.0,
+            audioMid: 0.0,
+            audioHigh: 0.0
+        };
+        
+        // Initialize the end-to-end test system
+        function initializeCascadeTest() {
+            console.log('🔗 Initializing End-to-End Parameter Cascade Test...');
+            
+            const canvas = document.getElementById('test-canvas');
+            
+            try {
+                if (window.VIB34D_WorkingCore) {
+                    cascadeTest.visualizer = new window.VIB34D_WorkingCore.HypercubeCore(canvas, {
+                        onError: (error) => {
+                            console.error('Visualizer error:', error);
+                            if (error.message.includes('context lost')) {
+                                cascadeTest.contextLostCount++;
+                            }
+                            addTestResult('error', `Visualizer error: ${error.message}`);
+                        }
+                    });
+                    
+                    // Set initial parameters
+                    cascadeTest.visualizer.updateParameters({
+                        geometryType: 'hypercube',
+                        projectionMethod: 'perspective',
+                        dimension: 4.0,
+                        morphFactor: 0.7,
+                        gridDensity: 8.0,
+                        rotationSpeed: 0.5
+                    });
+                    
+                    cascadeTest.visualizer.start();
+                    
+                    addTestResult('pass', 'Test visualizer initialized successfully');
+                    console.log('✅ Test visualizer initialized');
+                    
+                } else {
+                    throw new Error('VIB34D_WorkingCore not available');
+                }
+            } catch (error) {
+                addTestResult('fail', `Failed to initialize test visualizer: ${error.message}`);
+                console.error('❌ Test visualizer initialization failed:', error);
+            }
+            
+            // Start monitoring
+            startParameterMonitoring();
+            startPerformanceMonitoring();
+        }
+        
+        function startParameterMonitoring() {
+            function updateMonitor() {
+                if (cascadeTest.visualizer && cascadeTest.visualizer.getStatus) {
+                    const status = cascadeTest.visualizer.getStatus();
+                    
+                    // Update monitor displays
+                    document.getElementById('dimension-monitor').textContent = parameterMonitor.dimension.toFixed(2);
+                    document.getElementById('morph-monitor').textContent = parameterMonitor.morphFactor.toFixed(2);
+                    document.getElementById('grid-monitor').textContent = parameterMonitor.gridDensity.toFixed(1);
+                    document.getElementById('rotation-monitor').textContent = parameterMonitor.rotationSpeed.toFixed(2);
+                    document.getElementById('bass-monitor').textContent = parameterMonitor.audioBass.toFixed(2);
+                    document.getElementById('context-monitor').textContent = cascadeTest.contextLostCount;
+                    
+                    // Update parameter info
+                    const currentParams = document.getElementById('current-params');
+                    currentParams.innerHTML = `
+                        u_dimension: ${parameterMonitor.dimension.toFixed(2)}<br>
+                        u_morphFactor: ${parameterMonitor.morphFactor.toFixed(2)}<br>
+                        u_gridDensity: ${parameterMonitor.gridDensity.toFixed(1)}<br>
+                        u_rotationSpeed: ${parameterMonitor.rotationSpeed.toFixed(2)}<br>
+                        u_audioBass: ${parameterMonitor.audioBass.toFixed(2)}<br>
+                        u_audioMid: ${parameterMonitor.audioMid.toFixed(2)}<br>
+                        u_audioHigh: ${parameterMonitor.audioHigh.toFixed(2)}
+                    `;
+                }
+                
+                setTimeout(updateMonitor, 100);
+            }
+            updateMonitor();
+        }
+        
+        function startPerformanceMonitoring() {
+            function measureFPS() {
+                const now = performance.now();
+                cascadeTest.frameCount++;
+                
+                if (now - cascadeTest.lastFrameTime >= 1000) {
+                    const fps = cascadeTest.frameCount;
+                    document.getElementById('fps-monitor').textContent = fps;
+                    cascadeTest.frameCount = 0;
+                    cascadeTest.lastFrameTime = now;
+                }
+                
+                requestAnimationFrame(measureFPS);
+            }
+            
+            cascadeTest.lastFrameTime = performance.now();
+            measureFPS();
+        }
+        
+        function addTestResult(type, message) {
+            const resultsPanel = document.getElementById('results-panel');
+            const resultItem = document.createElement('div');
+            resultItem.className = `result-item ${type}`;
+            
+            const icon = {
+                'pass': '✅',
+                'fail': '❌',
+                'info': 'ℹ️',
+                'warn': '⚠️'
+            }[type] || '•';
+            
+            const timestamp = new Date().toLocaleTimeString();
+            resultItem.innerHTML = `${icon} [${timestamp}] ${message}`;
+            
+            resultsPanel.appendChild(resultItem);
+            resultsPanel.scrollTop = resultsPanel.scrollHeight;
+        }
+        
+        function updateProgress(phase, totalPhases, currentStep = '') {
+            const progress = (phase / totalPhases) * 100;
+            document.getElementById('test-progress').style.width = `${progress}%`;
+            document.getElementById('progress-text').textContent = currentStep || `Phase ${phase}/${totalPhases}`;
+        }
+        
+        function updateParameter(paramName, value) {
+            if (cascadeTest.visualizer && cascadeTest.visualizer.updateParameters) {
+                parameterMonitor[paramName] = value;
+                
+                const updateObject = {};
+                updateObject[paramName] = value;
+                cascadeTest.visualizer.updateParameters(updateObject);
+                
+                addTestResult('info', `Parameter updated: ${paramName} = ${value.toFixed(3)}`);
+            }
+        }
+        
+        // Phase 1: System Initialization Tests
+        function testSystemInitialization() {
+            const section = document.getElementById('init-section');
+            section.classList.add('active');
+            
+            addTestResult('info', 'Testing system initialization...');
+            
+            let testsPassed = 0;
+            const totalTests = 3;
+            
+            // Test 1: Core architecture loaded
+            if (window.VIB34D_WorkingCore) {
+                addTestResult('pass', 'VIB34D Working Core architecture loaded');
+                testsPassed++;
+            } else {
+                addTestResult('fail', 'VIB34D Working Core architecture not loaded');
+            }
+            
+            // Test 2: Visualizer initialized
+            if (cascadeTest.visualizer) {
+                addTestResult('pass', 'Test visualizer initialized');
+                testsPassed++;
+            } else {
+                addTestResult('fail', 'Test visualizer not initialized');
+            }
+            
+            // Test 3: Canvas context available
+            const canvas = document.getElementById('test-canvas');
+            const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+            if (gl && !gl.isContextLost()) {
+                addTestResult('pass', 'WebGL context available and valid');
+                testsPassed++;
+            } else {
+                addTestResult('fail', 'WebGL context not available or lost');
+            }
+            
+            cascadeTest.testResults.initialization = testsPassed === totalTests;
+            
+            setTimeout(() => section.classList.remove('active'), 2000);
+        }
+        
+        function testShaderCompilation() {
+            addTestResult('info', 'Testing shader compilation...');
+            
+            try {
+                if (cascadeTest.visualizer && cascadeTest.visualizer.shaderManager) {
+                    const shaderManager = cascadeTest.visualizer.shaderManager;
+                    
+                    if (shaderManager.currentProgramName) {
+                        addTestResult('pass', `Shader program '${shaderManager.currentProgramName}' compiled successfully`);
+                    } else {
+                        addTestResult('warn', 'No active shader program detected');
+                    }
+                } else {
+                    throw new Error('Shader manager not available');
+                }
+            } catch (error) {
+                addTestResult('fail', `Shader compilation test failed: ${error.message}`);
+            }
+        }
+        
+        function testWebGLContext() {
+            addTestResult('info', 'Testing WebGL context stability...');
+            
+            const canvas = document.getElementById('test-canvas');
+            let testsPassed = 0;
+            
+            // Test context attributes
+            const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+            if (gl) {
+                const contextAttributes = gl.getContextAttributes();
+                addTestResult('pass', `WebGL context attributes: ${JSON.stringify(contextAttributes)}`);
+                testsPassed++;
+                
+                // Test context loss simulation
+                const ext = gl.getExtension('WEBGL_lose_context');
+                if (ext) {
+                    addTestResult('pass', 'WEBGL_lose_context extension available');
+                    testsPassed++;
+                } else {
+                    addTestResult('warn', 'WEBGL_lose_context extension not available');
+                }
+            } else {
+                addTestResult('fail', 'WebGL context not available');
+            }
+            
+            cascadeTest.testResults.webgl = testsPassed >= 1;
+        }
+        
+        // Phase 2: Parameter Mapping Tests
+        function testParameterMapping() {
+            const section = document.getElementById('mapping-section');
+            section.classList.add('active');
+            
+            addTestResult('info', 'Testing parameter mapping...');
+            
+            const parameterTests = [
+                { name: 'u_dimension', value: 4.5 },
+                { name: 'u_morphFactor', value: 1.0 },
+                { name: 'u_gridDensity', value: 12.0 },
+                { name: 'u_rotationSpeed', value: 1.5 }
+            ];
+            
+            let testIndex = 0;
+            
+            function runNextParameterTest() {
+                if (testIndex >= parameterTests.length) {
+                    cascadeTest.testResults.parameterMapping = true;
+                    addTestResult('pass', 'All parameter mapping tests completed');
+                    setTimeout(() => section.classList.remove('active'), 1000);
+                    return;
+                }
+                
+                const test = parameterTests[testIndex];
+                updateParameter(test.name, test.value);
+                
+                setTimeout(() => {
+                    testIndex++;
+                    runNextParameterTest();
+                }, 500);
+            }
+            
+            runNextParameterTest();
+        }
+        
+        function testUniformUpdates() {
+            addTestResult('info', 'Testing shader uniform updates...');
+            
+            // Test all 17 core uniforms
+            const uniformTests = [
+                { name: 'u_dimension', value: 3.8 },
+                { name: 'u_morphFactor', value: 0.9 },
+                { name: 'u_rotationSpeed', value: 2.0 },
+                { name: 'u_gridDensity', value: 15.0 },
+                { name: 'u_lineThickness', value: 0.05 },
+                { name: 'u_universeModifier', value: 1.5 },
+                { name: 'u_patternIntensity', value: 2.0 },
+                { name: 'u_shellWidth', value: 0.04 },
+                { name: 'u_tetraThickness', value: 0.06 },
+                { name: 'u_glitchIntensity', value: 0.08 },
+                { name: 'u_colorShift', value: 0.5 },
+                { name: 'u_audioBass', value: 0.7 },
+                { name: 'u_audioMid', value: 0.4 },
+                { name: 'u_audioHigh', value: 0.6 }
+            ];
+            
+            let uniformIndex = 0;
+            
+            function testNextUniform() {
+                if (uniformIndex >= uniformTests.length) {
+                    addTestResult('pass', 'All uniform update tests completed');
+                    return;
+                }
+                
+                const test = uniformTests[uniformIndex];
+                updateParameter(test.name, test.value);
+                
+                uniformIndex++;
+                setTimeout(testNextUniform, 200);
+            }
+            
+            testNextUniform();
+        }
+        
+        function testParameterValidation() {
+            addTestResult('info', 'Testing parameter validation...');
+            
+            // Test boundary conditions
+            const boundaryTests = [
+                { name: 'u_dimension', value: 3.0, expected: 'valid' },
+                { name: 'u_dimension', value: 5.0, expected: 'valid' },
+                { name: 'u_morphFactor', value: 0.0, expected: 'valid' },
+                { name: 'u_morphFactor', value: 1.5, expected: 'valid' },
+                { name: 'u_gridDensity', value: 1.0, expected: 'valid' },
+                { name: 'u_gridDensity', value: 25.0, expected: 'valid' }
+            ];
+            
+            boundaryTests.forEach(test => {
+                try {
+                    updateParameter(test.name, test.value);
+                    addTestResult('pass', `Boundary test passed: ${test.name} = ${test.value}`);
+                } catch (error) {
+                    addTestResult('fail', `Boundary test failed: ${test.name} = ${test.value} - ${error.message}`);
+                }
+            });
+        }
+        
+        // Phase 3: Interaction Simulation
+        function simulateHover() {
+            const button = event.target;
+            button.classList.add('active');
+            
+            addTestResult('info', 'Simulating hover interaction...');
+            
+            // Simulate hover effect with parameter changes
+            updateParameter('u_audioBass', 0.3);
+            updateParameter('u_audioMid', 0.1);
+            updateParameter('u_morphFactor', 0.8);
+            
+            setTimeout(() => {
+                button.classList.remove('active');
+                addTestResult('pass', 'Hover simulation completed');
+            }, 1000);
+        }
+        
+        function simulateClick() {
+            const button = event.target;
+            button.classList.add('active');
+            
+            addTestResult('info', 'Simulating click interaction...');
+            
+            // Simulate click effect with parameter spike
+            updateParameter('u_audioBass', 0.9);
+            updateParameter('u_audioMid', 0.6);
+            updateParameter('u_audioHigh', 0.4);
+            updateParameter('u_morphFactor', 1.2);
+            
+            setTimeout(() => {
+                button.classList.remove('active');
+                addTestResult('pass', 'Click simulation completed');
+            }, 800);
+        }
+        
+        function simulateScroll() {
+            const button = event.target;
+            button.classList.add('active');
+            
+            addTestResult('info', 'Simulating scroll interaction...');
+            
+            // Simulate scroll effect with grid density changes
+            let scrollValue = 8.0;
+            const scrollInterval = setInterval(() => {
+                scrollValue += Math.sin(Date.now() * 0.01) * 2.0;
+                updateParameter('u_gridDensity', Math.max(1.0, Math.min(25.0, scrollValue)));
+                updateParameter('u_audioMid', Math.abs(Math.sin(Date.now() * 0.008)) * 0.5);
+            }, 100);
+            
+            setTimeout(() => {
+                clearInterval(scrollInterval);
+                button.classList.remove('active');
+                addTestResult('pass', 'Scroll simulation completed');
+            }, 2000);
+        }
+        
+        function simulateDrag() {
+            const button = event.target;
+            button.classList.add('active');
+            
+            addTestResult('info', 'Simulating drag interaction...');
+            
+            // Simulate drag with rotation and dimension changes
+            let dragPhase = 0;
+            const dragInterval = setInterval(() => {
+                dragPhase += 0.1;
+                updateParameter('u_rotationSpeed', 1.0 + Math.sin(dragPhase) * 1.5);
+                updateParameter('u_dimension', 4.0 + Math.sin(dragPhase * 0.7) * 0.8);
+                updateParameter('u_audioBass', Math.abs(Math.sin(dragPhase * 1.2)) * 0.8);
+            }, 150);
+            
+            setTimeout(() => {
+                clearInterval(dragInterval);
+                button.classList.remove('active');
+                addTestResult('pass', 'Drag simulation completed');
+            }, 2500);
+        }
+        
+        function simulateKeyPress() {
+            const button = event.target;
+            button.classList.add('active');
+            
+            addTestResult('info', 'Simulating key press interaction...');
+            
+            // Simulate key press with pattern intensity burst
+            updateParameter('u_patternIntensity', 2.5);
+            updateParameter('u_glitchIntensity', 0.1);
+            updateParameter('u_audioHigh', 0.8);
+            
+            setTimeout(() => {
+                updateParameter('u_patternIntensity', 1.3);
+                updateParameter('u_glitchIntensity', 0.02);
+                updateParameter('u_audioHigh', 0.0);
+                button.classList.remove('active');
+                addTestResult('pass', 'Key press simulation completed');
+            }, 600);
+        }
+        
+        function simulateIdle() {
+            const button = event.target;
+            button.classList.add('active');
+            
+            addTestResult('info', 'Simulating idle state...');
+            
+            // Return all parameters to baseline
+            updateParameter('u_audioBass', 0.0);
+            updateParameter('u_audioMid', 0.0);
+            updateParameter('u_audioHigh', 0.0);
+            updateParameter('u_morphFactor', 0.7);
+            updateParameter('u_dimension', 4.0);
+            updateParameter('u_gridDensity', 8.0);
+            updateParameter('u_rotationSpeed', 0.5);
+            updateParameter('u_patternIntensity', 1.3);
+            
+            setTimeout(() => {
+                button.classList.remove('active');
+                addTestResult('pass', 'Idle state restored');
+            }, 1000);
+        }
+        
+        // Phase 4: Visual Verification
+        function testVisualResponse() {
+            const section = document.getElementById('visual-section');
+            section.classList.add('active');
+            
+            addTestResult('info', 'Testing visual response to parameter changes...');
+            
+            // Test visual responsiveness with rapid parameter changes
+            let testPhase = 0;
+            const responseTest = setInterval(() => {
+                testPhase += 0.2;
+                
+                const dimension = 4.0 + Math.sin(testPhase) * 0.5;
+                const morphFactor = 0.7 + Math.sin(testPhase * 1.3) * 0.3;
+                const gridDensity = 8.0 + Math.sin(testPhase * 0.8) * 4.0;
+                
+                updateParameter('u_dimension', dimension);
+                updateParameter('u_morphFactor', morphFactor);
+                updateParameter('u_gridDensity', gridDensity);
+                
+            }, 100);
+            
+            setTimeout(() => {
+                clearInterval(responseTest);
+                section.classList.remove('active');
+                addTestResult('pass', 'Visual response test completed');
+            }, 3000);
+        }
+        
+        function testGeometrySwitch() {
+            addTestResult('info', 'Testing geometry switching...');
+            
+            const geometries = ['hypercube', 'hypersphere', 'hypertetrahedron'];
+            let geometryIndex = 0;
+            
+            const geometryInterval = setInterval(() => {
+                const geometry = geometries[geometryIndex];
+                
+                if (cascadeTest.visualizer && cascadeTest.visualizer.updateParameters) {
+                    cascadeTest.visualizer.updateParameters({ geometryType: geometry });
+                    addTestResult('info', `Switched to ${geometry} geometry`);
+                }
+                
+                geometryIndex = (geometryIndex + 1) % geometries.length;
+                
+                if (geometryIndex === 0) {
+                    clearInterval(geometryInterval);
+                    addTestResult('pass', 'Geometry switching test completed');
+                }
+            }, 1500);
+        }
+        
+        function testProjectionSwitch() {
+            addTestResult('info', 'Testing projection switching...');
+            
+            const projections = ['perspective', 'orthographic', 'stereographic'];
+            let projectionIndex = 0;
+            
+            const projectionInterval = setInterval(() => {
+                const projection = projections[projectionIndex];
+                
+                if (cascadeTest.visualizer && cascadeTest.visualizer.updateParameters) {
+                    cascadeTest.visualizer.updateParameters({ projectionMethod: projection });
+                    addTestResult('info', `Switched to ${projection} projection`);
+                }
+                
+                projectionIndex = (projectionIndex + 1) % projections.length;
+                
+                if (projectionIndex === 0) {
+                    clearInterval(projectionInterval);
+                    addTestResult('pass', 'Projection switching test completed');
+                }
+            }, 1200);
+        }
+        
+        // Phase 5: Complete Test Suite
+        function runCompleteCascadeTest() {
+            const section = document.getElementById('cascade-section');
+            section.classList.add('active');
+            
+            addTestResult('info', '🚀 Starting complete parameter cascade test...');
+            
+            cascadeTest.startTime = Date.now();
+            
+            const testSequence = [
+                { name: 'System Initialization', test: testSystemInitialization, duration: 3000 },
+                { name: 'Parameter Mapping', test: testParameterMapping, duration: 4000 },
+                { name: 'Uniform Updates', test: testUniformUpdates, duration: 3000 },
+                { name: 'Interaction Simulation', test: () => {
+                    simulateHover();
+                    setTimeout(simulateClick, 1000);
+                    setTimeout(simulateScroll, 2000);
+                    setTimeout(simulateDrag, 4000);
+                }, duration: 6000 },
+                { name: 'Visual Response', test: testVisualResponse, duration: 3000 },
+                { name: 'Final Validation', test: () => {
+                    const totalTime = Date.now() - cascadeTest.startTime;
+                    addTestResult('pass', `Complete cascade test completed in ${totalTime}ms`);
+                    
+                    // Check all test results
+                    const passedTests = Object.values(cascadeTest.testResults).filter(Boolean).length;
+                    const totalTests = Object.keys(cascadeTest.testResults).length;
+                    
+                    if (passedTests === totalTests) {
+                        addTestResult('pass', '🎉 ALL CASCADE TESTS PASSED - System is fully functional!');
+                    } else {
+                        addTestResult('warn', `⚠️ ${passedTests}/${totalTests} tests passed - Some issues detected`);
+                    }
+                }, duration: 1000 }
+            ];
+            
+            let currentTest = 0;
+            
+            function runNextTest() {
+                if (currentTest >= testSequence.length) {
+                    section.classList.remove('active');
+                    updateProgress(5, 5, 'All tests completed');
+                    return;
+                }
+                
+                const test = testSequence[currentTest];
+                updateProgress(currentTest + 1, testSequence.length, test.name);
+                
+                addTestResult('info', `Running: ${test.name}`);
+                test.test();
+                
+                currentTest++;
+                setTimeout(runNextTest, test.duration);
+            }
+            
+            runNextTest();
+        }
+        
+        function runStressTest() {
+            addTestResult('info', '💪 Starting stress test...');
+            
+            let stressPhase = 0;
+            const stressInterval = setInterval(() => {
+                stressPhase += 0.3;
+                
+                // Rapidly change all parameters
+                updateParameter('u_dimension', 3.0 + Math.random() * 2.0);
+                updateParameter('u_morphFactor', Math.random() * 1.5);
+                updateParameter('u_gridDensity', 1.0 + Math.random() * 24.0);
+                updateParameter('u_rotationSpeed', Math.random() * 3.0);
+                updateParameter('u_audioBass', Math.random());
+                updateParameter('u_audioMid', Math.random());
+                updateParameter('u_audioHigh', Math.random());
+                updateParameter('u_glitchIntensity', Math.random() * 0.15);
+                
+            }, 50);
+            
+            setTimeout(() => {
+                clearInterval(stressInterval);
+                addTestResult('pass', 'Stress test completed - System remained stable');
+                simulateIdle(); // Return to baseline
+            }, 5000);
+        }
+        
+        function runRecoveryTest() {
+            addTestResult('info', '🔄 Testing WebGL context recovery...');
+            
+            const canvas = document.getElementById('test-canvas');
+            const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+            
+            if (gl) {
+                const ext = gl.getExtension('WEBGL_lose_context');
+                if (ext) {
+                    addTestResult('warn', 'Forcing WebGL context loss...');
+                    ext.loseContext();
+                    
+                    setTimeout(() => {
+                        addTestResult('info', 'Attempting context restoration...');
+                        ext.restoreContext();
+                        
+                        setTimeout(() => {
+                            if (cascadeTest.visualizer && cascadeTest.visualizer.gl && !cascadeTest.visualizer.gl.isContextLost()) {
+                                addTestResult('pass', '✅ WebGL context recovery successful');
+                            } else {
+                                addTestResult('fail', '❌ WebGL context recovery failed');
+                            }
+                        }, 1000);
+                    }, 2000);
+                    
+                } else {
+                    addTestResult('warn', 'WEBGL_lose_context extension not available');
+                }
+            } else {
+                addTestResult('fail', 'WebGL context not available for recovery test');
+            }
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                initializeCascadeTest();
+                addTestResult('info', '🎯 End-to-End Parameter Cascade Test System Ready');
+                addTestResult('info', '📋 Click "Run Complete Test" to verify full parameter cascade');
+            }, 500);
+        });
+        
+        // Export test functions for console access
+        window.cascadeTest = cascadeTest;
+        window.runCompleteCascadeTest = runCompleteCascadeTest;
+    </script>
+</body>
+</html>

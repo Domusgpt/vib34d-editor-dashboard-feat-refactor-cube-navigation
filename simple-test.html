@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Content Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            padding: 20px;
+        }
+        .section {
+            border: 2px solid #0ff;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .card {
+            background: rgba(0,255,255,0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #0ff;
+        }
+        button {
+            background: #0ff;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #fff;
+        }
+        .current {
+            border-color: #f0f !important;
+            background: rgba(255,0,255,0.1) !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Simple Content Loading Test</h1>
+    <p>This tests if the site-content.json loads properly and shows different content per section.</p>
+    
+    <div>
+        <button onclick="loadSection('HOME')">HOME</button>
+        <button onclick="loadSection('TECH')">TECH</button>
+        <button onclick="loadSection('RESEARCH')">RESEARCH</button>
+        <button onclick="loadSection('MEDIA')">MEDIA</button>
+        <button onclick="loadSection('INNOVATION')">INNOVATION</button>
+    </div>
+
+    <h2>Current Section: <span id="current-section">HOME</span></h2>
+    
+    <div class="section" id="content-display">
+        <div class="card" id="card-1">
+            <h3 id="title-1">Loading...</h3>
+            <h4 id="subtitle-1">Loading...</h4>
+            <p id="content-1">Loading content...</p>
+        </div>
+        <div class="card" id="card-2">
+            <h3 id="title-2">Loading...</h3>
+            <h4 id="subtitle-2">Loading...</h4>
+            <p id="content-2">Loading content...</p>
+        </div>
+        <div class="card" id="card-3">
+            <h3 id="title-3">Loading...</h3>
+            <h4 id="subtitle-3">Loading...</h4>
+            <p id="content-3">Loading content...</p>
+        </div>
+    </div>
+
+    <div id="debug"></div>
+
+    <script>
+        let siteData = null;
+        
+        async function loadSiteData() {
+            try {
+                console.log('🔄 Loading site-content.json...');
+                const response = await fetch('./site-content.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                siteData = await response.json();
+                console.log('✅ Site data loaded:', siteData);
+                document.getElementById('debug').innerHTML = `<p>✅ Loaded ${siteData.sections?.length || 0} sections</p>`;
+                
+                // Load HOME by default
+                loadSection('HOME');
+            } catch (error) {
+                console.error('❌ Failed to load site data:', error);
+                document.getElementById('debug').innerHTML = `<p>❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        function loadSection(sectionKey) {
+            if (!siteData) {
+                console.warn('⚠️ Site data not loaded yet');
+                return;
+            }
+            
+            console.log(`📄 Loading section: ${sectionKey}`);
+            document.getElementById('current-section').textContent = sectionKey;
+            
+            const section = siteData.sections.find(s => s.sectionKey === sectionKey);
+            if (!section) {
+                console.error(`❌ Section not found: ${sectionKey}`);
+                return;
+            }
+            
+            console.log(`✅ Found section with ${section.cards.length} cards`);
+            
+            // Update cards
+            section.cards.forEach((card, index) => {
+                if (index < 3) { // Only first 3 cards
+                    const cardNum = index + 1;
+                    document.getElementById(`title-${cardNum}`).textContent = card.title;
+                    document.getElementById(`subtitle-${cardNum}`).textContent = card.subtitle;
+                    document.getElementById(`content-${cardNum}`).innerHTML = card.content;
+                    
+                    console.log(`📝 Updated card ${cardNum}: ${card.title}`);
+                }
+            });
+            
+            // Highlight current card
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('current'));
+            section.cards.forEach((card, index) => {
+                if (index < 3) {
+                    document.getElementById(`card-${index + 1}`).classList.add('current');
+                }
+            });
+        }
+        
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadSiteData);
+    </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VIB34D Initialization Test</title>
+</head>
+<body>
+    <h1>VIB34D System Test</h1>
+    <div id="test-results"></div>
+    <div id="console-output"></div>
+    
+    <script>
+        // Capture console logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const output = document.getElementById('console-output');
+        
+        function logToPage(message, type = 'log') {
+            const div = document.createElement('div');
+            div.style.color = type === 'error' ? 'red' : type === 'warn' ? 'orange' : 'black';
+            div.style.fontFamily = 'monospace';
+            div.textContent = `[${type.toUpperCase()}] ${message}`;
+            output.appendChild(div);
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            logToPage(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            logToPage(args.join(' '), 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalError.apply(console, args);
+            logToPage(args.join(' '), 'warn');
+        };
+        
+        // Test initialization
+        console.log('🚀 Starting VIB34D initialization test...');
+        
+        // Track loading
+        let loadedScripts = 0;
+        const totalScripts = 8;
+        
+        function scriptLoaded() {
+            loadedScripts++;
+            console.log(`✅ Script ${loadedScripts}/${totalScripts} loaded`);
+            
+            if (loadedScripts === totalScripts) {
+                setTimeout(testInitialization, 100);
+            }
+        }
+        
+        function testInitialization() {
+            console.log('🧪 Testing class availability...');
+            
+            // Test if classes exist
+            const tests = [
+                { name: 'BaseGeometry', exists: typeof BaseGeometry !== 'undefined' },
+                { name: 'BaseProjection', exists: typeof BaseProjection !== 'undefined' },
+                { name: 'GeometryManager', exists: typeof GeometryManager !== 'undefined' },
+                { name: 'ProjectionManager', exists: typeof ProjectionManager !== 'undefined' },
+                { name: 'ShaderManager', exists: typeof ShaderManager !== 'undefined' },
+                { name: 'HypercubeCore', exists: typeof HypercubeCore !== 'undefined' },
+                { name: 'HypercubeGeometry', exists: typeof HypercubeGeometry !== 'undefined' },
+                { name: 'VIB34DInteractionEngine', exists: typeof VIB34DInteractionEngine !== 'undefined' }
+            ];
+            
+            tests.forEach(test => {
+                if (test.exists) {
+                    console.log(`✅ ${test.name} class available`);
+                } else {
+                    console.error(`❌ ${test.name} class MISSING`);
+                }
+            });
+            
+            // Try to initialize core system
+            try {
+                console.log('🏗️ Attempting to create HypercubeCore...');
+                const core = new HypercubeCore();
+                console.log('✅ HypercubeCore created successfully!');
+                
+                console.log('🎨 Testing geometry registration...');
+                if (typeof HypercubeGeometry !== 'undefined') {
+                    const geom = new HypercubeGeometry();
+                    console.log('✅ HypercubeGeometry created successfully!');
+                } else {
+                    console.error('❌ HypercubeGeometry not available');
+                }
+                
+            } catch (error) {
+                console.error('❌ Initialization failed:', error.message);
+                console.error('Stack trace:', error.stack);
+            }
+        }
+    </script>
+    
+    <!-- Load VIB34D Phase Files -->
+    <script src="VIB34D_PHASE1_CORE_ARCHITECTURE.js" onload="scriptLoaded()" onerror="console.error('Failed to load Phase 1')"></script>
+    <script src="VIB34D_PHASE2_GEOMETRY_IMPLEMENTATIONS.js" onload="scriptLoaded()" onerror="console.error('Failed to load Phase 2')"></script>
+    <script src="VIB34D_PHASE3_PROJECTION_SYSTEM.js" onload="scriptLoaded()" onerror="console.error('Failed to load Phase 3')"></script>
+    <script src="VIB34D_PHASE4_SHADER_UNIFORM_SYSTEM.js" onload="scriptLoaded()" onerror="console.error('Failed to load Phase 4')"></script>
+    <script src="VIB34D_PHASE5_INTERACTION_INTEGRATION.js" onload="scriptLoaded()" onerror="console.error('Failed to load Phase 5')"></script>
+    <script src="VIB34D_PHASE6_CHROMATIC_INTEGRATION.js" onload="scriptLoaded()" onerror="console.error('Failed to load Phase 6')"></script>
+    <script src="VIB34D_PHASE7_VIB3_INTEGRATION.js" onload="scriptLoaded()" onerror="console.error('Failed to load Phase 7')"></script>
+    <script src="VIB34D_PHASE8_EDITOR_DASHBOARD.js" onload="scriptLoaded()" onerror="console.error('Failed to load Phase 8')"></script>
+</body>
+</html>
