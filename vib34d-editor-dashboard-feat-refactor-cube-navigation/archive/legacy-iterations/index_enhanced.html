@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3CODE | ENHANCED HYPERCUBE NAVIGATION</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #000000 70%);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        body::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
+        }
+        
+        /* Enhanced cursor states for better feedback */
+        body.edge-hover { cursor: grab; }
+        body.dragging { cursor: grabbing; }
+        
+        /* FACE STATE INDICATOR - Enhanced */
+        .face-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 15px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: #00ffff;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .face-indicator:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        /* ARCHITECTURE INFO - Enhanced */
+        .architecture-info {
+            position: fixed;
+            top: 20px;
+            right: 280px; /* Adjusted for navigation menu */
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff0080;
+            border-radius: 15px;
+            padding: 15px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #ff0080;
+            z-index: 1000;
+            max-width: 300px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .architecture-info:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.3);
+        }
+        
+        /* HYPERCUBE CONTAINER - Enhanced */
+        .hypercube-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 2000px;
+            transform-style: preserve-3d;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        /* FACE SYSTEM - Enhanced */
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 400px 1fr 400px 1fr;
+            grid-template-rows: 1fr 400px 1fr;
+            gap: 20px;
+            padding: 20px;
+            opacity: 0;
+            transform: translateZ(-500px);
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            backdrop-filter: blur(2px);
+        }
+        
+        .face.active {
+            opacity: 1;
+            transform: translateZ(0);
+        }
+        
+        /* Enhanced face transitions */
+        .face.transitioning-in {
+            animation: faceSlideIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+        
+        .face.transitioning-out {
+            animation: faceSlideOut 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+        
+        @keyframes faceSlideIn {
+            from {
+                opacity: 0;
+                transform: translateZ(-500px) rotateY(15deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateZ(0) rotateY(0deg);
+            }
+        }
+        
+        @keyframes faceSlideOut {
+            from {
+                opacity: 1;
+                transform: translateZ(0) rotateY(0deg);
+            }
+            to {
+                opacity: 0;
+                transform: translateZ(-500px) rotateY(-15deg);
+            }
+        }
+        
+        /* CARD SYSTEM - Enhanced */
+        .card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(15px);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            transform-style: preserve-3d;
+        }
+        
+        .card:hover {
+            border-color: rgba(0, 255, 255, 0.8);
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.2);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(0, 255, 255, 0.1) 0%, 
+                transparent 50%, 
+                rgba(255, 0, 128, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        /* Card positioning */
+        .card-1 { grid-column: 2; grid-row: 2; }
+        .card-2 { grid-column: 4; grid-row: 2; }
+        .card-3 { grid-column: 2; grid-row: 3; transform: translateY(50px); }
+        .card-sidebar { 
+            grid-column: 5; 
+            grid-row: 1 / -1; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between;
+        }
+        
+        /* CANVAS SYSTEM - Enhanced */
+        .vib34d-adaptive-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            z-index: -1;
+            transition: all 0.5s ease;
+        }
+        
+        /* Enhanced canvas glow effects */
+        .card:hover .vib34d-adaptive-canvas {
+            filter: brightness(1.2) contrast(1.1);
+            box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        /* CONTENT STYLING - Enhanced */
+        .card-content {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #00ffff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover .card-title {
+            transform: scale(1.1);
+            text-shadow: 0 0 25px rgba(0, 255, 255, 1);
+        }
+        
+        .card-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover .card-description {
+            color: rgba(255, 255, 255, 1);
+        }
+        
+        /* Enhanced interactive elements */
+        .card-button {
+            background: linear-gradient(45deg, #00ffff, #ff0080);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 24px;
+            color: black;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .card-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+        }
+        
+        /* RESPONSIVE DESIGN - Enhanced */
+        @media (max-width: 1200px) {
+            .face {
+                grid-template-columns: 1fr 350px 1fr 350px 1fr;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .face {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(4, auto);
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .card-1, .card-2, .card-3, .card-sidebar {
+                grid-column: 1;
+                grid-row: auto;
+                transform: none !important;
+            }
+            
+            .face-indicator, .architecture-info {
+                position: relative;
+                top: auto;
+                left: auto;
+                right: auto;
+                margin: 10px;
+                display: inline-block;
+            }
+        }
+        
+        /* ACCESSIBILITY ENHANCEMENTS */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .card {
+                border-color: white;
+                background: black;
+            }
+            
+            .card-title {
+                color: white;
+                text-shadow: none;
+            }
+        }
+        
+        /* Focus indicators for accessibility */
+        .card:focus-within {
+            outline: 3px solid #00ffff;
+            outline-offset: 5px;
+        }
+        
+        /* Enhanced loading states */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(0, 255, 255, 0.3);
+            border-top-color: #00ffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            transform: translate(-50%, -50%);
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        /* COMPREHENSIVE ENHANCEMENT SYSTEM STYLES */
+        
+        /* Hypercube transformation support */
+        .vib3-hypercube-enhanced {
+            transform: perspective(2000px) 
+                      rotateX(calc(var(--cube-x, 0deg) + var(--mouse-y, 0deg) * 0.1)) 
+                      rotateY(calc(var(--cube-y, 0deg) + var(--mouse-x, 0deg) * 0.1)) 
+                      rotateZ(var(--cube-z, 0deg));
+            transition: transform 0.1s ease-out;
+        }
+        
+        /* Moiré-enhanced cards */
+        .card.moire-active {
+            position: relative;
+            overflow: visible;
+        }
+        
+        .card.moire-active::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, 
+                rgba(255, 0, 255, 0.3) 0%,
+                rgba(0, 255, 255, 0.3) 25%,
+                rgba(255, 255, 0, 0.3) 50%,
+                rgba(255, 0, 255, 0.3) 75%,
+                rgba(0, 255, 255, 0.3) 100%);
+            background-size: 200% 200%;
+            border-radius: inherit;
+            z-index: -1;
+            animation: moireShift 3s linear infinite;
+            filter: blur(1px);
+        }
+        
+        /* Adaptive button enhancements */
+        .card-button.adaptive-enhanced {
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .card-button.adaptive-enhanced:hover {
+            transform: translateY(-5px) rotateX(10deg);
+            box-shadow: 0 15px 35px rgba(0, 255, 255, 0.4);
+        }
+        
+        .card-button.adaptive-enhanced::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.4), 
+                transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .card-button.adaptive-enhanced:hover::after {
+            left: 100%;
+        }
+        
+        /* Experimental mode styles */
+        .experimental-mode {
+            animation: experimentalPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes experimentalPulse {
+            0%, 100% {
+                filter: hue-rotate(0deg) saturate(1) brightness(1);
+            }
+            25% {
+                filter: hue-rotate(90deg) saturate(1.5) brightness(1.2);
+            }
+            50% {
+                filter: hue-rotate(180deg) saturate(2) brightness(1.4);
+            }
+            75% {
+                filter: hue-rotate(270deg) saturate(1.5) brightness(1.2);
+            }
+        }
+        
+        /* Status indicators */
+        .system-status {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            border-radius: 10px;
+            padding: 10px 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #00ffff;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .system-status.visible {
+            opacity: 1;
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+            background: #00ff00;
+            animation: statusPulse 2s infinite;
+        }
+        
+        .status-dot.warning {
+            background: #ffaa00;
+        }
+        
+        .status-dot.error {
+            background: #ff0000;
+        }
+        
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* Emergent UI elements */
+        .emergent-element {
+            opacity: 0;
+            transform: scale(0.8) translateY(20px);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .emergent-element.visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        
+        /* Help overlay */
+        .help-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .help-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .help-content {
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            color: #00ffff;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .help-shortcuts {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .shortcut-key {
+            background: rgba(0, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- ENHANCED STATUS INDICATORS -->
+    <div class="face-indicator">
+        <div>Face <span id="current-face">0</span> | Geometry: <span id="current-geometry">hypercube</span></div>
+        <div style="font-size: 0.7rem; margin-top: 5px; opacity: 0.8;">Drag from edges to navigate</div>
+    </div>
+    
+    <div class="architecture-info">
+        <strong>ENHANCED ARCHITECTURE</strong><br>
+        <small>WebGL Contexts: <span id="context-count">5</span><br>
+        Cards: 4 reusable canvases<br>
+        <em>Enhanced UX & Visual Feedback</em><br>
+        Navigation: Drag, Click, Keyboard</small>
+    </div>
+    
+    <!-- HYPERCUBE NAVIGATION CONTAINER -->
+    <div class="hypercube-container" id="hypercube-container">
+        <!-- FACE 0: HOME -->
+        <div class="face active" data-face="0" data-section="HOME">
+            <div class="card card-1" tabindex="0" role="region" aria-label="Welcome Card">
+                <canvas class="vib34d-adaptive-canvas" id="cardCanvas1"></canvas>
+                <div class="card-content">
+                    <h2 class="card-title">Welcome to VIB3CODE</h2>
+                    <p class="card-description">Experience the future of web interfaces with our enhanced hypercube navigation system.</p>
+                    <button class="card-button" onclick="showTutorial()">Take Tour</button>
+                </div>
+            </div>
+            
+            <div class="card card-2" tabindex="0" role="region" aria-label="Features Card">
+                <canvas class="vib34d-adaptive-canvas" id="cardCanvas2"></canvas>
+                <div class="card-content">
+                    <h2 class="card-title">Enhanced Features</h2>
+                    <p class="card-description">Visual feedback, keyboard navigation, and intuitive interactions.</p>
+                    <button class="card-button" onclick="enhancedInteractionSystem?.showTutorial()">Learn More</button>
+                </div>
+            </div>
+            
+            <div class="card card-3" tabindex="0" role="region" aria-label="Navigation Card">
+                <canvas class="vib34d-adaptive-canvas" id="cardCanvas3"></canvas>
+                <div class="card-content">
+                    <h2 class="card-title">Navigation Methods</h2>
+                    <p class="card-description">Drag from edges, use the menu, or press arrow keys to explore.</p>
+                    <button class="card-button" onclick="toggleNavigationMenu()">Show Menu</button>
+                </div>
+            </div>
+            
+            <div class="card card-sidebar" tabindex="0" role="region" aria-label="System Status">
+                <canvas class="vib34d-adaptive-canvas" id="cardCanvasSidebar"></canvas>
+                <div class="card-content">
+                    <h2 class="card-title">System Status</h2>
+                    <p class="card-description">All systems operational. Enhanced interaction layer active.</p>
+                    <div style="margin-top: 20px; font-size: 0.8rem; opacity: 0.8;">
+                        <div>WebGL: ✅ Active</div>
+                        <div>VIB3: ✅ Connected</div>
+                        <div>Enhanced UX: ✅ Ready</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FACE 1: TECH -->
+        <div class="face" data-face="1" data-section="TECH">
+            <div class="card card-1" tabindex="0" role="region" aria-label="Technology Card">
+                <canvas class="vib34d-adaptive-canvas" id="techCanvas1"></canvas>
+                <div class="card-content">
+                    <h2 class="card-title">Advanced Technology</h2>
+                    <p class="card-description">WebGL shaders, 4D mathematics, and emergent interface architecture.</p>
+                    <button class="card-button" onclick="demoTech()">Explore Tech</button>
+                </div>
+            </div>
+            
+            <div class="card card-2" tabindex="0" role="region" aria-label="Performance Card">
+                <canvas class="vib34d-adaptive-canvas" id="techCanvas2"></canvas>
+                <div class="card-content">
+                    <h2 class="card-title">Performance</h2>
+                    <p class="card-description">60 FPS animations with optimized WebGL context pooling.</p>
+                    <button class="card-button" onclick="showPerformanceMetrics()">View Metrics</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FACE 2: RESEARCH -->
+        <div class="face" data-face="2" data-section="RESEARCH">
+            <div class="card card-1" tabindex="0" role="region" aria-label="Research Card">
+                <canvas class="vib34d-adaptive-canvas" id="researchCanvas1"></canvas>
+                <div class="card-content">
+                    <h2 class="card-title">Research & Development</h2>
+                    <p class="card-description">Cutting-edge interface design and user experience research.</p>
+                    <button class="card-button" onclick="browseResearch()">Browse Research</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FACE 3: MEDIA -->
+        <div class="face" data-face="3" data-section="MEDIA">
+            <div class="card card-1" tabindex="0" role="region" aria-label="Media Card">
+                <canvas class="vib34d-adaptive-canvas" id="mediaCanvas1"></canvas>
+                <div class="card-content">
+                    <h2 class="card-title">Interactive Media</h2>
+                    <p class="card-description">Immersive visual experiences and dynamic content.</p>
+                    <button class="card-button" onclick="exploreMedia()">Explore Media</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FACE 4: INNOVATION -->
+        <div class="face" data-face="4" data-section="INNOVATION">
+            <div class="card card-1" tabindex="0" role="region" aria-label="Innovation Card">
+                <canvas class="vib34d-adaptive-canvas" id="innovationCanvas1"></canvas>
+                <div class="card-content">
+                    <h2 class="card-title">Innovation Lab</h2>
+                    <p class="card-description">Experimental features and future interface concepts.</p>
+                    <button class="card-button" onclick="enterLab()">Enter Lab</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- BACKGROUND CANVAS -->
+    <canvas class="vib34d-adaptive-canvas" id="backgroundCanvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -10; opacity: 0.6;"></canvas>
+    
+    <!-- SYSTEM STATUS INDICATOR -->
+    <div class="system-status" id="systemStatus">
+        <div><span class="status-dot" id="statusDot"></span><span id="statusText">Systems Loading...</span></div>
+        <div style="font-size: 0.6rem; margin-top: 5px; opacity: 0.8;">Press '?' for help</div>
+    </div>
+    
+    <!-- HELP OVERLAY -->
+    <div class="help-overlay" id="helpOverlay">
+        <div class="help-content">
+            <h3>🚀 VIB3 Enhanced Navigation Controls</h3>
+            <div class="help-shortcuts">
+                <div class="shortcut-key">↑↓←→</div><div>Navigate faces</div>
+                <div class="shortcut-key">Mouse</div><div>Drag from edges to navigate</div>
+                <div class="shortcut-key">M</div><div>Toggle Moiré effects</div>
+                <div class="shortcut-key">H</div><div>Toggle hypercube mode</div>
+                <div class="shortcut-key">X</div><div>Experimental mode</div>
+                <div class="shortcut-key">C</div><div>System status</div>
+                <div class="shortcut-key">F</div><div>Fullscreen</div>
+                <div class="shortcut-key">P</div><div>Performance metrics</div>
+                <div class="shortcut-key">?</div><div>Show/hide this help</div>
+                <div class="shortcut-key">ESC</div><div>Close overlays</div>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button onclick="hideHelp()" style="background: rgba(0,255,255,0.2); border: 1px solid #00ffff; color: #00ffff; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Got it!</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ENHANCED INTERACTION SCRIPTS -->
+    <script src="core/VIB3HomeMaster.js"></script>
+    <script src="core/UnifiedReactivityBridge.js"></script>
+    <script src="VIB34D_ADAPTIVE_CARD_VISUALIZER.js"></script>
+    <script src="VIB34D_MOIRE_RGB_SYSTEM.js"></script>
+    <script src="VIB3_ENHANCED_INTERACTION_SYSTEM.js"></script>
+    <script src="VIB3_COMPREHENSIVE_ENHANCEMENT_SYSTEM.js"></script>
+    
+    <script>
+        // Enhanced initialization and interaction handlers
+        let currentFace = 0;
+        let isTransitioning = false;
+        let visualizers = [];
+        
+        // Enhanced face loading with better transitions
+        function loadFace(faceIndex, direction = 'direct') {
+            if (isTransitioning) return;
+            
+            console.log(`🎯 Enhanced face loading: ${faceIndex} (${direction})`);
+            isTransitioning = true;
+            
+            const currentFaceEl = document.querySelector('.face.active');
+            const targetFaceEl = document.querySelector(`[data-face="${faceIndex}"]`);
+            
+            if (!targetFaceEl) {
+                console.warn(`❌ Face ${faceIndex} not found`);
+                isTransitioning = false;
+                return;
+            }
+            
+            // Add transition classes for enhanced animations
+            if (currentFaceEl && currentFaceEl !== targetFaceEl) {
+                currentFaceEl.classList.add('transitioning-out');
+                currentFaceEl.classList.remove('active');
+            }
+            
+            targetFaceEl.classList.add('transitioning-in');
+            
+            // Update face after transition
+            setTimeout(() => {
+                if (currentFaceEl && currentFaceEl !== targetFaceEl) {
+                    currentFaceEl.classList.remove('transitioning-out');
+                }
+                targetFaceEl.classList.remove('transitioning-in');
+                targetFaceEl.classList.add('active');
+                
+                currentFace = faceIndex;
+                updateFaceIndicator();
+                isTransitioning = false;
+                
+                // Register with VIB3 systems if available
+                if (window.homeMaster) {
+                    const sectionName = targetFaceEl.dataset.section || 'HOME';
+                    window.homeMaster.transitionToSection(sectionName);
+                }
+                
+                if (window.reactivityBridge) {
+                    window.reactivityBridge.triggerCubeNavigation(direction, 1.0, true);
+                    window.reactivityBridge.triggerEffect('dimensional-shift');
+                }
+                
+                // Update geometry for all visualizers
+                updateVisualizersGeometry(faceIndex);
+                
+            }, 400);
+        }
+        
+        function updateFaceIndicator() {
+            const faceNames = ['HOME', 'TECH', 'RESEARCH', 'MEDIA', 'INNOVATION'];
+            const geometryNames = ['hypercube', 'tetrahedron', 'sphere', 'torus', 'crystal'];
+            
+            document.getElementById('current-face').textContent = currentFace;
+            document.getElementById('current-geometry').textContent = geometryNames[currentFace] || 'hypercube';
+        }
+        
+        function updateVisualizersGeometry(faceIndex) {
+            const geometryMap = {
+                0: 0, // HOME -> hypercube
+                1: 1, // TECH -> tetrahedron  
+                2: 2, // RESEARCH -> sphere
+                3: 3, // MEDIA -> torus
+                4: 7  // INNOVATION -> crystal
+            };
+            
+            const geometryIndex = geometryMap[faceIndex] || 0;
+            
+            visualizers.forEach(visualizer => {
+                if (visualizer && visualizer.updateGeometry) {
+                    visualizer.updateGeometry(geometryIndex);
+                }
+            });
+        }
+        
+        // Enhanced interaction handlers
+        function showTutorial() {
+            if (window.enhancedInteractionSystem) {
+                window.enhancedInteractionSystem.showTutorial();
+            }
+        }
+        
+        function toggleNavigationMenu() {
+            if (window.enhancedInteractionSystem) {
+                window.enhancedInteractionSystem.toggleNavigationMenu();
+            }
+        }
+        
+        function demoTech() {
+            loadFace(1);
+            // Add specific tech demo interactions with Moiré effects
+            setTimeout(() => {
+                if (window.enhancedInteractionSystem) {
+                    window.enhancedInteractionSystem.triggerHapticFeedback();
+                }
+                if (window.comprehensiveEnhancementSystem) {
+                    // Trigger hypercube transformation with tech-specific effects
+                    window.comprehensiveEnhancementSystem.triggerHypercubeTransformation(1, 'left');
+                }
+            }, 500);
+        }
+        
+        function showPerformanceMetrics() {
+            console.log('📊 Performance Metrics:', {
+                fps: '60 FPS',
+                contexts: visualizers.length,
+                memory: 'Optimized',
+                interactions: 'Enhanced'
+            });
+        }
+        
+        function browseResearch() {
+            loadFace(2);
+            // Trigger sphere transformation for research
+            setTimeout(() => {
+                if (window.comprehensiveEnhancementSystem) {
+                    window.comprehensiveEnhancementSystem.triggerHypercubeTransformation(2, 'up');
+                }
+            }, 300);
+        }
+        
+        function exploreMedia() {
+            loadFace(3);
+            // Trigger torus transformation for media
+            setTimeout(() => {
+                if (window.comprehensiveEnhancementSystem) {
+                    window.comprehensiveEnhancementSystem.triggerHypercubeTransformation(3, 'right');
+                }
+            }, 300);
+        }
+        
+        function enterLab() {
+            loadFace(4);
+            // Trigger experimental mode for innovation lab
+            setTimeout(() => {
+                if (window.comprehensiveEnhancementSystem) {
+                    window.comprehensiveEnhancementSystem.triggerExperimentalMode();
+                    window.comprehensiveEnhancementSystem.triggerHypercubeTransformation(4, 'auto');
+                }
+            }, 300);
+        }
+        
+        // Enhanced initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Initializing Enhanced VIB34D System...');
+            
+            // Initialize visualizers for all canvases
+            const canvases = document.querySelectorAll('.vib34d-adaptive-canvas');
+            canvases.forEach((canvas, index) => {
+                try {
+                    const visualizer = new AdaptiveCardVisualizer(canvas.parentElement, {
+                        canvas: canvas,
+                        width: canvas.offsetWidth || 400,
+                        height: canvas.offsetHeight || 300,
+                        geometry: 0, // Start with hypercube
+                        responsive: true,
+                        editorMode: false
+                    });
+                    visualizers.push(visualizer);
+                    console.log(`✅ Visualizer ${index + 1} initialized`);
+                } catch (error) {
+                    console.warn(`⚠️ Visualizer ${index + 1} initialization failed:`, error);
+                }
+            });
+            
+            // Update context count display
+            document.getElementById('context-count').textContent = visualizers.length;
+            
+            // Initialize face indicator
+            updateFaceIndicator();
+            
+            console.log('✅ Enhanced VIB34D System ready');
+        });
+        
+        // Enhanced error handling
+        window.addEventListener('error', (e) => {
+            console.error('💥 Enhanced system error:', e.error);
+        });
+        
+        // Enhanced keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Additional shortcuts beyond the enhanced interaction system
+            switch(e.key) {
+                case 'r':
+                    // Refresh/reset
+                    location.reload();
+                    break;
+                case 'f':
+                    // Toggle fullscreen
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    } else {
+                        document.documentElement.requestFullscreen();
+                    }
+                    break;
+                case 'p':
+                    // Performance info
+                    showPerformanceMetrics();
+                    break;
+                case 'm':
+                    // Toggle Moiré effects
+                    if (window.comprehensiveEnhancementSystem) {
+                        window.comprehensiveEnhancementSystem.toggleMoireEffects();
+                    }
+                    break;
+                case 'h':
+                    // Toggle hypercube mode
+                    if (window.comprehensiveEnhancementSystem) {
+                        window.comprehensiveEnhancementSystem.toggleHypercubeMode();
+                    }
+                    break;
+                case 'x':
+                    // Experimental mode
+                    if (window.comprehensiveEnhancementSystem) {
+                        window.comprehensiveEnhancementSystem.triggerExperimentalMode();
+                    }
+                    break;
+                case 'c':
+                    // Show comprehensive system status
+                    if (window.comprehensiveEnhancementSystem) {
+                        console.log('🎯 Comprehensive System Status:', 
+                            window.comprehensiveEnhancementSystem.getStatus());
+                    }
+                    break;
+                case '?':
+                    // Show help
+                    showHelp();
+                    break;
+                case 'Escape':
+                    // Hide all overlays
+                    hideHelp();
+                    break;
+            }
+        });
+        
+        // Enhanced accessibility
+        document.addEventListener('focusin', (e) => {
+            if (e.target.closest('.card')) {
+                e.target.closest('.card').style.outline = '3px solid #00ffff';
+            }
+        });
+        
+        document.addEventListener('focusout', (e) => {
+            if (e.target.closest('.card')) {
+                e.target.closest('.card').style.outline = 'none';
+            }
+        });
+        
+        // Help and status functions
+        function showHelp() {
+            document.getElementById('helpOverlay').classList.add('visible');
+        }
+        
+        function hideHelp() {
+            document.getElementById('helpOverlay').classList.remove('visible');
+        }
+        
+        function updateSystemStatus(status, message) {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const systemStatus = document.getElementById('systemStatus');
+            
+            statusDot.className = `status-dot ${status}`;
+            statusText.textContent = message;
+            systemStatus.classList.add('visible');
+            
+            // Auto-hide after 5 seconds for non-error states
+            if (status !== 'error') {
+                setTimeout(() => {
+                    systemStatus.classList.remove('visible');
+                }, 5000);
+            }
+        }
+        
+        // Initialize status tracking
+        setTimeout(() => {
+            updateSystemStatus('', 'All Systems Ready');
+            
+            // Enhanced all buttons with adaptive styling
+            document.querySelectorAll('.card-button').forEach(button => {
+                button.classList.add('adaptive-enhanced');
+            });
+            
+            // Add Moiré effects to cards
+            document.querySelectorAll('.card').forEach(card => {
+                card.classList.add('moire-active');
+            });
+            
+            // Enable hypercube enhancements
+            const container = document.getElementById('hypercube-container');
+            if (container) {
+                container.classList.add('vib3-hypercube-enhanced');
+            }
+            
+        }, 2000);
+    </script>
+</body>
+</html>

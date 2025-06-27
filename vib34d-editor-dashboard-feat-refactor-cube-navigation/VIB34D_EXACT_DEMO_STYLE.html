@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D - Exact Demo Style Visualizer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .demo-card {
+            position: relative;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            height: 300px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-card:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-5px);
+        }
+        
+        .card-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .card-content {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .card-subtitle {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+        
+        .card-description {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+        
+        .card-footer {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            font-family: monospace;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ffff;
+            border-radius: 15px;
+            padding: 20px;
+            z-index: 1000;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            min-width: 800px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .control-group label {
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            color: #00ffff;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100px;
+            margin-bottom: 5px;
+        }
+        
+        .control-value {
+            font-size: 0.7rem;
+            color: #fff;
+            font-family: monospace;
+        }
+        
+        .demo-header {
+            text-align: center;
+            padding: 40px 20px 20px;
+        }
+        
+        .demo-title {
+            font-size: 3rem;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        .interaction-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 1000;
+            font-size: 12px;
+            min-width: 200px;
+        }
+        
+        .indicator-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 3px 0;
+        }
+        
+        .indicator-label {
+            color: #00ffff;
+        }
+        
+        .indicator-value {
+            color: #fff;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1 class="demo-title">VIB34D - Exact Demo Style</h1>
+        <p style="color: #00ffff;">Full WebGL with 8 geometries and complete parameter control</p>
+    </div>
+    
+    <div class="interaction-indicator">
+        <div class="indicator-row">
+            <span class="indicator-label">Total Cards:</span>
+            <span class="indicator-value" id="cardCount">8</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">WebGL Status:</span>
+            <span class="indicator-value" id="webglStatus">Checking...</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Interaction:</span>
+            <span class="indicator-value" id="interactionType">Idle</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Mouse:</span>
+            <span class="indicator-value" id="mousePos">0.5, 0.5</span>
+        </div>
+    </div>
+    
+    <div class="card-grid" id="card-grid"></div>
+    
+    <div class="controls">
+        <div class="control-group">
+            <label>Morph Factor</label>
+            <input type="range" id="morphFactor" min="0" max="1" step="0.01" value="0.5">
+            <span class="control-value" id="morphFactorValue">0.5</span>
+        </div>
+        
+        <div class="control-group">
+            <label>Grid Density</label>
+            <input type="range" id="gridDensity" min="5" max="25" step="0.5" value="12">
+            <span class="control-value" id="gridDensityValue">12.0</span>
+        </div>
+        
+        <div class="control-group">
+            <label>Dimension</label>
+            <input type="range" id="dimension" min="3" max="4" step="0.1" value="3.5">
+            <span class="control-value" id="dimensionValue">3.5</span>
+        </div>
+        
+        <div class="control-group">
+            <label>Glitch Intensity</label>
+            <input type="range" id="glitchIntensity" min="0" max="1" step="0.01" value="0.3">
+            <span class="control-value" id="glitchIntensityValue">0.3</span>
+        </div>
+        
+        <div class="control-group">
+            <label>Rotation Speed</label>
+            <input type="range" id="rotationSpeed" min="0" max="2" step="0.1" value="0.5">
+            <span class="control-value" id="rotationSpeedValue">0.5</span>
+        </div>
+        
+        <div class="control-group">
+            <label>Interaction</label>
+            <input type="range" id="interactionIntensity" min="0" max="2" step="0.1" value="0">
+            <span class="control-value" id="interactionIntensityValue">0.0</span>
+        </div>
+        
+        <div class="control-group">
+            <label>Color Shift</label>
+            <input type="range" id="colorShift" min="0" max="360" step="5" value="0">
+            <span class="control-value" id="colorShiftValue">0</span>
+        </div>
+        
+        <div class="control-group">
+            <label>Scale</label>
+            <input type="range" id="scale" min="0.5" max="2" step="0.1" value="1">
+            <span class="control-value" id="scaleValue">1.0</span>
+        </div>
+    </div>
+    
+    <script>
+        console.log('🔮 VIB34D Exact Demo Style Loading...');
+        
+        // Geometry data with theme configurations
+        const geometryData = [
+            {
+                name: 'Hypercube',
+                subtitle: 'Core Identity',
+                description: 'Foundational geometry representing sovereignty and data ownership. Pure magenta lattice grids form the base.',
+                baseColor: [1.0, 0.0, 1.0],
+                geometry: 0
+            },
+            {
+                name: 'Tetrahedron',
+                subtitle: 'Technology',
+                description: 'Precision-focused geometry for technical content. Cyan stability patterns emphasize structural integrity.',
+                baseColor: [0.0, 1.0, 1.0],
+                geometry: 1
+            },
+            {
+                name: 'Sphere',
+                subtitle: 'Philosophy',
+                description: 'Infinite potential geometry expressing boundless creativity. Yellow gradients represent freedom.',
+                baseColor: [1.0, 1.0, 0.0],
+                geometry: 2
+            },
+            {
+                name: 'Torus',
+                subtitle: 'Flow & Content',
+                description: 'Continuous circulation patterns for media content. Green flow dynamics represent creation cycles.',
+                baseColor: [0.0, 1.0, 0.0],
+                geometry: 3
+            },
+            {
+                name: 'Klein Bottle',
+                subtitle: 'Community',
+                description: 'Boundary-transcendent topology for community features. Orange surfaces represent collective consciousness.',
+                baseColor: [1.0, 0.5, 0.0],
+                geometry: 4
+            },
+            {
+                name: 'Fractal',
+                subtitle: 'Development',
+                description: 'Recursive complexity structures for innovation content. Purple emergence patterns show advancement.',
+                baseColor: [0.5, 0.0, 1.0],
+                geometry: 5
+            },
+            {
+                name: 'Wave Function',
+                subtitle: 'Research',
+                description: 'Probability field geometry for experimental features. Pink quantum states represent exploration.',
+                baseColor: [1.0, 0.0, 0.5],
+                geometry: 6
+            },
+            {
+                name: 'Crystal Lattice',
+                subtitle: 'Innovation',
+                description: 'Ordered complexity representing systematic value creation. Mint crystalline structures show precision.',
+                baseColor: [0.0, 1.0, 0.5],
+                geometry: 7
+            }
+        ];
+        
+        // Exact ReactiveHyperAVCore class from the working demo
+        class ReactiveHyperAVCore {
+            constructor(canvas, geometryType = 0, baseColor = [1.0, 0.0, 1.0]) {
+                this.canvas = canvas;
+                this.gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                
+                if (!this.gl) {
+                    console.error('WebGL not supported');
+                    return;
+                }
+                
+                this.geometryType = geometryType;
+                this.baseColor = baseColor;
+                
+                // Core state
+                this.startTime = Date.now();
+                this.interactionState = {
+                    type: 'idle',
+                    intensity: 0,
+                    lastActivity: Date.now(),
+                    mouseX: 0.5,
+                    mouseY: 0.5
+                };
+                
+                // Parameters (all tunable)
+                this.params = {
+                    morphFactor: 0.5,
+                    gridDensity: 12.0,
+                    dimension: 3.5,
+                    glitchIntensity: 0.3,
+                    rotationSpeed: 0.5,
+                    interactionIntensity: 0.0,
+                    baseColor: baseColor,
+                    geometry: geometryType
+                };
+                
+                this.initShaders();
+                this.initBuffers();
+                this.setupInteractions();
+                this.resize();
+                this.animate();
+                
+                console.log(`✅ ReactiveHyperAVCore initialized for geometry ${geometryType}`);
+            }
+            
+            initShaders() {
+                const vertexShaderSource = `
+                  attribute vec2 a_position;
+                  void main() {
+                    gl_Position = vec4(a_position, 0.0, 1.0);
+                  }
+                `;
+                
+                // EXACT fragment shader from working demo
+                const fragmentShaderSource = `
+                  precision highp float;
+                  
+                  uniform vec2 u_resolution;
+                  uniform float u_time;
+                  uniform vec2 u_mouse;
+                  uniform float u_morphFactor;
+                  uniform float u_glitchIntensity;
+                  uniform float u_rotationSpeed;
+                  uniform float u_dimension;
+                  uniform float u_gridDensity;
+                  uniform vec3 u_baseColor;
+                  uniform float u_interactionIntensity;
+                  uniform float u_geometry;
+                  
+                  // 4D rotation matrices
+                  mat4 rotateXW(float theta) {
+                    float c = cos(theta);
+                    float s = sin(theta);
+                    return mat4(c, 0, 0, -s, 0, 1, 0, 0, 0, 0, 1, 0, s, 0, 0, c);
+                  }
+                  
+                  mat4 rotateYW(float theta) {
+                    float c = cos(theta);
+                    float s = sin(theta);
+                    return mat4(1, 0, 0, 0, 0, c, 0, -s, 0, 0, 1, 0, 0, s, 0, c);
+                  }
+                  
+                  mat4 rotateZW(float theta) {
+                    float c = cos(theta);
+                    float s = sin(theta);
+                    return mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, c, -s, 0, 0, s, c);
+                  }
+                  
+                  vec3 project4Dto3D(vec4 p) {
+                    float w = 2.0 / (2.0 + p.w);
+                    return vec3(p.x * w, p.y * w, p.z * w);
+                  }
+                  
+                  // Geometry generators (exact from demo)
+                  float hypercubeLattice(vec3 p, float gridSize) {
+                    vec3 grid = fract(p * gridSize);
+                    vec3 edges = 1.0 - smoothstep(0.0, 0.03, abs(grid - 0.5));
+                    return max(max(edges.x, edges.y), edges.z);
+                  }
+                  
+                  float tetrahedronLattice(vec3 p, float gridSize) {
+                    vec3 q = fract(p * gridSize) - 0.5;
+                    float d1 = length(q);
+                    float d2 = length(q - vec3(0.5, 0.0, 0.0));
+                    float d3 = length(q - vec3(0.0, 0.5, 0.0));
+                    float d4 = length(q - vec3(0.0, 0.0, 0.5));
+                    return 1.0 - smoothstep(0.0, 0.1, min(min(d1, d2), min(d3, d4)));
+                  }
+                  
+                  float sphereLattice(vec3 p, float gridSize) {
+                    vec3 q = fract(p * gridSize) - 0.5;
+                    float r = length(q);
+                    return 1.0 - smoothstep(0.2, 0.5, r);
+                  }
+                  
+                  float torusLattice(vec3 p, float gridSize) {
+                    vec3 q = fract(p * gridSize) - 0.5;
+                    float r1 = sqrt(q.x*q.x + q.y*q.y);
+                    float r2 = sqrt((r1 - 0.3)*(r1 - 0.3) + q.z*q.z);
+                    return 1.0 - smoothstep(0.0, 0.1, r2);
+                  }
+                  
+                  float kleinLattice(vec3 p, float gridSize) {
+                    vec3 q = fract(p * gridSize);
+                    float u = q.x * 2.0 * 3.14159;
+                    float v = q.y * 2.0 * 3.14159;
+                    float x = cos(u) * (3.0 + cos(u/2.0) * sin(v) - sin(u/2.0) * sin(2.0*v));
+                    float klein = length(vec2(x, q.z)) - 0.1;
+                    return 1.0 - smoothstep(0.0, 0.05, abs(klein));
+                  }
+                  
+                  float fractalLattice(vec3 p, float gridSize) {
+                    vec3 q = p * gridSize;
+                    float scale = 1.0;
+                    float fractal = 0.0;
+                    for(int i = 0; i < 4; i++) {
+                      q = fract(q) - 0.5;
+                      fractal += abs(length(q)) / scale;
+                      scale *= 2.0;
+                      q *= 2.0;
+                    }
+                    return 1.0 - smoothstep(0.0, 1.0, fractal);
+                  }
+                  
+                  float waveLattice(vec3 p, float gridSize) {
+                    vec3 q = p * gridSize;
+                    float wave = sin(q.x * 2.0) * sin(q.y * 2.0) * sin(q.z * 2.0 + u_time);
+                    return smoothstep(-0.5, 0.5, wave);
+                  }
+                  
+                  float crystalLattice(vec3 p, float gridSize) {
+                    vec3 q = fract(p * gridSize) - 0.5;
+                    float d = max(max(abs(q.x), abs(q.y)), abs(q.z));
+                    return 1.0 - smoothstep(0.3, 0.5, d);
+                  }
+                  
+                  float getGeometryValue(vec3 p, float gridSize, float geomType) {
+                    if (geomType < 0.5) return hypercubeLattice(p, gridSize);
+                    else if (geomType < 1.5) return tetrahedronLattice(p, gridSize);
+                    else if (geomType < 2.5) return sphereLattice(p, gridSize);
+                    else if (geomType < 3.5) return torusLattice(p, gridSize);
+                    else if (geomType < 4.5) return kleinLattice(p, gridSize);
+                    else if (geomType < 5.5) return fractalLattice(p, gridSize);
+                    else if (geomType < 6.5) return waveLattice(p, gridSize);
+                    else return crystalLattice(p, gridSize);
+                  }
+                  
+                  void main() {
+                    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+                    float aspectRatio = u_resolution.x / u_resolution.y;
+                    uv.x *= aspectRatio;
+                    
+                    vec2 center = vec2(u_mouse.x * aspectRatio, u_mouse.y);
+                    vec3 p = vec3(uv - center, 0.0);
+                    
+                    // Interaction-driven rotation
+                    float timeRotation = u_time * 0.2 * u_rotationSpeed * (1.0 + u_interactionIntensity);
+                    mat2 rotation = mat2(cos(timeRotation), -sin(timeRotation), sin(timeRotation), cos(timeRotation));
+                    p.xy = rotation * p.xy;
+                    p.z = sin(u_time * 0.1) * 0.5;
+                    
+                    // Apply 4D transformations
+                    if (u_dimension > 3.0) {
+                      float w = sin(length(p) * 3.0 + u_time * 0.3) * (u_dimension - 3.0) * (1.0 + u_interactionIntensity * 0.5);
+                      vec4 p4d = vec4(p, w);
+                      
+                      p4d = rotateXW(timeRotation * 0.31) * p4d;
+                      p4d = rotateYW(timeRotation * 0.27) * p4d;
+                      p4d = rotateZW(timeRotation * 0.23) * p4d;
+                      
+                      p = project4Dto3D(p4d);
+                    }
+                    
+                    // Dynamic grid density
+                    float dynamicGridDensity = u_gridDensity * (1.0 + u_interactionIntensity * 0.3);
+                    
+                    // Get geometry value
+                    float lattice = getGeometryValue(p, dynamicGridDensity, u_geometry);
+                    
+                    // Glitch effects
+                    float glitchAmount = u_glitchIntensity * (0.1 + 0.1 * sin(u_time * 5.0)) * (1.0 + u_interactionIntensity);
+                    
+                    vec2 rOffset = vec2(glitchAmount, glitchAmount * 0.5);
+                    vec2 gOffset = vec2(-glitchAmount * 0.3, glitchAmount * 0.2);
+                    vec2 bOffset = vec2(glitchAmount * 0.1, -glitchAmount * 0.4);
+                    
+                    float r = getGeometryValue(vec3(p.xy + rOffset, p.z), dynamicGridDensity, u_geometry);
+                    float g = getGeometryValue(vec3(p.xy + gOffset, p.z), dynamicGridDensity, u_geometry);
+                    float b = getGeometryValue(vec3(p.xy + bOffset, p.z), dynamicGridDensity, u_geometry);
+                    
+                    // Colors
+                    vec3 baseColor = vec3(0.02, 0.05, 0.1);
+                    vec3 latticeColor = u_baseColor * (0.8 + 0.2 * u_interactionIntensity);
+                    
+                    vec3 color = mix(baseColor, latticeColor, vec3(r, g, b));
+                    
+                    // Interaction glow
+                    color += u_baseColor * 0.1 * (0.5 + 0.5 * sin(u_time * 0.5)) * u_interactionIntensity;
+                    
+                    // Vignette
+                    float vignette = 1.0 - smoothstep(0.4, 1.4, length(uv - vec2(center.x, center.y)));
+                    color *= vignette;
+                    
+                    gl_FragColor = vec4(color, 0.95);
+                  }
+                `;
+                
+                const vertexShader = this.createShader(this.gl.VERTEX_SHADER, vertexShaderSource);
+                const fragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
+                this.program = this.createProgram(vertexShader, fragmentShader);
+                
+                // Get uniform locations
+                this.uniforms = {
+                    resolution: this.gl.getUniformLocation(this.program, 'u_resolution'),
+                    time: this.gl.getUniformLocation(this.program, 'u_time'),
+                    mouse: this.gl.getUniformLocation(this.program, 'u_mouse'),
+                    morphFactor: this.gl.getUniformLocation(this.program, 'u_morphFactor'),
+                    glitchIntensity: this.gl.getUniformLocation(this.program, 'u_glitchIntensity'),
+                    rotationSpeed: this.gl.getUniformLocation(this.program, 'u_rotationSpeed'),
+                    dimension: this.gl.getUniformLocation(this.program, 'u_dimension'),
+                    gridDensity: this.gl.getUniformLocation(this.program, 'u_gridDensity'),
+                    baseColor: this.gl.getUniformLocation(this.program, 'u_baseColor'),
+                    interactionIntensity: this.gl.getUniformLocation(this.program, 'u_interactionIntensity'),
+                    geometry: this.gl.getUniformLocation(this.program, 'u_geometry')
+                };
+                
+                this.positionAttributeLocation = this.gl.getAttribLocation(this.program, 'a_position');
+            }
+            
+            createShader(type, source) {
+                const shader = this.gl.createShader(type);
+                this.gl.shaderSource(shader, source);
+                this.gl.compileShader(shader);
+                
+                if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+                    console.error("Shader error:", this.gl.getShaderInfoLog(shader));
+                    this.gl.deleteShader(shader);
+                    return null;
+                }
+                return shader;
+            }
+            
+            createProgram(vertexShader, fragmentShader) {
+                const program = this.gl.createProgram();
+                this.gl.attachShader(program, vertexShader);
+                this.gl.attachShader(program, fragmentShader);
+                this.gl.linkProgram(program);
+                
+                if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
+                    console.error("Program error:", this.gl.getProgramInfoLog(program));
+                    this.gl.deleteProgram(program);
+                    return null;
+                }
+                return program;
+            }
+            
+            initBuffers() {
+                this.positionBuffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+                this.gl.bufferData(
+                    this.gl.ARRAY_BUFFER,
+                    new Float32Array([-1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0]),
+                    this.gl.STATIC_DRAW
+                );
+            }
+            
+            setupInteractions() {
+                // Mouse movement
+                this.canvas.addEventListener('mousemove', (e) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    this.interactionState.mouseX = (e.clientX - rect.left) / rect.width;
+                    this.interactionState.mouseY = 1.0 - (e.clientY - rect.top) / rect.height;
+                    this.interactionState.lastActivity = Date.now();
+                    this.updateInteractionState('move', 0.3);
+                });
+                
+                // Click
+                this.canvas.addEventListener('click', () => {
+                    this.updateInteractionState('click', 1.0);
+                });
+                
+                // Mouse enter/leave
+                this.canvas.addEventListener('mouseenter', () => {
+                    this.updateInteractionState('hover', 0.5);
+                });
+                
+                this.canvas.addEventListener('mouseleave', () => {
+                    this.updateInteractionState('idle', 0.0);
+                });
+            }
+            
+            updateInteractionState(type, intensity) {
+                this.interactionState.type = type;
+                this.interactionState.intensity = intensity;
+                this.interactionState.lastActivity = Date.now();
+                this.params.interactionIntensity = intensity;
+                
+                // Update global indicator
+                document.getElementById('interactionType').textContent = type;
+            }
+            
+            updateParams(newParams) {
+                Object.assign(this.params, newParams);
+            }
+            
+            resize() {
+                const displayWidth = this.canvas.clientWidth;
+                const displayHeight = this.canvas.clientHeight;
+                
+                if (this.canvas.width !== displayWidth || this.canvas.height !== displayHeight) {
+                    this.canvas.width = displayWidth;
+                    this.canvas.height = displayHeight;
+                    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+                }
+            }
+            
+            render() {
+                this.resize();
+                
+                this.gl.clearColor(0, 0, 0, 1);
+                this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+                
+                this.gl.useProgram(this.program);
+                
+                // Update uniforms
+                const time = (Date.now() - this.startTime) / 1000;
+                
+                this.gl.uniform2f(this.uniforms.resolution, this.canvas.width, this.canvas.height);
+                this.gl.uniform1f(this.uniforms.time, time);
+                this.gl.uniform2f(this.uniforms.mouse, this.interactionState.mouseX, this.interactionState.mouseY);
+                this.gl.uniform1f(this.uniforms.morphFactor, this.params.morphFactor);
+                this.gl.uniform1f(this.uniforms.glitchIntensity, this.params.glitchIntensity);
+                this.gl.uniform1f(this.uniforms.rotationSpeed, this.params.rotationSpeed);
+                this.gl.uniform1f(this.uniforms.dimension, this.params.dimension);
+                this.gl.uniform1f(this.uniforms.gridDensity, this.params.gridDensity);
+                this.gl.uniform3f(this.uniforms.baseColor, this.params.baseColor[0], this.params.baseColor[1], this.params.baseColor[2]);
+                this.gl.uniform1f(this.uniforms.interactionIntensity, this.params.interactionIntensity);
+                this.gl.uniform1f(this.uniforms.geometry, this.params.geometry);
+                
+                // Bind and draw
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+                this.gl.enableVertexAttribArray(this.positionAttributeLocation);
+                this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
+                
+                this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+            }
+            
+            animate() {
+                this.render();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+        
+        // Global state
+        let visualizers = [];
+        let globalParams = {
+            morphFactor: 0.5,
+            gridDensity: 12.0,
+            dimension: 3.5,
+            glitchIntensity: 0.3,
+            rotationSpeed: 0.5,
+            interactionIntensity: 0.0
+        };
+        
+        // Create cards and visualizers
+        function initializeDemo() {
+            const cardGrid = document.getElementById('card-grid');
+            
+            geometryData.forEach((geometry, index) => {
+                // Create card
+                const card = document.createElement('div');
+                card.className = 'demo-card';
+                card.innerHTML = `
+                    <canvas class="card-canvas" width="400" height="300"></canvas>
+                    <div class="card-content">
+                        <div>
+                            <div class="card-title">${geometry.name}</div>
+                            <div class="card-subtitle">${geometry.subtitle}</div>
+                            <div class="card-description">${geometry.description}</div>
+                        </div>
+                        <div class="card-footer">Geometry ${index} | Type: ${geometry.name}</div>
+                    </div>
+                `;
+                
+                cardGrid.appendChild(card);
+                
+                // Create visualizer
+                const canvas = card.querySelector('.card-canvas');
+                const visualizer = new ReactiveHyperAVCore(canvas, geometry.geometry, geometry.baseColor);
+                
+                if (visualizer && visualizer.gl) {
+                    visualizers.push(visualizer);
+                    console.log(`✅ Created visualizer for ${geometry.name}`);
+                } else {
+                    console.error(`❌ Failed to create visualizer for ${geometry.name}`);
+                }
+            });
+            
+            // Update status
+            document.getElementById('webglStatus').textContent = visualizers.length > 0 ? 'Active' : 'Failed';
+            console.log(`🎮 Demo initialized: ${visualizers.length}/${geometryData.length} visualizers active`);
+        }
+        
+        // Setup controls
+        function setupControls() {
+            const controls = {
+                'morphFactor': 'morphFactor',
+                'gridDensity': 'gridDensity', 
+                'dimension': 'dimension',
+                'glitchIntensity': 'glitchIntensity',
+                'rotationSpeed': 'rotationSpeed',
+                'interactionIntensity': 'interactionIntensity'
+            };
+            
+            Object.keys(controls).forEach(controlId => {
+                const control = document.getElementById(controlId);
+                const valueDisplay = document.getElementById(controlId + 'Value');
+                const param = controls[controlId];
+                
+                if (control && valueDisplay) {
+                    control.addEventListener('input', () => {
+                        const value = parseFloat(control.value);
+                        valueDisplay.textContent = value;
+                        globalParams[param] = value;
+                        
+                        // Update all visualizers
+                        visualizers.forEach(viz => {
+                            viz.updateParams({ [param]: value });
+                        });
+                    });
+                }
+            });
+        }
+        
+        // Global mouse tracking
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = 1.0 - (e.clientY / window.innerHeight);
+            document.getElementById('mousePos').textContent = `${mouseX.toFixed(2)}, ${mouseY.toFixed(2)}`;
+        });
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Initializing VIB34D Exact Demo Style...');
+            initializeDemo();
+            setupControls();
+        });
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,3397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3CODE | Morphing Blog System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #000000 70%);
+            
+            /* INVISIBLE SCROLLBARS */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+        }
+        
+        body::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none; /* Chrome/Safari */
+        }
+        
+        /* TESSERACT 8-CELL HYPERCUBE CONTAINER */
+        .tesseract-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 2000px;
+            perspective-origin: center center;
+            overflow: hidden;
+        }
+        
+        .hypercube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            backface-visibility: visible;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        /* 8-CELL TESSERACT FACE POSITIONS */
+        .hypercube-face.face-0 { /* FRONT */
+            transform: translateZ(0px) rotateY(0deg);
+        }
+        
+        .hypercube-face.face-1 { /* RIGHT */
+            transform: rotateY(90deg) translateZ(0px);
+            transform-origin: center right;
+        }
+        
+        .hypercube-face.face-2 { /* BACK */
+            transform: rotateY(180deg) translateZ(0px);
+        }
+        
+        .hypercube-face.face-3 { /* LEFT */
+            transform: rotateY(-90deg) translateZ(0px);
+            transform-origin: center left;
+        }
+        
+        .hypercube-face.face-4 { /* TOP */
+            transform: rotateX(-90deg) translateZ(0px);
+            transform-origin: center top;
+        }
+        
+        .hypercube-face.face-5 { /* BOTTOM */
+            transform: rotateX(90deg) translateZ(0px);
+            transform-origin: center bottom;
+        }
+        
+        .hypercube-face.face-6 { /* INNER FRONT */
+            transform: translateZ(-200px) rotateY(0deg);
+        }
+        
+        .hypercube-face.face-7 { /* INNER BACK */
+            transform: translateZ(-200px) rotateY(180deg);
+        }
+        
+        /* TESSERACT FOLDING STATES */
+        .tesseract-container.folding-right .hypercube-face.face-0 {
+            transform: rotateY(-90deg) translateZ(-100px);
+        }
+        
+        .tesseract-container.folding-right .hypercube-face.face-1 {
+            transform: rotateY(0deg) translateZ(0px);
+        }
+        
+        .tesseract-container.folding-left .hypercube-face.face-0 {
+            transform: rotateY(90deg) translateZ(-100px);
+        }
+        
+        .tesseract-container.folding-left .hypercube-face.face-3 {
+            transform: rotateY(0deg) translateZ(0px);
+        }
+        
+        .tesseract-container.folding-up .hypercube-face.face-0 {
+            transform: rotateX(90deg) translateZ(-100px);
+        }
+        
+        .tesseract-container.folding-up .hypercube-face.face-4 {
+            transform: rotateX(0deg) translateZ(0px);
+        }
+        
+        .tesseract-container.folding-down .hypercube-face.face-0 {
+            transform: rotateX(-90deg) translateZ(-100px);
+        }
+        
+        .tesseract-container.folding-down .hypercube-face.face-5 {
+            transform: rotateX(0deg) translateZ(0px);
+        }
+        
+        /* HYPERCUBE TENSION MECHANICS */
+        .tesseract-container.tension-building {
+            --tension-intensity: 0.0;
+            filter: blur(calc(var(--tension-intensity) * 2px));
+        }
+        
+        .tesseract-container.tension-building .hypercube-face {
+            transform: scale(calc(1.0 + var(--tension-intensity) * 0.05)) 
+                      rotateZ(calc(var(--tension-intensity) * 2deg));
+        }
+            
+            /* Advanced CSS Variables for Real-time Reactivity */
+            --global-energy: 0.0;
+            --section-focus: 0;
+            --portal-intensity: 0.0;
+            --micro-chaos: 0.0;
+            --inverse-flow: 0.0;
+            --grid-vibrance: 1.0;
+            --transition-phase: 0.0;
+            --hover-section: -1;
+            --scroll-momentum: 0.0;
+            --reality-tear: 0.0;
+            
+            /* Smart Opacity Variables */
+            --visualizer-opacity: 0.6;
+            --focused-opacity: 0.1;
+            --reading-opacity: 0.05;
+            --gravity-opacity: 0.8;
+            --board-opacity: 0.3;
+            
+            /* Content Guidance Variables */
+            --content-gravity-x: 0.5;
+            --content-gravity-y: 0.5;
+            --content-flow-strength: 0.0;
+            --text-proximity: 0.0;
+        }
+        
+        /* MAIN BLOG CONTAINER */
+        .blog-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* VISUALIZER BACKGROUND BOARD */
+        .visualizer-board {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        #board-visualizer {
+            width: 100%;
+            height: 100%;
+            opacity: var(--board-opacity, 0.3);
+            filter: blur(0.8px);
+            transition: opacity 0.8s ease;
+        }
+        
+        /* FLOATING BLOG CARDS */
+        .blog-card {
+            position: absolute;
+            backdrop-filter: blur(calc(20px + var(--grid-vibrance) * 10px)) saturate(calc(180% + var(--grid-vibrance) * 50%));
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, calc(0.18 + var(--global-energy) * 0.3));
+            z-index: 5;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+            box-shadow: 
+                0 calc(15px + var(--global-energy) * 20px) calc(35px + var(--global-energy) * 30px) rgba(0, 0, 0, 0.4),
+                0 5px 15px rgba(0, 255, 255, calc(0.1 + var(--grid-vibrance) * 0.2)),
+                inset 0 1px 1px rgba(255, 255, 255, calc(0.2 + var(--global-energy) * 0.2)),
+                inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, 
+                rgba(0, 0, 0, calc(0.85 + var(--global-energy) * 0.1)) 0%,
+                rgba(0, 0, 0, calc(0.90 + var(--global-energy) * 0.05)) 50%,
+                rgba(0, 0, 0, 0.95) 100%
+            );
+            transform-style: preserve-3d;
+            transform: scale(calc(1.0 + var(--micro-chaos) * 0.02)) 
+                      rotateX(calc(var(--inverse-flow) * 2deg))
+                      rotateY(calc(var(--inverse-flow) * 1deg));
+        }
+        
+        /* SECTION HOVER ENLARGEMENT */
+        .blog-card[data-section-hover="true"] {
+            transform: scale(1.08) translateY(-15px) translateZ(30px) 
+                      rotateX(5deg) rotateY(2deg);
+            border-color: rgba(0, 255, 255, 0.6);
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.6),
+                0 15px 40px rgba(0, 255, 255, 0.3),
+                0 0 50px rgba(255, 0, 255, 0.2),
+                inset 0 1px 1px rgba(255, 255, 255, 0.4),
+                inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(30px) saturate(250%);
+            z-index: 10;
+        }
+        
+        /* INVERSE REACTION FOR NON-FOCUSED CARDS */
+        .blog-card[data-inverse="true"] {
+            transform: scale(0.95) translateZ(-10px);
+            opacity: 0.7;
+            backdrop-filter: blur(15px) saturate(120%);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .blog-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(calc(135deg + var(--transition-phase) * 180deg),
+                rgba(0, 255, 255, calc(0.08 + var(--grid-vibrance) * 0.12)) 0%,
+                rgba(255, 0, 255, calc(0.06 + var(--grid-vibrance) * 0.10)) 25%,
+                rgba(255, 255, 0, calc(0.04 + var(--grid-vibrance) * 0.08)) 50%,
+                rgba(0, 255, 0, calc(0.06 + var(--grid-vibrance) * 0.10)) 75%,
+                rgba(255, 0, 128, calc(0.08 + var(--grid-vibrance) * 0.12)) 100%
+            );
+            border-radius: inherit;
+            z-index: -1;
+            opacity: calc(0.6 + var(--global-energy) * 0.4);
+            transition: all 0.3s ease;
+            animation: pulse-glow calc(2s / (1 + var(--grid-vibrance))) ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { 
+                opacity: calc(0.6 + var(--global-energy) * 0.4); 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: calc(0.8 + var(--global-energy) * 0.4); 
+                transform: scale(1.02);
+            }
+        }
+        
+        /* PORTAL TRANSITION EFFECTS */
+        .portal-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: var(--portal-intensity);
+            background: 
+                radial-gradient(circle at var(--portal-x, 50%) var(--portal-y, 50%), 
+                    rgba(0, 255, 255, 0.3) 0%,
+                    rgba(255, 0, 255, 0.2) 20%,
+                    rgba(255, 255, 0, 0.1) 40%,
+                    transparent 60%
+                ),
+                conic-gradient(from 0deg at var(--portal-x, 50%) var(--portal-y, 50%),
+                    rgba(255, 0, 255, 0.2),
+                    rgba(0, 255, 255, 0.2),
+                    rgba(255, 255, 0, 0.2),
+                    rgba(255, 0, 255, 0.2)
+                );
+            animation: portal-spin calc(0.8s / (1 + var(--portal-intensity))) linear infinite;
+            backdrop-filter: blur(calc(var(--portal-intensity) * 20px)) 
+                           hue-rotate(calc(var(--portal-intensity) * 180deg));
+        }
+        
+        @keyframes portal-spin {
+            0% { transform: rotate(0deg) scale(0.5); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(0.5); }
+        }
+        
+        /* REALITY TEAR EFFECTS */
+        .reality-tear {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            opacity: var(--reality-tear);
+            background: 
+                repeating-linear-gradient(
+                    calc(45deg + var(--transition-phase) * 90deg),
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 0, 255, calc(0.1 * var(--reality-tear))) 2px,
+                    rgba(255, 0, 255, calc(0.1 * var(--reality-tear))) 4px
+                ),
+                repeating-linear-gradient(
+                    calc(-45deg + var(--transition-phase) * 90deg),
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 255, calc(0.1 * var(--reality-tear))) 2px,
+                    rgba(0, 255, 255, calc(0.1 * var(--reality-tear))) 4px
+                );
+            filter: contrast(calc(1 + var(--reality-tear) * 0.5)) 
+                   brightness(calc(1 + var(--reality-tear) * 0.3));
+            animation: reality-glitch calc(0.15s / (1 + var(--reality-tear))) infinite;
+        }
+        
+        @keyframes reality-glitch {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(calc(var(--reality-tear) * 2px)); }
+            50% { transform: translateX(0); }
+            75% { transform: translateX(calc(var(--reality-tear) * -2px)); }
+            100% { transform: translateX(0); }
+        }
+        
+        .blog-card:hover {
+            transform: translateY(-8px) translateZ(20px) scale(1.02);
+            border-color: rgba(0, 255, 255, 0.4);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 10px 30px rgba(0, 255, 255, 0.2),
+                0 0 40px rgba(255, 0, 255, 0.15),
+                inset 0 1px 1px rgba(255, 255, 255, 0.3),
+                inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(25px) saturate(200%);
+        }
+        
+        .blog-card:hover::before {
+            opacity: 0.9;
+        }
+        
+        .card-visualizer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: var(--visualizer-opacity, 0.6);
+            transition: opacity 0.8s ease;
+        }
+        
+        /* Smart opacity states */
+        .blog-card:hover .card-visualizer {
+            opacity: var(--focused-opacity, 0.1);
+        }
+        
+        .blog-card.reading-mode .card-visualizer {
+            opacity: var(--reading-opacity, 0.05);
+        }
+        
+        .blog-card.content-gravity .card-visualizer {
+            opacity: var(--gravity-opacity, 0.8);
+        }
+        
+        .card-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 25px;
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 255, 0.08) 0%,
+                rgba(255, 0, 255, 0.06) 25%,
+                rgba(255, 255, 0, 0.08) 50%,
+                rgba(0, 255, 0, 0.06) 75%,
+                rgba(255, 0, 128, 0.08) 100%
+            );
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+        
+        .card-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                rgba(0, 255, 255, 0.1) 0deg,
+                rgba(255, 0, 255, 0.08) 60deg,
+                rgba(255, 255, 0, 0.1) 120deg,
+                rgba(0, 255, 0, 0.08) 180deg,
+                rgba(255, 0, 128, 0.1) 240deg,
+                rgba(128, 0, 255, 0.08) 300deg,
+                rgba(0, 255, 255, 0.1) 360deg
+            );
+            z-index: -1;
+            animation: rotate-gradient 20s linear infinite;
+            opacity: var(--card-energy, 0.3);
+            transition: opacity 0.3s ease;
+        }
+        
+        @keyframes rotate-gradient {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* STATE-SPECIFIC BLOG LAYOUTS */
+        
+        /* HOME LAYOUT - Traditional Blog Grid */
+        .layout-home .blog-card:nth-child(2) { /* Header */
+            top: 3%; left: 50%; transform: translateX(-50%);
+            width: 90%; height: 15%;
+        }
+        
+        .layout-home .blog-card:nth-child(3) { /* Featured Article */
+            top: 20%; left: 5%;
+            width: 55%; height: 45%;
+        }
+        
+        .layout-home .blog-card:nth-child(4) { /* Sidebar */
+            top: 20%; right: 5%;
+            width: 35%; height: 70%;
+        }
+        
+        .layout-home .blog-card:nth-child(5) { /* Secondary Article */
+            top: 68%; left: 5%;
+            width: 35%; height: 27%;
+        }
+        
+        .layout-home .blog-card:nth-child(6) { /* Article List */
+            top: 68%; left: 42%;
+            width: 18%; height: 27%;
+        }
+        
+        .layout-home .blog-card:nth-child(7) { /* Navigation */
+            bottom: 3%; left: 50%; transform: translateX(-50%);
+            width: 60%; height: 10%;
+        }
+        
+        /* TECH LAYOUT - Documentation Style */
+        .layout-tech .blog-card:nth-child(2) { /* Header - Full Width */
+            top: 2%; left: 2%;
+            width: 96%; height: 10%;
+        }
+        
+        .layout-tech .blog-card:nth-child(3) { /* Left TOC */
+            top: 14%; left: 2%;
+            width: 20%; height: 82%;
+        }
+        
+        .layout-tech .blog-card:nth-child(4) { /* Main Content */
+            top: 14%; left: 24%;
+            width: 50%; height: 82%;
+        }
+        
+        .layout-tech .blog-card:nth-child(5) { /* Code Examples */
+            top: 14%; right: 2%;
+            width: 22%; height: 40%;
+        }
+        
+        .layout-tech .blog-card:nth-child(6) { /* API Reference */
+            top: 56%; right: 2%;
+            width: 22%; height: 40%;
+        }
+        
+        .layout-tech .blog-card:nth-child(7) { /* Hidden in tech */
+            opacity: 0; pointer-events: none;
+        }
+        
+        /* MEDIA LAYOUT - Magazine Style Radial */
+        .layout-media .blog-card:nth-child(2) { /* Center Feature */
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 40%; height: 45%;
+            border-radius: 30px;
+        }
+        
+        .layout-media .blog-card:nth-child(3) { /* Top Left */
+            top: 8%; left: 8%;
+            width: 35%; height: 35%;
+            border-radius: 25px;
+        }
+        
+        .layout-media .blog-card:nth-child(4) { /* Top Right */
+            top: 8%; right: 8%;
+            width: 35%; height: 35%;
+            border-radius: 25px;
+        }
+        
+        .layout-media .blog-card:nth-child(5) { /* Bottom Left */
+            bottom: 8%; left: 8%;
+            width: 35%; height: 35%;
+            border-radius: 25px;
+        }
+        
+        .layout-media .blog-card:nth-child(6) { /* Bottom Right */
+            bottom: 8%; right: 8%;
+            width: 35%; height: 35%;
+            border-radius: 25px;
+        }
+        
+        .layout-media .blog-card:nth-child(7) { /* Hidden in media */
+            opacity: 0; pointer-events: none;
+        }
+        
+        /* INNOVATION LAYOUT - Creative Flow */
+        .layout-innovation .blog-card:nth-child(2) { /* Left Column */
+            top: 5%; left: 5%;
+            width: 38%; height: 90%;
+            border-radius: 30px 15px 30px 15px;
+        }
+        
+        .layout-innovation .blog-card:nth-child(3) { /* Right Top */
+            top: 5%; right: 5%;
+            width: 52%; height: 42%;
+            border-radius: 15px 30px 15px 30px;
+        }
+        
+        .layout-innovation .blog-card:nth-child(4) { /* Right Bottom */
+            bottom: 5%; right: 5%;
+            width: 52%; height: 48%;
+            border-radius: 30px 15px 30px 15px;
+        }
+        
+        .layout-innovation .blog-card:nth-child(5) { /* Hidden */
+            opacity: 0; pointer-events: none;
+        }
+        
+        .layout-innovation .blog-card:nth-child(6) { /* Hidden */
+            opacity: 0; pointer-events: none;
+        }
+        
+        .layout-innovation .blog-card:nth-child(7) { /* Hidden */
+            opacity: 0; pointer-events: none;
+        }
+        
+        /* RESEARCH LAYOUT - Academic Style */
+        .layout-research .blog-card:nth-child(2) { /* Title */
+            top: 5%; left: 15%;
+            width: 70%; height: 12%;
+            transform: rotate(-1deg);
+        }
+        
+        .layout-research .blog-card:nth-child(3) { /* Abstract */
+            top: 20%; left: 10%;
+            width: 35%; height: 30%;
+            transform: rotate(2deg);
+        }
+        
+        .layout-research .blog-card:nth-child(4) { /* Main Paper */
+            top: 25%; right: 10%;
+            width: 45%; height: 65%;
+            transform: rotate(-1deg);
+        }
+        
+        .layout-research .blog-card:nth-child(5) { /* Methods */
+            bottom: 25%; left: 10%;
+            width: 35%; height: 25%;
+            transform: rotate(1deg);
+        }
+        
+        .layout-research .blog-card:nth-child(6) { /* References */
+            bottom: 5%; left: 25%;
+            width: 25%; height: 15%;
+            transform: rotate(-2deg);
+        }
+        
+        .layout-research .blog-card:nth-child(7) { /* Citations */
+            bottom: 5%; right: 25%;
+            width: 25%; height: 15%;
+            transform: rotate(1deg);
+        }
+        
+        /* TYPOGRAPHY SYSTEM */
+        .card-title {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: 900;
+            margin-bottom: 12px;
+            color: #ffffff;
+            text-shadow: 
+                0 0 5px #00ffff,
+                0 0 10px #00ffff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+        
+        .card-subtitle {
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            color: #00ffff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 8px #00ffff;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+        
+        .card-description {
+            font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.5;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .article-content {
+            font-size: clamp(0.65rem, 1.8vw, 0.85rem);
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 15px;
+        }
+        
+        .article-content h3 {
+            color: #ff00ff;
+            margin: 15px 0 8px 0;
+            font-size: clamp(0.8rem, 2.2vw, 1rem);
+        }
+        
+        .article-content p {
+            margin-bottom: 12px;
+        }
+        
+        .article-meta {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            font-size: clamp(0.5rem, 1.3vw, 0.7rem);
+            color: #00ffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tag {
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2));
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: clamp(0.5rem, 1.2vw, 0.6rem);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+        }
+        
+        /* 4D CUBE NAVIGATION BEZELS */
+        .cube-navigation-system {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2000;
+        }
+        
+        .nav-bezel {
+            position: absolute;
+            background: linear-gradient(45deg, 
+                rgba(0, 255, 255, 0.3) 0%,
+                rgba(255, 0, 255, 0.3) 50%,
+                rgba(255, 255, 0, 0.3) 100%
+            );
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(15px);
+            pointer-events: auto;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0.8;
+            overflow: hidden;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-bezel:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        /* LEFT/RIGHT BEZELS - Vertical strips */
+        .nav-bezel-left, .nav-bezel-right {
+            top: 20%;
+            height: 60%;
+            width: 25px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+        
+        .nav-bezel-left {
+            left: 0;
+            border-radius: 0 15px 15px 0;
+            background: linear-gradient(to right,
+                rgba(255, 0, 127, 0.15) 0%,
+                rgba(127, 0, 255, 0.1) 100%
+            );
+        }
+        
+        .nav-bezel-right {
+            right: 0;
+            border-radius: 15px 0 0 15px;
+            background: linear-gradient(to left,
+                rgba(0, 255, 255, 0.15) 0%,
+                rgba(0, 127, 255, 0.1) 100%
+            );
+        }
+        
+        /* TOP/BOTTOM BEZELS - Horizontal strips */
+        .nav-bezel-top, .nav-bezel-bottom {
+            left: 20%;
+            width: 60%;
+            height: 25px;
+        }
+        
+        .nav-bezel-top {
+            top: 0;
+            border-radius: 0 0 15px 15px;
+            background: linear-gradient(to bottom,
+                rgba(255, 255, 0, 0.15) 0%,
+                rgba(255, 127, 0, 0.1) 100%
+            );
+        }
+        
+        .nav-bezel-bottom {
+            bottom: 0;
+            border-radius: 15px 15px 0 0;
+            background: linear-gradient(to top,
+                rgba(127, 255, 0, 0.15) 0%,
+                rgba(0, 255, 127, 0.1) 100%
+            );
+        }
+        
+        .bezel-visualizer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.4;
+        }
+        
+        .bezel-content {
+            position: relative;
+            padding: 8px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+        
+        .bezel-title {
+            font-size: 0.7rem;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 0 8px #00ffff;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        
+        .bezel-subtitle {
+            font-size: 0.5rem;
+            color: #00ffff;
+            text-shadow: 0 0 4px #00ffff;
+            opacity: 0.8;
+        }
+        
+        .bezel-preview {
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #00ffff 0%, transparent 70%);
+            border-radius: 50%;
+            margin-top: 4px;
+            animation: pulse 2s infinite;
+        }
+        
+        .drag-indicator {
+            position: absolute;
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 700;
+            text-shadow: 0 0 6px rgba(0, 255, 255, 0.5);
+            pointer-events: none;
+        }
+        
+        .nav-bezel-left .drag-indicator { 
+            bottom: 10px; 
+            left: 50%; 
+            transform: translateX(-50%) rotate(-90deg);
+        }
+        .nav-bezel-right .drag-indicator { 
+            bottom: 10px; 
+            right: 50%; 
+            transform: translateX(50%) rotate(90deg);
+        }
+        .nav-bezel-top .drag-indicator { 
+            right: 10px; 
+            top: 50%; 
+            transform: translateY(-50%);
+        }
+        .nav-bezel-bottom .drag-indicator { 
+            right: 10px; 
+            bottom: 50%; 
+            transform: translateY(50%);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        /* BLOG STATE CONTROLS */
+        .blog-controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+            background: linear-gradient(135deg,
+                rgba(0, 0, 0, 0.9) 0%,
+                rgba(25, 0, 50, 0.9) 100%
+            );
+            padding: 15px 25px;
+            border-radius: 25px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .state-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .state-dot.active {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            box-shadow: 
+                0 0 15px #00ffff,
+                0 0 30px #ff00ff;
+            transform: scale(1.3);
+        }
+        
+        .state-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg,
+                rgba(0, 0, 0, 0.9) 0%,
+                rgba(25, 0, 50, 0.9) 100%
+            );
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #00ffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            z-index: 2000;
+            min-width: 200px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        .state-row {
+            margin: 4px 0;
+            color: #00ffff;
+            text-shadow: 0 0 5px #00ffff;
+        }
+        
+        .state-value {
+            color: #ffffff;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+        
+        /* SCROLL INTERACTION FEEDBACK */
+        .scroll-progress {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            z-index: 1000;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .scroll-fill {
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(to top,
+                #00ffff 0%,
+                #ff00ff 50%,
+                #ffff00 100%
+            );
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+        }
+        
+        .morphing-indicator {
+            position: fixed;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            color: #00ffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            writing-mode: vertical-rl;
+            text-shadow: 0 0 5px #00ffff;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .morphing-indicator.active {
+            opacity: 1;
+        }
+        
+        /* ARTICLE CONTENT STYLES */
+        .blog-header {
+            text-align: center;
+        }
+        
+        .blog-title {
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            overflow-x: auto;
+        }
+        
+        .link-button {
+            color: #00ffff;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .link-button:hover {
+            color: #ff00ff;
+            text-shadow: 0 0 8px #ff00ff;
+        }
+        
+        /* RESPONSIVE ADJUSTMENTS */
+        @media (max-width: 768px) {
+            .blog-controls {
+                bottom: 15px;
+                padding: 12px 20px;
+                gap: 12px;
+            }
+            
+            .state-dot {
+                width: 12px;
+                height: 12px;
+            }
+            
+            .state-indicator {
+                font-size: 0.6rem;
+                padding: 12px;
+                min-width: 180px;
+            }
+            
+            .card-content {
+                padding: 15px;
+            }
+        }
+    </style>
+    
+    <!-- CORE ARCHITECTURE SYSTEMS -->
+    <script type="module" src="./core/VIB3HomeMaster.js"></script>
+    <script type="module" src="./core/UnifiedReactivityBridge.js"></script>
+</head>
+<body>
+    <!-- STATE INDICATOR -->
+    <div class="state-indicator">
+        <div class="state-row">Layout: <span class="state-value" id="current-layout">HOME</span></div>
+        <div class="state-row">Theme: <span class="state-value" id="current-theme">Hypercube Grid</span></div>
+        <div class="state-row">Cards: <span class="state-value" id="card-count">6 Active</span></div>
+        <div class="state-row">Mode: <span class="state-value">Morphing</span></div>
+    </div>
+    
+    <!-- SCROLL PROGRESS -->
+    <div class="scroll-progress">
+        <div class="scroll-fill" id="scrollFill"></div>
+    </div>
+    
+    <!-- MORPHING INDICATOR -->
+    <div class="morphing-indicator" id="morphingIndicator">MORPHING IN PROGRESS</div>
+    
+    <!-- PORTAL TRANSITION OVERLAY -->
+    <div class="portal-transition" id="portalTransition"></div>
+    
+    <!-- REALITY TEAR OVERLAY -->
+    <div class="reality-tear" id="realityTear"></div>
+
+    <!-- TESSERACT 8-CELL HYPERCUBE NAVIGATION -->
+    <div class="tesseract-container" id="tesseractContainer">
+        <!-- FACE 0: HOME (FRONT) -->
+        <div class="hypercube-face face-0" id="face-0">
+            <div class="blog-container layout-home" id="blogContainer">
+        
+        <!-- VISUALIZER BACKGROUND BOARD -->
+        <div class="visualizer-board">
+            <canvas id="board-visualizer"></canvas>
+        </div>
+        
+        <!-- FLOATING BLOG CARDS -->
+        <!-- Card 1: Header/Navigation -->
+        <div class="blog-card" id="blog-card-1">
+            <canvas class="card-visualizer" id="card-visualizer-1"></canvas>
+            <div class="card-content">
+                <div class="blog-header">
+                    <div class="blog-title" id="blog-title">VIB3CODE</div>
+                    <div class="card-subtitle" id="header-subtitle">Emergent Interface Architecture</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 2: Featured Article -->
+        <div class="blog-card" id="blog-card-2">
+            <canvas class="card-visualizer" id="card-visualizer-2"></canvas>
+            <div class="card-content">
+                <div class="card-title" id="card-title-2">The Foundational Trinity</div>
+                <div class="card-subtitle" id="card-subtitle-2">Core Architecture Principles</div>
+                <div class="article-content" id="article-content-2">
+                    <p>VIB3STYLEPACK emerges from three foundational principles that define emergent interface architecture: Home-Master control systems, Portal scroll transitions, and Multi-element geometry language.</p>
+                    <h3>Home-Master Control</h3>
+                    <p>Every visualizer responds to a central authority that maintains visual coherence across 13 synchronized instances. Mathematical precision creates living, breathing interfaces.</p>
+                    <div class="code-block">geometry: hypercube, density: 12.0, dimension: 3.5</div>
+                </div>
+                <div class="article-meta">
+                    <span class="tag">Architecture</span>
+                    <span>2025-06-22</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 3: Secondary Content -->
+        <div class="blog-card" id="blog-card-3">
+            <canvas class="card-visualizer" id="card-visualizer-3"></canvas>
+            <div class="card-content">
+                <div class="card-title" id="card-title-3">Geometric Lexicon</div>
+                <div class="card-subtitle" id="card-subtitle-3">8 Mathematical Forms</div>
+                <div class="article-content" id="article-content-3">
+                    <p>Expanding beyond basic shapes into advanced fractal forms including Menger Sponge and Mandelbulb geometries.</p>
+                    <p>Using Signed Distance Fields to unlock vast new territories of visual complexity while maintaining 60fps performance.</p>
+                </div>
+                <div class="article-meta">
+                    <span class="tag">Mathematics</span>
+                    <span>2025-06-21</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 4: Sidebar/Navigation -->
+        <div class="blog-card" id="blog-card-4">
+            <canvas class="card-visualizer" id="card-visualizer-4"></canvas>
+            <div class="card-content">
+                <div class="card-title" id="card-title-4">Navigation</div>
+                <div class="card-subtitle" id="card-subtitle-4">Article Categories</div>
+                <div class="article-content" id="article-content-4">
+                    <p><span class="link-button">→ Technical Architecture</span></p>
+                    <p><span class="link-button">→ Visual Mathematics</span></p>
+                    <p><span class="link-button">→ Innovation Showcase</span></p>
+                    <p><span class="link-button">→ Research Papers</span></p>
+                    <p><span class="link-button">→ Community</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 5: Article List -->
+        <div class="blog-card" id="blog-card-5">
+            <canvas class="card-visualizer" id="card-visualizer-5"></canvas>
+            <div class="card-content">
+                <div class="card-title" id="card-title-5">Latest</div>
+                <div class="card-subtitle" id="card-subtitle-5">Recent Articles</div>
+                <div class="article-content" id="article-content-5">
+                    <p><span class="link-button">Mandelbulb Innovation</span></p>
+                    <p><span class="link-button">Quantum Wave Fields</span></p>
+                    <p><span class="link-button">Klein Bottle UI</span></p>
+                    <p><span class="link-button">Torus Flow Patterns</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 6: Footer/Meta -->
+        <div class="blog-card" id="blog-card-6">
+            <canvas class="card-visualizer" id="card-visualizer-6"></canvas>
+            <div class="card-content">
+                <div class="card-title" id="card-title-6">System Status</div>
+                <div class="card-subtitle" id="card-subtitle-6">Live Metrics</div>
+                <div class="article-content" id="article-content-6">
+                    <p>Visualizers: <span class="state-value">13 Active</span></p>
+                    <p>Performance: <span class="state-value">60 FPS</span></p>
+                    <p>Reactivity: <span class="state-value">Unified</span></p>
+                </div>
+            </div>
+        </div>
+        
+            </div> <!-- Close blog-container -->
+        </div> <!-- Close face-0 -->
+        
+        <!-- FACE 1: TECH (RIGHT) -->
+        <div class="hypercube-face face-1" id="face-1">
+            <div class="blog-container layout-tech">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+                    <div style="font-size: 4rem; color: #00ffff; text-shadow: 0 0 20px #00ffff;">TECH DOCS</div>
+                    <div style="font-size: 1.5rem; color: #ffffff; margin-top: 20px;">Tetrahedron Precision Architecture</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FACE 2: RESEARCH (BACK) -->
+        <div class="hypercube-face face-2" id="face-2">
+            <div class="blog-container layout-research">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+                    <div style="font-size: 4rem; color: #ff00ff; text-shadow: 0 0 20px #ff00ff;">RESEARCH</div>
+                    <div style="font-size: 1.5rem; color: #ffffff; margin-top: 20px;">Wave Function Mathematics</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FACE 3: MEDIA (LEFT) -->
+        <div class="hypercube-face face-3" id="face-3">
+            <div class="blog-container layout-media">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+                    <div style="font-size: 4rem; color: #ffff00; text-shadow: 0 0 20px #ffff00;">MEDIA</div>
+                    <div style="font-size: 1.5rem; color: #ffffff; margin-top: 20px;">Sphere Potential Infinite</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FACE 4: INNOVATION (TOP) -->
+        <div class="hypercube-face face-4" id="face-4">
+            <div class="blog-container layout-innovation">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+                    <div style="font-size: 4rem; color: #00ff00; text-shadow: 0 0 20px #00ff00;">INNOVATION</div>
+                    <div style="font-size: 1.5rem; color: #ffffff; margin-top: 20px;">Mandelbulb Growth Patterns</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FACE 5: CONTEXT (BOTTOM) -->
+        <div class="hypercube-face face-5" id="face-5">
+            <div class="blog-container layout-context">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+                    <div style="font-size: 4rem; color: #ff8800; text-shadow: 0 0 20px #ff8800;">CONTEXT</div>
+                    <div style="font-size: 1.5rem; color: #ffffff; margin-top: 20px;">Settings & Configuration</div>
+                </div>
+            </div>
+        </div>
+        
+    </div> <!-- Close tesseract-container -->
+    
+    <!-- 4D CUBE NAVIGATION BEZELS -->
+    <div class="cube-navigation-system">
+        <!-- LEFT EDGE: Previous Section -->
+        <div class="nav-bezel nav-bezel-left" data-direction="left" data-target="research">
+            <canvas class="bezel-visualizer" id="bezel-visualizer-left"></canvas>
+            <div class="bezel-content">
+                <div class="bezel-title">RESEARCH</div>
+                <div class="bezel-subtitle">Wave Patterns</div>
+                <div class="bezel-preview"></div>
+            </div>
+            <div class="drag-indicator">← DRAG</div>
+        </div>
+        
+        <!-- RIGHT EDGE: Next Section -->
+        <div class="nav-bezel nav-bezel-right" data-direction="right" data-target="tech">
+            <canvas class="bezel-visualizer" id="bezel-visualizer-right"></canvas>
+            <div class="bezel-content">
+                <div class="bezel-title">TECH</div>
+                <div class="bezel-subtitle">Documentation</div>
+                <div class="bezel-preview"></div>
+            </div>
+            <div class="drag-indicator">DRAG →</div>
+        </div>
+        
+        <!-- TOP EDGE: Always Home -->
+        <div class="nav-bezel nav-bezel-top" data-direction="up" data-target="home">
+            <canvas class="bezel-visualizer" id="bezel-visualizer-top"></canvas>
+            <div class="bezel-content">
+                <div class="bezel-title">HOME</div>
+                <div class="bezel-subtitle">Hypercube Grid</div>
+                <div class="bezel-preview"></div>
+            </div>
+            <div class="drag-indicator">↑ HOME</div>
+        </div>
+        
+        <!-- BOTTOM EDGE: Context Menu -->
+        <div class="nav-bezel nav-bezel-bottom" data-direction="down" data-target="context">
+            <canvas class="bezel-visualizer" id="bezel-visualizer-bottom"></canvas>
+            <div class="bezel-content">
+                <div class="bezel-title">CONTEXT</div>
+                <div class="bezel-subtitle">Settings</div>
+                <div class="bezel-preview"></div>
+            </div>
+            <div class="drag-indicator">↓ MENU</div>
+        </div>
+    </div>
+
+    <!-- BLOG STATE CONTROLS (Legacy - will be replaced) -->
+    <div class="blog-controls" style="opacity: 0.3;">
+        <div class="state-dot active" data-state="0" title="HOME - Traditional Blog Grid"></div>
+        <div class="state-dot" data-state="1" title="TECH - Documentation Style"></div>
+        <div class="state-dot" data-state="2" title="MEDIA - Magazine Radial"></div>
+        <div class="state-dot" data-state="3" title="INNOVATION - Creative Flow"></div>
+        <div class="state-dot" data-state="4" title="RESEARCH - Academic Papers"></div>
+    </div>
+
+    <script>
+        console.log('🌌 VIB3CODE MORPHING BLOG SYSTEM');
+        
+        // REACTIVE HYPERAV CORE - REAL 4D POLYTOPAL SYSTEM
+        // RESTORED FROM DESKTOP DEMO WITH FULL FEATURES
+        class ReactiveHyperAVCore {
+            constructor(canvas, role = 'content', instanceId = Math.random()) {
+                this.canvas = canvas;
+                this.gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                this.role = role; // 'background', 'shadow', 'content', 'highlight', 'accent'
+                this.instanceId = instanceId;
+                
+                if (!this.gl) {
+                    console.error('WebGL not supported');
+                    return;
+                }
+                
+                // Core state
+                this.startTime = Date.now();
+                this.currentTheme = 'hypercube';
+                this.interactionState = {
+                    type: 'idle',
+                    intensity: 0,
+                    lastActivity: Date.now(),
+                    holdStart: 0,
+                    isHolding: false,
+                    scrollVelocity: 0,
+                    mouseX: 0.5,
+                    mouseY: 0.5
+                };
+                
+                // PROPER ROLE-BASED PARAMETERS FOR MULTI-LAYER SYSTEM
+                const roleParameterMap = {
+                    'background': { 
+                        densityMult: 0.4, speedMult: 0.2, colorShift: 0.0, intensity: 0.2,
+                        mouseReactivity: 0.3, clickReactivity: 0.1 
+                    },
+                    'shadow': { 
+                        densityMult: 0.8, speedMult: 0.3, colorShift: 180.0, intensity: 0.4,
+                        mouseReactivity: 0.5, clickReactivity: 0.3 
+                    },
+                    'content': { 
+                        densityMult: 1.0 + Math.random() * 0.5, speedMult: 0.6 + Math.random() * 0.3, 
+                        colorShift: Math.random() * 360, intensity: 0.7 + Math.random() * 0.2,
+                        mouseReactivity: 1.0, clickReactivity: 0.8 
+                    },
+                    'highlight': { 
+                        densityMult: 1.5, speedMult: 0.8, colorShift: 60.0, intensity: 0.6,
+                        mouseReactivity: 1.2, clickReactivity: 1.0 
+                    },
+                    'accent': { 
+                        densityMult: 0.6, speedMult: 0.4, colorShift: 300.0, intensity: 0.3,
+                        mouseReactivity: 1.5, clickReactivity: 1.2 
+                    },
+                    'board': {
+                        densityMult: 0.6, speedMult: 0.2, colorShift: 0.0, intensity: 0.3,
+                        mouseReactivity: 0.5, clickReactivity: 0.2
+                    },
+                    'bezel': {
+                        densityMult: 2.0, speedMult: 1.0, colorShift: 120.0, intensity: 0.8,
+                        mouseReactivity: 2.0, clickReactivity: 1.5
+                    },
+                    'card': {
+                        densityMult: 1.0, speedMult: 0.7, colorShift: 45.0, intensity: 0.8,
+                        mouseReactivity: 1.0, clickReactivity: 0.9
+                    }
+                };
+                
+                // ASSIGN ROLE PARAMETERS
+                this.roleParams = roleParameterMap[role] || { densityMult: 1.0, speedMult: 0.5, colorShift: 0.0, intensity: 0.5, mouseReactivity: 1.0, clickReactivity: 0.5 };
+                this.instanceParams = this.roleParams; // FOR COMPATIBILITY
+                
+                // ENSURE CRITICAL PROPERTIES ALWAYS EXIST
+                if (!this.instanceParams.intensity) this.instanceParams.intensity = 0.5;
+                if (!this.instanceParams.densityMult) this.instanceParams.densityMult = 1.0;
+                if (!this.instanceParams.speedMult) this.instanceParams.speedMult = 1.0;
+                if (!this.instanceParams.colorShift) this.instanceParams.colorShift = 0.0;
+                
+                // HYPERCUBE FACE GEOMETRY MAPPING - DEFINED FIRST!
+                // Fixed geometry assignments for each face of the tesseract
+                this.hypercubeFaceGeometries = {
+                    'face-0': 'hypercube',    // HOME (FRONT) - Hypercube sovereignty
+                    'face-1': 'tetrahedron',  // TECH (RIGHT) - Tetrahedron precision
+                    'face-2': 'wave',         // RESEARCH (BACK) - Wave function
+                    'face-3': 'sphere',       // MEDIA (LEFT) - Sphere potential
+                    'face-4': 'fractal',      // INNOVATION (TOP) - Fractal growth
+                    'face-5': 'crystal',      // CONTEXT (BOTTOM) - Crystal lattice
+                    'face-6': 'klein',        // INNER FRONT - Klein bottle topology
+                    'face-7': 'torus'         // INNER BACK - Torus flow
+                };
+                
+                // BASE THEME CONFIG (HOME/HYPERCUBE REFERENCE VALUES)
+                this.baseThemeConfig = {
+                    baseColor: [1.0, 0.0, 1.0],      // Magenta - HOME base
+                    gridDensity: 12.0,               // BASE density
+                    morphFactor: 0.5,                // BASE morph
+                    dimension: 3.5,                  // BASE dimension
+                    glitchIntensity: 0.3,             // BASE glitch
+                    rotationSpeed: 0.5                // BASE rotation
+                };
+                
+                // RELATIONAL GEOMETRY CONFIGURATIONS (relative to HOME base)
+                this.themeConfigs = {
+                    hypercube: {
+                        ...this.baseThemeConfig,
+                        geometry: 0.0  // FACE-0: HOME (BASE REFERENCE)
+                    },
+                    tetrahedron: {
+                        baseColor: [0.0, 1.0, 1.0],                    // Cyan
+                        gridDensity: this.baseThemeConfig.gridDensity * 0.67,  // 0.67x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 1.4,   // 1.4x base morph
+                        dimension: this.baseThemeConfig.dimension * 0.91,      // 0.91x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 0.67, // 0.67x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 1.4, // 1.4x base rotation
+                        geometry: 1.0  // FACE-1: TECH
+                    },
+                    sphere: {
+                        baseColor: [1.0, 1.0, 0.0],                    // Yellow
+                        gridDensity: this.baseThemeConfig.gridDensity * 1.25,  // 1.25x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 0.6,   // 0.6x base morph
+                        dimension: this.baseThemeConfig.dimension * 1.09,      // 1.09x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 0.33, // 0.33x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 0.6, // 0.6x base rotation
+                        geometry: 2.0  // FACE-3: MEDIA
+                    },
+                    torus: {
+                        baseColor: [0.0, 1.0, 0.0],                    // Green
+                        gridDensity: this.baseThemeConfig.gridDensity * 0.83,  // 0.83x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 1.6,   // 1.6x base morph
+                        dimension: this.baseThemeConfig.dimension * 1.03,      // 1.03x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 1.33, // 1.33x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 1.2, // 1.2x base rotation
+                        geometry: 3.0  // FACE-7: INNER BACK (Torus flow)
+                    },
+                    klein: {
+                        baseColor: [1.0, 0.5, 0.0],                    // Orange
+                        gridDensity: this.baseThemeConfig.gridDensity * 1.17,  // 1.17x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 1.8,   // 1.8x base morph
+                        dimension: this.baseThemeConfig.dimension * 1.11,      // 1.11x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 1.67, // 1.67x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 0.8, // 0.8x base rotation
+                        geometry: 4.0  // FACE-6: INNER FRONT (Klein topology)
+                    },
+                    fractal: {
+                        baseColor: [0.5, 0.0, 1.0],                    // Purple
+                        gridDensity: this.baseThemeConfig.gridDensity * 1.67,  // 1.67x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 1.2,   // 1.2x base morph
+                        dimension: this.baseThemeConfig.dimension * 1.06,      // 1.06x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 2.0, // 2.0x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 1.6, // 1.6x base rotation
+                        geometry: 5.0  // FACE-4: INNOVATION (Fractal growth)
+                    },
+                    wave: {
+                        baseColor: [1.0, 0.0, 0.5],                    // Pink
+                        gridDensity: this.baseThemeConfig.gridDensity * 1.33,  // 1.33x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 0.8,   // 0.8x base morph
+                        dimension: this.baseThemeConfig.dimension * 0.94,      // 0.94x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 1.0, // 1.0x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 1.8, // 1.8x base rotation
+                        geometry: 6.0  // FACE-2: RESEARCH (Wave function)
+                    },
+                    crystal: {
+                        baseColor: [0.0, 1.0, 0.5],                    // Mint
+                        gridDensity: this.baseThemeConfig.gridDensity * 1.5,   // 1.5x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 0.4,   // 0.4x base morph
+                        dimension: this.baseThemeConfig.dimension * 0.89,      // 0.89x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 0.67, // 0.67x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 0.4, // 0.4x base rotation
+                        geometry: 7.0  // FACE-5: CONTEXT (Crystal lattice)
+                    }
+                };
+                
+                // Current parameters (reactive) - Start with HOME/hypercube base
+                this.params = { ...this.themeConfigs.hypercube };
+                
+                // ENHANCED INTERACTION STATE SYSTEM  
+                this.mouseX = 0.5;
+                this.mouseY = 0.5;
+                this.mouseIntensity = 0.0;
+                this.clickIntensity = 0.0;
+                this.clickDecay = 0.95;
+                
+                // GRID DENSITY CHANGES FOR REAL-TIME REACTIVITY
+                this.baseDensity = 6.0 + Math.random() * 4.0;
+                this.densityVariation = 0.0;
+                this.densityTarget = 0.0;
+                
+                this.currentState = 0;
+                this.targetState = 0;
+                this.transitionProgress = 1.0;
+                this.chaosIntensity = 0.0;
+                
+                // instanceParams already assigned above - just add missing properties
+                this.gridVibrance = 1.0;
+                this.sectionFocus = 0.0;
+                this.portalIntensity = 0.0;
+                this.microChaos = 0.0;
+                this.inverseFlow = 0.0;
+                this.contentGravityX = 0.5;
+                this.contentGravityY = 0.5;
+                this.contentFlowStrength = 0.0;
+                this.textProximity = 0.0;
+                
+                // ENHANCED 4D POLYTOPAL STATE DEFINITIONS
+                this.states = [
+                    { // HOME - HYPERCUBE SOVEREIGNTY
+                        geometry: 0.0, density: this.baseDensity, speed: 0.5,
+                        color: [1.0, 0.0, 1.0], dimension: 3.5,
+                        name: 'HOME', geometryName: 'Hypercube'
+                    },
+                    { // TECH - TETRAHEDRON PRECISION
+                        geometry: 1.0, density: this.baseDensity * 0.7, speed: 0.3,
+                        color: [0.0, 1.0, 1.0], dimension: 3.2,
+                        name: 'TECH', geometryName: 'Tetrahedron'
+                    },
+                    { // MEDIA - SPHERE POTENTIAL
+                        geometry: 2.0, density: this.baseDensity * 1.3, speed: 0.8,
+                        color: [1.0, 1.0, 0.0], dimension: 3.8,
+                        name: 'MEDIA', geometryName: 'Sphere'
+                    },
+                    { // AUDIO - TORUS FLOW
+                        geometry: 3.0, density: this.baseDensity * 0.9, speed: 0.6,
+                        color: [0.0, 1.0, 0.0], dimension: 3.6,
+                        name: 'AUDIO', geometryName: 'Torus'
+                    },
+                    { // QUANTUM - WAVE NEXUS
+                        geometry: 6.0, density: this.baseDensity * 1.5, speed: 0.7,
+                        color: [1.0, 0.0, 0.5], dimension: 3.9,
+                        name: 'QUANTUM', geometryName: 'Wave'
+                    }
+                ];
+                
+                this.mouseX = 0.5;
+                this.mouseY = 0.5;
+                this.startTime = Date.now();
+                
+                // Automatically determine geometry based on role if it's a hypercube face
+                this.autoDetectFaceGeometry();
+                
+                this.initShaders();
+                this.initBuffers();
+                this.setupInteractions();
+                this.resize();
+                
+                console.log(`✅ ReactiveHyperAVCore initialized (${role}) - Geometry: ${this.currentTheme}`);
+            }
+            
+            autoDetectFaceGeometry() {
+                // Auto-detect if this canvas belongs to a hypercube face
+                const canvasId = this.canvas.id || 'unknown';
+                
+                // DEBUG: Log the detection process
+                console.log(`🔍 Detecting geometry for canvas: ${canvasId}`);
+                
+                // Check for face-specific canvases within hypercube faces
+                const parentFace = this.canvas.closest('.hypercube-face');
+                if (parentFace) {
+                    const faceId = parentFace.id;
+                    console.log(`🔍 Found parent face: ${faceId}`);
+                    
+                    if (this.hypercubeFaceGeometries && this.hypercubeFaceGeometries[faceId]) {
+                        const assignedGeometry = this.hypercubeFaceGeometries[faceId];
+                        this.setTheme(assignedGeometry);
+                        console.log(`🎯 Auto-assigned ${assignedGeometry} to ${faceId} visualizer`);
+                        return;
+                    } else {
+                        console.warn(`⚠️ No geometry mapping found for face: ${faceId}`);
+                        console.log('Available face geometries:', Object.keys(this.hypercubeFaceGeometries || {}));
+                    }
+                }
+                
+                // Check for bezel assignments
+                if (canvasId.includes('bezel-visualizer')) {
+                    const direction = canvasId.split('-')[2]; // left, right, top, bottom
+                    const bezelGeometryMap = {
+                        'left': 'wave',       // Research
+                        'right': 'tetrahedron', // Tech
+                        'top': 'hypercube',     // Home
+                        'bottom': 'crystal'     // Context
+                    };
+                    if (bezelGeometryMap[direction]) {
+                        this.setTheme(bezelGeometryMap[direction]);
+                        console.log(`🎯 Auto-assigned ${bezelGeometryMap[direction]} to ${direction} bezel`);
+                        return;
+                    }
+                }
+                
+                // Default assignment for other visualizers based on role
+                const roleGeometryMap = {
+                    'board': 'hypercube',     // Board uses base geometry
+                    'card': 'sphere',         // Cards use sphere by default
+                    'background': 'hypercube', // Background uses base
+                    'shadow': 'klein',        // Shadows use topology
+                    'content': 'hypercube',   // Content uses base
+                    'highlight': 'fractal',   // Highlights use complex geometry
+                    'accent': 'crystal'       // Accents use structured geometry
+                };
+                
+                if (roleGeometryMap[this.role]) {
+                    this.setTheme(roleGeometryMap[this.role]);
+                    console.log(`🎯 Auto-assigned ${roleGeometryMap[this.role]} to ${this.role} role`);
+                }
+            }
+            
+            setupInteractions() {
+                let lastScrollY = window.scrollY;
+                let lastScrollTime = Date.now();
+                
+                // Mouse movement
+                this.canvas.addEventListener('mousemove', (e) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    this.interactionState.mouseX = (e.clientX - rect.left) / rect.width;
+                    this.interactionState.mouseY = 1.0 - (e.clientY - rect.top) / rect.height;
+                    this.interactionState.lastActivity = Date.now();
+                    this.updateInteractionState('move', 0.3);
+                });
+                
+                // Scroll tracking
+                window.addEventListener('scroll', () => {
+                    const currentScrollY = window.scrollY;
+                    const currentTime = Date.now();
+                    const scrollDelta = Math.abs(currentScrollY - lastScrollY);
+                    const timeDelta = currentTime - lastScrollTime;
+                    
+                    this.interactionState.scrollVelocity = timeDelta > 0 ? scrollDelta / timeDelta : 0;
+                    this.interactionState.lastActivity = currentTime;
+                    
+                    this.updateInteractionState('scroll', Math.min(this.interactionState.scrollVelocity * 10, 1.0));
+                    
+                    lastScrollY = currentScrollY;
+                    lastScrollTime = currentTime;
+                });
+                
+                // Click and hold
+                this.canvas.addEventListener('mousedown', (e) => {
+                    this.interactionState.isHolding = true;
+                    this.interactionState.holdStart = Date.now();
+                    this.interactionState.lastActivity = Date.now();
+                    this.updateInteractionState('click', 0.8);
+                });
+                
+                this.canvas.addEventListener('mouseup', () => {
+                    this.interactionState.isHolding = false;
+                    this.interactionState.holdStart = 0;
+                    this.updateInteractionState('release', 0.1);
+                });
+                
+                // Touch support
+                this.canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    if (touch) {
+                        const rect = this.canvas.getBoundingClientRect();
+                        this.interactionState.mouseX = (touch.clientX - rect.left) / rect.width;
+                        this.interactionState.mouseY = 1.0 - (touch.clientY - rect.top) / rect.height;
+                        this.interactionState.lastActivity = Date.now();
+                        this.updateInteractionState('touch', 0.5);
+                    }
+                });
+            }
+            
+            updateInteractionState(type, intensity) {
+                this.interactionState.type = type;
+                this.interactionState.intensity = Math.max(this.interactionState.intensity, intensity);
+            }
+            
+            setTheme(themeName) {
+                if (this.themeConfigs && this.themeConfigs[themeName]) {
+                    const newConfig = this.themeConfigs[themeName];
+                    
+                    // Smooth parameter transition
+                    this.transitionToParams = {...newConfig};
+                    this.transitionProgress = 0;
+                    this.currentTheme = themeName;
+                    
+                    console.log(`🎨 Theme set to: ${themeName}`);
+                } else {
+                    console.warn(`⚠️ Theme not found: ${themeName}`);
+                    console.log('Available themes:', Object.keys(this.themeConfigs || {}));
+                }
+            }
+            
+            initShaders() {
+                const vertexShaderSource = `
+                    attribute vec2 a_position;
+                    void main() {
+                        gl_Position = vec4(a_position, 0.0, 1.0);
+                    }
+                `;
+                
+                const fragmentShaderSource = `
+                    precision highp float;
+                    
+                    uniform vec2 u_resolution;
+                    uniform float u_time;
+                    uniform vec2 u_mouse;
+                    uniform float u_geometry;
+                    uniform float u_density;
+                    uniform float u_speed;
+                    uniform vec3 u_color;
+                    uniform float u_intensity;
+                    uniform float u_instanceDensity;
+                    uniform float u_instanceSpeed;
+                    uniform float u_colorShift;
+                    uniform float u_chaosIntensity;
+                    uniform float u_gridVibrance;
+                    uniform float u_sectionFocus;
+                    uniform float u_portalIntensity;
+                    uniform float u_microChaos;
+                    uniform float u_inverseFlow;
+                    uniform vec2 u_contentGravity;
+                    uniform float u_contentFlowStrength;
+                    uniform float u_textProximity;
+                    
+                    mat4 rotateXW(float theta) {
+                        float c = cos(theta);
+                        float s = sin(theta);
+                        return mat4(c, 0, 0, -s, 0, 1, 0, 0, 0, 0, 1, 0, s, 0, 0, c);
+                    }
+                    
+                    mat4 rotateYW(float theta) {
+                        float c = cos(theta);
+                        float s = sin(theta);
+                        return mat4(c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1);
+                    }
+                    
+                    vec3 project4Dto3D(vec4 p) {
+                        float w = 2.0 / (2.0 + p.w);
+                        return vec3(p.x * w, p.y * w, p.z * w);
+                    }
+                    
+                    float hypercubeLattice(vec3 p, float gridSize) {
+                        vec3 grid = fract(p * gridSize);
+                        vec3 edges = 1.0 - smoothstep(0.0, 0.01 + u_gridVibrance * 0.02, abs(grid - 0.5));
+                        float lattice = max(max(edges.x, edges.y), edges.z);
+                        
+                        // Enhanced grid effects
+                        float pulse = sin(u_time * 0.003 + length(p) * 5.0) * 0.5 + 0.5;
+                        lattice += pulse * u_gridVibrance * 0.3;
+                        
+                        // Section focus enhancement
+                        float focus = exp(-length(p - vec3(0.0, 0.0, u_sectionFocus * 0.5)) * 2.0);
+                        lattice += focus * u_sectionFocus * 0.4;
+                        
+                        return lattice;
+                    }
+                    
+                    float tetrahedronLattice(vec3 p, float gridSize) {
+                        vec3 q = fract(p * gridSize) - 0.5;
+                        float d1 = length(q);
+                        float d2 = length(q - vec3(0.5, 0.0, 0.0));
+                        float d3 = length(q - vec3(0.0, 0.5, 0.0));
+                        float d4 = length(q - vec3(0.0, 0.0, 0.5));
+                        return 1.0 - smoothstep(0.0, 0.08, min(min(d1, d2), min(d3, d4)));
+                    }
+                    
+                    float sphereLattice(vec3 p, float gridSize) {
+                        vec3 q = fract(p * gridSize) - 0.5;
+                        float r = length(q);
+                        return 1.0 - smoothstep(0.1, 0.35, r);
+                    }
+                    
+                    float mandelbulbLattice(vec3 p, float gridSize) {
+                        vec3 q = fract(p * gridSize) - 0.5;
+                        vec3 z = q;
+                        float dr = 1.0;
+                        float r = 0.0;
+                        for (int i = 0; i < 4; i++) {
+                            r = length(z);
+                            if (r > 2.0) break;
+                            
+                            float theta = acos(z.z / r) * 8.0;
+                            float phi = atan(z.y, z.x) * 8.0;
+                            dr = pow(r, 7.0) * 8.0 * dr + 1.0;
+                            
+                            float zr = pow(r, 8.0);
+                            theta *= 8.0;
+                            phi *= 8.0;
+                            
+                            z = zr * vec3(sin(theta) * cos(phi), sin(phi) * sin(theta), cos(theta));
+                            z += q;
+                        }
+                        return 1.0 - smoothstep(0.0, 0.15, r);
+                    }
+                    
+                    float waveLattice(vec3 p, float gridSize) {
+                        vec3 q = p * gridSize;
+                        float wave1 = sin(q.x * 1.2 + u_time * u_speed * 0.0008);
+                        float wave2 = sin(q.y * 1.2 + u_time * u_speed * 0.001);
+                        float wave3 = sin(q.z * 1.2 + u_time * u_speed * 0.0006);
+                        return smoothstep(-0.4, 0.4, wave1 * wave2 * wave3);
+                    }
+                    
+                    float getGeometryValue(vec3 p, float gridSize, float geomType) {
+                        if (geomType < 0.5) return hypercubeLattice(p, gridSize);
+                        else if (geomType < 1.5) return tetrahedronLattice(p, gridSize);
+                        else if (geomType < 2.5) return sphereLattice(p, gridSize);
+                        else if (geomType < 6.5) return waveLattice(p, gridSize);
+                        else return mandelbulbLattice(p, gridSize);
+                    }
+                    
+                    vec3 hsv2rgb(vec3 c) {
+                        vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+                        vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+                        return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+                    }
+                    
+                    void main() {
+                        vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+                        float aspectRatio = u_resolution.x / u_resolution.y;
+                        uv.x *= aspectRatio;
+                        uv -= 0.5;
+                        
+                        float time = u_time * 0.0008 * u_speed * u_instanceSpeed;
+                        
+                        // Enhanced 4D rotation with portal effects
+                        vec4 p4d = vec4(uv, sin(time * 0.2) * 0.3, cos(time * 0.15) * 0.3);
+                        p4d = rotateXW(time * (0.3 + u_portalIntensity * 0.5)) * p4d;
+                        p4d = rotateYW(time * (0.2 + u_microChaos * 0.3)) * p4d;
+                        
+                        vec3 p = project4Dto3D(p4d);
+                        
+                        // CONTENT GUIDANCE SYSTEM - Particles flow toward text
+                        vec2 contentDirection = normalize(u_contentGravity - uv);
+                        float contentDistance = length(u_contentGravity - uv);
+                        
+                        // Apply content gravity to the geometry position
+                        vec2 gravityPull = contentDirection * u_contentFlowStrength * 0.1;
+                        p.xy += gravityPull * (1.0 - u_textProximity);
+                        
+                        // Create flow lines toward content
+                        float flowLines = sin(dot(p.xy, contentDirection) * 20.0 + time * 2.0) * u_contentFlowStrength * 0.3;
+                        
+                        // Enhanced density with vibrance AND content awareness
+                        float instanceDensity = u_density * u_instanceDensity * (1.0 + u_gridVibrance * 0.5);
+                        float lattice = getGeometryValue(p, instanceDensity, u_geometry);
+                        
+                        // Add flow guidance to lattice
+                        lattice += flowLines;
+                        
+                        // Portal distortion effects
+                        float portalDistort = sin(length(p) * 10.0 + time * 2.0) * u_portalIntensity * 0.1;
+                        lattice += portalDistort;
+                        
+                        // Micro chaos effects
+                        float chaos = sin(p.x * 50.0 + time * 5.0) * sin(p.y * 47.0 + time * 4.8) * u_microChaos * 0.2;
+                        lattice += chaos;
+                        
+                        // Inverse flow effects
+                        float inverseFlow = cos(length(p) * 8.0 - time * 1.5) * u_inverseFlow * 0.15;
+                        lattice -= inverseFlow;
+                        
+                        // Enhanced color with vibrance
+                        float hue = atan(u_color.r, u_color.g) + u_colorShift * 0.017453 + time * 0.1;
+                        float saturation = 0.7 + lattice * 0.3 + u_gridVibrance * 0.2;
+                        float brightness = 0.2 + lattice * 0.8 + u_intensity * 0.3 + u_gridVibrance * 0.2;
+                        
+                        vec3 color = hsv2rgb(vec3(hue, saturation, brightness));
+                        
+                        // Enhanced mouse interaction
+                        float mouseDist = length(uv - (u_mouse - 0.5) * vec2(aspectRatio, 1.0));
+                        float mouseGlow = exp(-mouseDist * (2.0 + u_sectionFocus * 2.0)) * (0.2 + u_gridVibrance * 0.3);
+                        color += vec3(mouseGlow) * u_color * (0.5 + u_gridVibrance * 0.5);
+                        
+                        // Section focus glow
+                        float focusGlow = exp(-length(uv) * (3.0 - u_sectionFocus * 2.0)) * u_sectionFocus * 0.3;
+                        color += vec3(focusGlow) * mix(u_color, vec3(1.0), 0.5);
+                        
+                        // Portal intensity enhancement
+                        color += vec3(u_portalIntensity * 0.2) * vec3(0.0, 1.0, 1.0);
+                        
+                        float alpha = 0.85 + u_gridVibrance * 0.15;
+                        gl_FragColor = vec4(color, alpha);
+                    }
+                `;
+                
+                this.program = this.createProgram(vertexShaderSource, fragmentShaderSource);
+                this.uniforms = {
+                    resolution: this.gl.getUniformLocation(this.program, 'u_resolution'),
+                    time: this.gl.getUniformLocation(this.program, 'u_time'),
+                    mouse: this.gl.getUniformLocation(this.program, 'u_mouse'),
+                    geometry: this.gl.getUniformLocation(this.program, 'u_geometry'),
+                    density: this.gl.getUniformLocation(this.program, 'u_density'),
+                    speed: this.gl.getUniformLocation(this.program, 'u_speed'),
+                    color: this.gl.getUniformLocation(this.program, 'u_color'),
+                    intensity: this.gl.getUniformLocation(this.program, 'u_intensity'),
+                    instanceDensity: this.gl.getUniformLocation(this.program, 'u_instanceDensity'),
+                    instanceSpeed: this.gl.getUniformLocation(this.program, 'u_instanceSpeed'),
+                    colorShift: this.gl.getUniformLocation(this.program, 'u_colorShift'),
+                    chaosIntensity: this.gl.getUniformLocation(this.program, 'u_chaosIntensity'),
+                    gridVibrance: this.gl.getUniformLocation(this.program, 'u_gridVibrance'),
+                    sectionFocus: this.gl.getUniformLocation(this.program, 'u_sectionFocus'),
+                    portalIntensity: this.gl.getUniformLocation(this.program, 'u_portalIntensity'),
+                    microChaos: this.gl.getUniformLocation(this.program, 'u_microChaos'),
+                    inverseFlow: this.gl.getUniformLocation(this.program, 'u_inverseFlow'),
+                    contentGravity: this.gl.getUniformLocation(this.program, 'u_contentGravity'),
+                    contentFlowStrength: this.gl.getUniformLocation(this.program, 'u_contentFlowStrength'),
+                    textProximity: this.gl.getUniformLocation(this.program, 'u_textProximity')
+                };
+            }
+            
+            createProgram(vertexSource, fragmentSource) {
+                const vertexShader = this.createShader(this.gl.VERTEX_SHADER, vertexSource);
+                const fragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, fragmentSource);
+                
+                const program = this.gl.createProgram();
+                this.gl.attachShader(program, vertexShader);
+                this.gl.attachShader(program, fragmentShader);
+                this.gl.linkProgram(program);
+                
+                if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
+                    console.error('Program linking failed:', this.gl.getProgramInfoLog(program));
+                    return null;
+                }
+                
+                return program;
+            }
+            
+            createShader(type, source) {
+                const shader = this.gl.createShader(type);
+                this.gl.shaderSource(shader, source);
+                this.gl.compileShader(shader);
+                
+                if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+                    console.error('Shader compilation failed:', this.gl.getShaderInfoLog(shader));
+                    return null;
+                }
+                
+                return shader;
+            }
+            
+            initBuffers() {
+                const positions = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+                
+                this.buffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
+                
+                const positionLocation = this.gl.getAttribLocation(this.program, 'a_position');
+                this.gl.enableVertexAttribArray(positionLocation);
+                this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+            }
+            
+            resize() {
+                this.canvas.width = this.canvas.clientWidth;
+                this.canvas.height = this.canvas.clientHeight;
+                this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+            }
+            
+            snapToState(stateIndex) {
+                if (stateIndex !== this.targetState) {
+                    this.targetState = stateIndex;
+                    this.transitionProgress = 0.0;
+                }
+            }
+            
+            updateInteraction(mouseX, mouseY) {
+                this.mouseX = mouseX;
+                this.mouseY = mouseY;
+            }
+            
+            render() {
+                if (!this.program) return;
+                
+                this.resize();
+                this.gl.useProgram(this.program);
+                
+                if (this.transitionProgress < 1.0) {
+                    this.transitionProgress = Math.min(1.0, this.transitionProgress + 0.025);
+                }
+                
+                // Safety check for state bounds
+                const currentStateIndex = Math.max(0, Math.min(this.currentState, this.states.length - 1));
+                const targetStateIndex = Math.max(0, Math.min(this.targetState, this.states.length - 1));
+                
+                const currentState = this.states[currentStateIndex];
+                const targetState = this.states[targetStateIndex];
+                
+                if (!currentState || !targetState) {
+                    console.error('BlogVisualizer: Invalid state indices', { 
+                        currentState: this.currentState, 
+                        targetState: this.targetState, 
+                        statesLength: this.states.length 
+                    });
+                    return;
+                }
+                
+                const t = this.transitionProgress;
+                const smoothT = t * t * (3.0 - 2.0 * t);
+                
+                const interpolated = {
+                    geometry: currentState.geometry + (targetState.geometry - currentState.geometry) * smoothT,
+                    density: currentState.density + (targetState.density - currentState.density) * smoothT,
+                    speed: currentState.speed + (targetState.speed - currentState.speed) * smoothT,
+                    color: [
+                        currentState.color[0] + (targetState.color[0] - currentState.color[0]) * smoothT,
+                        currentState.color[1] + (targetState.color[1] - currentState.color[1]) * smoothT,
+                        currentState.color[2] + (targetState.color[2] - currentState.color[2]) * smoothT
+                    ]
+                };
+                
+                if (this.transitionProgress >= 1.0 && this.currentState !== this.targetState) {
+                    this.currentState = this.targetState;
+                }
+                
+                const time = Date.now() - this.startTime;
+                
+                this.gl.uniform2f(this.uniforms.resolution, this.canvas.width, this.canvas.height);
+                this.gl.uniform1f(this.uniforms.time, time);
+                this.gl.uniform2f(this.uniforms.mouse, this.mouseX, this.mouseY);
+                this.gl.uniform1f(this.uniforms.geometry, interpolated.geometry);
+                this.gl.uniform1f(this.uniforms.density, interpolated.density);
+                this.gl.uniform1f(this.uniforms.speed, interpolated.speed);
+                this.gl.uniform3fv(this.uniforms.color, new Float32Array(interpolated.color));
+                // SAFETY CHECK FOR UNDEFINED PROPERTIES
+                if (!this.instanceParams) {
+                    console.error('instanceParams is undefined in render method');
+                    return;
+                }
+                
+                // Ensure instanceParams has safe defaults
+                const safeIntensity = (this.instanceParams && this.instanceParams.intensity !== undefined) ? this.instanceParams.intensity : 0.5;
+                const safeDensityMult = (this.instanceParams && this.instanceParams.densityMult !== undefined) ? this.instanceParams.densityMult : 1.0;
+                const safeSpeedMult = (this.instanceParams && this.instanceParams.speedMult !== undefined) ? this.instanceParams.speedMult : 1.0;
+                const safeColorShift = (this.instanceParams && this.instanceParams.colorShift !== undefined) ? this.instanceParams.colorShift : 0.0;
+                
+                this.gl.uniform1f(this.uniforms.intensity, safeIntensity);
+                this.gl.uniform1f(this.uniforms.instanceDensity, safeDensityMult);
+                this.gl.uniform1f(this.uniforms.instanceSpeed, safeSpeedMult);
+                this.gl.uniform1f(this.uniforms.colorShift, safeColorShift);
+                this.gl.uniform1f(this.uniforms.chaosIntensity, this.chaosIntensity || 0.0);
+                
+                // Enhanced reactivity uniforms
+                const rootStyle = getComputedStyle(document.documentElement);
+                this.gl.uniform1f(this.uniforms.gridVibrance, 
+                    this.gridVibrance !== undefined ? this.gridVibrance : 
+                    parseFloat(rootStyle.getPropertyValue('--grid-vibrance')) || 1.0);
+                this.gl.uniform1f(this.uniforms.sectionFocus, 
+                    this.sectionFocus !== undefined ? this.sectionFocus : 
+                    parseFloat(rootStyle.getPropertyValue('--section-focus')) || 0.0);
+                this.gl.uniform1f(this.uniforms.portalIntensity, 
+                    this.portalIntensity !== undefined ? this.portalIntensity : 
+                    parseFloat(rootStyle.getPropertyValue('--portal-intensity')) || 0.0);
+                this.gl.uniform1f(this.uniforms.microChaos, 
+                    this.microChaos !== undefined ? this.microChaos : 
+                    parseFloat(rootStyle.getPropertyValue('--micro-chaos')) || 0.0);
+                this.gl.uniform1f(this.uniforms.inverseFlow, 
+                    this.inverseFlow !== undefined ? this.inverseFlow : 
+                    parseFloat(rootStyle.getPropertyValue('--inverse-flow')) || 0.0);
+                
+                // Content guidance uniforms
+                this.gl.uniform2f(this.uniforms.contentGravity, 
+                    this.contentGravityX !== undefined ? this.contentGravityX : 
+                    parseFloat(rootStyle.getPropertyValue('--content-gravity-x')) || 0.5,
+                    this.contentGravityY !== undefined ? this.contentGravityY : 
+                    parseFloat(rootStyle.getPropertyValue('--content-gravity-y')) || 0.5);
+                this.gl.uniform1f(this.uniforms.contentFlowStrength, 
+                    this.contentFlowStrength !== undefined ? this.contentFlowStrength : 
+                    parseFloat(rootStyle.getPropertyValue('--content-flow-strength')) || 0.0);
+                this.gl.uniform1f(this.uniforms.textProximity, 
+                    this.textProximity !== undefined ? this.textProximity : 
+                    parseFloat(rootStyle.getPropertyValue('--text-proximity')) || 0.0);
+                
+                this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+            }
+        }
+        
+        // MORPHING BLOG SYSTEM
+        class MorphingBlogSystem {
+            constructor() {
+                this.visualizers = [];
+                this.currentState = 0;
+                this.mouseX = 0.5;
+                this.mouseY = 0.5;
+                this.isTransitioning = false;
+                
+                this.layoutNames = ['HOME', 'TECH', 'MEDIA', 'INNOVATION', 'RESEARCH'];
+                this.layoutClasses = ['layout-home', 'layout-tech', 'layout-media', 'layout-innovation', 'layout-research'];
+                
+                // State-specific blog content
+                this.stateContent = [
+                    { // HOME - Traditional Blog
+                        header: { title: 'VIB3CODE', subtitle: 'Emergent Interface Architecture' },
+                        featured: { 
+                            title: 'The Foundational Trinity', 
+                            subtitle: 'Core Architecture Principles',
+                            content: 'VIB3STYLEPACK emerges from three foundational principles that define emergent interface architecture: Home-Master control systems, Portal scroll transitions, and Multi-element geometry language.\n\nHome-Master Control: Every visualizer responds to a central authority that maintains visual coherence across 13 synchronized instances. Mathematical precision creates living, breathing interfaces.',
+                            tag: 'Architecture'
+                        },
+                        sidebar: {
+                            title: 'Navigation',
+                            subtitle: 'Article Categories',
+                            content: '→ Technical Architecture\n→ Visual Mathematics\n→ Innovation Showcase\n→ Research Papers\n→ Community'
+                        }
+                    },
+                    { // TECH - Documentation Style
+                        header: { title: 'VIB3CODE DOCS', subtitle: 'Technical Documentation' },
+                        featured: {
+                            title: 'API Reference',
+                            subtitle: 'Implementation Guide',
+                            content: 'Complete technical documentation for implementing VIB3STYLEPACK in production environments.\n\nGeometry Configuration:\n```javascript\nconst config = {\n  geometry: "tetrahedron",\n  density: 12.0,\n  precision: "enhanced"\n};\n```\n\nThe tetrahedron geometry provides maximum structural precision for technical interfaces.',
+                            tag: 'Technical'
+                        },
+                        sidebar: {
+                            title: 'Table of Contents',
+                            subtitle: 'Documentation Sections',
+                            content: '1. Getting Started\n2. Core Concepts\n3. API Reference\n4. Examples\n5. Best Practices'
+                        }
+                    },
+                    { // MEDIA - Magazine Style
+                        header: { title: 'VIB3 MAGAZINE', subtitle: 'Visual Innovation Showcase' },
+                        featured: {
+                            title: 'Infinite Potential',
+                            subtitle: 'Sphere-Based Media Gallery',
+                            content: 'Exploring the visual possibilities of spherical coordinate systems in media presentation. Each sphere represents infinite creative potential.',
+                            tag: 'Visual'
+                        },
+                        sidebar: {
+                            title: 'Featured Gallery',
+                            subtitle: 'Latest Visual Works',
+                            content: 'Interactive Spheres\nDynamic Galleries\nImmersive Experiences\nCreative Showcases'
+                        }
+                    },
+                    { // INNOVATION - Creative Flow
+                        header: { title: 'INNOVATION LAB', subtitle: 'Organic Growth Systems' },
+                        featured: {
+                            title: 'Mandelbulb Evolution',
+                            subtitle: 'Fractal Growth Patterns',
+                            content: 'How 3D Mandelbrot fractals create organic, flowing details representing chaotic growth and innovation. The intersection of mathematical beauty and interface design.',
+                            tag: 'Innovation'
+                        },
+                        sidebar: {
+                            title: 'Growth Metrics',
+                            subtitle: 'Innovation Tracking',
+                            content: 'Complexity: Evolving\nGrowth Rate: Organic\nPattern: Fractal\nDepth: Infinite'
+                        }
+                    },
+                    { // RESEARCH - Academic Style
+                        header: { title: 'RESEARCH PAPERS', subtitle: 'Academic Publications' },
+                        featured: {
+                            title: 'Wave Interference Patterns',
+                            subtitle: 'Quantum UI Research',
+                            content: 'Abstract: This paper explores the application of quantum wave interference patterns to user interface design, creating probability-based interaction zones.\n\nMethodology: Using mathematical wave functions to create dynamic UI elements that respond to user interaction probability distributions.',
+                            tag: 'Research'
+                        },
+                        sidebar: {
+                            title: 'Citation Index',
+                            subtitle: 'Related Papers',
+                            content: '[1] Quantum UI Theory\n[2] Probability Interfaces\n[3] Wave Function UX'
+                        }
+                    }
+                ];
+                
+                this.initialize();
+            }
+            
+            initialize() {
+                console.log('🎨 Initializing Morphing Blog System...');
+                
+                // Create board visualizer
+                const boardCanvas = document.getElementById('board-visualizer');
+                const boardViz = new ReactiveHyperAVCore(boardCanvas, 'board');
+                this.visualizers.push(boardViz);
+                
+                // Create card visualizers
+                for (let i = 1; i <= 6; i++) {
+                    const cardCanvas = document.getElementById(`card-visualizer-${i}`);
+                    const cardViz = new ReactiveHyperAVCore(cardCanvas, 'card');
+                    this.visualizers.push(cardViz);
+                }
+                
+                // Create bezel visualizers
+                const bezelDirections = ['left', 'right', 'top', 'bottom'];
+                const bezelGeometries = [6.0, 1.0, 0.0, 2.0]; // Wave, Tetrahedron, Hypercube, Sphere
+                const bezelColors = [
+                    [1.0, 0.0, 0.5], // Pink for Research
+                    [0.0, 1.0, 1.0], // Cyan for Tech
+                    [1.0, 1.0, 0.0], // Yellow for Home
+                    [0.0, 1.0, 0.5]  // Green for Context
+                ];
+                
+                bezelDirections.forEach((direction, index) => {
+                    const bezelCanvas = document.getElementById(`bezel-visualizer-${direction}`);
+                    const bezelViz = new ReactiveHyperAVCore(bezelCanvas, 'bezel');
+                    if (bezelViz) {
+                        // Set specific geometry and color for each bezel
+                        bezelViz.states = [{
+                            geometry: bezelGeometries[index],
+                            density: 6.0,
+                            speed: 0.3,
+                            color: bezelColors[index],
+                            dimension: 3.4
+                        }];
+                        bezelViz.snapToState(0);
+                        this.visualizers.push(bezelViz);
+                    }
+                });
+                
+                this.setupInteractions();
+                this.setupStateControls();
+                this.setupScrolling();
+                this.startRenderLoop();
+                this.updateContent();
+                
+                console.log(`✅ Morphing Blog System ready - ${this.visualizers.length} visualizers with dynamic content`);
+            }
+            
+            setupInteractions() {
+                // Enhanced mouse tracking with energy buildup
+                document.addEventListener('mousemove', (e) => {
+                    this.mouseX = e.clientX / window.innerWidth;
+                    this.mouseY = 1.0 - (e.clientY / window.innerHeight);
+                    
+                    // Increase global energy with mouse movement
+                    this.globalEnergy = Math.min(1.0, this.globalEnergy + 0.05);
+                    document.documentElement.style.setProperty('--global-energy', this.globalEnergy);
+                    
+                    // Find hovered section
+                    const hoveredCard = this.getHoveredCard(e.clientX, e.clientY);
+                    this.updateSectionHover(hoveredCard);
+                    
+                    this.visualizers.forEach((viz, index) => {
+                        viz.updateInteraction(this.mouseX, this.mouseY);
+                        viz.globalEnergy = this.globalEnergy;
+                        viz.sectionFocus = hoveredCard === index - 1 ? 1.0 : 0.0;
+                    });
+                });
+                
+                // Enhanced card hover effects with section focus
+                document.querySelectorAll('.blog-card').forEach((card, index) => {
+                    card.addEventListener('mouseenter', () => {
+                        // Section hover enlargement
+                        card.setAttribute('data-section-hover', 'true');
+                        
+                        // Set inverse effect on other cards
+                        document.querySelectorAll('.blog-card').forEach((otherCard, otherIndex) => {
+                            if (otherIndex !== index) {
+                                otherCard.setAttribute('data-inverse', 'true');
+                            }
+                        });
+                        
+                        // Update CSS variables for focused section
+                        document.documentElement.style.setProperty('--section-focus', index);
+                        document.documentElement.style.setProperty('--hover-section', index);
+                        
+                        // SMART CONTENT GUIDANCE - Calculate content center
+                        const cardRect = card.getBoundingClientRect();
+                        const contentCenterX = (cardRect.left + cardRect.width * 0.5) / window.innerWidth;
+                        const contentCenterY = 1.0 - (cardRect.top + cardRect.height * 0.5) / window.innerHeight;
+                        
+                        // Update content gravity for ALL visualizers
+                        document.documentElement.style.setProperty('--content-gravity-x', contentCenterX);
+                        document.documentElement.style.setProperty('--content-gravity-y', contentCenterY);
+                        document.documentElement.style.setProperty('--content-flow-strength', '1.0');
+                        
+                        // Smart opacity: focused card dims, others flow toward it
+                        document.documentElement.style.setProperty('--focused-opacity', '0.1');
+                        document.documentElement.style.setProperty('--gravity-opacity', '0.8');
+                        
+                        // Enhanced visualizer reactions
+                        this.visualizers.forEach((viz, vizIndex) => {
+                            if (vizIndex === index + 1) { // +1 because index 0 is board
+                                viz.sectionFocus = 1.0;
+                                viz.gridVibrance = 2.0;
+                                viz.contentGravityX = contentCenterX;
+                                viz.contentGravityY = contentCenterY;
+                                viz.contentFlowStrength = 0.0; // No flow within focused card
+                                viz.textProximity = 1.0;
+                            } else {
+                                viz.inverseFlow = 0.5;
+                                viz.gridVibrance = 0.3;
+                                viz.contentGravityX = contentCenterX;
+                                viz.contentGravityY = contentCenterY;
+                                viz.contentFlowStrength = 1.0; // Flow toward focused content
+                                viz.textProximity = 0.0;
+                            }
+                        });
+                    });
+                    
+                    card.addEventListener('mouseleave', () => {
+                        // Remove section hover
+                        card.removeAttribute('data-section-hover');
+                        
+                        // Remove inverse effect from all cards
+                        document.querySelectorAll('.blog-card').forEach(otherCard => {
+                            otherCard.removeAttribute('data-inverse');
+                        });
+                        
+                        // Reset CSS variables
+                        document.documentElement.style.setProperty('--section-focus', '0');
+                        document.documentElement.style.setProperty('--hover-section', '-1');
+                        
+                        // Reset content guidance system
+                        document.documentElement.style.setProperty('--content-gravity-x', '0.5');
+                        document.documentElement.style.setProperty('--content-gravity-y', '0.5');
+                        document.documentElement.style.setProperty('--content-flow-strength', '0.0');
+                        document.documentElement.style.setProperty('--focused-opacity', '0.6');
+                        document.documentElement.style.setProperty('--gravity-opacity', '0.6');
+                        
+                        // Reset visualizer states
+                        this.visualizers.forEach(viz => {
+                            viz.sectionFocus = 0.0;
+                            viz.inverseFlow = 0.0;
+                            viz.gridVibrance = 1.0;
+                            viz.contentGravityX = 0.5;
+                            viz.contentGravityY = 0.5;
+                            viz.contentFlowStrength = 0.0;
+                            viz.textProximity = 0.0;
+                        });
+                    });
+                    
+                    // Click to enter READING MODE
+                    card.addEventListener('click', (e) => {
+                        if (!e.target.closest('.link-button')) { // Don't trigger on buttons
+                            card.classList.toggle('reading-mode');
+                            
+                            if (card.classList.contains('reading-mode')) {
+                                // Enter reading mode
+                                document.documentElement.style.setProperty('--reading-opacity', '0.05');
+                                document.documentElement.style.setProperty('--board-opacity', '0.08');
+                                
+                                // Ultra-subtle visualizers for reading
+                                this.visualizers.forEach(viz => {
+                                    viz.contentFlowStrength = 0.0;
+                                    viz.textProximity = 1.0;
+                                    viz.gridVibrance = 0.2;
+                                });
+                                
+                                console.log('📖 READING MODE ACTIVATED');
+                            } else {
+                                // Exit reading mode
+                                document.documentElement.style.setProperty('--reading-opacity', '0.6');
+                                document.documentElement.style.setProperty('--board-opacity', '0.3');
+                                
+                                // Return to normal visualizer state
+                                this.visualizers.forEach(viz => {
+                                    viz.contentFlowStrength = 0.0;
+                                    viz.textProximity = 0.0;
+                                    viz.gridVibrance = 1.0;
+                                });
+                                
+                                console.log('🌌 NORMAL MODE RESTORED');
+                            }
+                        }
+                    });
+                    
+                    // Section-specific scroll reactivity
+                    card.addEventListener('wheel', (e) => {
+                        if (e.target.closest('.blog-card') === card) {
+                            e.stopPropagation();
+                            
+                            // Micro reactivity within section
+                            const scrollIntensity = Math.abs(e.deltaY) / 100;
+                            this.visualizers[index + 1].microChaos = scrollIntensity;
+                            
+                            // Inverse reaction in other sections
+                            this.visualizers.forEach((viz, vizIndex) => {
+                                if (vizIndex !== index + 1) {
+                                    viz.inverseFlow = scrollIntensity * 0.3;
+                                }
+                            });
+                            
+                            // Decay effects
+                            setTimeout(() => {
+                                this.visualizers[index + 1].microChaos = 0.0;
+                                this.visualizers.forEach(viz => viz.inverseFlow = 0.0);
+                            }, 300);
+                        }
+                    }, { passive: false });
+                });
+                
+                // Global mouse energy decay
+                setInterval(() => {
+                    this.globalEnergy *= 0.98;
+                    document.documentElement.style.setProperty('--global-energy', this.globalEnergy);
+                }, 50);
+                
+                // 4D CUBE NAVIGATION DRAG SYSTEM
+                this.setupCubeNavigation();
+            }
+            
+            setupCubeNavigation() {
+                console.log('🔳 Setting up 4D Cube Navigation System...');
+                
+                // Drag state tracking
+                this.dragState = {
+                    isDragging: false,
+                    startX: 0,
+                    startY: 0,
+                    currentX: 0,
+                    currentY: 0,
+                    direction: null,
+                    threshold: 80, // pixels to drag before snap
+                    tension: 0.0   // 0-1 resistance buildup
+                };
+                
+                // Edge zones for drag detection - SMALLER AND MORE PRECISE
+                this.edgeZones = {
+                    left: { x: 0, width: 30, direction: 'left', target: 'research' },
+                    right: { x: window.innerWidth - 30, width: 30, direction: 'right', target: 'tech' },
+                    top: { y: 0, height: 30, direction: 'up', target: 'home' },
+                    bottom: { y: window.innerHeight - 30, height: 30, direction: 'down', target: 'context' }
+                };
+                
+                // Mouse/Touch drag detection
+                document.addEventListener('mousedown', (e) => this.handleDragStart(e));
+                document.addEventListener('mousemove', (e) => this.handleDragMove(e));
+                document.addEventListener('mouseup', (e) => this.handleDragEnd(e));
+                
+                // Touch events for mobile
+                document.addEventListener('touchstart', (e) => this.handleDragStart(e.touches[0]));
+                document.addEventListener('touchmove', (e) => this.handleDragMove(e.touches[0]));
+                document.addEventListener('touchend', (e) => this.handleDragEnd(e));
+                
+                // Bezel hover effects
+                document.querySelectorAll('.nav-bezel').forEach(bezel => {
+                    bezel.addEventListener('mouseenter', () => {
+                        bezel.style.transform = 'scale(1.1)';
+                        bezel.style.opacity = '0.9';
+                    });
+                    
+                    bezel.addEventListener('mouseleave', () => {
+                        bezel.style.transform = 'scale(1.0)';
+                        bezel.style.opacity = '0.4';
+                    });
+                });
+                
+                console.log('✅ 4D Cube Navigation ready - drag edges to rotate cube faces');
+            }
+            
+            handleDragStart(event) {
+                const { clientX: x, clientY: y } = event;
+                
+                console.log(`🔍 DRAG START DEBUG: x=${x}, y=${y}, window=${window.innerWidth}x${window.innerHeight}`);
+                
+                // FIRST: Check if click is actually on a bezel visualizer
+                const target = event.target;
+                const isOnBezel = target.closest('.bezel-visualizer, .navigation-bezel, canvas[id*="bezel"]');
+                
+                if (!isOnBezel) {
+                    console.log(`❌ Click not on bezel element:`, target);
+                    return;
+                }
+                
+                // SECOND: Check if drag started in edge zone
+                const edgeZone = this.detectEdgeZone(x, y);
+                
+                console.log(`🔍 EDGE ZONE RESULT:`, edgeZone);
+                
+                if (!edgeZone) {
+                    console.log(`❌ No edge zone detected at ${x}, ${y}`);
+                    return;
+                }
+                
+                console.log(`🔳 CUBE DRAG START: ${edgeZone.direction} → ${edgeZone.target}`);
+                
+                this.dragState.isDragging = true;
+                this.dragState.startX = x;
+                this.dragState.startY = y;
+                this.dragState.currentX = x;
+                this.dragState.currentY = y;
+                this.dragState.direction = edgeZone.direction;
+                this.dragState.target = edgeZone.target;
+                
+                // Visual feedback - activate corresponding bezel
+                const bezel = document.querySelector(`.nav-bezel-${edgeZone.direction}`);
+                if (bezel) {
+                    bezel.style.transform = 'scale(1.15)';
+                    bezel.style.opacity = '1.0';
+                    bezel.style.boxShadow = '0 0 40px rgba(0, 255, 255, 0.6)';
+                }
+                
+                // Start tension buildup
+                this.dragState.tension = 0.0;
+                document.documentElement.style.setProperty('--cube-tension', '0.0');
+            }
+            
+            handleDragMove(event) {
+                if (!this.dragState.isDragging) return;
+                
+                const { clientX: x, clientY: y } = event;
+                this.dragState.currentX = x;
+                this.dragState.currentY = y;
+                
+                // Calculate drag distance in appropriate direction
+                let dragDistance = 0;
+                switch (this.dragState.direction) {
+                    case 'left':
+                        dragDistance = this.dragState.startX - x; // Drag left = positive
+                        break;
+                    case 'right':
+                        dragDistance = x - this.dragState.startX; // Drag right = positive
+                        break;
+                    case 'up':
+                        dragDistance = this.dragState.startY - y; // Drag up = positive
+                        break;
+                    case 'down':
+                        dragDistance = y - this.dragState.startY; // Drag down = positive
+                        break;
+                }
+                
+                // Calculate tension (0-1) based on drag distance
+                this.dragState.tension = Math.min(1.0, Math.max(0.0, dragDistance / this.dragState.threshold));
+                
+                // Update CSS variables for visual feedback
+                document.documentElement.style.setProperty('--cube-tension', this.dragState.tension);
+                document.documentElement.style.setProperty('--portal-intensity', this.dragState.tension * 0.5);
+                
+                // Update visualizers with tension effects
+                this.visualizers.forEach(viz => {
+                    viz.portalIntensity = this.dragState.tension * 0.5;
+                    viz.microChaos = this.dragState.tension * 0.3;
+                    viz.gridVibrance = 1.0 + this.dragState.tension * 0.5;
+                });
+                
+                // Threshold reached - trigger snap
+                if (this.dragState.tension >= 1.0) {
+                    this.triggerCubeRotation();
+                }
+            }
+            
+            handleDragEnd(event) {
+                if (!this.dragState.isDragging) return;
+                
+                console.log(`🔳 CUBE DRAG END: tension=${this.dragState.tension.toFixed(2)}`);
+                
+                // Reset bezel visual state
+                document.querySelectorAll('.nav-bezel').forEach(bezel => {
+                    bezel.style.transform = 'scale(1.0)';
+                    bezel.style.opacity = '0.4';
+                    bezel.style.boxShadow = '';
+                });
+                
+                // If threshold wasn't reached, animate back to start
+                if (this.dragState.tension < 1.0) {
+                    this.animateTensionRelease();
+                }
+                
+                // Reset drag state
+                this.dragState.isDragging = false;
+                this.dragState.direction = null;
+                this.dragState.tension = 0.0;
+            }
+            
+            detectEdgeZone(x, y) {
+                const zones = this.edgeZones;
+                
+                // Check left edge
+                if (x <= zones.left.width) return zones.left;
+                
+                // Check right edge  
+                if (x >= zones.right.x) return zones.right;
+                
+                // Check top edge
+                if (y <= zones.top.height) return zones.top;
+                
+                // Check bottom edge
+                if (y >= zones.bottom.y) return zones.bottom;
+                
+                return null;
+            }
+            
+            triggerCubeRotation() {
+                console.log(`🌀 CUBE ROTATION TRIGGERED: ${this.dragState.direction} → ${this.dragState.target}`);
+                
+                // Map targets to state indices
+                const targetMap = {
+                    'home': 0,
+                    'tech': 1, 
+                    'research': 4,
+                    'context': 2  // Use media for now as context placeholder
+                };
+                
+                const targetState = targetMap[this.dragState.target];
+                if (targetState !== undefined) {
+                    console.log(`🎯 NAVIGATING TO STATE: ${targetState} (${this.dragState.target})`);
+                    this.triggerStateTransition(targetState);
+                }
+                
+                this.animateTensionRelease();
+                
+                // Reset drag state
+                this.dragState.isDragging = false;
+                this.dragState.direction = null;
+                this.dragState.tension = 0.0;
+            }
+            
+            animateTensionRelease() {
+                // Smooth release animation back to zero tension
+                let currentTension = this.dragState.tension;
+                const releaseInterval = setInterval(() => {
+                    currentTension *= 0.9;
+                    
+                    document.documentElement.style.setProperty('--cube-tension', currentTension);
+                    document.documentElement.style.setProperty('--portal-intensity', currentTension * 0.5);
+                    
+                    this.visualizers.forEach(viz => {
+                        viz.portalIntensity = currentTension * 0.5;
+                        viz.microChaos = currentTension * 0.3;
+                        viz.gridVibrance = 1.0 + currentTension * 0.5;
+                    });
+                    
+                    if (currentTension < 0.01) {
+                        clearInterval(releaseInterval);
+                        document.documentElement.style.setProperty('--cube-tension', '0');
+                        document.documentElement.style.setProperty('--portal-intensity', '0');
+                    }
+                }, 16);
+            }
+            
+            getHoveredCard(x, y) {
+                const cards = document.querySelectorAll('.blog-card');
+                for (let i = 0; i < cards.length; i++) {
+                    const rect = cards[i].getBoundingClientRect();
+                    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+            
+            updateSectionHover(hoveredIndex) {
+                this.hoveredSection = hoveredIndex;
+                document.documentElement.style.setProperty('--micro-chaos', hoveredIndex >= 0 ? '0.5' : '0.0');
+            }
+            
+            setupStateControls() {
+                document.querySelectorAll('.state-dot').forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        this.snapToState(index);
+                        
+                        document.querySelectorAll('.state-dot').forEach(d => d.classList.remove('active'));
+                        dot.classList.add('active');
+                    });
+                });
+            }
+            
+            setupScrolling() {
+                let scrollAccumulation = 0;
+                let scrollPosition = 0;
+                let scrollTimeout;
+                let snapBackTimeout;
+                
+                // INFINITE SCROLL WITH VISUAL EFFECTS AND SNAP-BACK
+                document.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    
+                    if (this.isTransitioning) return;
+                    
+                    const direction = e.deltaY > 0 ? 1 : -1;
+                    const scrollSpeed = Math.abs(e.deltaY);
+                    
+                    // Infinite scroll position (accumulates indefinitely)
+                    scrollPosition += e.deltaY * 0.5;
+                    scrollAccumulation += direction * 0.5;
+                    
+                    // Apply infinite scroll visual effects
+                    const scrollIntensity = Math.min(scrollSpeed / 100, 2.0);
+                    document.documentElement.style.setProperty('--scroll-momentum', scrollIntensity.toString());
+                    document.documentElement.style.setProperty('--scroll-position', (scrollPosition * 0.001).toString());
+                    
+                    // Visual scroll effects on all cards
+                    const allCards = document.querySelectorAll('.blog-card');
+                    allCards.forEach((card, index) => {
+                        const offset = (scrollPosition * 0.1 + index * 100) % 400 - 200;
+                        card.style.transform = `translateY(${offset}px) scale(${1.0 + scrollIntensity * 0.1})`;
+                    });
+                    
+                    // Show morphing indicator during scroll
+                    const indicator = document.getElementById('morphingIndicator');
+                    indicator.classList.add('active');
+                    
+                    // Update scroll progress
+                    const progress = Math.abs(scrollAccumulation) / 3 * 100;
+                    document.getElementById('scrollFill').style.height = `${Math.min(100, progress)}%`;
+                    
+                    // Section transition threshold (still works)
+                    if (Math.abs(scrollAccumulation) >= 3) {
+                        const newState = (this.currentState + (direction > 0 ? 1 : -1) + 5) % 5;
+                        this.triggerStateTransition(newState);
+                        scrollAccumulation = 0;
+                    }
+                    
+                    // Reset snap-back timer
+                    clearTimeout(scrollTimeout);
+                    clearTimeout(snapBackTimeout);
+                    
+                    scrollTimeout = setTimeout(() => {
+                        scrollAccumulation = 0;
+                        document.getElementById('scrollFill').style.height = '0%';
+                        indicator.classList.remove('active');
+                        
+                        // SNAP BACK CONTENT WHEN INTERACTION STOPS
+                        snapBackTimeout = setTimeout(() => {
+                            this.snapContentBack();
+                        }, 500);
+                        
+                    }, 1000);
+                }, { passive: false });
+                
+                // Add smooth snap-back functionality
+                this.snapContentBack = () => {
+                    const startPosition = scrollPosition;
+                    const snapDuration = 800;
+                    const startTime = performance.now();
+                    
+                    const animateSnapBack = (currentTime) => {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / snapDuration, 1);
+                        const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+                        
+                        scrollPosition = startPosition * (1 - easeProgress);
+                        
+                        // Apply snap-back visual effects
+                        document.documentElement.style.setProperty('--scroll-position', (scrollPosition * 0.001).toString());
+                        const allCards = document.querySelectorAll('.blog-card');
+                        allCards.forEach((card, index) => {
+                            const offset = (scrollPosition * 0.1 + index * 100) % 400 - 200;
+                            const snapProgress = easeProgress;
+                            card.style.transform = `translateY(${offset * (1 - snapProgress)}px) scale(1.0)`;
+                        });
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(animateSnapBack);
+                        } else {
+                            // Fully snapped back
+                            scrollPosition = 0;
+                            document.documentElement.style.setProperty('--scroll-momentum', '0');
+                            document.documentElement.style.setProperty('--scroll-position', '0');
+                        }
+                    };
+                    
+                    requestAnimationFrame(animateSnapBack);
+                };
+            }
+            
+            triggerStateTransition(newState) {
+                if (newState === this.currentState || this.isTransitioning) return;
+                
+                console.log(`🎭 MORPHING BLOG TRANSITION DISABLED - VIB34D ACTIVE`);
+                
+                // DISABLE OLD TRANSITIONS - VIB34D SYSTEM HANDLES VISUALS
+                return;
+                
+                this.isTransitioning = true;
+                
+                // PORTAL TRANSITION SEQUENCE
+                this.triggerPortalTransition(() => {
+                    this.currentState = newState;
+                    
+                    // Show morphing indicator
+                    document.getElementById('morphingIndicator').classList.add('active');
+                    
+                    // Change layout class with dramatic effect
+                    const blogContainer = document.getElementById('blogContainer');
+                    blogContainer.className = `blog-container ${this.layoutClasses[newState]}`;
+                    
+                    // Enhanced visualizer state changes
+                    this.visualizers.forEach((viz, index) => {
+                        viz.snapToState(newState);
+                        viz.portalIntensity = 1.0;
+                        viz.gridVibrance = 2.0;
+                        
+                        // Staggered activation for dramatic effect
+                        setTimeout(() => {
+                            viz.portalIntensity = 0.0;
+                            viz.gridVibrance = 1.5;
+                        }, index * 100);
+                    });
+                    
+                    // Update content and UI
+                    this.updateContent();
+                    
+                    document.querySelectorAll('.state-dot').forEach(d => d.classList.remove('active'));
+                    document.querySelectorAll('.state-dot')[newState].classList.add('active');
+                    
+                    document.getElementById('current-layout').textContent = this.layoutNames[newState];
+                    document.getElementById('current-theme').textContent = this.visualizers[0].states[newState].geometryName;
+                    
+                    // Update card count based on layout
+                    const visibleCards = this.getVisibleCardCount(newState);
+                    document.getElementById('card-count').textContent = `${visibleCards} Active`;
+                    
+                    // Reality stabilization
+                    setTimeout(() => {
+                        this.isTransitioning = false;
+                        document.getElementById('morphingIndicator').classList.remove('active');
+                        this.visualizers.forEach(viz => {
+                            viz.gridVibrance = 1.0;
+                            viz.realityTear = 0.0;
+                        });
+                    }, 1400);
+                });
+            }
+            
+            triggerPortalTransition(callback) {
+                // Portal position (center of screen)
+                document.documentElement.style.setProperty('--portal-x', '50%');
+                document.documentElement.style.setProperty('--portal-y', '50%');
+                
+                // Phase 1: Portal opening
+                document.documentElement.style.setProperty('--portal-intensity', '0');
+                document.documentElement.style.setProperty('--reality-tear', '0');
+                document.documentElement.style.setProperty('--transition-phase', '0');
+                
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--portal-intensity', '1.0');
+                    this.visualizers.forEach(viz => {
+                        viz.portalIntensity = 1.0;
+                    });
+                }, 50);
+                
+                // Phase 2: Reality tear
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--reality-tear', '1.0');
+                    document.documentElement.style.setProperty('--transition-phase', '0.5');
+                    this.visualizers.forEach(viz => {
+                        viz.realityTear = 1.0;
+                    });
+                }, 200);
+                
+                // Phase 3: Execute transition at peak distortion
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--transition-phase', '1.0');
+                    callback();
+                }, 400);
+                
+                // Phase 4: Portal closing
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--portal-intensity', '0');
+                    document.documentElement.style.setProperty('--reality-tear', '0.3');
+                }, 800);
+                
+                // Phase 5: Reality stabilization
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--reality-tear', '0');
+                    document.documentElement.style.setProperty('--transition-phase', '0');
+                }, 1200);
+            }
+            
+            getVisibleCardCount(state) {
+                switch(state) {
+                    case 0: return 6; // HOME
+                    case 1: return 5; // TECH
+                    case 2: return 5; // MEDIA
+                    case 3: return 3; // INNOVATION
+                    case 4: return 6; // RESEARCH
+                    default: return 6;
+                }
+            }
+            
+            snapToState(stateIndex) {
+                this.triggerStateTransition(stateIndex);
+            }
+            
+            updateContent() {
+                const content = this.stateContent[this.currentState];
+                
+                // Update header
+                document.getElementById('blog-title').textContent = content.header.title;
+                document.getElementById('header-subtitle').textContent = content.header.subtitle;
+                
+                // Update featured article
+                document.getElementById('card-title-2').textContent = content.featured.title;
+                document.getElementById('card-subtitle-2').textContent = content.featured.subtitle;
+                document.getElementById('article-content-2').innerHTML = this.formatContent(content.featured.content);
+                
+                // Update sidebar
+                document.getElementById('card-title-4').textContent = content.sidebar.title;
+                document.getElementById('card-subtitle-4').textContent = content.sidebar.subtitle;
+                document.getElementById('article-content-4').innerHTML = this.formatContent(content.sidebar.content);
+                
+                // State-specific content updates
+                this.updateStateSpecificContent();
+            }
+            
+            updateStateSpecificContent() {
+                const content = this.stateContent[this.currentState];
+                
+                // Update article meta with appropriate tag
+                const metaElements = document.querySelectorAll('.article-meta .tag');
+                metaElements.forEach(tag => {
+                    tag.textContent = content.featured.tag;
+                });
+                
+                // Update secondary cards based on state
+                switch(this.currentState) {
+                    case 0: // HOME
+                        document.getElementById('card-title-3').textContent = 'Geometric Lexicon';
+                        document.getElementById('card-title-5').textContent = 'Latest';
+                        document.getElementById('card-title-6').textContent = 'System Status';
+                        break;
+                    case 1: // TECH
+                        document.getElementById('card-title-3').textContent = 'Code Examples';
+                        document.getElementById('card-title-5').textContent = 'API Methods';
+                        document.getElementById('card-title-6').textContent = 'Reference';
+                        break;
+                    case 2: // MEDIA
+                        document.getElementById('card-title-3').textContent = 'Visual Gallery';
+                        document.getElementById('card-title-5').textContent = 'Media Stream';
+                        document.getElementById('card-title-6').textContent = 'Creative Tools';
+                        break;
+                    case 3: // INNOVATION
+                        document.getElementById('card-title-3').textContent = 'Growth Patterns';
+                        break;
+                    case 4: // RESEARCH
+                        document.getElementById('card-title-3').textContent = 'Abstract';
+                        document.getElementById('card-title-5').textContent = 'Methods';
+                        document.getElementById('card-title-6').textContent = 'Conclusions';
+                        break;
+                }
+            }
+            
+            formatContent(content) {
+                return content
+                    .replace(/\n\n/g, '</p><p>')
+                    .replace(/\n/g, '<br>')
+                    .replace(/→/g, '<span class="link-button">→')
+                    .replace(/(\d+\.)/g, '</span><br><span class="link-button">$1')
+                    .replace(/```javascript\n([\s\S]*?)\n```/g, '<div class="code-block">$1</div>')
+                    .replace(/\[(\d+)\]/g, '<span class="link-button">[$1]</span>');
+            }
+            
+            startRenderLoop() {
+                const render = () => {
+                    this.visualizers.forEach(viz => {
+                        viz.render();
+                    });
+                    requestAnimationFrame(render);
+                };
+                
+                render();
+                console.log('🎬 Morphing blog render loop started');
+            }
+        }
+        
+        // DUAL NAVIGATION SYSTEM: Tesseract + Scroll
+        // PROPERLY INTEGRATED WITH VIB3HOMEMASTER ARCHITECTURE
+        class DualNavigationSystem {
+            constructor(homeMaster, reactivityBridge) {
+                this.homeMaster = homeMaster;
+                this.reactivityBridge = reactivityBridge;
+                this.tesseractContainer = document.getElementById('tesseractContainer');
+                this.faces = ['face-0', 'face-1', 'face-2', 'face-3', 'face-4', 'face-5'];
+                this.currentFace = 0;
+                this.isDragging = false;
+                this.startX = 0;
+                this.startY = 0;
+                this.dragVelocity = 0;
+                this.tensionLevel = 0;
+                this.isTransitioning = false;
+                this.springStrength = 0.6; // From editor config
+                this.dragSensitivity = 1.0;
+                this.lastDragTime = 0;
+                this.isScrolling = false;
+                this.scrollMomentum = 0;
+                
+                // Bezel detection zone (configurable via editor)
+                this.bezelWidth = 80;
+                
+                this.init();
+            }
+            
+            init() {
+                console.log('🎲 Dual Navigation System initializing...');
+                
+                // CLICK/DRAG SUPPLEMENT TO SCROLL (not replacement)
+                this.tesseractContainer.addEventListener('mousedown', (e) => this.startDrag(e), { passive: false });
+                document.addEventListener('mousemove', (e) => this.handleDrag(e), { passive: false });
+                document.addEventListener('mouseup', () => this.endDrag(), { passive: false });
+                
+                // Touch drag events for mobile
+                this.tesseractContainer.addEventListener('touchstart', (e) => this.startDrag(e.touches[0]), { passive: false });
+                document.addEventListener('touchmove', (e) => this.handleDrag(e.touches[0]), { passive: false });
+                document.addEventListener('touchend', () => this.endDrag(), { passive: false });
+                
+                // REMOVED: Wheel scrolling - let main scroll system handle this
+                // this.tesseractContainer.addEventListener('wheel', (e) => this.handleWheel(e), { passive: false });
+                
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+                
+                console.log('✅ Dual Navigation System ready - Tesseract folding + Scroll mechanics');
+            }
+            
+            startDrag(e) {
+                if (this.isTransitioning) return;
+                
+                this.isDragging = true;
+                this.startX = e.clientX !== undefined ? e.clientX : e.pageX;
+                this.startY = e.clientY !== undefined ? e.clientY : e.pageY;
+                this.tensionLevel = 0;
+                this.dragVelocity = 0;
+                this.lastDragTime = performance.now();
+                this.isScrolling = false;
+                
+                // Check if we're near a bezel for tesseract mode
+                this.isBezelDrag = this.isNearBezel(this.startX, this.startY);
+                
+                // Visual feedback
+                this.tesseractContainer.style.cursor = 'grabbing';
+                document.body.style.userSelect = 'none';
+                
+                console.log(`🎲 Drag started - Bezel mode: ${this.isBezelDrag}`);
+            }
+            
+            isNearBezel(x, y) {
+                const bezelWidth = 80; // 80px from edges
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                
+                return (x < bezelWidth || x > windowWidth - bezelWidth || 
+                        y < bezelWidth || y > windowHeight - bezelWidth);
+            }
+            
+            handleDrag(e) {
+                if (!this.isDragging || this.isTransitioning) return;
+                
+                // Handle both mouse and touch events
+                const clientX = e.clientX !== undefined ? e.clientX : e.pageX;
+                const clientY = e.clientY !== undefined ? e.clientY : e.pageY;
+                if (!clientX || !clientY) return;
+                
+                e.preventDefault();
+                
+                const currentTime = performance.now();
+                const deltaTime = currentTime - this.lastDragTime;
+                const deltaX = clientX - this.startX;
+                const deltaY = clientY - this.startY;
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                
+                // Calculate velocity for momentum
+                if (deltaTime > 0) {
+                    this.dragVelocity = distance / deltaTime;
+                }
+                
+                if (this.isBezelDrag) {
+                    // TESSERACT FOLDING MODE
+                    this.handleTesseractDrag(deltaX, deltaY, distance);
+                } else {
+                    // SCROLL MODE  
+                    this.handleScrollDrag(deltaX, deltaY);
+                }
+                
+                this.lastDragTime = currentTime;
+            }
+            
+            handleTesseractDrag(deltaX, deltaY, distance) {
+                // Build tension based on drag distance
+                this.tensionLevel = Math.min(distance / 200, 1.0); // Max tension at 200px drag
+                
+                // PROPER ARCHITECTURE: Register interaction with HomeMaster (if available)
+                if (this.homeMaster) {
+                    this.homeMaster.registerInteraction('cubeRotation', this.tensionLevel, 800);
+                }
+                
+                // PROPER ARCHITECTURE: Update via ReactivityBridge (if available)
+                if (this.reactivityBridge) {
+                    this.reactivityBridge.triggerCubeNavigation(
+                        this.determineFoldDirection(deltaX, deltaY), 
+                        this.tensionLevel, 
+                        false
+                    );
+                } else {
+                    // Fallback: Direct CSS update
+                    document.documentElement.style.setProperty('--tension-intensity', this.tensionLevel.toString());
+                }
+                
+                // Add tension visual feedback
+                if (this.tensionLevel > 0.1) {
+                    this.tesseractContainer.classList.add('tension-building');
+                } else {
+                    this.tesseractContainer.classList.remove('tension-building');
+                }
+                
+                // Determine fold direction for visual preparation
+                if (this.tensionLevel > 0.3) {
+                    const direction = this.determineFoldDirection(deltaX, deltaY);
+                    this.prepareFold(direction);
+                }
+                
+                console.log(`🎲 Tesseract Tension: ${this.tensionLevel.toFixed(2)}, ΔX: ${deltaX}, ΔY: ${deltaY}`);
+            }
+            
+            determineFoldDirection(deltaX, deltaY) {
+                const absX = Math.abs(deltaX);
+                const absY = Math.abs(deltaY);
+                
+                if (absX > absY) {
+                    return deltaX > 0 ? 'right' : 'left';
+                } else {
+                    return deltaY > 0 ? 'down' : 'up';
+                }
+            }
+            
+            handleScrollDrag(deltaX, deltaY) {
+                // DRAG AS SCROLL SUPPLEMENT (works WITH main scroll system)
+                this.isScrolling = true;
+                
+                // Calculate scroll intensity
+                const scrollIntensity = Math.min(Math.abs(deltaY) / 50, 2.0);
+                const scrollVelocity = Math.abs(this.dragVelocity);
+                
+                // INTEGRATE WITH MAIN SCROLL SYSTEM
+                // Simulate scroll wheel events to work with existing scroll logic
+                const scrollEvent = new WheelEvent('wheel', {
+                    deltaY: deltaY * 2, // Amplify drag to scroll conversion
+                    bubbles: true,
+                    cancelable: true
+                });
+                
+                // Dispatch to main scroll system (but don't let it prevent default again)
+                setTimeout(() => {
+                    document.dispatchEvent(scrollEvent);
+                }, 0);
+                
+                // ADDITIONAL DRAG-SPECIFIC VISUAL EFFECTS
+                const allCards = document.querySelectorAll('.blog-card');
+                allCards.forEach((card, index) => {
+                    // Additional drag-specific scaling and rotation
+                    const dragEffect = `scale(${1.0 + scrollIntensity * 0.05}) rotateZ(${deltaX * 0.02}deg)`;
+                    card.style.filter = `brightness(${1.0 + scrollIntensity * 0.2})`;
+                    // Don't override the main scroll transform, just add effects
+                });
+                
+                // PROPER ARCHITECTURE: Register interaction with HomeMaster (if available)
+                if (this.homeMaster) {
+                    this.homeMaster.updateInteraction('scroll', {
+                        velocity: scrollIntensity,
+                        chaos: scrollVelocity * 0.5
+                    });
+                }
+                
+                // PROPER ARCHITECTURE: Sync all layers via ReactivityBridge (if available)
+                if (this.reactivityBridge) {
+                    this.reactivityBridge.syncAllLayers();
+                }
+                
+                console.log(`📜 Drag-as-scroll supplement: ΔX: ${deltaX}, ΔY: ${deltaY}, velocity: ${this.dragVelocity.toFixed(2)}`);
+            }
+            
+            prepareFold(direction) {
+                // Remove previous fold classes
+                this.tesseractContainer.classList.remove('folding-left', 'folding-right', 'folding-up', 'folding-down');
+                
+                // Add new fold direction
+                this.tesseractContainer.classList.add(`folding-${direction}`);
+            }
+            
+            endDrag() {
+                if (!this.isDragging) return;
+                
+                this.isDragging = false;
+                this.tesseractContainer.style.cursor = '';
+                document.body.style.userSelect = '';
+                
+                if (this.isBezelDrag) {
+                    // TESSERACT MODE: Check if tension is high enough to trigger fold
+                    if (this.tensionLevel > 0.5) {
+                        this.executeFold();
+                    } else {
+                        this.snapBack();
+                    }
+                    console.log(`🎲 Tesseract drag ended - tension: ${this.tensionLevel.toFixed(2)}`);
+                } else {
+                    // SCROLL MODE: Apply momentum and smooth scrolling
+                    this.applyScrollMomentum();
+                    console.log(`📜 Scroll drag ended - velocity: ${this.dragVelocity.toFixed(2)}`);
+                }
+            }
+            
+            applyScrollMomentum() {
+                // Apply momentum based on drag velocity (restored method)
+                if (Math.abs(this.dragVelocity) > 0.5) {
+                    const momentum = this.dragVelocity * -200; // Convert to scroll distance
+                    this.scrollMomentum = momentum;
+                    
+                    // Smooth momentum animation
+                    this.animateScrollMomentum(300, () => {
+                        this.snapToCenter();
+                    });
+                } else {
+                    this.snapToCenter();
+                }
+            }
+            
+            animateScrollMomentum(duration, callback) {
+                const startTime = performance.now();
+                const startMomentum = this.scrollMomentum;
+                
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Cubic bezier easing for spring-like effect
+                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+                    
+                    this.scrollMomentum = startMomentum * (1 - easeProgress);
+                    
+                    // Apply visual momentum effects
+                    const momentumIntensity = Math.abs(this.scrollMomentum) / 200;
+                    document.documentElement.style.setProperty('--scroll-momentum', momentumIntensity.toString());
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else if (callback) {
+                        callback();
+                    }
+                };
+                
+                requestAnimationFrame(animate);
+            }
+            
+            snapToCenter() {
+                // Smooth return to center position (restored method)
+                const duration = 600 * this.springStrength;
+                
+                this.animateScrollTo(0, duration);
+                
+                console.log(`📍 Snapping to center`);
+            }
+            
+            animateScrollTo(targetValue, duration, callback) {
+                const startTime = performance.now();
+                const startValue = parseFloat(document.documentElement.style.getPropertyValue('--scroll-momentum')) || 0;
+                const distance = targetValue - startValue;
+                
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Cubic bezier easing for spring-like effect
+                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+                    
+                    const currentValue = startValue + (distance * easeProgress);
+                    document.documentElement.style.setProperty('--scroll-momentum', currentValue.toString());
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else if (callback) {
+                        callback();
+                    }
+                };
+                
+                requestAnimationFrame(animate);
+            }
+            
+            executeFold() {
+                this.isTransitioning = true;
+                
+                // Determine which face to switch to based on fold direction
+                let targetFace = this.currentFace;
+                
+                if (this.tesseractContainer.classList.contains('folding-right')) {
+                    targetFace = 1; // TECH
+                } else if (this.tesseractContainer.classList.contains('folding-left')) {
+                    targetFace = 3; // MEDIA
+                } else if (this.tesseractContainer.classList.contains('folding-up')) {
+                    targetFace = 4; // INNOVATION
+                } else if (this.tesseractContainer.classList.contains('folding-down')) {
+                    targetFace = 5; // CONTEXT
+                }
+                
+                // Execute the hypercube face transition
+                this.transitionToFace(targetFace);
+                
+                console.log(`🎲 Executing tesseract fold to face ${targetFace}`);
+            }
+            
+            snapBack() {
+                // Remove tension and fold classes
+                this.tesseractContainer.classList.remove('tension-building', 'folding-left', 'folding-right', 'folding-up', 'folding-down');
+                document.documentElement.style.setProperty('--tension-intensity', '0');
+                
+                console.log('🎲 Snapping back to current face');
+            }
+            
+            transitionToFace(faceIndex) {
+                if (faceIndex === this.currentFace) {
+                    this.snapBack();
+                    this.isTransitioning = false;
+                    return;
+                }
+                
+                this.currentFace = faceIndex;
+                
+                // Remove all fold classes and set final state
+                setTimeout(() => {
+                    this.tesseractContainer.classList.remove('folding-left', 'folding-right', 'folding-up', 'folding-down', 'tension-building');
+                    document.documentElement.style.setProperty('--tension-intensity', '0');
+                    
+                    // Update active face visibility
+                    this.faces.forEach((faceId, index) => {
+                        const face = document.getElementById(faceId);
+                        if (index === faceIndex) {
+                            face.style.zIndex = '10';
+                            face.style.opacity = '1';
+                        } else {
+                            face.style.zIndex = '1';
+                            face.style.opacity = '0.1';
+                        }
+                    });
+                    
+                    this.isTransitioning = false;
+                    console.log(`🎲 Tesseract folded to face ${faceIndex}`);
+                }, 800);
+            }
+            
+            handleWheel(e) {
+                e.preventDefault();
+                
+                // Convert wheel delta to scroll effects
+                const sensitivity = 2.0;
+                const scrollAmount = e.deltaY * sensitivity;
+                
+                // Apply visual wheel scrolling effects
+                const scrollIntensity = Math.min(Math.abs(scrollAmount) / 100, 1.0);
+                document.documentElement.style.setProperty('--scroll-momentum', scrollIntensity.toString());
+                
+                // Auto-decay after wheel scrolling stops
+                clearTimeout(this.wheelTimeout);
+                this.wheelTimeout = setTimeout(() => {
+                    this.snapToCenter();
+                }, 150);
+                
+                console.log(`🎡 Wheel scroll: ${scrollAmount}, intensity: ${scrollIntensity.toFixed(2)}`);
+            }
+            
+            handleKeyboard(e) {
+                if (this.isTransitioning) return;
+                
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        this.transitionToFace(3); // MEDIA (LEFT)
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        this.transitionToFace(1); // TECH (RIGHT)
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        this.transitionToFace(4); // INNOVATION (TOP)
+                        break;
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        this.transitionToFace(5); // CONTEXT (BOTTOM)
+                        break;
+                    case 'Home':
+                        e.preventDefault();
+                        this.transitionToFace(0); // HOME
+                        break;
+                    case 'Escape':
+                        e.preventDefault();
+                        this.transitionToFace(0); // HOME
+                        break;
+                }
+            }
+            
+            // Integration with editor dashboard
+            updateFromEditor(parameter, value) {
+                switch(parameter) {
+                    case 'springReturn':
+                        this.springStrength = value;
+                        break;
+                    case 'tensionThreshold':
+                        this.tensionThreshold = value;
+                        break;
+                    case 'dragSensitivity':
+                        this.dragSensitivity = value;
+                        break;
+                }
+            }
+            
+            getCurrentFace() {
+                return this.currentFace;
+            }
+            
+            getCurrentSection() {
+                return this.currentFace; // For compatibility
+            }
+            
+            getFaceName() {
+                const faceNames = ['HOME', 'TECH', 'RESEARCH', 'MEDIA', 'INNOVATION', 'CONTEXT'];
+                return faceNames[this.currentFace] || 'UNKNOWN';
+            }
+            
+            scrollToSection(sectionIndex) {
+                // For compatibility - convert to face transition
+                if (sectionIndex >= 0 && sectionIndex < this.faces.length) {
+                    this.transitionToFace(sectionIndex);
+                }
+            }
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', async () => {
+            console.log('🚀 Initializing Morphing Blog System...');
+            
+            try {
+                // Import core architecture systems
+                const { default: VIB3HomeMaster } = await import('./core/VIB3HomeMaster.js');
+                const { default: UnifiedReactivityBridge } = await import('./core/UnifiedReactivityBridge.js');
+                
+                // Initialize core architecture systems (CRITICAL for proper operation)
+                console.log('🏠 Initializing VIB3HomeMaster...');
+                const homeMaster = new VIB3HomeMaster();
+                window.vib3HomeMaster = homeMaster;
+                
+                console.log('🌉 Initializing UnifiedReactivityBridge...');
+                const reactivityBridge = new UnifiedReactivityBridge(homeMaster, []);
+                window.vib3Bridge = reactivityBridge;
+                
+                // Initialize blog system
+                const system = new MorphingBlogSystem();
+                window.morphingBlogSystem = system;
+                
+                // Initialize DUAL navigation system with proper architecture
+                console.log('🎲 Initializing DualNavigationSystem with proper architecture...');
+                const dualNavSystem = new DualNavigationSystem(homeMaster, reactivityBridge);
+                window.dualNavigationSystem = dualNavSystem;
+                
+                console.log('✅ All systems initialized with proper architecture');
+            } catch (error) {
+                console.error('❌ Error initializing core systems:', error);
+                console.log('🔄 Falling back to standalone mode...');
+                
+                // Initialize blog system in standalone mode
+                const system = new MorphingBlogSystem();
+                window.morphingBlogSystem = system;
+                
+                // Initialize basic dual navigation (without full architecture)
+                const basicNavSystem = new DualNavigationSystem(null, null);
+                window.dualNavigationSystem = basicNavSystem;
+            }
+        });
+        
+    </script>
+
+    <!-- VIB34D INTEGRATION INJECT -->
+    <script src="VIB34D_BLOG_INTEGRATION_INJECT.js?v=2"></script>
+</body>
+</html>

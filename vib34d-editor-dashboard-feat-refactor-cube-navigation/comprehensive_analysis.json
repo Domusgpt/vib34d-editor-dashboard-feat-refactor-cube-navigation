@@ -1,0 +1,1337 @@
+{
+  "analysis": {
+    "url": "https://domusgpt.github.io/vib34d-hypercube-navigation/",
+    "title": "VIB3CODE | FIXED ARCHITECTURE - Reusable Canvas System",
+    "documentReady": "complete",
+    "timestamp": "2025-06-27T05:31:29.091Z",
+    "webgl": {
+      "supported": true,
+      "context": {
+        "vendor": "WebKit",
+        "renderer": "WebKit WebGL",
+        "version": "WebGL 1.0 (OpenGL ES 2.0 Chromium)"
+      },
+      "canvases": [
+        {
+          "index": 0,
+          "id": "backgroundCanvas",
+          "className": "vib34d-adaptive-canvas",
+          "dimensions": {
+            "canvas": {
+              "width": 1920,
+              "height": 1080
+            },
+            "display": {
+              "width": 1920,
+              "height": 1080
+            },
+            "position": {
+              "top": 0,
+              "left": 0
+            }
+          },
+          "visible": true,
+          "contextType": "webgl",
+          "zIndex": "-1",
+          "opacity": "0.6"
+        },
+        {
+          "index": 1,
+          "id": "cardCanvas1",
+          "className": "vib34d-adaptive-canvas",
+          "dimensions": {
+            "canvas": {
+              "width": 766,
+              "height": 376
+            },
+            "display": {
+              "width": 768,
+              "height": 378
+            },
+            "position": {
+              "top": 163,
+              "left": 97
+            }
+          },
+          "visible": true,
+          "contextType": "webgl",
+          "zIndex": "auto",
+          "opacity": "1"
+        },
+        {
+          "index": 2,
+          "id": "cardCanvas2",
+          "className": "vib34d-adaptive-canvas",
+          "dimensions": {
+            "canvas": {
+              "width": 766,
+              "height": 376
+            },
+            "display": {
+              "width": 768,
+              "height": 378
+            },
+            "position": {
+              "top": 163,
+              "left": 1057
+            }
+          },
+          "visible": true,
+          "contextType": "webgl",
+          "zIndex": "auto",
+          "opacity": "1"
+        },
+        {
+          "index": 3,
+          "id": "cardCanvas3",
+          "className": "vib34d-adaptive-canvas",
+          "dimensions": {
+            "canvas": {
+              "width": 766,
+              "height": 376
+            },
+            "display": {
+              "width": 768,
+              "height": 378
+            },
+            "position": {
+              "top": 541,
+              "left": 97
+            }
+          },
+          "visible": true,
+          "contextType": "webgl",
+          "zIndex": "auto",
+          "opacity": "1"
+        },
+        {
+          "index": 4,
+          "id": "cardCanvasSidebar",
+          "className": "vib34d-adaptive-canvas",
+          "dimensions": {
+            "canvas": {
+              "width": 766,
+              "height": 376
+            },
+            "display": {
+              "width": 768,
+              "height": 378
+            },
+            "position": {
+              "top": 541,
+              "left": 1057
+            }
+          },
+          "visible": true,
+          "contextType": "webgl",
+          "zIndex": "auto",
+          "opacity": "1"
+        }
+      ]
+    },
+    "navigation": {
+      "bezelDragElements": [],
+      "clickableElements": [],
+      "navigationButtons": []
+    },
+    "content": {
+      "textElements": [
+        {
+          "selector": "h3",
+          "text": "VIB3CODE System",
+          "visible": true,
+          "rect": {
+            "width": 726,
+            "height": 24,
+            "top": 561,
+            "left": 117
+          }
+        },
+        {
+          "selector": "h3",
+          "text": "Architecture Status",
+          "visible": true,
+          "rect": {
+            "width": 726,
+            "height": 24,
+            "top": 561,
+            "left": 1077
+          }
+        },
+        {
+          "selector": "h3",
+          "text": "Visual Systems",
+          "visible": true,
+          "rect": {
+            "width": 726,
+            "height": 24,
+            "top": 939,
+            "left": 117
+          }
+        },
+        {
+          "selector": "h3",
+          "text": "Navigation Guide",
+          "visible": true,
+          "rect": {
+            "width": 726,
+            "height": 24,
+            "top": 939,
+            "left": 1077
+          }
+        },
+        {
+          "selector": "h4",
+          "text": "Hypercube Navigation",
+          "visible": true,
+          "rect": {
+            "width": 726,
+            "height": 16,
+            "top": 593,
+            "left": 117
+          }
+        },
+        {
+          "selector": "h4",
+          "text": "Performance Metrics",
+          "visible": true,
+          "rect": {
+            "width": 726,
+            "height": 16,
+            "top": 593,
+            "left": 1077
+          }
+        },
+        {
+          "selector": "h4",
+          "text": "WebGL Shaders",
+          "visible": true,
+          "rect": {
+            "width": 726,
+            "height": 16,
+            "top": 971,
+            "left": 117
+          }
+        },
+        {
+          "selector": "h4",
+          "text": "Hypercube Control",
+          "visible": true,
+          "rect": {
+            "width": 726,
+            "height": 16,
+            "top": 971,
+            "left": 1077
+          }
+        },
+        {
+          "selector": "div",
+          "text": "HOME\n        Face 0 | Geometry: hypercube",
+          "visible": true,
+          "rect": {
+            "width": 247.03125,
+            "height": 56,
+            "top": 20,
+            "left": 20
+          }
+        },
+        {
+          "selector": "div",
+          "text": "FIXED ARCHITECTURE\n        WebGL Contexts: 5 (not 31!)\n        Background: 1 reusable canvas\n       ",
+          "visible": true,
+          "rect": {
+            "width": 278.265625,
+            "height": 92,
+            "top": 20,
+            "left": 1621.734375
+          }
+        },
+        {
+          "selector": "div",
+          "text": "🌌 Initializing FIXED VIB3CODE System...",
+          "visible": false,
+          "rect": {
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "left": 0
+          }
+        },
+        {
+          "selector": "div",
+          "text": "VIB3CODE System\n            Hypercube Navigation\n            WebGL reusable canvas architecture with",
+          "visible": true,
+          "rect": {
+            "width": 768,
+            "height": 378,
+            "top": 162,
+            "left": 96
+          }
+        },
+        {
+          "selector": "div",
+          "text": "VIB3CODE System\n            Hypercube Navigation\n            WebGL reusable canvas architecture with",
+          "visible": true,
+          "rect": {
+            "width": 766,
+            "height": 376,
+            "top": 541,
+            "left": 97
+          }
+        },
+        {
+          "selector": "div",
+          "text": "WebGL reusable canvas architecture with 5 total contexts. Drag from screen edges to navigate between",
+          "visible": true,
+          "rect": {
+            "width": 726,
+            "height": 15.671875,
+            "top": 621,
+            "left": 117
+          }
+        },
+        {
+          "selector": "div",
+          "text": "Architecture Status\n            Performance Metrics\n            5 WebGL contexts active (84% reducti",
+          "visible": true,
+          "rect": {
+            "width": 768,
+            "height": 378,
+            "top": 162,
+            "left": 1056
+          }
+        },
+        {
+          "selector": "div",
+          "text": "Architecture Status\n            Performance Metrics\n            5 WebGL contexts active (84% reducti",
+          "visible": true,
+          "rect": {
+            "width": 766,
+            "height": 376,
+            "top": 541,
+            "left": 1057
+          }
+        },
+        {
+          "selector": "div",
+          "text": "5 WebGL contexts active (84% reduction from 31). Reusable canvas system with geometry switching.",
+          "visible": true,
+          "rect": {
+            "width": 726,
+            "height": 15.671875,
+            "top": 621,
+            "left": 1077
+          }
+        },
+        {
+          "selector": "div",
+          "text": "Visual Systems\n            WebGL Shaders\n            Dynamic geometry morphing with hypercube, tetra",
+          "visible": true,
+          "rect": {
+            "width": 768,
+            "height": 378,
+            "top": 540,
+            "left": 96
+          }
+        },
+        {
+          "selector": "div",
+          "text": "Visual Systems\n            WebGL Shaders\n            Dynamic geometry morphing with hypercube, tetra",
+          "visible": true,
+          "rect": {
+            "width": 766,
+            "height": 376,
+            "top": 919,
+            "left": 97
+          }
+        },
+        {
+          "selector": "div",
+          "text": "Dynamic geometry morphing with hypercube, tetrahedron, sphere, torus, and fractal patterns.",
+          "visible": true,
+          "rect": {
+            "width": 726,
+            "height": 15.671875,
+            "top": 999,
+            "left": 117
+          }
+        },
+        {
+          "selector": "div",
+          "text": "Navigation Guide\n            Hypercube Control\n            Drag from 250px bezel zones on screen edg",
+          "visible": true,
+          "rect": {
+            "width": 768,
+            "height": 378,
+            "top": 540,
+            "left": 1056
+          }
+        },
+        {
+          "selector": "div",
+          "text": "Navigation Guide\n            Hypercube Control\n            Drag from 250px bezel zones on screen edg",
+          "visible": true,
+          "rect": {
+            "width": 766,
+            "height": 376,
+            "top": 919,
+            "left": 1057
+          }
+        },
+        {
+          "selector": "div",
+          "text": "Drag from 250px bezel zones on screen edges. Arrow keys also work. Visual feedback shows transitions",
+          "visible": true,
+          "rect": {
+            "width": 726,
+            "height": 15.671875,
+            "top": 999,
+            "left": 1077
+          }
+        },
+        {
+          "selector": "span",
+          "text": "HOME",
+          "visible": true,
+          "rect": {
+            "width": 30.71875,
+            "height": 17,
+            "top": 31,
+            "left": 36
+          }
+        },
+        {
+          "selector": "span",
+          "text": "hypercube",
+          "visible": true,
+          "rect": {
+            "width": 69.109375,
+            "height": 17,
+            "top": 48,
+            "left": 181.921875
+          }
+        },
+        {
+          "selector": ".card-content",
+          "text": "VIB3CODE System\n            Hypercube Navigation\n            WebGL reusable canvas architecture with",
+          "visible": true,
+          "rect": {
+            "width": 766,
+            "height": 376,
+            "top": 541,
+            "left": 97
+          }
+        },
+        {
+          "selector": ".card-content",
+          "text": "Architecture Status\n            Performance Metrics\n            5 WebGL contexts active (84% reducti",
+          "visible": true,
+          "rect": {
+            "width": 766,
+            "height": 376,
+            "top": 541,
+            "left": 1057
+          }
+        },
+        {
+          "selector": ".card-content",
+          "text": "Visual Systems\n            WebGL Shaders\n            Dynamic geometry morphing with hypercube, tetra",
+          "visible": true,
+          "rect": {
+            "width": 766,
+            "height": 376,
+            "top": 919,
+            "left": 97
+          }
+        },
+        {
+          "selector": ".card-content",
+          "text": "Navigation Guide\n            Hypercube Control\n            Drag from 250px bezel zones on screen edg",
+          "visible": true,
+          "rect": {
+            "width": 766,
+            "height": 376,
+            "top": 919,
+            "left": 1057
+          }
+        }
+      ],
+      "sections": [],
+      "visibleText": []
+    },
+    "visual": {
+      "backgroundElements": [],
+      "cards": [],
+      "sidebars": []
+    },
+    "interactions": {
+      "dragCapable": true,
+      "clickHandlers": [],
+      "eventListeners": []
+    },
+    "issues": [],
+    "architecture": {
+      "type": "UNKNOWN",
+      "bodyClasses": ""
+    }
+  },
+  "consoleMessages": [
+    {
+      "type": "log",
+      "text": "🌌 VIB3CODE FIXED ARCHITECTURE - Reusable Canvas System",
+      "timestamp": "2025-06-27T05:31:19.828Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 DOM loaded, initializing FIXED architecture...",
+      "timestamp": "2025-06-27T05:31:19.829Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 Initializing FIXED Hypercube Navigation...",
+      "timestamp": "2025-06-27T05:31:19.829Z"
+    },
+    {
+      "type": "log",
+      "text": "🏠 VIB3HomeMaster - Single Source of Truth Initializing...",
+      "timestamp": "2025-06-27T05:31:19.829Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 VIB3HomeMaster update loop started - Managing 13 visualizers hierarchically",
+      "timestamp": "2025-06-27T05:31:19.831Z"
+    },
+    {
+      "type": "log",
+      "text": "🌉 UnifiedReactivityBridge - Synchronizing multi-layer reactions...",
+      "timestamp": "2025-06-27T05:31:19.831Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 UnifiedReactivityBridge update loop started - Multi-layer synchronization active",
+      "timestamp": "2025-06-27T05:31:19.832Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ UnifiedReactivityBridge initialized - Multi-layer synchronization active",
+      "timestamp": "2025-06-27T05:31:19.832Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Using basic preset configuration",
+      "timestamp": "2025-06-27T05:31:19.832Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3STYLEPACK core systems initialized",
+      "timestamp": "2025-06-27T05:31:19.833Z"
+    },
+    {
+      "type": "log",
+      "text": "📡 Loading site-content.json...",
+      "timestamp": "2025-06-27T05:31:19.833Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Site content data loaded: 5 sections",
+      "timestamp": "2025-06-27T05:31:19.865Z"
+    },
+    {
+      "type": "log",
+      "text": "📊 Editor configuration loaded: 1.0.0",
+      "timestamp": "2025-06-27T05:31:19.865Z"
+    },
+    {
+      "type": "log",
+      "text": "🎛️ Master controls applied from editor config",
+      "timestamp": "2025-06-27T05:31:19.865Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Site content loaded: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:19.865Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Initializing 5 reusable visualizers...",
+      "timestamp": "2025-06-27T05:31:19.865Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Background canvas element: JSHandle@node",
+      "timestamp": "2025-06-27T05:31:19.866Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Initializing AdaptiveCardVisualizer for geometry hypercube...",
+      "timestamp": "2025-06-27T05:31:19.866Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Using provided canvas element: backgroundCanvas",
+      "timestamp": "2025-06-27T05:31:19.867Z"
+    },
+    {
+      "type": "log",
+      "text": "🖼️ Canvas styled and made visible: 1920x1080",
+      "timestamp": "2025-06-27T05:31:20.000Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Using WebGL context backgroundCanvas",
+      "timestamp": "2025-06-27T05:31:20.001Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Shaders compiled and linked successfully",
+      "timestamp": "2025-06-27T05:31:20.014Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ WebGL visualizer initialized for geometry hypercube",
+      "timestamp": "2025-06-27T05:31:20.017Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Initializing AdaptiveCardVisualizer for geometry hypercube...",
+      "timestamp": "2025-06-27T05:31:20.017Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Using provided canvas element: cardCanvas1",
+      "timestamp": "2025-06-27T05:31:20.017Z"
+    },
+    {
+      "type": "log",
+      "text": "🖼️ Canvas styled and made visible: 400x300",
+      "timestamp": "2025-06-27T05:31:20.037Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Using WebGL context cardCanvas1",
+      "timestamp": "2025-06-27T05:31:20.037Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Shaders compiled and linked successfully",
+      "timestamp": "2025-06-27T05:31:20.044Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ WebGL visualizer initialized for geometry hypercube",
+      "timestamp": "2025-06-27T05:31:20.044Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Initializing AdaptiveCardVisualizer for geometry hypercube...",
+      "timestamp": "2025-06-27T05:31:20.044Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Using provided canvas element: cardCanvas2",
+      "timestamp": "2025-06-27T05:31:20.044Z"
+    },
+    {
+      "type": "log",
+      "text": "🖼️ Canvas styled and made visible: 400x300",
+      "timestamp": "2025-06-27T05:31:20.063Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Using WebGL context cardCanvas2",
+      "timestamp": "2025-06-27T05:31:20.063Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Shaders compiled and linked successfully",
+      "timestamp": "2025-06-27T05:31:20.068Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ WebGL visualizer initialized for geometry hypercube",
+      "timestamp": "2025-06-27T05:31:20.068Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Initializing AdaptiveCardVisualizer for geometry hypercube...",
+      "timestamp": "2025-06-27T05:31:20.068Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Using provided canvas element: cardCanvas3",
+      "timestamp": "2025-06-27T05:31:20.069Z"
+    },
+    {
+      "type": "log",
+      "text": "🖼️ Canvas styled and made visible: 400x300",
+      "timestamp": "2025-06-27T05:31:20.082Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Using WebGL context cardCanvas3",
+      "timestamp": "2025-06-27T05:31:20.082Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Shaders compiled and linked successfully",
+      "timestamp": "2025-06-27T05:31:20.095Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ WebGL visualizer initialized for geometry hypercube",
+      "timestamp": "2025-06-27T05:31:20.096Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Initializing AdaptiveCardVisualizer for geometry hypercube...",
+      "timestamp": "2025-06-27T05:31:20.096Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Using provided canvas element: cardCanvasSidebar",
+      "timestamp": "2025-06-27T05:31:20.096Z"
+    },
+    {
+      "type": "log",
+      "text": "🖼️ Canvas styled and made visible: 400x300",
+      "timestamp": "2025-06-27T05:31:20.130Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Using WebGL context cardCanvasSidebar",
+      "timestamp": "2025-06-27T05:31:20.130Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Shaders compiled and linked successfully",
+      "timestamp": "2025-06-27T05:31:20.134Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ WebGL visualizer initialized for geometry hypercube",
+      "timestamp": "2025-06-27T05:31:20.135Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ All 5 reusable visualizers initialized",
+      "timestamp": "2025-06-27T05:31:20.135Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Navigation setup complete",
+      "timestamp": "2025-06-27T05:31:20.135Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ FIXED Hypercube Navigation ready with full VIB3STYLEPACK integration",
+      "timestamp": "2025-06-27T05:31:20.135Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "timestamp": "2025-06-27T05:31:20.349Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Bezel drag started",
+      "timestamp": "2025-06-27T05:31:29.129Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Loading face 2: RESEARCH",
+      "timestamp": "2025-06-27T05:31:29.144Z"
+    },
+    {
+      "type": "log",
+      "text": "🌀 VIB3HomeMaster transitioning: HOME → MEDIA",
+      "timestamp": "2025-06-27T05:31:29.144Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 VIB3 section transition: RESEARCH",
+      "timestamp": "2025-06-27T05:31:29.145Z"
+    },
+    {
+      "type": "log",
+      "text": "🌌 Dimensional Shift triggered - New dimension: 3.8",
+      "timestamp": "2025-06-27T05:31:29.145Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Interaction registered: cubeRotation (intensity: 1)",
+      "timestamp": "2025-06-27T05:31:29.145Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 REUSING same canvases with new geometry: sphere",
+      "timestamp": "2025-06-27T05:31:29.145Z"
+    },
+    {
+      "type": "log",
+      "text": "📊 VIB3 parameters for sphere: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:29.145Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: sphere with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:29.145Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: sphere = 3",
+      "timestamp": "2025-06-27T05:31:29.146Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:29.146Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: sphere with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:29.146Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: sphere = 3",
+      "timestamp": "2025-06-27T05:31:29.146Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:29.146Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: sphere with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:29.146Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: sphere = 3",
+      "timestamp": "2025-06-27T05:31:29.146Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:29.146Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: sphere with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:29.147Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: sphere = 3",
+      "timestamp": "2025-06-27T05:31:29.147Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:29.147Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: sphere with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:29.147Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: sphere = 3",
+      "timestamp": "2025-06-27T05:31:29.147Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:29.147Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 All visual layers synchronized",
+      "timestamp": "2025-06-27T05:31:29.147Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Updating content with VIB3 coordinated transition",
+      "timestamp": "2025-06-27T05:31:29.147Z"
+    },
+    {
+      "type": "log",
+      "text": "🌀 Portal Burst triggered - velocity: 2000, intensity: 2",
+      "timestamp": "2025-06-27T05:31:29.148Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Face change triggered - tension: 1.00, direction: down",
+      "timestamp": "2025-06-27T05:31:29.148Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Interaction registered: cubeRotation (intensity: 1)",
+      "timestamp": "2025-06-27T05:31:29.161Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Cube navigation: down (tension: 1, snap: 1)",
+      "timestamp": "2025-06-27T05:31:29.161Z"
+    },
+    {
+      "type": "log",
+      "text": "✨ VIB3 coordinated content transition complete",
+      "timestamp": "2025-06-27T05:31:29.548Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Bezel drag started",
+      "timestamp": "2025-06-27T05:31:31.329Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Loading face 0: HOME",
+      "timestamp": "2025-06-27T05:31:31.346Z"
+    },
+    {
+      "type": "log",
+      "text": "🌀 VIB3HomeMaster transitioning: MEDIA → HOME",
+      "timestamp": "2025-06-27T05:31:31.346Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 VIB3 section transition: HOME",
+      "timestamp": "2025-06-27T05:31:31.346Z"
+    },
+    {
+      "type": "log",
+      "text": "🌌 Dimensional Shift triggered - New dimension: 3.8",
+      "timestamp": "2025-06-27T05:31:31.346Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Interaction registered: cubeRotation (intensity: 1)",
+      "timestamp": "2025-06-27T05:31:31.347Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 REUSING same canvases with new geometry: hypercube",
+      "timestamp": "2025-06-27T05:31:31.347Z"
+    },
+    {
+      "type": "log",
+      "text": "📊 VIB3 parameters for hypercube: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:31.349Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: hypercube with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:31.350Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: hypercube = 1",
+      "timestamp": "2025-06-27T05:31:31.350Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:31.350Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: hypercube with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:31.350Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: hypercube = 1",
+      "timestamp": "2025-06-27T05:31:31.350Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:31.350Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: hypercube with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:31.350Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: hypercube = 1",
+      "timestamp": "2025-06-27T05:31:31.351Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:31.351Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: hypercube with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:31.351Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: hypercube = 1",
+      "timestamp": "2025-06-27T05:31:31.351Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:31.351Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: hypercube with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:31.351Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: hypercube = 1",
+      "timestamp": "2025-06-27T05:31:31.351Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:31.352Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 All visual layers synchronized",
+      "timestamp": "2025-06-27T05:31:31.352Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Updating content with VIB3 coordinated transition",
+      "timestamp": "2025-06-27T05:31:31.352Z"
+    },
+    {
+      "type": "log",
+      "text": "🌀 Portal Burst triggered - velocity: 2000, intensity: 2",
+      "timestamp": "2025-06-27T05:31:31.352Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Face change triggered - tension: 1.00, direction: up",
+      "timestamp": "2025-06-27T05:31:31.352Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Interaction registered: cubeRotation (intensity: 1)",
+      "timestamp": "2025-06-27T05:31:31.362Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Cube navigation: up (tension: 1, snap: 1)",
+      "timestamp": "2025-06-27T05:31:31.362Z"
+    },
+    {
+      "type": "log",
+      "text": "✨ VIB3 coordinated content transition complete",
+      "timestamp": "2025-06-27T05:31:31.749Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Bezel drag started",
+      "timestamp": "2025-06-27T05:31:33.530Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Loading face 1: TECH",
+      "timestamp": "2025-06-27T05:31:33.548Z"
+    },
+    {
+      "type": "log",
+      "text": "🌀 VIB3HomeMaster transitioning: HOME → TECH",
+      "timestamp": "2025-06-27T05:31:33.549Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 VIB3 section transition: TECH",
+      "timestamp": "2025-06-27T05:31:33.549Z"
+    },
+    {
+      "type": "log",
+      "text": "🌌 Dimensional Shift triggered - New dimension: 3.8",
+      "timestamp": "2025-06-27T05:31:33.549Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Interaction registered: cubeRotation (intensity: 1)",
+      "timestamp": "2025-06-27T05:31:33.550Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 REUSING same canvases with new geometry: tetrahedron",
+      "timestamp": "2025-06-27T05:31:33.550Z"
+    },
+    {
+      "type": "log",
+      "text": "📊 VIB3 parameters for tetrahedron: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:33.550Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: tetrahedron with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:33.550Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: tetrahedron = 2",
+      "timestamp": "2025-06-27T05:31:33.550Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:33.550Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: tetrahedron with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:33.551Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: tetrahedron = 2",
+      "timestamp": "2025-06-27T05:31:33.551Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:33.551Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: tetrahedron with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:33.551Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: tetrahedron = 2",
+      "timestamp": "2025-06-27T05:31:33.551Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:33.551Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: tetrahedron with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:33.552Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: tetrahedron = 2",
+      "timestamp": "2025-06-27T05:31:33.552Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:33.552Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: tetrahedron with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:33.552Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: tetrahedron = 2",
+      "timestamp": "2025-06-27T05:31:33.553Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:33.554Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 All visual layers synchronized",
+      "timestamp": "2025-06-27T05:31:33.554Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Updating content with VIB3 coordinated transition",
+      "timestamp": "2025-06-27T05:31:33.554Z"
+    },
+    {
+      "type": "log",
+      "text": "🌀 Portal Burst triggered - velocity: 2000, intensity: 2",
+      "timestamp": "2025-06-27T05:31:33.554Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Face change triggered - tension: 1.00, direction: right",
+      "timestamp": "2025-06-27T05:31:33.554Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Interaction registered: cubeRotation (intensity: 1)",
+      "timestamp": "2025-06-27T05:31:33.563Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Cube navigation: right (tension: 1, snap: 1)",
+      "timestamp": "2025-06-27T05:31:33.563Z"
+    },
+    {
+      "type": "log",
+      "text": "✨ VIB3 coordinated content transition complete",
+      "timestamp": "2025-06-27T05:31:33.951Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Bezel drag started",
+      "timestamp": "2025-06-27T05:31:35.733Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Loading face 0: HOME",
+      "timestamp": "2025-06-27T05:31:35.749Z"
+    },
+    {
+      "type": "log",
+      "text": "🌀 VIB3HomeMaster transitioning: TECH → HOME",
+      "timestamp": "2025-06-27T05:31:35.749Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 VIB3 section transition: HOME",
+      "timestamp": "2025-06-27T05:31:35.749Z"
+    },
+    {
+      "type": "log",
+      "text": "🌌 Dimensional Shift triggered - New dimension: 3.8",
+      "timestamp": "2025-06-27T05:31:35.749Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Interaction registered: cubeRotation (intensity: 1)",
+      "timestamp": "2025-06-27T05:31:35.749Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 REUSING same canvases with new geometry: hypercube",
+      "timestamp": "2025-06-27T05:31:35.749Z"
+    },
+    {
+      "type": "log",
+      "text": "📊 VIB3 parameters for hypercube: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:35.749Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: hypercube with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:35.749Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: hypercube = 1",
+      "timestamp": "2025-06-27T05:31:35.750Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:35.750Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: hypercube with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:35.750Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: hypercube = 1",
+      "timestamp": "2025-06-27T05:31:35.750Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:35.750Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: hypercube with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:35.750Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: hypercube = 1",
+      "timestamp": "2025-06-27T05:31:35.750Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:35.750Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: hypercube with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:35.751Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: hypercube = 1",
+      "timestamp": "2025-06-27T05:31:35.751Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:35.751Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry updated to: hypercube with VIB3 params: JSHandle@object",
+      "timestamp": "2025-06-27T05:31:35.751Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Geometry uniform updated: hypercube = 1",
+      "timestamp": "2025-06-27T05:31:35.751Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ VIB3 uniforms updated with visual changes",
+      "timestamp": "2025-06-27T05:31:35.751Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 All visual layers synchronized",
+      "timestamp": "2025-06-27T05:31:35.751Z"
+    },
+    {
+      "type": "log",
+      "text": "🎨 Updating content with VIB3 coordinated transition",
+      "timestamp": "2025-06-27T05:31:35.751Z"
+    },
+    {
+      "type": "log",
+      "text": "🌀 Portal Burst triggered - velocity: 2000, intensity: 2",
+      "timestamp": "2025-06-27T05:31:35.751Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Face change triggered - tension: 1.00, direction: left",
+      "timestamp": "2025-06-27T05:31:35.752Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Interaction registered: cubeRotation (intensity: 1)",
+      "timestamp": "2025-06-27T05:31:35.764Z"
+    },
+    {
+      "type": "log",
+      "text": "🎲 Cube navigation: left (tension: 1, snap: 1)",
+      "timestamp": "2025-06-27T05:31:35.764Z"
+    },
+    {
+      "type": "log",
+      "text": "✨ VIB3 coordinated content transition complete",
+      "timestamp": "2025-06-27T05:31:36.151Z"
+    }
+  ],
+  "errors": [],
+  "timestamp": "2025-06-27T05:31:37.934Z"
+}

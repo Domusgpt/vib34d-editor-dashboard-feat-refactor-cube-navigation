@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Complete Integrated System Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 60px 1fr;
+            height: 100vh;
+            gap: 2px;
+        }
+        
+        .demo-header {
+            grid-column: 1 / -1;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-weight: bold;
+        }
+        
+        .demo-title {
+            font-size: 18px;
+        }
+        
+        .demo-status {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+        }
+        
+        .status-item {
+            padding: 5px 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+        }
+        
+        .status-item.active {
+            background: rgba(0, 255, 0, 0.3);
+        }
+        
+        .editor-panel {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff00ff;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .demo-panel {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .panel-title {
+            color: #ffff00;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .demo-elements {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            height: calc(100% - 100px);
+        }
+        
+        .demo-element {
+            background: rgba(255, 0, 255, 0.1);
+            border: 2px solid #ff00ff;
+            border-radius: 8px;
+            padding: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .demo-element:hover {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .demo-element.active {
+            border-color: #ffff00;
+            background: rgba(255, 255, 0, 0.2);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
+        }
+        
+        .demo-element.related {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .element-visualizer {
+            width: 100%;
+            height: 80px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+        }
+        
+        .element-name {
+            color: #00ffff;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .element-type {
+            color: #888;
+            font-size: 10px;
+        }
+        
+        .element-energy {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 10px;
+            color: #00ff00;
+        }
+        
+        .control-section {
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 5px;
+            padding: 15px;
+            border: 1px solid #333;
+        }
+        
+        .control-title {
+            color: #ff00ff;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .control-row {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            gap: 10px;
+        }
+        
+        .control-label {
+            color: #888;
+            font-size: 11px;
+            min-width: 80px;
+        }
+        
+        .control-slider {
+            flex: 1;
+            height: 20px;
+        }
+        
+        .control-value {
+            color: #00ff00;
+            font-size: 11px;
+            min-width: 40px;
+            text-align: right;
+        }
+        
+        .test-button {
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 11px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            background: rgba(0, 255, 255, 0.4);
+        }
+        
+        .test-button.primary {
+            background: rgba(255, 0, 255, 0.3);
+            border-color: #ff00ff;
+            color: #ff00ff;
+        }
+        
+        .test-button.primary:hover {
+            background: rgba(255, 0, 255, 0.6);
+        }
+        
+        .relationship-type {
+            padding: 5px 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+            border-radius: 3px;
+            color: #fff;
+            font-size: 10px;
+            margin: 2px;
+            cursor: pointer;
+        }
+        
+        .relationship-type.selected {
+            border-color: #ffff00;
+            background: rgba(255, 255, 0, 0.2);
+        }
+        
+        .master-energy-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+            border: 1px solid #333;
+        }
+        
+        .energy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .interaction-demo {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            border: 1px solid #444;
+        }
+        
+        .interaction-demo h4 {
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+        
+        .interaction-demo p {
+            color: #888;
+            font-size: 11px;
+            line-height: 1.4;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <!-- Header -->
+        <div class="demo-header">
+            <div class="demo-title">🌉 VIB34D Complete Integrated System Demo</div>
+            <div class="demo-status">
+                <div class="status-item" id="status-bridge">Bridge: Loading...</div>
+                <div class="status-item" id="status-interaction">Interaction: Loading...</div>
+                <div class="status-item" id="status-moire">Moiré: Loading...</div>
+                <div class="status-item" id="status-elements">Elements: 0</div>
+            </div>
+        </div>
+        
+        <!-- Left Panel: Editor Controls -->
+        <div class="editor-panel">
+            <div class="panel-title">🎛️ Integrated System Controls</div>
+            
+            <!-- Master Energy -->
+            <div class="control-section">
+                <div class="control-title">⚡ Master Energy State</div>
+                <div class="master-energy-bar">
+                    <div class="energy-fill" id="master-energy-fill"></div>
+                </div>
+                <div style="text-align: center; color: #00ff00; font-size: 11px;" id="energy-value">0.00</div>
+            </div>
+            
+            <!-- Element Configuration -->
+            <div class="control-section">
+                <div class="control-title">🔮 Element Configuration</div>
+                
+                <div class="control-row">
+                    <span class="control-label">Dimension:</span>
+                    <input type="range" class="control-slider" id="global-dimension" min="3.0" max="5.0" step="0.1" value="4.0">
+                    <span class="control-value" id="global-dimension-value">4.0</span>
+                </div>
+                
+                <div class="control-row">
+                    <span class="control-label">Morph:</span>
+                    <input type="range" class="control-slider" id="global-morph" min="0.0" max="1.5" step="0.01" value="0.7">
+                    <span class="control-value" id="global-morph-value">0.70</span>
+                </div>
+                
+                <div class="control-row">
+                    <span class="control-label">Grid:</span>
+                    <input type="range" class="control-slider" id="global-grid" min="1.0" max="25.0" step="0.1" value="8.0">
+                    <span class="control-value" id="global-grid-value">8.0</span>
+                </div>
+                
+                <div class="control-row">
+                    <span class="control-label">Rotation:</span>
+                    <input type="range" class="control-slider" id="global-rotation" min="0.0" max="3.0" step="0.01" value="0.5">
+                    <span class="control-value" id="global-rotation-value">0.50</span>
+                </div>
+            </div>
+            
+            <!-- Relationship Controls -->
+            <div class="control-section">
+                <div class="control-title">🔗 Relationship System</div>
+                
+                <div style="margin-bottom: 10px;">
+                    <div class="relationship-type selected" data-type="sync">Sync</div>
+                    <div class="relationship-type" data-type="inverse">Inverse</div>
+                    <div class="relationship-type" data-type="cascade">Cascade</div>
+                    <div class="relationship-type" data-type="amplify">Amplify</div>
+                    <div class="relationship-type" data-type="none">None</div>
+                </div>
+                
+                <div class="control-row">
+                    <span class="control-label">Strength:</span>
+                    <input type="range" class="control-slider" id="relationship-strength" min="0.0" max="1.0" step="0.1" value="0.5">
+                    <span class="control-value" id="relationship-strength-value">0.5</span>
+                </div>
+            </div>
+            
+            <!-- Test Controls -->
+            <div class="control-section">
+                <div class="control-title">🧪 System Tests</div>
+                
+                <button class="test-button primary" onclick="runSystemTests()">Run All Tests</button>
+                <button class="test-button" onclick="simulateInteractions()">Simulate Interactions</button>
+                <button class="test-button" onclick="testRelationships()">Test Relationships</button>
+                <button class="test-button" onclick="resetSystem()">Reset System</button>
+            </div>
+            
+            <div class="interaction-demo">
+                <h4>🎮 Interaction Guide</h4>
+                <p><strong>Hover:</strong> Elements respond with increased energy and visual effects</p>
+                <p><strong>Click:</strong> Triggers relationship propagation and parameter spikes</p>
+                <p><strong>Drag:</strong> Mouse position affects spatial parameters</p>
+                <p><strong>Relationships:</strong> Selected type determines how elements affect each other</p>
+            </div>
+        </div>
+        
+        <!-- Right Panel: Live Demo -->
+        <div class="demo-panel">
+            <div class="panel-title">🎮 Interactive Elements Demo</div>
+            
+            <div class="demo-elements" id="demo-elements">
+                <!-- Demo elements will be populated here -->
+            </div>
+        </div>
+    </div>
+    
+    <script src="VIB34D_WORKING_CORE_ARCHITECTURE.js"></script>
+    <script src="VIB34D_MOIRE_RGB_SYSTEM.js"></script>
+    <script src="VIB34D_INTEGRATED_SYSTEM_BRIDGE.js"></script>
+    <script>
+        // Complete Integrated Demo System
+        class VIB34DCompleteDemo {
+            constructor() {
+                this.systemBridge = null;
+                this.demoElements = [];
+                this.currentRelationshipType = 'sync';
+                this.isInitialized = false;
+                
+                this.initialize();
+            }
+            
+            async initialize() {
+                console.log('🚀 Initializing VIB34D Complete Integrated Demo...');
+                
+                try {
+                    // Initialize system bridge
+                    await this.initializeSystemBridge();
+                    
+                    // Create demo elements
+                    this.createDemoElements();
+                    
+                    // Setup controls
+                    this.setupControls();
+                    
+                    // Start monitoring
+                    this.startMonitoring();
+                    
+                    this.isInitialized = true;
+                    console.log('✅ Complete demo system ready');
+                    
+                } catch (error) {
+                    console.error('❌ Failed to initialize demo:', error);
+                }
+            }
+            
+            async initializeSystemBridge() {
+                if (window.VIB34DIntegratedSystemBridge) {
+                    this.systemBridge = new VIB34DIntegratedSystemBridge();
+                    await this.systemBridge.initialize();
+                    
+                    // Update status
+                    this.updateStatus();
+                    
+                    console.log('✅ System bridge initialized for demo');
+                } else {
+                    throw new Error('VIB34DIntegratedSystemBridge not available');
+                }
+            }
+            
+            createDemoElements() {
+                const elementConfigs = [
+                    { type: 'button', geometry: 'hypercube', name: 'Magic Button', color: '#ff00ff' },
+                    { type: 'card', geometry: 'sphere', name: 'Info Card', color: '#00ffff' },
+                    { type: 'nav', geometry: 'tetrahedron', name: 'Navigation', color: '#ffff00' },
+                    { type: 'header', geometry: 'wave', name: 'Page Header', color: '#ff8000' },
+                    { type: 'background', geometry: 'klein', name: 'Background', color: '#8000ff' },
+                    { type: 'accent', geometry: 'crystal', name: 'Accent Element', color: '#00ff80' }
+                ];
+                
+                const container = document.getElementById('demo-elements');
+                
+                elementConfigs.forEach((config, index) => {
+                    this.createElement(config, index, container);
+                });
+            }
+            
+            createElement(config, index, container) {
+                const elementId = `demo-element-${index}`;
+                
+                // Create DOM element
+                const element = document.createElement('div');
+                element.className = 'demo-element';
+                element.id = elementId;
+                element.innerHTML = `
+                    <canvas class="element-visualizer" width="120" height="80"></canvas>
+                    <div class="element-name">${config.name}</div>
+                    <div class="element-type">${config.geometry}</div>
+                    <div class="element-energy" id="energy-${elementId}">0.00</div>
+                `;
+                
+                container.appendChild(element);
+                
+                // Create element data
+                const elementData = {
+                    id: elementId,
+                    type: config.type,
+                    geometry: config.geometry,
+                    name: config.name,
+                    position: { x: index * 100, y: 100 },
+                    visualizer: null,
+                    properties: {
+                        dimension: 4.0,
+                        morphFactor: 0.7,
+                        gridDensity: 8.0 + (index * 2),
+                        rotationSpeed: 0.5 + (index * 0.1),
+                        hoverIntensity: 1.0,
+                        clickResponse: 1.2,
+                        scrollSensitivity: 0.8
+                    },
+                    relationships: {
+                        type: this.currentRelationshipType,
+                        strength: 0.5,
+                        targets: []
+                    }
+                };
+                
+                this.demoElements.push(elementData);
+                
+                // Initialize visualizer
+                this.initializeElementVisualizer(elementData, element.querySelector('canvas'));
+                
+                // Register with system bridge
+                if (this.systemBridge) {
+                    this.systemBridge.registerElement(elementData);
+                }
+                
+                // Setup interactions
+                this.setupElementInteractions(element, elementData);
+                
+                console.log(`Created demo element: ${config.name}`);
+            }
+            
+            initializeElementVisualizer(elementData, canvas) {
+                try {
+                    if (window.VIB34D_WorkingCore) {
+                        const core = new window.VIB34D_WorkingCore.HypercubeCore(canvas, {
+                            onError: (error) => {
+                                console.error(`Visualizer error for ${elementData.id}:`, error);
+                            }
+                        });
+                        
+                        core.updateParameters({
+                            geometryType: elementData.geometry,
+                            projectionMethod: 'perspective',
+                            dimension: elementData.properties.dimension,
+                            morphFactor: elementData.properties.morphFactor,
+                            gridDensity: elementData.properties.gridDensity,
+                            rotationSpeed: elementData.properties.rotationSpeed,
+                            patternIntensity: 1.5,
+                            lineThickness: 0.03,
+                            glitchIntensity: 0.02
+                        });
+                        
+                        core.start();
+                        elementData.visualizer = core;
+                        
+                    } else {
+                        console.warn('VIB34D_WorkingCore not available');
+                    }
+                } catch (error) {
+                    console.error('Failed to initialize visualizer:', error);
+                }
+            }
+            
+            setupElementInteractions(element, elementData) {
+                // Hover effects
+                element.addEventListener('mouseenter', () => {
+                    element.classList.add('active');
+                    this.triggerElementInteraction(elementData.id, 'hover', elementData.properties.hoverIntensity);
+                    this.showRelatedElements(elementData.id);
+                });
+                
+                element.addEventListener('mouseleave', () => {
+                    element.classList.remove('active');
+                    this.triggerElementInteraction(elementData.id, 'hover', 0);
+                    this.hideRelatedElements();
+                });
+                
+                // Click effects
+                element.addEventListener('click', () => {
+                    this.triggerElementInteraction(elementData.id, 'click', elementData.properties.clickResponse);
+                });
+                
+                // Mouse move effects
+                element.addEventListener('mousemove', (e) => {
+                    const rect = element.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width;
+                    const y = (e.clientY - rect.top) / rect.height;
+                    
+                    this.triggerElementInteraction(elementData.id, 'mouse', { x, y });
+                });
+            }
+            
+            triggerElementInteraction(elementId, interactionType, intensity) {
+                if (this.systemBridge) {
+                    this.systemBridge.triggerElementInteraction(elementId, interactionType, intensity);
+                }
+            }
+            
+            showRelatedElements(activeElementId) {
+                if (this.currentRelationshipType === 'none') return;
+                
+                this.demoElements.forEach(elementData => {
+                    if (elementData.id !== activeElementId) {
+                        const element = document.getElementById(elementData.id);
+                        element.classList.add('related');
+                    }
+                });
+            }
+            
+            hideRelatedElements() {
+                this.demoElements.forEach(elementData => {
+                    const element = document.getElementById(elementData.id);
+                    element.classList.remove('related');
+                });
+            }
+            
+            setupControls() {
+                // Global parameter sliders
+                this.setupSlider('global-dimension', 'dimension');
+                this.setupSlider('global-morph', 'morphFactor');
+                this.setupSlider('global-grid', 'gridDensity');
+                this.setupSlider('global-rotation', 'rotationSpeed');
+                
+                // Relationship type selector
+                document.querySelectorAll('.relationship-type').forEach(button => {
+                    button.addEventListener('click', () => {
+                        document.querySelectorAll('.relationship-type').forEach(b => b.classList.remove('selected'));
+                        button.classList.add('selected');
+                        this.currentRelationshipType = button.dataset.type;
+                        this.updateAllRelationships();
+                    });
+                });
+                
+                // Relationship strength
+                this.setupSlider('relationship-strength', 'relationshipStrength');
+            }
+            
+            setupSlider(sliderId, property) {
+                const slider = document.getElementById(sliderId);
+                const valueDisplay = document.getElementById(`${sliderId}-value`);
+                
+                slider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    const decimals = property.includes('grid') ? 1 : 2;
+                    valueDisplay.textContent = value.toFixed(decimals);
+                    
+                    this.updateGlobalProperty(property, value);
+                });
+            }
+            
+            updateGlobalProperty(property, value) {
+                this.demoElements.forEach(elementData => {
+                    if (property !== 'relationshipStrength') {
+                        elementData.properties[property] = value;
+                        
+                        if (elementData.visualizer) {
+                            const updates = {};
+                            updates[property] = value;
+                            elementData.visualizer.updateParameters(updates);
+                        }
+                    } else {
+                        elementData.relationships.strength = value;
+                    }
+                });
+            }
+            
+            updateAllRelationships() {
+                this.demoElements.forEach(elementData => {
+                    elementData.relationships.type = this.currentRelationshipType;
+                    
+                    if (this.systemBridge) {
+                        this.systemBridge.registerElement(elementData); // Re-register with new relationship
+                    }
+                });
+            }
+            
+            startMonitoring() {
+                const monitor = () => {
+                    if (this.systemBridge) {
+                        // Update master energy display
+                        const energy = this.systemBridge.masterState.globalEnergy;
+                        document.getElementById('master-energy-fill').style.width = `${energy * 100}%`;
+                        document.getElementById('energy-value').textContent = energy.toFixed(2);
+                        
+                        // Update individual element energies
+                        this.demoElements.forEach(elementData => {
+                            const bridgeElementData = this.systemBridge.elements.get(elementData.id);
+                            if (bridgeElementData) {
+                                const energyDisplay = document.getElementById(`energy-${elementData.id}`);
+                                if (energyDisplay) {
+                                    energyDisplay.textContent = bridgeElementData.currentEnergy.toFixed(2);
+                                }
+                            }
+                        });
+                        
+                        // Update status
+                        this.updateStatus();
+                    }
+                    
+                    requestAnimationFrame(monitor);
+                };
+                
+                monitor();
+            }
+            
+            updateStatus() {
+                if (this.systemBridge) {
+                    const status = this.systemBridge.getStatus();
+                    
+                    document.getElementById('status-bridge').textContent = `Bridge: ${status.initialized ? 'Active' : 'Inactive'}`;
+                    document.getElementById('status-bridge').className = `status-item ${status.initialized ? 'active' : ''}`;
+                    
+                    document.getElementById('status-interaction').textContent = `Interaction: ${status.hasInteractionEngine ? 'Active' : 'Basic'}`;
+                    document.getElementById('status-interaction').className = `status-item ${status.hasInteractionEngine ? 'active' : ''}`;
+                    
+                    document.getElementById('status-moire').textContent = `Moiré: ${status.hasMoireEngine ? 'Active' : 'Basic'}`;
+                    document.getElementById('status-moire').className = `status-item ${status.hasMoireEngine ? 'active' : ''}`;
+                    
+                    document.getElementById('status-elements').textContent = `Elements: ${status.elements}`;
+                    document.getElementById('status-elements').className = `status-item active`;
+                }
+            }
+        }
+        
+        // Global functions for testing
+        async function runSystemTests() {
+            if (window.VIB34DIntegratedSystemTester) {
+                const tester = new VIB34DIntegratedSystemTester();
+                await tester.runAllTests();
+            } else {
+                console.log('🧪 Basic system test: Demo is running successfully');
+            }
+        }
+        
+        function simulateInteractions() {
+            console.log('🎮 Simulating interaction sequence...');
+            
+            demo.demoElements.forEach((elementData, index) => {
+                setTimeout(() => {
+                    demo.triggerElementInteraction(elementData.id, 'hover', 1.0);
+                    
+                    setTimeout(() => {
+                        demo.triggerElementInteraction(elementData.id, 'click', 1.5);
+                    }, 200);
+                    
+                    setTimeout(() => {
+                        demo.triggerElementInteraction(elementData.id, 'hover', 0);
+                    }, 800);
+                    
+                }, index * 300);
+            });
+        }
+        
+        function testRelationships() {
+            console.log('🔗 Testing relationship propagation...');
+            
+            // Test each relationship type
+            const types = ['sync', 'inverse', 'cascade', 'amplify'];
+            let typeIndex = 0;
+            
+            const testNextType = () => {
+                if (typeIndex >= types.length) {
+                    console.log('✅ Relationship tests completed');
+                    return;
+                }
+                
+                const type = types[typeIndex];
+                console.log(`Testing ${type} relationships...`);
+                
+                // Update UI
+                document.querySelectorAll('.relationship-type').forEach(button => {
+                    button.classList.remove('selected');
+                    if (button.dataset.type === type) {
+                        button.classList.add('selected');
+                    }
+                });
+                
+                demo.currentRelationshipType = type;
+                demo.updateAllRelationships();
+                
+                // Trigger test interaction
+                demo.triggerElementInteraction(demo.demoElements[0].id, 'click', 1.0);
+                
+                typeIndex++;
+                setTimeout(testNextType, 2000);
+            };
+            
+            testNextType();
+        }
+        
+        function resetSystem() {
+            console.log('🔄 Resetting system...');
+            
+            // Reset all energies
+            if (demo.systemBridge) {
+                demo.systemBridge.masterState.globalEnergy = 0;
+                demo.systemBridge.masterState.activeElements.clear();
+                
+                demo.systemBridge.elements.forEach(elementData => {
+                    elementData.currentEnergy = 0;
+                    elementData.relationshipInfluences.clear();
+                });
+            }
+            
+            // Reset UI
+            document.getElementById('master-energy-fill').style.width = '0%';
+            document.getElementById('energy-value').textContent = '0.00';
+            
+            console.log('✅ System reset completed');
+        }
+        
+        // Initialize demo when page loads
+        let demo;
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                demo = new VIB34DCompleteDemo();
+                console.log('🎉 VIB34D Complete Integrated Demo Ready!');
+                console.log('🎮 Interact with elements to see relationships in action');
+            }, 100);
+        });
+    </script>
+</body>
+</html>

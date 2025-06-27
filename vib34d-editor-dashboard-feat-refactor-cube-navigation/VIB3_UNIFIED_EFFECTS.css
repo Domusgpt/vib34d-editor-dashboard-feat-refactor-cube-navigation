@@ -1,0 +1,395 @@
+/**
+ * VIB3 UNIFIED EFFECTS CSS
+ * 
+ * Hierarchical CSS classes that create total system coherence
+ * All effects cascade through the system with mathematical relationships
+ */
+
+/* ============ ROOT VARIABLES ============ */
+:root {
+    /* Global System Variables */
+    --global-intensity: 0.8;
+    --system-coherence: 1.0;
+    --dimensional-depth: 3.5;
+    --portal-intensity: 0.0;
+    --chaos-intensity: 0.0;
+    --micro-chaos: 0.0;
+    --reality-tear: 0.0;
+    --tension-intensity: 0.0;
+    
+    /* Focus System Variables */
+    --focused-element: -1;
+    --focus-intensity: 0.0;
+    --unfocus-blur: 0.0;
+    --background-dim: 0.0;
+    
+    /* Mouse Influence Variables */
+    --mouse-influence: 0.0;
+    --mouse-intensity: 0.0;
+    --click-pulse: 0.0;
+    
+    /* Portal/Transition Variables */
+    --portal-energy: 1.0;
+    --portal-duration: 0.8;
+    --chromatic-red: 0;
+    --chromatic-cyan: 0;
+    
+    /* Quantum Variables */
+    --quantum-coherence: 0.0;
+    --entanglement-field: 0.0;
+    
+    /* Breathing/Consciousness Variables */
+    --breathing-amplitude: 0.02;
+    --breathing-frequency: 0.5;
+    --consciousness-phase: 0.0;
+    
+    /* VHS/Glitch Variables */
+    --glitch-intensity: 0.0;
+    --text-shadow-red: 0;
+    --text-shadow-blue: 0;
+    --chromatic-shift: 0;
+}
+
+/* ============ SYSTEM-LEVEL EFFECTS ============ */
+
+/* Global intensity affects everything */
+body {
+    filter: brightness(calc(1 + var(--global-intensity, 0.8) * 0.2));
+    transition: filter calc(0.3s * var(--system-coherence, 1.0)) ease;
+}
+
+/* Background dimming for focus effects */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, var(--background-dim, 0));
+    pointer-events: none;
+    z-index: 500;
+    transition: background-color 0.3s ease;
+}
+
+/* ============ FOCUS SYSTEM HIERARCHY ============ */
+
+/* Focused element comes forward */
+.vib3-focused {
+    transform: scale(calc(1 + var(--focus-intensity, 0) * 0.05)) 
+               translateZ(calc(var(--dimensional-depth, 3.5) * var(--focus-intensity, 0) * 10px));
+    opacity: calc(0.9 + var(--focus-intensity, 0) * 0.1);
+    filter: blur(0px) brightness(calc(1 + var(--focus-intensity, 0) * 0.2));
+    box-shadow: 0 0 calc(var(--focus-intensity, 0) * 30px) rgba(0, 255, 255, var(--focus-intensity, 0));
+    z-index: calc(100 + var(--focus-intensity, 0) * 50);
+    transition: all calc(0.3s * var(--system-coherence, 1.0)) ease-out;
+}
+
+/* Unfocused elements fade back */
+.vib3-unfocused {
+    transform: scale(calc(1 - var(--focus-intensity, 0) * 0.02)) 
+               translateZ(calc(var(--dimensional-depth, 3.5) * var(--focus-intensity, 0) * -5px));
+    opacity: calc(1 - var(--focus-intensity, 0) * 0.4);
+    filter: blur(calc(var(--unfocus-blur, 0) * 2px)) brightness(calc(1 - var(--focus-intensity, 0) * 0.1));
+    transition: all calc(0.3s * var(--system-coherence, 1.0)) ease-out;
+}
+
+/* ============ CLICK/ACTIVATION EFFECTS ============ */
+
+/* Click pulse effect */
+.vib3-click-pulse {
+    animation: vib3-pulse-effect calc(0.6s / var(--system-coherence, 1.0)) ease-out;
+}
+
+@keyframes vib3-pulse-effect {
+    0% {
+        transform: scale(1) translateZ(0);
+        box-shadow: 0 0 0 rgba(0, 255, 255, 0);
+    }
+    50% {
+        transform: scale(calc(1 + var(--click-pulse, 0.8) * 0.15)) 
+                   translateZ(calc(var(--dimensional-depth, 3.5) * var(--click-pulse, 0.8) * 15px));
+        box-shadow: 0 0 calc(var(--click-pulse, 0.8) * 40px) rgba(0, 255, 255, var(--click-pulse, 0.8));
+    }
+    100% {
+        transform: scale(1) translateZ(calc(var(--dimensional-depth, 3.5) * 0.1));
+        box-shadow: 0 0 calc(var(--click-pulse, 0.8) * 10px) rgba(0, 255, 255, calc(var(--click-pulse, 0.8) * 0.3));
+    }
+}
+
+/* Reality inversion effect */
+.vib3-reality-invert {
+    filter: invert(var(--reality-tear, 0)) 
+            hue-rotate(calc(var(--reality-tear, 0) * 180deg)) 
+            contrast(calc(1 + var(--reality-tear, 0)));
+    transition: filter calc(0.4s * var(--system-coherence, 1.0)) ease;
+}
+
+/* ============ PORTAL/TRANSITION EFFECTS ============ */
+
+/* Portal transition with chromatic aberration */
+.vib3-portal-transition {
+    filter: drop-shadow(calc(var(--chromatic-red, 0) * 1px) 0 0 red) 
+            drop-shadow(calc(var(--chromatic-cyan, 0) * -1px) 0 0 cyan);
+    opacity: calc(1 - var(--portal-intensity, 0));
+    transition: all calc(var(--portal-duration, 0.8s) * var(--system-coherence, 1.0)) ease-out;
+}
+
+/* Tesseract folding mechanics */
+.vib3-tesseract-fold {
+    transform: perspective(calc(1200px + var(--dimensional-depth, 3.5) * 200px)) 
+               rotateY(calc(var(--tension-intensity, 0) * -90deg)) 
+               scale(calc(1 - var(--tension-intensity, 0) * 0.2));
+    opacity: calc(1 - var(--tension-intensity, 0));
+    transition: all calc(0.8s * var(--system-coherence, 1.0)) cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ============ VHS/GLITCH EFFECTS ============ */
+
+/* VHS Glitch effect with dynamic intensity */
+.vib3-vhs-glitch {
+    position: relative;
+}
+
+.vib3-vhs-glitch[data-text]::before,
+.vib3-vhs-glitch[data-text]::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    overflow: hidden;
+    animation-duration: calc(2s / (1.0 + var(--glitch-intensity, 0) * 4.0));
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate-reverse;
+    opacity: var(--glitch-intensity, 0);
+}
+
+.vib3-vhs-glitch[data-text]::before {
+    left: calc(var(--chromatic-shift, 0) * 2px);
+    text-shadow: calc(var(--text-shadow-red, 0) * -1px) 0 red;
+    animation-name: vib3-noise-1;
+}
+
+.vib3-vhs-glitch[data-text]::after {
+    left: calc(var(--chromatic-shift, 0) * -2px);
+    text-shadow: calc(var(--text-shadow-blue, 0) * -1px) 0 blue;
+    animation-name: vib3-noise-2;
+}
+
+@keyframes vib3-noise-1 {
+    0%, 100% { clip-path: inset(0 0 98% 0); }
+    5% { clip-path: inset(15% 0 30% 0); }
+    10% { clip-path: inset(10% 0 85% 0); }
+    15% { clip-path: inset(30% 0 60% 0); }
+    20% { clip-path: inset(60% 0 15% 0); }
+    25% { clip-path: inset(10% 0 80% 0); }
+    30% { clip-path: inset(50% 0 30% 0); }
+    35% { clip-path: inset(80% 0 5% 0); }
+    40% { clip-path: inset(40% 0 50% 0); }
+    45% { clip-path: inset(30% 0 65% 0); }
+    50% { clip-path: inset(70% 0 15% 0); }
+    55% { clip-path: inset(20% 0 70% 0); }
+    60% { clip-path: inset(65% 0 25% 0); }
+    65% { clip-path: inset(5% 0 85% 0); }
+    70% { clip-path: inset(40% 0 45% 0); }
+    75% { clip-path: inset(25% 0 60% 0); }
+    80% { clip-path: inset(75% 0 15% 0); }
+    85% { clip-path: inset(35% 0 55% 0); }
+    90% { clip-path: inset(50% 0 35% 0); }
+    95% { clip-path: inset(5% 0 90% 0); }
+}
+
+@keyframes vib3-noise-2 {
+    0%, 100% { clip-path: inset(98% 0 0 0); }
+    5% { clip-path: inset(30% 0 15% 0); }
+    10% { clip-path: inset(85% 0 10% 0); }
+    15% { clip-path: inset(60% 0 30% 0); }
+    20% { clip-path: inset(15% 0 60% 0); }
+    25% { clip-path: inset(80% 0 10% 0); }
+    30% { clip-path: inset(30% 0 50% 0); }
+    35% { clip-path: inset(5% 0 80% 0); }
+    40% { clip-path: inset(50% 0 40% 0); }
+    45% { clip-path: inset(65% 0 30% 0); }
+    50% { clip-path: inset(15% 0 70% 0); }
+    55% { clip-path: inset(70% 0 20% 0); }
+    60% { clip-path: inset(25% 0 65% 0); }
+    65% { clip-path: inset(85% 0 5% 0); }
+    70% { clip-path: inset(45% 0 40% 0); }
+    75% { clip-path: inset(60% 0 25% 0); }
+    80% { clip-path: inset(15% 0 75% 0); }
+    85% { clip-path: inset(55% 0 35% 0); }
+    90% { clip-path: inset(35% 0 50% 0); }
+    95% { clip-path: inset(90% 0 5% 0); }
+}
+
+/* ============ CONSCIOUSNESS/BREATHING EFFECTS ============ */
+
+/* Unified breathing pattern */
+.vib3-consciousness-breathing {
+    animation: vib3-unified-breathing calc(3s / var(--system-coherence, 1.0)) ease-in-out infinite;
+}
+
+@keyframes vib3-unified-breathing {
+    0%, 100% {
+        transform: scale(1) translateZ(0);
+        opacity: var(--global-intensity, 0.8);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(calc(1 + var(--breathing-amplitude, 0.02))) 
+                   translateZ(calc(var(--dimensional-depth, 3.5) * 10px));
+        opacity: calc(var(--global-intensity, 0.8) + 0.1);
+        filter: brightness(calc(1 + var(--global-intensity, 0.8) * 0.1));
+    }
+}
+
+/* Staggered breathing for multiple elements */
+.vib3-consciousness-breathing:nth-child(2) {
+    animation-delay: calc(-1s / var(--system-coherence, 1.0));
+}
+
+.vib3-consciousness-breathing:nth-child(3) {
+    animation-delay: calc(-2s / var(--system-coherence, 1.0));
+}
+
+.vib3-consciousness-breathing:nth-child(4) {
+    animation-delay: calc(-0.5s / var(--system-coherence, 1.0));
+}
+
+/* ============ DIMENSIONAL SHIFT EFFECTS ============ */
+
+/* Dimensional perspective shift */
+.vib3-dimensional-shift {
+    transform: perspective(calc(1200px + var(--dimensional-depth, 3.5) * 200px)) 
+               rotateX(calc(var(--mouse-influence, 0) * 5deg)) 
+               rotateY(calc(var(--mouse-influence, 0) * 3deg));
+    transition: transform calc(0.3s * var(--system-coherence, 1.0)) ease-out;
+}
+
+/* ============ QUANTUM ENTANGLEMENT EFFECTS ============ */
+
+/* Quantum synchronized elements */
+.vib3-quantum-entangled {
+    animation: vib3-quantum-oscillation calc(3.33s / var(--system-coherence, 1.0)) ease-in-out infinite;
+}
+
+@keyframes vib3-quantum-oscillation {
+    0%, 100% {
+        transform: translateZ(0) rotateZ(0deg);
+        opacity: calc(0.8 + var(--quantum-coherence, 0) * 0.2);
+    }
+    25% {
+        transform: translateZ(calc(var(--entanglement-field, 0) * 15px)) rotateZ(calc(var(--entanglement-field, 0) * 2deg));
+        opacity: calc(0.9 + var(--quantum-coherence, 0) * 0.1);
+    }
+    50% {
+        transform: translateZ(calc(var(--entanglement-field, 0) * -10px)) rotateZ(calc(var(--entanglement-field, 0) * -1deg));
+        opacity: calc(0.7 + var(--quantum-coherence, 0) * 0.3);
+    }
+    75% {
+        transform: translateZ(calc(var(--entanglement-field, 0) * 8px)) rotateZ(calc(var(--entanglement-field, 0) * 1.5deg));
+        opacity: calc(0.85 + var(--quantum-coherence, 0) * 0.15);
+    }
+}
+
+/* Phase-shifted quantum entanglement */
+.vib3-quantum-entangled:nth-child(2) { animation-delay: -1.11s; }
+.vib3-quantum-entangled:nth-child(3) { animation-delay: -2.22s; }
+.vib3-quantum-entangled:nth-child(4) { animation-delay: -0.55s; }
+.vib3-quantum-entangled:nth-child(5) { animation-delay: -1.67s; }
+.vib3-quantum-entangled:nth-child(6) { animation-delay: -2.78s; }
+
+/* ============ MICRO-INTERACTION EFFECTS ============ */
+
+/* Responsive micro-interactions */
+.vib3-micro-interactive {
+    transition: all calc(0.2s * var(--system-coherence, 1.0)) ease;
+}
+
+.vib3-micro-interactive:hover {
+    transform: scale(calc(1 + var(--micro-chaos, 0) * 0.05));
+    filter: brightness(calc(1 + var(--global-intensity, 0.8) * 0.1));
+}
+
+/* ============ REACTIVE ELEMENTS ============ */
+
+/* Elements that react to global state */
+.vib3-reactive-element {
+    opacity: calc(0.5 + var(--global-intensity, 0.8) * 0.5);
+    filter: brightness(calc(1 + var(--global-intensity, 0.8) * 0.3));
+    transition: all calc(0.1s * var(--system-coherence, 1.0)) ease;
+}
+
+/* ============ CARD-SPECIFIC HIERARCHICAL EFFECTS ============ */
+
+/* Blog cards inherit system state */
+.blog-card {
+    transition: all calc(0.3s * var(--system-coherence, 1.0)) ease-out;
+}
+
+/* Card visualizers respond to parent card state */
+.card-visualizer {
+    opacity: calc(var(--visualizer-opacity, 0.8) * (1 + var(--global-intensity, 0.8) * 0.2));
+    transition: opacity calc(0.3s * var(--system-coherence, 1.0)) ease;
+}
+
+/* Board visualizer background coherence */
+.visualizer-board {
+    opacity: calc(var(--board-opacity, 0.7) * (1 + var(--global-intensity, 0.8) * 0.1));
+    filter: blur(calc(var(--micro-chaos, 0) * 1px));
+    transition: all calc(0.5s * var(--system-coherence, 1.0)) ease;
+}
+
+/* ============ UTILITY CLASSES ============ */
+
+/* Apply all effects to an element */
+.vib3-full-effects {
+    @apply vib3-consciousness-breathing vib3-dimensional-shift vib3-quantum-entangled vib3-reactive-element;
+}
+
+/* Disable effects */
+.vib3-no-effects {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    filter: none !important;
+}
+
+/* ============ RESPONSIVE CONSIDERATIONS ============ */
+
+/* Reduce effects on mobile for performance */
+@media (max-width: 768px) {
+    :root {
+        --breathing-amplitude: 0.01;
+        --dimensional-depth: 3.0;
+        --system-coherence: 0.8;
+    }
+    
+    .vib3-consciousness-breathing {
+        animation-duration: calc(4s / var(--system-coherence, 0.8));
+    }
+    
+    .vib3-dimensional-shift {
+        transform: perspective(800px);
+    }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .vib3-consciousness-breathing,
+    .vib3-quantum-entangled,
+    .vib3-click-pulse {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+    
+    .vib3-portal-transition,
+    .vib3-tesseract-fold,
+    .vib3-dimensional-shift {
+        transition-duration: 0.01ms !important;
+    }
+}

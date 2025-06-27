@@ -1,0 +1,477 @@
+{
+  "_metadata": {
+    "version": "2.0.0",
+    "description": "VIB3STYLEPACK Visual Geometry Presets - Complete 4D Polytope & Fractal Library",
+    "architecture": "Data-driven preset system with external JSON configuration",
+    "geometryCount": 8,
+    "lastUpdated": "2025-06-22",
+    "compatibleWith": "NEOSKEUOMORPHIC_HOLOGRAPHIC_UI.html"
+  },
+  
+  "geometries": {
+    "hypercube": {
+      "id": 0.0,
+      "name": "Hypercube",
+      "concept": "Core Foundation",
+      "description": "4D lattice structure representing mathematical underpinning of the system",
+      "shaderFunction": "hypercubeLattice",
+      "parameters": {
+        "gridDensity": 12.0,
+        "dimension": 3.5,
+        "lineThickness": 0.008,
+        "edgeEnhancement": true,
+        "cornerIntersections": true
+      },
+      "visualDescription": "Precise grid lattice with 4D hypercube projection and enhanced edge definition",
+      "useCases": ["home-sections", "foundational-ui", "core-branding"],
+      "colorRecommendations": {
+        "primary": "#FF00FF",
+        "secondary": "#FF00FF80",
+        "accent": "#FF00FF40"
+      }
+    },
+    
+    "tetrahedron": {
+      "id": 1.0,
+      "name": "Tetrahedron", 
+      "concept": "Stability & Structure",
+      "description": "Crystalline lattice based on tetrahedral forms, ideal for technical content",
+      "shaderFunction": "tetrahedronLattice",
+      "parameters": {
+        "gridDensity": 8.0,
+        "vertexSize": 0.04,
+        "edgeConnections": true,
+        "geometricPrecision": true,
+        "wireframeEmphasis": true
+      },
+      "visualDescription": "Clean geometric lines showing mathematical precision with blueprint-style visualization",
+      "useCases": ["technology-sections", "technical-documentation", "api-interfaces"],
+      "colorRecommendations": {
+        "primary": "#00FFFF",
+        "secondary": "#00FFFF80", 
+        "accent": "#00FFFF40"
+      }
+    },
+    
+    "sphere": {
+      "id": 2.0,
+      "name": "Sphere",
+      "concept": "Potential & Flow",
+      "description": "Organic flowing patterns derived from spherical coordinates, represents creative potential",
+      "shaderFunction": "sphereLattice",
+      "parameters": {
+        "gridDensity": 15.0,
+        "sphereRadius": 0.25,
+        "detailLayers": 2,
+        "flowEmphasis": true,
+        "organicVariation": 0.3
+      },
+      "visualDescription": "Multiple sphere sizes creating organic flow patterns with detail layering",
+      "useCases": ["philosophy-sections", "creative-content", "infinite-potential"],
+      "colorRecommendations": {
+        "primary": "#FFFF00",
+        "secondary": "#FFFF0080",
+        "accent": "#FFFF0040"
+      }
+    },
+    
+    "torus": {
+      "id": 3.0,
+      "name": "Torus",
+      "concept": "Continuity & Cycles", 
+      "description": "Continuous looping patterns based on toroidal geometry, represents audio or temporal flows",
+      "shaderFunction": "torusLattice",
+      "parameters": {
+        "gridDensity": 10.0,
+        "majorRadius": 0.15,
+        "minorRadius": 0.05,
+        "innerDetail": true,
+        "flowContinuity": true
+      },
+      "visualDescription": "Toroidal structures with inner detail rings emphasizing continuous flow",
+      "useCases": ["audio-content", "temporal-flows", "cyclical-processes"],
+      "colorRecommendations": {
+        "primary": "#00FF00",
+        "secondary": "#00FF0080",
+        "accent": "#00FF0040"
+      }
+    },
+    
+    "kleinBottle": {
+      "id": 4.0,
+      "name": "Klein Bottle",
+      "concept": "Boundary Transcendence",
+      "description": "Non-orientable surface representing community and boundary transcendence",
+      "shaderFunction": "kleinBottleLattice", 
+      "parameters": {
+        "gridDensity": 11.0,
+        "selfIntersection": true,
+        "topologyEmphasis": 0.7,
+        "boundaryBlur": 0.4,
+        "transcendenceEffect": true
+      },
+      "visualDescription": "Self-intersecting surface showing topology that transcends traditional boundaries",
+      "useCases": ["community-features", "boundary-transcendence", "advanced-topology"],
+      "colorRecommendations": {
+        "primary": "#FF8000",
+        "secondary": "#FF800080",
+        "accent": "#FF800040"
+      }
+    },
+    
+    "mengerSponge": {
+      "id": 5.0,
+      "name": "Menger Sponge",
+      "concept": "Complexity & Recursion",
+      "description": "Self-similar blocky fractal representing infinite complexity within defined structure",
+      "shaderFunction": "mengerSpongeLattice",
+      "parameters": {
+        "gridDensity": 1.2,
+        "iterations": 5,
+        "scale": 3.0,
+        "recursionDepth": 4,
+        "selfSimilarity": true
+      },
+      "visualDescription": "Iterative SDF-based fractal with discrete self-similar structure and infinite detail",
+      "useCases": ["development-content", "recursive-structures", "complex-systems"],
+      "colorRecommendations": {
+        "primary": "#8000FF",
+        "secondary": "#8000FF80",
+        "accent": "#8000FF40"
+      }
+    },
+    
+    "wave": {
+      "id": 6.0,
+      "name": "Wave Function",
+      "concept": "Probability & Fields",
+      "description": "Interfering wave patterns representing quantum probability spaces and abstract concepts",
+      "shaderFunction": "waveLattice",
+      "parameters": {
+        "gridDensity": 12.0,
+        "waveFrequency1": 1.0,
+        "waveFrequency2": 1.2,
+        "waveFrequency3": 0.8,
+        "harmonicDetails": 0.3,
+        "interferencePattern": true
+      },
+      "visualDescription": "Multiple wave frequencies creating interference patterns with harmonic details",
+      "useCases": ["research-content", "quantum-concepts", "probability-visualization"],
+      "colorRecommendations": {
+        "primary": "#FF0080",
+        "secondary": "#FF008080",
+        "accent": "#FF008040"
+      }
+    },
+    
+    "mandelbulb": {
+      "id": 7.0,
+      "name": "Mandelbulb",
+      "concept": "Organic Chaos",
+      "description": "3D Mandelbrot fractal with organic flowing details representing chaotic growth",
+      "shaderFunction": "mandelbulbLattice",
+      "parameters": {
+        "gridDensity": 1.0,
+        "power": 8.0,
+        "iterations": 10,
+        "escapeRadius": 2.0,
+        "organicFlow": true
+      },
+      "visualDescription": "Ornate bulbous fractal with organic flowing details and infinite complexity",
+      "useCases": ["innovation-content", "organic-growth", "chaotic-systems"],
+      "colorRecommendations": {
+        "primary": "#00FF80",
+        "secondary": "#00FF8080",
+        "accent": "#00FF8040"
+      }
+    }
+  },
+  
+  "presetStyles": {
+    "vib3code-hero": {
+      "name": "VIB3CODE Hero Background",
+      "type": "Background",
+      "geometry": "hypercube",
+      "parameters": {
+        "density": 8.0,
+        "speed": 0.3,
+        "dimension": 3.5,
+        "morphFactor": 0.4,
+        "lineThickness": 0.03,
+        "baseColor": "#ff00ff",
+        "opacity": 0.7
+      },
+      "context": {
+        "readability": "high",
+        "performance": "optimized",
+        "usage": "hero_sections"
+      }
+    },
+
+    "technical-precision": {
+      "name": "Technical Content Background",
+      "type": "Structured",
+      "geometry": "tetrahedron",
+      "parameters": {
+        "density": 16.0,
+        "speed": 0.2,
+        "dimension": 3.0,
+        "morphFactor": 0.1,
+        "lineThickness": 0.02,
+        "baseColor": "#0088cc",
+        "opacity": 0.4
+      },
+      "context": {
+        "readability": "high",
+        "performance": "balanced",
+        "usage": "technical_articles"
+      }
+    },
+
+    "parserator-authority": {
+      "name": "Parserator Brand Authority",
+      "type": "Brand",
+      "geometry": "hypercube",
+      "parameters": {
+        "density": 12.0,
+        "speed": 0.6,
+        "dimension": 3.4,
+        "morphFactor": 0.3,
+        "lineThickness": 0.04,
+        "baseColor": "#ff0099",
+        "opacity": 0.8
+      },
+      "context": {
+        "readability": "high",
+        "performance": "balanced",
+        "usage": "brand_sections"
+      }
+    },
+
+    "fractal-deep": {
+      "name": "Deep Technical Fractal",
+      "type": "Complex",
+      "geometry": "mengerSponge",
+      "parameters": {
+        "density": 1.0,
+        "speed": 0.15,
+        "dimension": 3.7,
+        "morphFactor": 0.5,
+        "lineThickness": 0.02,
+        "baseColor": "#8800ff",
+        "opacity": 0.6
+      },
+      "context": {
+        "readability": "medium",
+        "performance": "intensive",
+        "usage": "complex_technical_content"
+      }
+    },
+
+    "mandelbulb-innovation": {
+      "name": "Organic Innovation Showcase",
+      "type": "Innovation",
+      "geometry": "mandelbulb",
+      "parameters": {
+        "density": 1.0,
+        "speed": 0.5,
+        "dimension": 3.7,
+        "morphFactor": 0.8,
+        "lineThickness": 0.03,
+        "baseColor": "#00ff80",
+        "opacity": 0.7
+      },
+      "context": {
+        "readability": "medium",
+        "performance": "intensive",
+        "usage": "innovation_content"
+      }
+    },
+
+    "quantum-wave": {
+      "name": "Quantum Probability Field",
+      "type": "Research",
+      "geometry": "wave",
+      "parameters": {
+        "density": 12.0,
+        "speed": 0.7,
+        "dimension": 3.9,
+        "morphFactor": 0.6,
+        "lineThickness": 0.025,
+        "baseColor": "#ff0080",
+        "opacity": 0.6
+      },
+      "context": {
+        "readability": "medium",
+        "performance": "high",
+        "usage": "research_experimental"
+      }
+    },
+
+    "klein-community": {
+      "name": "Community Transcendence",
+      "type": "Community",
+      "geometry": "kleinBottle",
+      "parameters": {
+        "density": 11.0,
+        "speed": 0.6,
+        "dimension": 3.6,
+        "morphFactor": 0.5,
+        "lineThickness": 0.03,
+        "baseColor": "#ff8000",
+        "opacity": 0.5
+      },
+      "context": {
+        "readability": "high",
+        "performance": "balanced",
+        "usage": "community_features"
+      }
+    },
+
+    "torus-flow": {
+      "name": "Temporal Flow Pattern",
+      "type": "Flow",
+      "geometry": "torus",
+      "parameters": {
+        "density": 10.0,
+        "speed": 1.1,
+        "dimension": 3.6,
+        "morphFactor": 0.4,
+        "lineThickness": 0.03,
+        "baseColor": "#00ff00",
+        "opacity": 0.5
+      },
+      "context": {
+        "readability": "high",
+        "performance": "standard",
+        "usage": "audio_temporal"
+      }
+    },
+
+    "sphere-potential": {
+      "name": "Infinite Potential Sphere",
+      "type": "Philosophy",
+      "geometry": "sphere",
+      "parameters": {
+        "density": 15.0,
+        "speed": 0.8,
+        "dimension": 3.8,
+        "morphFactor": 0.4,
+        "lineThickness": 0.025,
+        "baseColor": "#ffff00",
+        "opacity": 0.6
+      },
+      "context": {
+        "readability": "high",
+        "performance": "balanced",
+        "usage": "philosophical_content"
+      }
+    },
+
+    "minimal-grid": {
+      "name": "Minimal Grid Pattern",
+      "type": "Subtle",
+      "geometry": "hypercube",
+      "parameters": {
+        "density": 6.0,
+        "speed": 0.05,
+        "dimension": 3.0,
+        "morphFactor": 0.1,
+        "lineThickness": 0.01,
+        "baseColor": "#444444",
+        "opacity": 0.2
+      },
+      "context": {
+        "readability": "maximum",
+        "performance": "minimal",
+        "usage": "footer_sidebar"
+      }
+    }
+  },
+  
+  "visualizerTypes": {
+    "background": {
+      "description": "Primary background visualizer for full-screen coverage",
+      "role": "background",
+      "layerDepth": -100,
+      "opacity": 0.6,
+      "blendMode": "normal",
+      "geometryRecommendations": ["hypercube", "wave", "sphere"]
+    },
+    
+    "shadow": {
+      "description": "Shadow/accent visualizer for depth enhancement",
+      "role": "shadow", 
+      "layerDepth": 0,
+      "opacity": 0.4,
+      "blendMode": "multiply",
+      "filters": ["blur(2px)", "brightness(0.7)"],
+      "transform": "translate(4px, 4px)",
+      "geometryRecommendations": ["tetrahedron", "torus", "mengerSponge"]
+    },
+    
+    "content": {
+      "description": "Main content visualizer for UI elements",
+      "role": "content",
+      "layerDepth": 50,
+      "opacity": 0.8,
+      "blendMode": "normal",
+      "geometryRecommendations": ["hypercube", "tetrahedron", "kleinBottle"]
+    },
+    
+    "highlight": {
+      "description": "Highlight visualizer for interactive feedback",
+      "role": "highlight",
+      "layerDepth": 75,
+      "opacity": 0.4,
+      "blendMode": "screen",
+      "filters": ["blur(1px)", "brightness(1.5)"],
+      "transform": "translate(-2px, -2px)",
+      "geometryRecommendations": ["sphere", "mandelbulb", "wave"]
+    },
+    
+    "accent": {
+      "description": "Accent rim visualizer for subtle enhancement",
+      "role": "accent",
+      "layerDepth": 100, 
+      "opacity": 0.3,
+      "blendMode": "color-dodge",
+      "filters": ["blur(3px)"],
+      "transform": "scale(1.02)",
+      "geometryRecommendations": ["kleinBottle", "mengerSponge", "torus"]
+    }
+  },
+  
+  "parameterRanges": {
+    "gridDensity": {
+      "min": 0.5,
+      "max": 20.0,
+      "default": 8.0,
+      "description": "Controls the scale and density of geometric patterns"
+    },
+    "speed": {
+      "min": 0.0,
+      "max": 2.0,
+      "default": 0.5,
+      "description": "Animation speed multiplier for time-based effects"
+    },
+    "dimension": {
+      "min": 3.0,
+      "max": 4.0,
+      "default": 3.5,
+      "description": "4D projection dimension parameter"
+    },
+    "intensity": {
+      "min": 0.0,
+      "max": 1.0,
+      "default": 0.5,
+      "description": "Overall visual intensity and brightness"
+    },
+    "morphFactor": {
+      "min": 0.0,
+      "max": 1.0,
+      "default": 0.5,
+      "description": "Geometry morphing and complexity factor"
+    }
+  }
+}

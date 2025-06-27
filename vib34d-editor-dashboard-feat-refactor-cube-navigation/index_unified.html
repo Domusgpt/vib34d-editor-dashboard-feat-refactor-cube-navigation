@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3CODE | UNIFIED HYPERCUBE NAVIGATION</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #000000 70%);
+        }
+        
+        /* REACTIVE HYPERAV BACKGROUND */
+        #reactive-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            transition: filter 0.3s ease;
+        }
+        
+        /* HYPERCUBE NAVIGATION LAYER */
+        .hypercube-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 2000px;
+            transform-style: preserve-3d;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 10;
+        }
+        
+        /* FACE SYSTEM */
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 20px;
+            padding: 40px;
+            backface-visibility: hidden;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        /* Face positioning (hypercube navigation) */
+        .face.front { transform: translateZ(50vh); }
+        .face.back { transform: translateZ(-50vh) rotateY(180deg); }
+        .face.right { transform: rotateY(90deg) translateZ(50vh); }
+        .face.left { transform: rotateY(-90deg) translateZ(50vh); }
+        .face.top { transform: rotateX(90deg) translateZ(50vh); }
+        .face.bottom { transform: rotateX(-90deg) translateZ(50vh); }
+        
+        /* CONTENT CARDS */
+        .card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.02);
+            background: rgba(0, 0, 0, 0.9);
+        }
+        
+        /* Section-specific theming */
+        .face[data-section="0"] .card { border-color: rgba(255, 0, 255, 0.3); } /* HOME - Magenta */
+        .face[data-section="1"] .card { border-color: rgba(0, 255, 255, 0.3); } /* TECH - Cyan */
+        .face[data-section="2"] .card { border-color: rgba(255, 255, 0, 0.3); } /* MEDIA - Yellow */
+        .face[data-section="3"] .card { border-color: rgba(0, 255, 0, 0.3); } /* AUDIO - Green */
+        .face[data-section="4"] .card { border-color: rgba(255, 128, 0, 0.3); } /* QUANTUM - Orange */
+        
+        .card h3 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .card p {
+            color: #ccc;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        /* NAVIGATION INFO */
+        .face-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 15px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: #00ffff;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* CONTROLS GUIDE */
+        .controls-guide {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #ccc;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .controls-guide h4 {
+            color: #ffff00;
+            margin-bottom: 8px;
+        }
+        
+        .controls-guide .control-item {
+            margin: 3px 0;
+        }
+        
+        .controls-guide .key {
+            color: #00ffff;
+            font-weight: bold;
+        }
+        
+        /* INTERACTION FEEDBACK */
+        .interaction-indicator {
+            position: fixed;
+            top: 20px;
+            right: 300px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #ff00ff;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #fff;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .indicator-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 3px 0;
+        }
+        
+        .indicator-label {
+            color: #ffff00;
+        }
+        
+        .indicator-value {
+            color: #00ff00;
+            font-family: monospace;
+        }
+        
+        /* HYPERCUBE ROTATION STATES */
+        .hypercube-container.rotated-right {
+            transform: rotateY(-90deg);
+        }
+        
+        .hypercube-container.rotated-left {
+            transform: rotateY(90deg);
+        }
+        
+        .hypercube-container.rotated-up {
+            transform: rotateX(90deg);
+        }
+        
+        .hypercube-container.rotated-down {
+            transform: rotateX(-90deg);
+        }
+        
+        .hypercube-container.rotated-forward {
+            transform: translateZ(-50vh);
+        }
+        
+        .hypercube-container.rotated-back {
+            transform: translateZ(50vh);
+        }
+        
+        /* DRAG INTERACTION VISUAL FEEDBACK */
+        .drag-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(255, 0, 255, 0.5);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.3s ease;
+            z-index: 500;
+            pointer-events: none;
+        }
+        
+        .drag-indicator.active {
+            transform: translate(-50%, -50%) scale(1);
+            border-color: rgba(255, 0, 255, 1);
+        }
+        
+        /* LOADING STATE */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-text {
+            color: #00ffff;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-text">
+            <div>🔮 VIB3CODE</div>
+            <div style="font-size: 1rem; margin-top: 10px;">Initializing Hyperdimensional Systems...</div>
+        </div>
+    </div>
+    
+    <!-- Reactive HyperAV Background -->
+    <canvas id="reactive-canvas"></canvas>
+    
+    <!-- Drag interaction indicator -->
+    <div class="drag-indicator" id="dragIndicator"></div>
+    
+    <!-- Hypercube Navigation Container -->
+    <div class="hypercube-container" id="hypercube-container">
+        <!-- HOME FACE (FRONT) - Section 0 -->
+        <div class="face front" data-section="0" data-theme="hypercube">
+            <div class="card">
+                <h3>🏠 VIB3CODE Home</h3>
+                <p>Welcome to the unified hypercube navigation system. Experience reactive 4D geometry that responds to your interactions.</p>
+            </div>
+            <div class="card">
+                <h3>🔮 HyperAV Core</h3>
+                <p>8 geometries, infinite possibilities. The background visualization adapts to your section and interaction patterns.</p>
+            </div>
+            <div class="card">
+                <h3>🎛️ Parameter System</h3>
+                <p>Every visual element is mathematically connected through the VIB3 parameter hierarchy.</p>
+            </div>
+            <div class="card">
+                <h3>🧭 Navigation</h3>
+                <p>Drag edges to rotate the hypercube. Each face reveals different content sections.</p>
+            </div>
+            <div class="card">
+                <h3>⚡ Reactive Design</h3>
+                <p>The visualization responds to scroll, mouse movement, clicks, and idle states.</p>
+            </div>
+            <div class="card">
+                <h3>🎨 Theme Engine</h3>
+                <p>Each section has its own geometry theme: hypercube, tetrahedron, sphere, torus, klein bottle.</p>
+            </div>
+            <div class="card">
+                <h3>🔧 Dev Controls</h3>
+                <p>Press 'D' to access development controls for testing and debugging.</p>
+            </div>
+            <div class="card">
+                <h3>🌟 Integration</h3>
+                <p>Combines the best of both reactive core and hypercube navigation systems.</p>
+            </div>
+            <div class="card">
+                <h3>📐 4D Mathematics</h3>
+                <p>True 4D rotations and projections create impossible geometric transformations.</p>
+            </div>
+        </div>
+        
+        <!-- TECH FACE (RIGHT) - Section 1 -->
+        <div class="face right" data-section="1" data-theme="tetrahedron">
+            <div class="card">
+                <h3>💻 Technology Stack</h3>
+                <p>WebGL shaders, 4D mathematics, reactive parameter systems, and real-time visual feedback.</p>
+            </div>
+            <div class="card">
+                <h3>🔬 Shader System</h3>
+                <p>8 distinct geometry generators with dynamic parameter interpolation and interaction-driven effects.</p>
+            </div>
+            <div class="card">
+                <h3>🎯 VIB3 Architecture</h3>
+                <p>Unified parameter authority through VIB3HomeMaster and synchronized reactivity bridge.</p>
+            </div>
+            <div class="card">
+                <h3>🌊 Reactivity Engine</h3>
+                <p>Multi-layer synchronization between CSS, JavaScript, and WebGL systems.</p>
+            </div>
+            <div class="card">
+                <h3>📊 Performance</h3>
+                <p>Optimized for 60fps with efficient WebGL context management and parameter updates.</p>
+            </div>
+            <div class="card">
+                <h3>🎮 Interaction System</h3>
+                <p>Mouse, touch, scroll, and keyboard inputs drive geometric transformations.</p>
+            </div>
+            <div class="card">
+                <h3>🔄 State Management</h3>
+                <p>Centralized state with smooth transitions and parameter interpolation.</p>
+            </div>
+            <div class="card">
+                <h3>🎨 Theme System</h3>
+                <p>Section-based geometry switching with smooth parameter transitions.</p>
+            </div>
+            <div class="card">
+                <h3>🔧 Debug Tools</h3>
+                <p>Comprehensive development controls and real-time parameter monitoring.</p>
+            </div>
+        </div>
+        
+        <!-- MEDIA FACE (BACK) - Section 2 -->
+        <div class="face back" data-section="2" data-theme="sphere">
+            <div class="card">
+                <h3>🎬 Visual Media</h3>
+                <p>Sphere geometry creates smooth, organic flow patterns perfect for media content.</p>
+            </div>
+            <div class="card">
+                <h3>📸 Image Gallery</h3>
+                <p>Interactive galleries with reactive background visualization.</p>
+            </div>
+            <div class="card">
+                <h3>🎥 Video Content</h3>
+                <p>Embedded videos with visualization synchronization.</p>
+            </div>
+            <div class="card">
+                <h3>🖼️ Art Showcase</h3>
+                <p>Digital art and visual experiments.</p>
+            </div>
+            <div class="card">
+                <h3>📱 Interactive Demos</h3>
+                <p>Live demonstrations of visual systems.</p>
+            </div>
+            <div class="card">
+                <h3>🎨 Design Process</h3>
+                <p>Behind-the-scenes visual development.</p>
+            </div>
+            <div class="card">
+                <h3>🔄 Animation Tests</h3>
+                <p>Motion graphics and transition experiments.</p>
+            </div>
+            <div class="card">
+                <h3>🎬 Video Tutorials</h3>
+                <p>Educational content and technical explanations.</p>
+            </div>
+            <div class="card">
+                <h3>📊 Visualization Data</h3>
+                <p>Real-time parameter and performance data visualization.</p>
+            </div>
+        </div>
+        
+        <!-- AUDIO FACE (LEFT) - Section 3 -->
+        <div class="face left" data-section="3" data-theme="torus">
+            <div class="card">
+                <h3>🎵 Audio Integration</h3>
+                <p>Torus geometry represents continuous flow between sound and visual harmony.</p>
+            </div>
+            <div class="card">
+                <h3>🎧 Music Player</h3>
+                <p>Reactive audio visualization with frequency analysis.</p>
+            </div>
+            <div class="card">
+                <h3>🎤 Podcasts</h3>
+                <p>ParseHer episodes and audio content.</p>
+            </div>
+            <div class="card">
+                <h3>🔊 Sound Design</h3>
+                <p>Audio-reactive visual effects and sound synthesis.</p>
+            </div>
+            <div class="card">
+                <h3>📡 Live Streams</h3>
+                <p>Real-time audio with synchronized visuals.</p>
+            </div>
+            <div class="card">
+                <h3>🎼 Music Theory</h3>
+                <p>Visual representation of musical concepts.</p>
+            </div>
+            <div class="card">
+                <h3>🎹 Interactive Instruments</h3>
+                <p>Web-based musical interfaces.</p>
+            </div>
+            <div class="card">
+                <h3>📊 Spectrum Analysis</h3>
+                <p>Real-time frequency visualization.</p>
+            </div>
+            <div class="card">
+                <h3>🌊 Waveform Art</h3>
+                <p>Audio as visual art and data visualization.</p>
+            </div>
+        </div>
+        
+        <!-- QUANTUM FACE (TOP) - Section 4 -->
+        <div class="face top" data-section="4" data-theme="klein">
+            <div class="card">
+                <h3>⚛️ Quantum Concepts</h3>
+                <p>Klein bottle topology represents impossible connections and non-orientable manifolds.</p>
+            </div>
+            <div class="card">
+                <h3>🔬 Research Projects</h3>
+                <p>Quantum-inspired computation and visualization research.</p>
+            </div>
+            <div class="card">
+                <h3>📊 Data Visualization</h3>
+                <p>Complex data sets rendered through 4D geometric transformations.</p>
+            </div>
+            <div class="card">
+                <h3>🧮 Mathematics</h3>
+                <p>Advanced mathematical concepts and interactive proofs.</p>
+            </div>
+            <div class="card">
+                <h3>🔮 Probability Spaces</h3>
+                <p>Wave function visualization and quantum state representations.</p>
+            </div>
+            <div class="card">
+                <h3>🌌 Dimensional Theory</h3>
+                <p>Exploration of higher-dimensional mathematics and geometry.</p>
+            </div>
+            <div class="card">
+                <h3>⚡ Energy Fields</h3>
+                <p>Dynamic field visualization and interactive physics simulations.</p>
+            </div>
+            <div class="card">
+                <h3>🔬 Experiments</h3>
+                <p>Interactive scientific demonstrations and educational tools.</p>
+            </div>
+            <div class="card">
+                <h3>📐 Geometric Proofs</h3>
+                <p>Visual mathematical proofs and theorem demonstrations.</p>
+            </div>
+        </div>
+        
+        <!-- INNOVATION FACE (BOTTOM) - Section 5 -->
+        <div class="face bottom" data-section="5" data-theme="crystal">
+            <div class="card">
+                <h3>💎 Innovation Lab</h3>
+                <p>Crystal lattice structures represent systematic growth and ordered complexity.</p>
+            </div>
+            <div class="card">
+                <h3>🚀 Future Projects</h3>
+                <p>Upcoming developments and experimental features.</p>
+            </div>
+            <div class="card">
+                <h3>🤖 AI Integration</h3>
+                <p>Human-AI collaboration tools and agentic development workflows.</p>
+            </div>
+            <div class="card">
+                <h3>🔬 Prototypes</h3>
+                <p>Early-stage concepts and proof-of-concept implementations.</p>
+            </div>
+            <div class="card">
+                <h3>🌟 Breakthrough Ideas</h3>
+                <p>Revolutionary concepts in visualization and interaction design.</p>
+            </div>
+            <div class="card">
+                <h3>📈 Growth Patterns</h3>
+                <p>Systematic expansion of capabilities and features.</p>
+            </div>
+            <div class="card">
+                <h3>🔮 Vision</h3>
+                <p>Long-term goals and technological advancement strategies.</p>
+            </div>
+            <div class="card">
+                <h3>⚡ Energy Systems</h3>
+                <p>Next-generation power and efficiency optimizations.</p>
+            </div>
+            <div class="card">
+                <h3>🌐 Network Effects</h3>
+                <p>Distributed systems and collaborative platform development.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation Information -->
+    <div class="face-indicator" id="face-indicator">
+        <strong>Current Face:</strong> <span id="current-face">HOME</span><br>
+        <strong>Section:</strong> <span id="current-section">0</span><br>
+        <strong>Theme:</strong> <span id="current-theme">Hypercube</span>
+    </div>
+    
+    <!-- Interaction Feedback -->
+    <div class="interaction-indicator">
+        <div class="indicator-row">
+            <span class="indicator-label">Interaction:</span>
+            <span class="indicator-value" id="interactionType">Idle</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Intensity:</span>
+            <span class="indicator-value" id="interactionIntensity">0.00</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Dimension:</span>
+            <span class="indicator-value" id="dimensionLevel">3.50</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Grid Density:</span>
+            <span class="indicator-value" id="gridDensity">12.0</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Morph Factor:</span>
+            <span class="indicator-value" id="morphLevel">0.50</span>
+        </div>
+    </div>
+    
+    <!-- Controls Guide -->
+    <div class="controls-guide">
+        <h4>🎮 Navigation Controls</h4>
+        <div class="control-item"><span class="key">Drag edges</span> - Rotate hypercube</div>
+        <div class="control-item"><span class="key">Arrow keys</span> - Navigate faces</div>
+        <div class="control-item"><span class="key">Mouse</span> - Shift visualization center</div>
+        <div class="control-item"><span class="key">Hold click</span> - Increase dimension</div>
+        <div class="control-item"><span class="key">Scroll</span> - Modify parameters</div>
+        <div class="control-item"><span class="key">D key</span> - Development controls</div>
+        <div class="control-item"><span class="key">Space</span> - Cycle presets</div>
+        <div class="control-item"><span class="key">R key</span> - Reset to default</div>
+    </div>
+
+    <!-- Core VIB3 Systems -->
+    <script src="core/VIB3HomeMaster.js"></script>
+    <script src="core/UnifiedReactivityBridge.js"></script>
+    
+    <!-- Reactive HyperAV Core -->
+    <script src="VIB3_REACTIVE_HYPERAV_CORE.js"></script>
+    
+    <!-- Development Controls -->
+    <script src="VIB3_DEV_CONTROLS.js"></script>
+
+    <script>
+        // Unified VIB3CODE System
+        class UnifiedVIB3System {
+            constructor() {
+                this.currentFace = 'front';
+                this.currentSection = 0;
+                this.hypercubeContainer = document.getElementById('hypercube-container');
+                this.dragState = {
+                    isDragging: false,
+                    startX: 0,
+                    startY: 0,
+                    threshold: 50
+                };
+                
+                // Initialize core systems
+                this.initializeCoreComponents();
+                this.setupHypercubeNavigation();
+                this.setupKeyboardControls();
+                this.updateUI();
+                
+                console.log('🚀 Unified VIB3 System initialized');
+            }
+            
+            async initializeCoreComponents() {
+                try {
+                    // Initialize VIB3HomeMaster
+                    this.homeMaster = new window.VIB3HomeMaster();
+                    
+                    // Initialize UnifiedReactivityBridge
+                    this.reactivityBridge = new window.UnifiedReactivityBridge(this.homeMaster);
+                    
+                    // Initialize Reactive HyperAV Core
+                    const canvas = document.getElementById('reactive-canvas');
+                    this.hyperavCore = new window.VIB3ReactiveHyperAVCore(
+                        canvas, 
+                        this.homeMaster, 
+                        this.reactivityBridge
+                    );
+                    
+                    // Initialize Development Controls
+                    this.devControls = new window.VIB3DevControls();
+                    this.devControls.setReferences(this.hyperavCore, this.homeMaster, this.reactivityBridge);
+                    
+                    // Export for global access
+                    window.vib3DevControls = this.devControls;
+                    window.vib3System = this;
+                    
+                    // Hide loading overlay
+                    setTimeout(() => {
+                        document.getElementById('loadingOverlay').classList.add('hidden');
+                    }, 2000);
+                    
+                    console.log('✅ All VIB3 systems connected and operational');
+                    
+                } catch (error) {
+                    console.error('❌ Failed to initialize VIB3 systems:', error);
+                }
+            }
+            
+            setupHypercubeNavigation() {
+                // Edge detection for drag navigation
+                let edgeDetectionZones = [];
+                
+                // Create invisible edge zones
+                const edges = [
+                    { side: 'right', x: window.innerWidth - 50, y: 0, w: 50, h: window.innerHeight },
+                    { side: 'left', x: 0, y: 0, w: 50, h: window.innerHeight },
+                    { side: 'top', x: 0, y: 0, w: window.innerWidth, h: 50 },
+                    { side: 'bottom', x: 0, y: window.innerHeight - 50, w: window.innerWidth, h: 50 }
+                ];
+                
+                // Mouse/touch event handlers
+                const startDrag = (e) => {
+                    const x = e.clientX || e.touches[0].clientX;
+                    const y = e.clientY || e.touches[0].clientY;
+                    
+                    // Check if we're near an edge
+                    const nearEdge = this.checkEdgeProximity(x, y);
+                    
+                    if (nearEdge) {
+                        this.dragState.isDragging = true;
+                        this.dragState.startX = x;
+                        this.dragState.startY = y;
+                        this.dragState.edge = nearEdge;
+                        
+                        document.getElementById('dragIndicator').classList.add('active');
+                        document.body.style.cursor = 'grabbing';
+                        
+                        e.preventDefault();
+                    }
+                };
+                
+                const updateDrag = (e) => {
+                    if (!this.dragState.isDragging) return;
+                    
+                    const x = e.clientX || e.touches[0].clientX;
+                    const y = e.clientY || e.touches[0].clientY;
+                    
+                    const deltaX = x - this.dragState.startX;
+                    const deltaY = y - this.dragState.startY;
+                    
+                    // Update drag indicator position
+                    const indicator = document.getElementById('dragIndicator');
+                    indicator.style.left = x + 'px';
+                    indicator.style.top = y + 'px';
+                };
+                
+                const endDrag = (e) => {
+                    if (!this.dragState.isDragging) return;
+                    
+                    const x = e.clientX || e.changedTouches[0].clientX;
+                    const y = e.clientY || e.changedTouches[0].clientY;
+                    
+                    const deltaX = x - this.dragState.startX;
+                    const deltaY = y - this.dragState.startY;
+                    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                    
+                    if (distance > this.dragState.threshold) {
+                        this.handleEdgeDrag(this.dragState.edge, deltaX, deltaY);
+                    }
+                    
+                    this.dragState.isDragging = false;
+                    document.getElementById('dragIndicator').classList.remove('active');
+                    document.body.style.cursor = 'crosshair';
+                };
+                
+                // Add event listeners
+                document.addEventListener('mousedown', startDrag);
+                document.addEventListener('mousemove', updateDrag);
+                document.addEventListener('mouseup', endDrag);
+                document.addEventListener('touchstart', startDrag, { passive: false });
+                document.addEventListener('touchmove', updateDrag, { passive: false });
+                document.addEventListener('touchend', endDrag);
+            }
+            
+            checkEdgeProximity(x, y) {
+                const threshold = 80;
+                
+                if (x < threshold) return 'left';
+                if (x > window.innerWidth - threshold) return 'right';
+                if (y < threshold) return 'top';
+                if (y > window.innerHeight - threshold) return 'bottom';
+                
+                return null;
+            }
+            
+            handleEdgeDrag(edge, deltaX, deltaY) {
+                const faceMap = {
+                    'right': { face: 'right', section: 1, rotation: 'rotated-right' },
+                    'left': { face: 'left', section: 3, rotation: 'rotated-left' },
+                    'top': { face: 'top', section: 4, rotation: 'rotated-up' },
+                    'bottom': { face: 'bottom', section: 5, rotation: 'rotated-down' }
+                };
+                
+                const target = faceMap[edge];
+                if (target) {
+                    this.rotateTo(target.face, target.section, target.rotation);
+                    
+                    // Register interaction with systems
+                    if (this.homeMaster) {
+                        this.homeMaster.registerInteraction('cubeRotation', 0.8, 1000);
+                        this.homeMaster.transitionToSection(target.section);
+                    }
+                    
+                    if (this.reactivityBridge) {
+                        this.reactivityBridge.triggerEffect('hypercube-rotation', {
+                            direction: edge,
+                            section: target.section
+                        });
+                    }
+                }
+            }
+            
+            rotateTo(face, section, rotationClass) {
+                // Remove existing rotation classes
+                this.hypercubeContainer.className = 'hypercube-container';
+                
+                // Add new rotation
+                if (rotationClass) {
+                    this.hypercubeContainer.classList.add(rotationClass);
+                }
+                
+                this.currentFace = face;
+                this.currentSection = section;
+                
+                // Update HyperAV theme based on section
+                if (this.hyperavCore) {
+                    const themeMap = ['hypercube', 'tetrahedron', 'sphere', 'torus', 'klein', 'crystal'];
+                    const themeName = themeMap[section] || 'hypercube';
+                    this.hyperavCore.setTheme(themeName);
+                }
+                
+                this.updateUI();
+                
+                console.log(`🎯 Rotated to ${face} (Section ${section})`);
+            }
+            
+            setupKeyboardControls() {
+                document.addEventListener('keydown', (e) => {
+                    // Skip if dev controls handles it
+                    if (['d', ' ', 'r', 'c', 't'].includes(e.key.toLowerCase())) return;
+                    
+                    switch(e.key) {
+                        case 'ArrowRight':
+                            e.preventDefault();
+                            this.rotateTo('right', 1, 'rotated-right');
+                            break;
+                        case 'ArrowLeft':
+                            e.preventDefault();
+                            this.rotateTo('left', 3, 'rotated-left');
+                            break;
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            this.rotateTo('top', 4, 'rotated-up');
+                            break;
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            this.rotateTo('bottom', 5, 'rotated-down');
+                            break;
+                        case 'Home':
+                        case 'h':
+                            e.preventDefault();
+                            this.rotateTo('front', 0, '');
+                            break;
+                        case 'Backspace':
+                        case 'b':
+                            e.preventDefault();
+                            this.rotateTo('back', 2, 'rotated-back');
+                            break;
+                    }
+                });
+            }
+            
+            updateUI() {
+                const faceNames = {
+                    'front': 'HOME',
+                    'right': 'TECH',
+                    'back': 'MEDIA',
+                    'left': 'AUDIO',
+                    'top': 'QUANTUM',
+                    'bottom': 'INNOVATION'
+                };
+                
+                const themeNames = ['Hypercube', 'Tetrahedron', 'Sphere', 'Torus', 'Klein', 'Crystal'];
+                
+                document.getElementById('current-face').textContent = faceNames[this.currentFace] || this.currentFace;
+                document.getElementById('current-section').textContent = this.currentSection;
+                document.getElementById('current-theme').textContent = themeNames[this.currentSection] || 'Unknown';
+                
+                // Update interaction indicators from HyperAV core
+                if (this.hyperavCore) {
+                    const state = this.hyperavCore.interactionState;
+                    const params = this.hyperavCore.params;
+                    
+                    document.getElementById('interactionType').textContent = 
+                        state.type.charAt(0).toUpperCase() + state.type.slice(1);
+                    document.getElementById('interactionIntensity').textContent = 
+                        state.intensity.toFixed(2);
+                    document.getElementById('dimensionLevel').textContent = 
+                        params.dimension.toFixed(2);
+                    document.getElementById('gridDensity').textContent = 
+                        params.gridDensity.toFixed(1);
+                    document.getElementById('morphLevel').textContent = 
+                        params.morphFactor.toFixed(2);
+                }
+            }
+            
+            // Update UI periodically
+            startUIUpdates() {
+                setInterval(() => {
+                    this.updateUI();
+                }, 100);
+            }
+        }
+        
+        // Initialize the unified system
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Starting VIB3CODE Unified System...');
+            window.unifiedSystem = new UnifiedVIB3System();
+            window.unifiedSystem.startUIUpdates();
+        });
+    </script>
+</body>
+</html>

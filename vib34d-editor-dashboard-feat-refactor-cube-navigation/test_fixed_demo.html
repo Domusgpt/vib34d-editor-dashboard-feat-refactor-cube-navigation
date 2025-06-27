@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test Fixed VIB34D Demo</title>
+    <style>
+        body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #333; }
+        .pass { border-color: #0f0; }
+        .fail { border-color: #f00; color: #f00; }
+        .warn { border-color: #ff0; color: #ff0; }
+        iframe { width: 100%; height: 600px; border: 2px solid #333; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>VIB34D Fixed Demo Test</h1>
+    <div id="results"></div>
+    
+    <h2>Live Demo (should show 8 visualizer cards)</h2>
+    <iframe id="demo-frame" src="/VIB34D_PHASE1_INTEGRATED_DEMO.html"></iframe>
+    
+    <script>
+        function log(message, type = 'test') {
+            const resultsDiv = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test ${type}`;
+            div.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            resultsDiv.appendChild(div);
+            console.log(message);
+        }
+        
+        function testFixedDemo() {
+            log('🚀 Starting test of fixed VIB34D demo...');
+            
+            const iframe = document.getElementById('demo-frame');
+            
+            iframe.onload = function() {
+                log('📄 Demo iframe loaded, waiting for initialization...');
+                
+                // Wait for demo to initialize, then check results
+                setTimeout(() => {
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        const iframeWindow = iframe.contentWindow;
+                        
+                        // Test 1: Check Working Core
+                        if (iframeWindow.VIB34D_WorkingCore) {
+                            log('✅ Working Core Architecture loaded', 'pass');
+                        } else {
+                            log('❌ Working Core Architecture missing', 'fail');
+                            return;
+                        }
+                        
+                        // Test 2: Check Central State Manager
+                        if (iframeWindow.VIB34DCentralStateManager) {
+                            log('✅ Central State Manager loaded', 'pass');
+                        } else {
+                            log('❌ Central State Manager missing', 'fail');
+                            return;
+                        }
+                        
+                        // Test 3: Check visualizer grid
+                        const grid = iframeDoc.getElementById('visualizer-grid');
+                        if (grid) {
+                            const cardCount = grid.children.length;
+                            if (cardCount === 8) {
+                                log(`✅ Found ${cardCount} visualizer cards (EXPECTED!)`, 'pass');
+                            } else if (cardCount > 0) {
+                                log(`⚠️ Found ${cardCount} visualizer cards (expected 8)`, 'warn');
+                            } else {
+                                log(`❌ No visualizer cards found`, 'fail');
+                            }
+                        } else {
+                            log('❌ Visualizer grid not found', 'fail');
+                        }
+                        
+                        // Test 4: Check system status
+                        const systemStatus = iframeDoc.getElementById('system-status');
+                        if (systemStatus) {
+                            const statusText = systemStatus.textContent;
+                            if (statusText.includes('Ready')) {
+                                log('✅ System status shows Ready', 'pass');
+                            } else if (statusText.includes('Error') || statusText.includes('Failed')) {
+                                log('❌ System status shows errors', 'fail');
+                                log(`Status: ${statusText.substring(0, 200)}...`, 'fail');
+                            } else {
+                                log('⚠️ System status unclear', 'warn');
+                            }
+                        }
+                        
+                        // Test 5: Check for active canvases
+                        const canvases = iframeDoc.querySelectorAll('.card-canvas');
+                        log(`📊 Found ${canvases.length} canvas elements`);
+                        
+                        // Test 6: Check console logs from iframe
+                        log('📝 Check browser console for demo initialization logs');
+                        
+                        log('🏁 Test completed - Check iframe above for visual verification');
+                        
+                    } catch (error) {
+                        log(`❌ Error testing demo: ${error.message}`, 'fail');
+                    }
+                }, 5000); // Wait 5 seconds for initialization
+            };
+            
+            iframe.onerror = function() {
+                log('❌ Failed to load demo iframe', 'fail');
+            };
+        }
+        
+        // Start test
+        testFixedDemo();
+    </script>
+</body>
+</html>

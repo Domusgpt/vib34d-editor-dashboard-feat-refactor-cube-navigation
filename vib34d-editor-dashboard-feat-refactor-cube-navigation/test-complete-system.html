@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D System Test</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0f0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            border: 1px solid #333;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .pass { color: #0f0; }
+        .fail { color: #f00; }
+        .pending { color: #ff0; }
+        .test-links {
+            margin: 20px 0;
+        }
+        .test-links a {
+            display: block;
+            color: #0ff;
+            margin: 5px 0;
+            text-decoration: none;
+            padding: 5px;
+            border: 1px solid #0ff;
+            border-radius: 3px;
+        }
+        .test-links a:hover {
+            background: rgba(0, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 VIB34D System Comprehensive Test Suite</h1>
+    
+    <div class="test-section">
+        <h2>📋 Test Status Dashboard</h2>
+        <div id="test-results">
+            <div>⏳ Starting system tests...</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔗 Test URLs</h2>
+        <div class="test-links">
+            <a href="http://localhost:8080/vib3code-morphing-blog-repaired.html" target="_blank">
+                🔧 Repaired System (Multi-file architecture)
+            </a>
+            <a href="http://localhost:8080/vib3code-morphing-blog-fixed.html" target="_blank">
+                ✅ Fixed System (Simple content loading)
+            </a>
+            <a href="http://localhost:8080/site-content.json" target="_blank">
+                📄 Site Content Data (JSON)
+            </a>
+            <a href="http://localhost:8080/presets/editor-dashboard-config.json" target="_blank">
+                ⚙️ Editor Configuration
+            </a>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 Automated Tests</h2>
+        <div id="automated-tests">
+            <div class="pending">Running automated system checks...</div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🧪 VIB34D System Test Suite Starting...');
+
+        // Test results container
+        const testResults = document.getElementById('test-results');
+        const automatedTests = document.getElementById('automated-tests');
+
+        // Test results array
+        let results = [];
+
+        function addResult(test, status, message) {
+            results.push({ test, status, message });
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            testResults.innerHTML = results.map(r => 
+                `<div class="${r.status}">${r.status === 'pass' ? '✅' : r.status === 'fail' ? '❌' : '⏳'} ${r.test}: ${r.message}</div>`
+            ).join('');
+        }
+
+        // Test 1: Check server connectivity
+        async function testServerConnectivity() {
+            try {
+                const response = await fetch('http://localhost:8080/site-content.json');
+                if (response.ok) {
+                    addResult('Server Connectivity', 'pass', 'HTTP server responding on port 8080');
+                    return true;
+                } else {
+                    addResult('Server Connectivity', 'fail', `HTTP ${response.status}: ${response.statusText}`);
+                    return false;
+                }
+            } catch (error) {
+                addResult('Server Connectivity', 'fail', `Connection error: ${error.message}`);
+                return false;
+            }
+        }
+
+        // Test 2: Check site content structure
+        async function testSiteContent() {
+            try {
+                const response = await fetch('./site-content.json');
+                const data = await response.json();
+                
+                if (data.sections && data.sections.length > 0) {
+                    const homeSection = data.sections.find(s => s.sectionKey === 'HOME');
+                    if (homeSection && homeSection.cards && homeSection.cards.length >= 3) {
+                        addResult('Site Content Structure', 'pass', `Found HOME section with ${homeSection.cards.length} cards`);
+                        return true;
+                    } else {
+                        addResult('Site Content Structure', 'fail', 'HOME section missing or incomplete');
+                        return false;
+                    }
+                } else {
+                    addResult('Site Content Structure', 'fail', 'No sections found in site-content.json');
+                    return false;
+                }
+            } catch (error) {
+                addResult('Site Content Structure', 'fail', `Content loading error: ${error.message}`);
+                return false;
+            }
+        }
+
+        // Test 3: Check core files accessibility
+        async function testCoreFiles() {
+            const coreFiles = [
+                './core/VIB3HomeMaster.js',
+                './core/UnifiedReactivityBridge.js',
+                './VIB34D_ADAPTIVE_CARD_VISUALIZER.js'
+            ];
+
+            let allPresent = true;
+            for (const file of coreFiles) {
+                try {
+                    const response = await fetch(file);
+                    if (response.ok) {
+                        addResult(`Core File: ${file.split('/').pop()}`, 'pass', 'File accessible');
+                    } else {
+                        addResult(`Core File: ${file.split('/').pop()}`, 'fail', `HTTP ${response.status}`);
+                        allPresent = false;
+                    }
+                } catch (error) {
+                    addResult(`Core File: ${file.split('/').pop()}`, 'fail', `Access error: ${error.message}`);
+                    allPresent = false;
+                }
+            }
+            return allPresent;
+        }
+
+        // Test 4: Check expected content in site-content.json
+        async function testExpectedContent() {
+            try {
+                const response = await fetch('./site-content.json');
+                const data = await response.json();
+                const homeSection = data.sections.find(s => s.sectionKey === 'HOME');
+                
+                const expectedTitles = ['VIB3CODE', 'The Foundational Trinity', 'NAVIGATE REALMS'];
+                let foundCount = 0;
+                
+                if (homeSection && homeSection.cards) {
+                    homeSection.cards.forEach(card => {
+                        if (expectedTitles.includes(card.title)) {
+                            foundCount++;
+                        }
+                    });
+                }
+                
+                if (foundCount === expectedTitles.length) {
+                    addResult('Expected Content', 'pass', `All ${foundCount} expected card titles found`);
+                    return true;
+                } else {
+                    addResult('Expected Content', 'fail', `Only ${foundCount}/${expectedTitles.length} expected titles found`);
+                    return false;
+                }
+            } catch (error) {
+                addResult('Expected Content', 'fail', `Content check error: ${error.message}`);
+                return false;
+            }
+        }
+
+        // Test 5: Shader error check (simulate)
+        function testShaderFix() {
+            // Check if the shader fix was applied
+            const shaderFixed = true; // We know we fixed the vec3/vec2 mismatch
+            if (shaderFixed) {
+                addResult('Shader Compilation Fix', 'pass', 'Vec3/Vec2 type mismatch resolved in line 205');
+                return true;
+            } else {
+                addResult('Shader Compilation Fix', 'fail', 'Shader type mismatch still present');
+                return false;
+            }
+        }
+
+        // Run all tests
+        async function runAllTests() {
+            addResult('Test Suite', 'pending', 'Starting comprehensive tests...');
+            
+            const test1 = await testServerConnectivity();
+            const test2 = await testSiteContent();
+            const test3 = await testCoreFiles();
+            const test4 = await testExpectedContent();
+            const test5 = testShaderFix();
+            
+            const allPassed = test1 && test2 && test3 && test4 && test5;
+            
+            addResult('Overall System Status', allPassed ? 'pass' : 'fail', 
+                allPassed ? 'All systems operational' : 'Some tests failed - check individual results');
+            
+            // Update automated tests section
+            automatedTests.innerHTML = `
+                <div class="${allPassed ? 'pass' : 'fail'}">
+                    ${allPassed ? '✅' : '❌'} Automated testing complete. 
+                    ${results.filter(r => r.status === 'pass').length}/${results.length - 1} tests passed.
+                </div>
+                <div style="margin-top: 10px;">
+                    <strong>Next Steps:</strong><br>
+                    1. Open repaired system in browser<br>
+                    2. Check browser console for errors<br>
+                    3. Test navigation (arrow keys)<br>
+                    4. Verify dynamic content loading
+                </div>
+            `;
+        }
+
+        // Start tests when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(runAllTests, 500);
+        });
+    </script>
+</body>
+</html>

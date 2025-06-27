@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Production Spectacular - True 4D Hyperdimensional System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            cursor: none;
+        }
+        
+        /* Full-screen immersive canvas grid */
+        .hyperdimensional-grid {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+            background: radial-gradient(circle at center, #ff00ff11, #00000099);
+        }
+        
+        .hypercube-face {
+            position: relative;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #ff00ff33;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .hypercube-face:hover {
+            border-color: #ff00ffff;
+            box-shadow: 
+                0 0 50px rgba(255, 0, 255, 0.5),
+                inset 0 0 50px rgba(255, 0, 255, 0.1);
+            transform: scale(1.02);
+            z-index: 10;
+        }
+        
+        .hypercube-face.focused {
+            border: 2px solid #00ffff;
+            box-shadow: 
+                0 0 100px rgba(0, 255, 255, 0.8),
+                inset 0 0 100px rgba(0, 255, 255, 0.2);
+            transform: scale(1.05);
+            z-index: 20;
+        }
+        
+        .geometry-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            filter: 
+                contrast(1.3) 
+                brightness(1.2) 
+                saturate(1.4)
+                drop-shadow(0 0 20px rgba(255, 0, 255, 0.3));
+        }
+        
+        /* Floating holographic UI */
+        .holographic-hud {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid #00ffff;
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 300px;
+            box-shadow: 
+                0 0 50px rgba(0, 255, 255, 0.3),
+                inset 0 0 30px rgba(0, 255, 255, 0.05);
+            font-size: 12px;
+            z-index: 1000;
+        }
+        
+        .hud-title {
+            color: #00ffff;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        
+        .parameter-group {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 0, 255, 0.05);
+            border-radius: 5px;
+            border-left: 3px solid #ff00ff;
+        }
+        
+        .param-label {
+            color: #ffff00;
+            font-size: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .param-value {
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .param-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+        
+        .param-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            transition: width 0.3s ease;
+        }
+        
+        /* Reality distortion effects */
+        .reality-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 500;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%);
+            animation: reality-pulse 8s ease-in-out infinite;
+        }
+        
+        @keyframes reality-pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.02); }
+        }
+        
+        /* Dimension counter */
+        .dimension-display {
+            position: fixed;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%);
+            font-size: 120px;
+            font-weight: bold;
+            color: rgba(255, 255, 0, 0.6);
+            text-shadow: 0 0 30px #ffff00;
+            z-index: 100;
+            transition: all 0.5s ease;
+        }
+        
+        /* Interactive geometry info */
+        .geometry-overlay {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #ff00ff44;
+            border-radius: 5px;
+            padding: 8px;
+            font-size: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .hypercube-face:hover .geometry-overlay {
+            opacity: 1;
+        }
+        
+        .geometry-name {
+            color: #ff00ff;
+            font-weight: bold;
+        }
+        
+        .geometry-params {
+            color: #00ffff;
+            margin-top: 5px;
+        }
+        
+        /* Audio visualization bars */
+        .audio-spectrum {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 2px;
+            z-index: 1000;
+        }
+        
+        .spectrum-bar {
+            width: 3px;
+            height: 20px;
+            background: linear-gradient(to top, #ff00ff, #00ffff);
+            border-radius: 1px;
+            transition: height 0.1s ease;
+        }
+        
+        /* Master control portal */
+        .control-portal {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.1));
+            border: 2px solid #ff00ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .control-portal:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 100px rgba(255, 0, 255, 0.8);
+        }
+        
+        .portal-text {
+            color: #fff;
+            font-size: 14px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        /* Glitch effects */
+        .glitch-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 0, 255, 0.03) 2px,
+                    rgba(255, 0, 255, 0.03) 4px
+                );
+            animation: glitch-flicker 0.1s infinite;
+        }
+        
+        @keyframes glitch-flicker {
+            0% { opacity: 0; }
+            98% { opacity: 0; }
+            99% { opacity: 0.1; }
+            100% { opacity: 0; }
+        }
+        
+        /* Typography effects */
+        .hyperdimensional-title {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+            z-index: 1001;
+        }
+        
+        /* Performance monitoring */
+        .performance-monitor {
+            position: fixed;
+            top: 20px;
+            right: 300px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 10px;
+            z-index: 1000;
+        }
+        
+        .fps-display {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        /* Interaction ripples */
+        .interaction-ripple {
+            position: fixed;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: ripple-expand 0.6s ease-out forwards;
+            z-index: 100;
+        }
+        
+        @keyframes ripple-expand {
+            from {
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+            to {
+                width: 200px;
+                height: 200px;
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Reality distortion layer -->
+    <div class="reality-overlay"></div>
+    <div class="glitch-overlay"></div>
+    
+    <!-- Main hyperdimensional grid -->
+    <div class="hyperdimensional-grid" id="hyperdimensional-grid">
+        <!-- 12 hypercube faces will be generated here -->
+    </div>
+    
+    <!-- Dimension display -->
+    <div class="dimension-display" id="dimension-display">4D</div>
+    
+    <!-- Holographic HUD -->
+    <div class="holographic-hud">
+        <div class="hud-title">🔮 HYPERDIMENSIONAL CONTROL MATRIX</div>
+        
+        <div class="parameter-group">
+            <div class="param-label">DIMENSIONAL PHASE</div>
+            <div class="param-value" id="dimension-value">4.000</div>
+            <div class="param-bar"><div class="param-fill" id="dimension-bar"></div></div>
+        </div>
+        
+        <div class="parameter-group">
+            <div class="param-label">MORPHOLOGICAL FACTOR</div>
+            <div class="param-value" id="morph-value">0.700</div>
+            <div class="param-bar"><div class="param-fill" id="morph-bar"></div></div>
+        </div>
+        
+        <div class="parameter-group">
+            <div class="param-label">LATTICE DENSITY</div>
+            <div class="param-value" id="grid-value">12.0</div>
+            <div class="param-bar"><div class="param-fill" id="grid-bar"></div></div>
+        </div>
+        
+        <div class="parameter-group">
+            <div class="param-label">ROTATION VELOCITY</div>
+            <div class="param-value" id="rotation-value">0.800</div>
+            <div class="param-bar"><div class="param-fill" id="rotation-bar"></div></div>
+        </div>
+        
+        <div class="parameter-group">
+            <div class="param-label">REALITY DISTORTION</div>
+            <div class="param-value" id="distortion-value">0.250</div>
+            <div class="param-bar"><div class="param-fill" id="distortion-bar"></div></div>
+        </div>
+        
+        <div class="parameter-group">
+            <div class="param-label">ACTIVE VISUALIZERS</div>
+            <div class="param-value" id="visualizer-count">0/12</div>
+        </div>
+    </div>
+    
+    <!-- Performance monitor -->
+    <div class="performance-monitor">
+        <div class="fps-display" id="fps-display">FPS: 0</div>
+        <div>Geometry Instances: <span id="geometry-count">0</span></div>
+        <div>WebGL Contexts: <span id="context-count">0</span></div>
+        <div>Active Shaders: <span id="shader-count">0</span></div>
+    </div>
+    
+    <!-- Audio spectrum -->
+    <div class="audio-spectrum" id="audio-spectrum">
+        <!-- Spectrum bars will be generated here -->
+    </div>
+    
+    <!-- Master control portal -->
+    <div class="control-portal" onclick="toggleMasterControl()">
+        <div class="portal-text">
+            MASTER<br>
+            CONTROL<br>
+            PORTAL
+        </div>
+    </div>
+    
+    <!-- Title -->
+    <div class="hyperdimensional-title">VIB34D PRODUCTION SPECTACULAR</div>
+    
+    <script src="VIB34D_WORKING_CORE_ARCHITECTURE.js"></script>
+    <script src="VIB34D_CENTRAL_STATE_MANAGER.js"></script>
+    <script>
+        // Production-grade hyperdimensional system
+        const spectacularSystem = {
+            visualizers: [],
+            parameters: {
+                dimension: 4.0,
+                morphFactor: 0.7,
+                gridDensity: 12.0,
+                rotationSpeed: 0.8,
+                distortion: 0.25,
+                glitchIntensity: 0.05,
+                audioReactivity: {
+                    bass: 0, mid: 0, high: 0
+                }
+            },
+            performance: {
+                fps: 0,
+                frameCount: 0,
+                lastTime: 0,
+                activeGeometries: 0,
+                activeContexts: 0,
+                activeShaders: 0
+            },
+            interactionState: {
+                focusedFace: -1,
+                mousePosX: 0,
+                mousePosY: 0,
+                isInteracting: false
+            },
+            masterControlActive: false
+        };
+        
+        // Geometry configurations for epic visual impact
+        const epicGeometryConfigs = [
+            { type: 'hypercube', name: 'TESSERACT CORE', color: '#ff00ff', density: 15.0, speed: 1.2 },
+            { type: 'hypersphere', name: 'DIMENSIONAL SPHERE', color: '#00ffff', density: 12.0, speed: 0.8 },
+            { type: 'hypertetrahedron', name: 'TETRA NEXUS', color: '#ffff00', density: 10.0, speed: 1.5 },
+            { type: 'hypercube', name: 'CUBE MATRIX', color: '#ff0080', density: 18.0, speed: 0.6 },
+            { type: 'hypersphere', name: 'SPHERE VORTEX', color: '#0080ff', density: 14.0, speed: 1.0 },
+            { type: 'hypertetrahedron', name: 'TETRA STORM', color: '#80ff00', density: 16.0, speed: 1.8 },
+            { type: 'hypercube', name: 'HYPERCUBE INFINITY', color: '#ff4000', density: 20.0, speed: 0.9 },
+            { type: 'hypersphere', name: 'SPHERE DIMENSION', color: '#00ff80', density: 11.0, speed: 1.3 },
+            { type: 'hypertetrahedron', name: 'TETRA CHAOS', color: '#8000ff', density: 13.0, speed: 2.0 },
+            { type: 'hypercube', name: 'CUBE REALITY', color: '#ff8000', density: 17.0, speed: 0.7 },
+            { type: 'hypersphere', name: 'SPHERE NEXUS', color: '#0040ff', density: 19.0, speed: 1.1 },
+            { type: 'hypertetrahedron', name: 'TETRA ULTIMATE', color: '#ff0040', density: 22.0, speed: 1.6 }
+        ];
+        
+        function initializeSpectacularSystem() {
+            console.log('🚀 Initializing VIB34D Production Spectacular...');
+            
+            // Create hyperdimensional grid
+            createHyperdimensionalGrid();
+            
+            // Initialize audio spectrum
+            createAudioSpectrum();
+            
+            // Start the reality engine
+            startRealityEngine();
+            
+            // Setup interaction handlers
+            setupInteractionHandlers();
+            
+            // Start performance monitoring
+            startPerformanceMonitoring();
+            
+            console.log('✅ VIB34D Production Spectacular System Online');
+        }
+        
+        function createHyperdimensionalGrid() {
+            const grid = document.getElementById('hyperdimensional-grid');
+            
+            epicGeometryConfigs.forEach((config, index) => {
+                const face = document.createElement('div');
+                face.className = 'hypercube-face';
+                face.id = `face-${index}`;
+                
+                const canvas = document.createElement('canvas');
+                canvas.className = 'geometry-canvas';
+                canvas.width = 400;
+                canvas.height = 300;
+                canvas.id = `canvas-${index}`;
+                
+                const overlay = document.createElement('div');
+                overlay.className = 'geometry-overlay';
+                overlay.innerHTML = `
+                    <div class="geometry-name">${config.name}</div>
+                    <div class="geometry-params">
+                        Type: ${config.type}<br>
+                        Density: ${config.density}<br>
+                        Speed: ${config.speed}x
+                    </div>
+                `;
+                
+                face.appendChild(canvas);
+                face.appendChild(overlay);
+                grid.appendChild(face);
+                
+                // Initialize epic visualizer
+                createEpicVisualizer(canvas, config, index);
+                
+                // Setup hover effects
+                face.addEventListener('mouseenter', () => focusHypercubeFace(index));
+                face.addEventListener('mouseleave', () => unfocusHypercubeFace(index));
+                face.addEventListener('click', () => activateHypercubeFace(index));
+            });
+        }
+        
+        function createEpicVisualizer(canvas, config, index) {
+            // STAGGER INITIALIZATION to prevent WebGL context overload
+            setTimeout(() => {
+                try {
+                    if (!window.VIB34D_WorkingCore) {
+                        throw new Error('VIB34D_WorkingCore not available');
+                    }
+                    
+                    // Enhanced WebGL context configuration for multiple instances
+                    const gl = canvas.getContext('webgl', {
+                        alpha: true,
+                        antialias: false,
+                        depth: false,
+                        stencil: false,
+                        preserveDrawingBuffer: false,
+                        powerPreference: "default",
+                        failIfMajorPerformanceCaveat: false
+                    });
+                    
+                    if (!gl) {
+                        throw new Error(`WebGL context creation failed for visualizer ${index}`);
+                    }
+                    
+                    // Add context loss handlers
+                    canvas.addEventListener('webglcontextlost', (e) => {
+                        console.warn(`WebGL context lost for visualizer ${index}`);
+                        e.preventDefault();
+                        spectacularSystem.performance.activeContexts--;
+                    });
+                    
+                    canvas.addEventListener('webglcontextrestored', (e) => {
+                        console.log(`WebGL context restored for visualizer ${index}`);
+                        spectacularSystem.performance.activeContexts++;
+                        // Reinitialize visualizer if needed
+                        if (spectacularSystem.visualizers[index]) {
+                            spectacularSystem.visualizers[index].reinitialize();
+                        }
+                    });
+                    
+                    const visualizer = new window.VIB34D_WorkingCore.HypercubeCore(canvas, {
+                        geometryType: config.type,
+                        projectionMethod: 'perspective',
+                        webglContext: gl,
+                        onError: (error) => {
+                            console.error(`Epic visualizer ${index} error:`, error);
+                        },
+                        onContextLoss: () => {
+                            console.warn(`Visualizer ${index} handling context loss`);
+                        }
+                    });
+                    
+                    // Set epic parameters with CONFIGURABLE REACTIVITY
+                    visualizer.updateParameters({
+                        // Core 4D Mathematics
+                        u_dimension: spectacularSystem.parameters.dimension,
+                        u_morphFactor: spectacularSystem.parameters.morphFactor,
+                        u_gridDensity: config.density,
+                        u_rotationSpeed: config.speed * spectacularSystem.parameters.rotationSpeed,
+                        
+                        // Visual Enhancement  
+                        u_patternIntensity: 2.0,
+                        u_universeModifier: 1.5,
+                        u_lineThickness: 0.04,
+                        u_glitchIntensity: spectacularSystem.parameters.glitchIntensity,
+                        u_colorShift: index * 0.1,
+                        
+                        // User Interaction Reactivity (configurable)
+                        u_audioBass: 0.2,   // Primary interaction intensity
+                        u_audioMid: 0.1,    // Secondary modulation  
+                        u_audioHigh: 0.3,   // Detail/effect level
+                        
+                        // Geometry-specific parameters
+                        u_shellWidth: 0.025,
+                        u_tetraThickness: 0.035
+                    });
+                    
+                    visualizer.start();
+                    spectacularSystem.visualizers[index] = visualizer;
+                    spectacularSystem.performance.activeGeometries++;
+                    spectacularSystem.performance.activeContexts++;
+                    spectacularSystem.performance.activeShaders++;
+                    
+                    console.log(`✅ Epic visualizer ${index} (${config.name}) initialized with configurable reactivity`);
+                    
+                } catch (error) {
+                    console.error(`Failed to create epic visualizer ${index}:`, error);
+                    spectacularSystem.visualizers[index] = null;
+                }
+            }, index * 150); // 150ms stagger between each visualizer
+        }
+        
+        function createAudioSpectrum() {
+            const spectrum = document.getElementById('audio-spectrum');
+            
+            for (let i = 0; i < 32; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'spectrum-bar';
+                bar.id = `spectrum-${i}`;
+                spectrum.appendChild(bar);
+            }
+        }
+        
+        function startRealityEngine() {
+            let phase = 0;
+            
+            function updateReality() {
+                phase += 0.02;
+                
+                // Dynamic parameter evolution
+                spectacularSystem.parameters.dimension = 4.0 + Math.sin(phase * 0.3) * 0.5;
+                spectacularSystem.parameters.morphFactor = 0.7 + Math.sin(phase * 0.7) * 0.3;
+                spectacularSystem.parameters.gridDensity = 12.0 + Math.sin(phase * 0.5) * 4.0;
+                spectacularSystem.parameters.rotationSpeed = 0.8 + Math.sin(phase * 0.4) * 0.4;
+                spectacularSystem.parameters.distortion = 0.25 + Math.sin(phase * 1.2) * 0.15;
+                
+                // Audio reactivity simulation
+                spectacularSystem.parameters.audioReactivity.bass = Math.abs(Math.sin(phase * 2.0)) * 0.6;
+                spectacularSystem.parameters.audioReactivity.mid = Math.abs(Math.sin(phase * 2.5)) * 0.4;
+                spectacularSystem.parameters.audioReactivity.high = Math.abs(Math.sin(phase * 3.0)) * 0.8;
+                
+                // Update all visualizers
+                spectacularSystem.visualizers.forEach((visualizer, index) => {
+                    if (visualizer) {
+                        const config = epicGeometryConfigs[index];
+                        
+                        visualizer.updateParameters({
+                            dimension: spectacularSystem.parameters.dimension,
+                            morphFactor: spectacularSystem.parameters.morphFactor,
+                            gridDensity: config.density + Math.sin(phase + index) * 3.0,
+                            rotationSpeed: config.speed * spectacularSystem.parameters.rotationSpeed,
+                            u_audioBass: spectacularSystem.parameters.audioReactivity.bass,
+                            u_audioMid: spectacularSystem.parameters.audioReactivity.mid,
+                            u_audioHigh: spectacularSystem.parameters.audioReactivity.high,
+                            glitchIntensity: spectacularSystem.parameters.glitchIntensity + Math.random() * 0.02,
+                            colorShift: Math.sin(phase + index * 0.5) * 0.3
+                        });
+                    }
+                });
+                
+                // Update UI displays
+                updateHolographicHUD();
+                updateAudioSpectrum();
+                updateDimensionDisplay();
+                
+                requestAnimationFrame(updateReality);
+            }
+            
+            updateReality();
+        }
+        
+        function updateHolographicHUD() {
+            const params = spectacularSystem.parameters;
+            
+            // Update parameter values
+            document.getElementById('dimension-value').textContent = params.dimension.toFixed(3);
+            document.getElementById('morph-value').textContent = params.morphFactor.toFixed(3);
+            document.getElementById('grid-value').textContent = params.gridDensity.toFixed(1);
+            document.getElementById('rotation-value').textContent = params.rotationSpeed.toFixed(3);
+            document.getElementById('distortion-value').textContent = params.distortion.toFixed(3);
+            
+            // Update parameter bars
+            document.getElementById('dimension-bar').style.width = `${((params.dimension - 3.0) / 2.0) * 100}%`;
+            document.getElementById('morph-bar').style.width = `${(params.morphFactor / 1.5) * 100}%`;
+            document.getElementById('grid-bar').style.width = `${(params.gridDensity / 25.0) * 100}%`;
+            document.getElementById('rotation-bar').style.width = `${(params.rotationSpeed / 2.0) * 100}%`;
+            document.getElementById('distortion-bar').style.width = `${(params.distortion / 0.5) * 100}%`;
+            
+            // Update visualizer count
+            const activeCount = spectacularSystem.visualizers.filter(v => v !== null).length;
+            document.getElementById('visualizer-count').textContent = `${activeCount}/12`;
+        }
+        
+        function updateAudioSpectrum() {
+            const audioData = spectacularSystem.parameters.audioReactivity;
+            
+            for (let i = 0; i < 32; i++) {
+                const bar = document.getElementById(`spectrum-${i}`);
+                const value = Math.random() * (audioData.bass + audioData.mid + audioData.high) * 60 + 20;
+                bar.style.height = `${value}px`;
+            }
+        }
+        
+        function updateDimensionDisplay() {
+            const display = document.getElementById('dimension-display');
+            const dimension = spectacularSystem.parameters.dimension;
+            
+            if (dimension < 3.5) {
+                display.textContent = '3D';
+            } else if (dimension < 4.5) {
+                display.textContent = '4D';
+            } else {
+                display.textContent = '5D';
+            }
+        }
+        
+        function setupInteractionHandlers() {
+            // Mouse tracking for reality distortion
+            document.addEventListener('mousemove', (e) => {
+                spectacularSystem.interactionState.mousePosX = e.clientX / window.innerWidth;
+                spectacularSystem.interactionState.mousePosY = e.clientY / window.innerHeight;
+                
+                // Create interaction ripple
+                createInteractionRipple(e.clientX, e.clientY);
+                
+                // Influence parameters based on mouse position
+                const mouseInfluence = 0.2;
+                spectacularSystem.parameters.morphFactor += (spectacularSystem.interactionState.mousePosX - 0.5) * mouseInfluence * 0.01;
+                spectacularSystem.parameters.rotationSpeed += (spectacularSystem.interactionState.mousePosY - 0.5) * mouseInfluence * 0.01;
+            });
+            
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                switch(e.key) {
+                    case ' ':
+                        toggleMasterControl();
+                        break;
+                    case 'ArrowUp':
+                        spectacularSystem.parameters.dimension = Math.min(5.0, spectacularSystem.parameters.dimension + 0.1);
+                        break;
+                    case 'ArrowDown':
+                        spectacularSystem.parameters.dimension = Math.max(3.0, spectacularSystem.parameters.dimension - 0.1);
+                        break;
+                    case 'ArrowLeft':
+                        spectacularSystem.parameters.rotationSpeed = Math.max(0.1, spectacularSystem.parameters.rotationSpeed - 0.1);
+                        break;
+                    case 'ArrowRight':
+                        spectacularSystem.parameters.rotationSpeed = Math.min(3.0, spectacularSystem.parameters.rotationSpeed + 0.1);
+                        break;
+                }
+            });
+        }
+        
+        function createInteractionRipple(x, y) {
+            const ripple = document.createElement('div');
+            ripple.className = 'interaction-ripple';
+            ripple.style.left = `${x - 100}px`;
+            ripple.style.top = `${y - 100}px`;
+            document.body.appendChild(ripple);
+            
+            setTimeout(() => {
+                document.body.removeChild(ripple);
+            }, 600);
+        }
+        
+        function focusHypercubeFace(index) {
+            const face = document.getElementById(`face-${index}`);
+            face.classList.add('focused');
+            spectacularSystem.interactionState.focusedFace = index;
+            
+            // Enhance the focused visualizer
+            const visualizer = spectacularSystem.visualizers[index];
+            if (visualizer) {
+                visualizer.updateParameters({
+                    patternIntensity: 3.0,
+                    glitchIntensity: 0.1,
+                    u_audioBass: 0.8,
+                    u_audioMid: 0.6,
+                    u_audioHigh: 0.9
+                });
+            }
+        }
+        
+        function unfocusHypercubeFace(index) {
+            const face = document.getElementById(`face-${index}`);
+            face.classList.remove('focused');
+            
+            if (spectacularSystem.interactionState.focusedFace === index) {
+                spectacularSystem.interactionState.focusedFace = -1;
+            }
+            
+            // Reset the visualizer to normal
+            const visualizer = spectacularSystem.visualizers[index];
+            if (visualizer) {
+                visualizer.updateParameters({
+                    patternIntensity: 2.0,
+                    glitchIntensity: spectacularSystem.parameters.glitchIntensity,
+                    u_audioBass: spectacularSystem.parameters.audioReactivity.bass,
+                    u_audioMid: spectacularSystem.parameters.audioReactivity.mid,
+                    u_audioHigh: spectacularSystem.parameters.audioReactivity.high
+                });
+            }
+        }
+        
+        function activateHypercubeFace(index) {
+            console.log(`🎯 Activated hypercube face ${index}: ${epicGeometryConfigs[index].name}`);
+            
+            // Trigger massive visual effect
+            const visualizer = spectacularSystem.visualizers[index];
+            if (visualizer) {
+                visualizer.updateParameters({
+                    dimension: 4.8,
+                    morphFactor: 1.2,
+                    rotationSpeed: 2.5,
+                    patternIntensity: 4.0,
+                    glitchIntensity: 0.15,
+                    u_audioBass: 1.0,
+                    u_audioMid: 1.0,
+                    u_audioHigh: 1.0
+                });
+                
+                // Return to normal after 2 seconds
+                setTimeout(() => {
+                    visualizer.updateParameters({
+                        dimension: spectacularSystem.parameters.dimension,
+                        morphFactor: spectacularSystem.parameters.morphFactor,
+                        rotationSpeed: spectacularSystem.parameters.rotationSpeed,
+                        patternIntensity: 2.0,
+                        glitchIntensity: spectacularSystem.parameters.glitchIntensity
+                    });
+                }, 2000);
+            }
+        }
+        
+        function toggleMasterControl() {
+            spectacularSystem.masterControlActive = !spectacularSystem.masterControlActive;
+            
+            if (spectacularSystem.masterControlActive) {
+                console.log('🔮 MASTER CONTROL ACTIVATED');
+                
+                // Activate all visualizers to maximum intensity
+                spectacularSystem.visualizers.forEach(visualizer => {
+                    if (visualizer) {
+                        visualizer.updateParameters({
+                            dimension: 4.9,
+                            morphFactor: 1.4,
+                            rotationSpeed: 2.0,
+                            patternIntensity: 3.5,
+                            glitchIntensity: 0.12,
+                            u_audioBass: 0.9,
+                            u_audioMid: 0.8,
+                            u_audioHigh: 1.0
+                        });
+                    }
+                });
+                
+                // Add glitch overlay
+                document.querySelector('.glitch-overlay').style.opacity = '0.3';
+                
+            } else {
+                console.log('🔮 MASTER CONTROL DEACTIVATED');
+                
+                // Return to normal parameters
+                document.querySelector('.glitch-overlay').style.opacity = '0';
+            }
+        }
+        
+        function startPerformanceMonitoring() {
+            function updatePerformance() {
+                spectacularSystem.performance.frameCount++;
+                const now = performance.now();
+                
+                if (now - spectacularSystem.performance.lastTime >= 1000) {
+                    spectacularSystem.performance.fps = spectacularSystem.performance.frameCount;
+                    spectacularSystem.performance.frameCount = 0;
+                    spectacularSystem.performance.lastTime = now;
+                    
+                    // Update performance displays
+                    document.getElementById('fps-display').textContent = `FPS: ${spectacularSystem.performance.fps}`;
+                    document.getElementById('geometry-count').textContent = spectacularSystem.performance.activeGeometries;
+                    document.getElementById('context-count').textContent = spectacularSystem.performance.activeContexts;
+                    document.getElementById('shader-count').textContent = spectacularSystem.performance.activeShaders;
+                }
+                
+                requestAnimationFrame(updatePerformance);
+            }
+            
+            spectacularSystem.performance.lastTime = performance.now();
+            updatePerformance();
+        }
+        
+        // Initialize the spectacular system
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                initializeSpectacularSystem();
+                console.log('🌟 VIB34D PRODUCTION SPECTACULAR - READY FOR UBIQUITY');
+            }, 100);
+        });
+        
+        // Export for console access
+        window.spectacularSystem = spectacularSystem;
+        window.toggleMasterControl = toggleMasterControl;
+    </script>
+</body>
+</html>

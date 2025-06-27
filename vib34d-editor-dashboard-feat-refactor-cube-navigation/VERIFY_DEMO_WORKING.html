@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Demo Verification Test</title>
+    <style>
+        body {
+            background: #000;
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .pass {
+            background: rgba(0, 255, 0, 0.2);
+            border-left: 4px solid #00ff00;
+        }
+        
+        .fail {
+            background: rgba(255, 0, 0, 0.2);
+            border-left: 4px solid #ff0000;
+        }
+        
+        .test-button {
+            background: rgba(255, 0, 255, 0.3);
+            border: 2px solid #ff00ff;
+            color: #ff00ff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            font-family: inherit;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 VIB34D Demo Verification Test</h1>
+    <p>This page will test if your VIB34D demo is actually working.</p>
+    
+    <button class="test-button" onclick="runVerificationTest()">🚀 Test Demo Now</button>
+    <button class="test-button" onclick="openDemoInIframe()">📺 Load Demo in Frame</button>
+    <button class="test-button" onclick="openDemoInNewTab()">🌐 Open Demo in New Tab</button>
+    
+    <div id="test-results"></div>
+    
+    <iframe id="demo-frame" style="display: none;"></iframe>
+    
+    <script>
+        function runVerificationTest() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<h3>🧪 Running Verification Tests...</h3>';
+            
+            const tests = [
+                {
+                    name: 'Server Accessibility',
+                    test: () => {
+                        return fetch('http://localhost:8000/VIB34D_PHASE1_INTEGRATED_DEMO.html')
+                            .then(response => response.ok)
+                            .catch(() => false);
+                    }
+                },
+                {
+                    name: 'Core Architecture File',
+                    test: () => {
+                        return fetch('http://localhost:8000/VIB34D_WORKING_CORE_ARCHITECTURE.js')
+                            .then(response => response.ok)
+                            .catch(() => false);
+                    }
+                },
+                {
+                    name: 'Central State Manager File',
+                    test: () => {
+                        return fetch('http://localhost:8000/VIB34D_CENTRAL_STATE_MANAGER.js')
+                            .then(response => response.ok)
+                            .catch(() => false);
+                    }
+                }
+            ];
+            
+            Promise.all(tests.map(test => 
+                test.test().then(result => ({ name: test.name, passed: result }))
+            )).then(results => {
+                displayTestResults(results);
+            });
+        }
+        
+        function displayTestResults(results) {
+            const resultsDiv = document.getElementById('test-results');
+            let html = '<h3>📊 Test Results:</h3>';
+            
+            results.forEach(result => {
+                const className = result.passed ? 'pass' : 'fail';
+                const icon = result.passed ? '✅' : '❌';
+                html += `<div class="test-result ${className}">${icon} ${result.name}: ${result.passed ? 'PASS' : 'FAIL'}</div>`;
+            });
+            
+            const allPassing = results.every(r => r.passed);
+            
+            if (allPassing) {
+                html += `
+                    <div class="test-result pass">
+                        🎉 <strong>ALL TESTS PASS!</strong> The demo should be working.
+                        <br><br>
+                        <strong>Next Steps:</strong>
+                        <ol>
+                            <li>Click "Open Demo in New Tab" to test it</li>
+                            <li>Verify you see 8 visualizer cards</li>
+                            <li>Test the hover effects and control buttons</li>
+                            <li>Check that the dashboard shows real data</li>
+                        </ol>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="test-result fail">
+                        ❌ <strong>SOME TESTS FAILED</strong> - Demo may not work properly.
+                        <br><br>
+                        <strong>Troubleshooting:</strong>
+                        <ol>
+                            <li>Make sure your HTTP server is running on port 8000</li>
+                            <li>Check that all files are in the correct directory</li>
+                            <li>Try refreshing and running the test again</li>
+                        </ol>
+                    </div>
+                `;
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function openDemoInIframe() {
+            const iframe = document.getElementById('demo-frame');
+            iframe.src = 'http://localhost:8000/VIB34D_PHASE1_INTEGRATED_DEMO.html';
+            iframe.style.display = 'block';
+            
+            iframe.onload = () => {
+                console.log('Demo loaded in iframe');
+                setTimeout(() => {
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        const visualizerGrid = iframeDoc.getElementById('visualizer-grid');
+                        const cardCount = visualizerGrid ? visualizerGrid.children.length : 0;
+                        
+                        const resultDiv = document.createElement('div');
+                        resultDiv.className = cardCount === 8 ? 'test-result pass' : 'test-result fail';
+                        resultDiv.innerHTML = `📺 Iframe Test: ${cardCount === 8 ? '✅' : '❌'} Found ${cardCount}/8 visualizer cards`;
+                        document.getElementById('test-results').appendChild(resultDiv);
+                        
+                    } catch (error) {
+                        console.log('Cannot access iframe content (CORS/security)');
+                        const resultDiv = document.createElement('div');
+                        resultDiv.className = 'test-result fail';
+                        resultDiv.innerHTML = '📺 Iframe Test: ⚠️ Cannot access iframe content due to security restrictions';
+                        document.getElementById('test-results').appendChild(resultDiv);
+                    }
+                }, 2000);
+            };
+        }
+        
+        function openDemoInNewTab() {
+            window.open('http://localhost:8000/VIB34D_PHASE1_INTEGRATED_DEMO.html', '_blank');
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'test-result pass';
+            resultDiv.innerHTML = `
+                🌐 <strong>Opened demo in new tab!</strong>
+                <br><br>
+                <strong>What to look for:</strong>
+                <ul>
+                    <li>✅ 8 visualizer cards in a grid layout</li>
+                    <li>✅ Central State Dashboard on the left with real data</li>
+                    <li>✅ Interactive control buttons at the bottom</li>
+                    <li>✅ No errors in browser console (F12)</li>
+                    <li>✅ Hover effects work on visualizer cards</li>
+                    <li>✅ Test buttons trigger parameter changes</li>
+                </ul>
+            `;
+            document.getElementById('test-results').appendChild(resultDiv);
+        }
+        
+        // Auto-run basic test on load
+        window.addEventListener('load', () => {
+            setTimeout(runVerificationTest, 500);
+        });
+    </script>
+</body>
+</html>

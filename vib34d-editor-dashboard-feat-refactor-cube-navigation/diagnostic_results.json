@@ -1,0 +1,395 @@
+{
+  "timestamp": "2025-06-24T21:12:21.028Z",
+  "results": {
+    "phase1": {
+      "status": "broken",
+      "tests": {
+        "coreClassesExist": {
+          "passed": true,
+          "details": "All core classes available",
+          "data": {
+            "missingClasses": [],
+            "availableClasses": 6
+          }
+        },
+        "hypercubeCoreInstantiation": {
+          "passed": false,
+          "details": "HypercubeCore instantiation error: HTMLCanvasElement is not defined",
+          "error": {}
+        },
+        "webglContextCreation": {
+          "passed": true,
+          "details": "WebGL context created (WebGLRenderingContext)",
+          "data": {
+            "context": {
+              "constructor": {
+                "name": "WebGLRenderingContext"
+              }
+            },
+            "version": "Mock WebGL Version 1.0"
+          }
+        },
+        "shaderManagerInit": {
+          "passed": true,
+          "details": "ShaderManager initialized successfully",
+          "data": {
+            "shaderManager": {
+              "gl": {
+                "constructor": {
+                  "name": "WebGLRenderingContext"
+                }
+              },
+              "geometryManager": {
+                "options": {
+                  "defaultGeometry": "hypercube"
+                },
+                "geometries": {
+                  "hypercube": {},
+                  "hypersphere": {},
+                  "hypertetrahedron": {},
+                  "torus": {},
+                  "klein": {},
+                  "fractal": {},
+                  "wave": {},
+                  "crystal": {}
+                }
+              },
+              "projectionManager": {
+                "options": {
+                  "defaultProjection": "perspective"
+                },
+                "projections": {
+                  "perspective": {
+                    "viewDistance": 2.5
+                  },
+                  "orthographic": {},
+                  "stereographic": {
+                    "baseProjectionPoleW": -1.5
+                  }
+                }
+              },
+              "options": {
+                "baseVertexShaderName": "base-vertex",
+                "baseFragmentShaderName": "base-fragment"
+              },
+              "shaderSources": {
+                "base-vertex": {
+                  "source": "attribute vec2 a_position; varying vec2 v_uv; void main() { v_uv = a_position * 0.5 + 0.5; gl_Position = vec4(a_position, 0.0, 1.0); }"
+                },
+                "base-fragment": {
+                  "source": "\n            precision highp float;\n            uniform vec2 u_resolution; uniform float u_time;\n            uniform float u_dimension; uniform float u_morphFactor; uniform float u_rotationSpeed;\n            uniform float u_universeModifier; uniform float u_patternIntensity; uniform float u_gridDensity;\n            uniform float u_lineThickness; uniform float u_shellWidth; uniform float u_tetraThickness;\n            uniform float u_audioBass; uniform float u_audioMid; uniform float u_audioHigh;\n            uniform float u_glitchIntensity; uniform float u_colorShift;\n            uniform vec3 u_primaryColor; uniform vec3 u_secondaryColor; uniform vec3 u_backgroundColor;\n            varying vec2 v_uv;\n            mat4 rotXW(float a){float c=cos(a),s=sin(a);return mat4(c,0,0,-s, 0,1,0,0, 0,0,1,0, s,0,0,c);} \n            mat4 rotYW(float a){float c=cos(a),s=sin(a);return mat4(1,0,0,0, 0,c,0,-s, 0,0,1,0, 0,s,0,c);} \n            mat4 rotZW(float a){float c=cos(a),s=sin(a);return mat4(1,0,0,0, 0,1,0,0, 0,0,c,-s, 0,0,s,c);} \n            mat4 rotXY(float a){float c=cos(a),s=sin(a);return mat4(c,-s,0,0, s,c,0,0, 0,0,1,0, 0,0,0,1);} \n            mat4 rotYZ(float a){float c=cos(a),s=sin(a);return mat4(1,0,0,0, 0,c,-s,0, 0,s,c,0, 0,0,0,1);} \n            mat4 rotXZ(float a){float c=cos(a),s=sin(a);return mat4(c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1);}\n            vec3 rgb2hsv(vec3 c){vec4 K=vec4(0.,-1./3.,2./3.,-1.);vec4 p=mix(vec4(c.bg,K.wz),vec4(c.gb,K.xy),step(c.b,c.g));vec4 q=mix(vec4(p.xyw,c.r),vec4(c.r,p.yzx),step(p.x,c.r));float d=q.x-min(q.w,q.y);float e=1e-10;return vec3(abs(q.z+(q.w-q.y)/(6.*d+e)),d/(q.x+e),q.x);} \n            vec3 hsv2rgb(vec3 c){vec4 K=vec4(1.,2./3.,1./3.,3.);vec3 p=abs(fract(c.xxx+K.xyz)*6.-K.www);return c.z*mix(K.xxx,clamp(p-K.xxx,0.,1.),c.y);}\n            //__PROJECTION_CODE_INJECTION_POINT__\n            //__GEOMETRY_CODE_INJECTION_POINT__\n            void main() {\n                vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0); \n                vec2 uv = (v_uv * 2.0 - 1.0) * aspect;\n                vec3 rayOrigin = vec3(0.0, 0.0, -2.5); \n                vec3 rayDirection = normalize(vec3(uv, 1.0));\n                float camRotY = u_time * 0.05 * u_rotationSpeed + u_audioMid * 0.1; \n                float camRotX = sin(u_time * 0.03 * u_rotationSpeed) * 0.15 + u_audioHigh * 0.1;\n                mat4 camMat = rotXY(camRotX) * rotYZ(camRotY); \n                rayDirection = (camMat * vec4(rayDirection, 0.0)).xyz;\n                vec3 p = rayDirection * 1.5; \n                float latticeValue = calculateLattice(p);\n                vec3 color = mix(u_backgroundColor, u_primaryColor, latticeValue);\n                color = mix(color, u_secondaryColor, smoothstep(0.2, 0.7, u_audioMid) * latticeValue * 0.6);\n                if (abs(u_colorShift) > 0.01) { \n                    vec3 hsv = rgb2hsv(color); \n                    hsv.x = fract(hsv.x + u_colorShift * 0.5 + u_audioHigh * 0.1); \n                    color = hsv2rgb(hsv); \n                }\n                color *= (0.8 + u_patternIntensity * 0.7);\n                color = pow(clamp(color, 0.0, 1.5), vec3(0.9));\n                gl_FragColor = vec4(color, 1.0);\n            }\n        "
+                }
+              },
+              "compiledShaders": {},
+              "programs": {},
+              "uniformLocations": {},
+              "attributeLocations": {},
+              "currentProgramName": null
+            },
+            "geometryManager": {
+              "options": {
+                "defaultGeometry": "hypercube"
+              },
+              "geometries": {
+                "hypercube": {},
+                "hypersphere": {},
+                "hypertetrahedron": {},
+                "torus": {},
+                "klein": {},
+                "fractal": {},
+                "wave": {},
+                "crystal": {}
+              }
+            },
+            "projectionManager": {
+              "options": {
+                "defaultProjection": "perspective"
+              },
+              "projections": {
+                "perspective": {
+                  "viewDistance": 2.5
+                },
+                "orthographic": {},
+                "stereographic": {
+                  "baseProjectionPoleW": -1.5
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "phase2": {
+      "status": "broken",
+      "tests": {
+        "geometryShaderGeneration": {
+          "passed": true,
+          "details": "8/8 geometries generate valid shader code",
+          "data": {
+            "hypercube": {
+              "passed": true,
+              "shaderCodeLength": 2382,
+              "hasCalculateLattice": true
+            },
+            "hypersphere": {
+              "passed": true,
+              "shaderCodeLength": 2240,
+              "hasCalculateLattice": true
+            },
+            "hypertetrahedron": {
+              "passed": true,
+              "shaderCodeLength": 2484,
+              "hasCalculateLattice": true
+            },
+            "torus": {
+              "passed": true,
+              "shaderCodeLength": 493,
+              "hasCalculateLattice": true
+            },
+            "klein": {
+              "passed": true,
+              "shaderCodeLength": 510,
+              "hasCalculateLattice": true
+            },
+            "fractal": {
+              "passed": true,
+              "shaderCodeLength": 466,
+              "hasCalculateLattice": true
+            },
+            "wave": {
+              "passed": true,
+              "shaderCodeLength": 252,
+              "hasCalculateLattice": true
+            },
+            "crystal": {
+              "passed": true,
+              "shaderCodeLength": 245,
+              "hasCalculateLattice": true
+            }
+          }
+        },
+        "geometryManagerRegistration": {
+          "passed": true,
+          "details": "GeometryManager has 8 registered geometries",
+          "data": {
+            "availableTypes": [
+              "hypercube",
+              "hypersphere",
+              "hypertetrahedron",
+              "torus",
+              "klein",
+              "fractal",
+              "wave",
+              "crystal"
+            ],
+            "expectedTypes": [
+              "hypercube",
+              "hypersphere",
+              "hypertetrahedron"
+            ]
+          }
+        },
+        "shaderUniformPresence": {
+          "passed": true,
+          "details": "8/8 required uniforms found in shader code",
+          "data": {
+            "foundUniforms": [
+              "u_time",
+              "u_dimension",
+              "u_morphFactor",
+              "u_gridDensity",
+              "u_rotationSpeed",
+              "u_audioBass",
+              "u_audioMid",
+              "u_audioHigh"
+            ],
+            "missingUniforms": []
+          }
+        },
+        "geometryShaderHandoff": {
+          "passed": false,
+          "details": "Geometry handoff error: this.gl.getShaderParameter is not a function",
+          "error": {}
+        }
+      }
+    },
+    "phase4": {
+      "status": "broken",
+      "tests": {
+        "uniformRegistration": {
+          "passed": false,
+          "details": "Uniform registration test not yet implemented",
+          "data": {}
+        },
+        "uniformLocationBinding": {
+          "passed": false,
+          "details": "Uniform location binding test not yet implemented",
+          "data": {}
+        },
+        "uniformGPUUpdates": {
+          "passed": false,
+          "details": "Uniform GPU updates test not yet implemented",
+          "data": {}
+        },
+        "batchUpdateSystem": {
+          "passed": false,
+          "details": "Batch update system test not yet implemented",
+          "data": {}
+        }
+      }
+    },
+    "phase5": {
+      "status": "broken",
+      "tests": {
+        "interactionEngineConnection": {
+          "passed": false,
+          "details": "Interaction engine connection test not yet implemented",
+          "data": {}
+        },
+        "parameterMappingConfig": {
+          "passed": false,
+          "details": "Parameter mapping config test not yet implemented",
+          "data": {}
+        },
+        "eventDetection": {
+          "passed": false,
+          "details": "Event detection test not yet implemented",
+          "data": {}
+        },
+        "parameterSmoothing": {
+          "passed": false,
+          "details": "Parameter smoothing test not yet implemented",
+          "data": {}
+        }
+      }
+    },
+    "integration": {
+      "status": "broken",
+      "tests": {
+        "endToEndDataFlow": {
+          "passed": false,
+          "details": "End-to-end data flow test not yet implemented",
+          "data": {}
+        },
+        "visualFeedback": {
+          "passed": false,
+          "details": "Visual feedback test not yet implemented",
+          "data": {}
+        },
+        "realtimePerformance": {
+          "passed": false,
+          "details": "Realtime performance test not yet implemented",
+          "data": {}
+        }
+      }
+    }
+  },
+  "diagnosticOutput": [
+    "🚀 Starting VIB34D Integration Diagnostic...",
+    "✅ VIB34D Working Core Architecture loaded successfully",
+    "📊 Available geometries: [\n  \"hypercube\",\n  \"hypersphere\",\n  \"hypertetrahedron\",\n  \"torus\",\n  \"klein\",\n  \"fractal\",\n  \"wave\",\n  \"crystal\"\n]",
+    "📊 Available projections: [\n  \"perspective\",\n  \"orthographic\",\n  \"stereographic\"\n]",
+    "✅ VIB34D Central State Manager loaded",
+    "🔍 VIB34D Integration Diagnostic Script Loaded",
+    "Run: new VIB34DIntegrationDiagnostic().runFullDiagnostic()",
+    "🔍 VIB34D Integration Diagnostic Starting...",
+    "📋 Testing Phase 1 Core Architecture...",
+    "📐 Registered geometry: hypercube",
+    "📐 Registered geometry: hypersphere",
+    "📐 Registered geometry: hypertetrahedron",
+    "📐 Registered geometry: torus",
+    "📐 Registered geometry: klein",
+    "📐 Registered geometry: fractal",
+    "📐 Registered geometry: wave",
+    "📐 Registered geometry: crystal",
+    "📐 Registered projection: perspective",
+    "📐 Registered projection: orthographic",
+    "📐 Registered projection: stereographic",
+    "✅ Phase 1 Status: broken",
+    "📋 Testing Phase 2 Geometry Integration...",
+    "📐 Registered geometry: hypercube",
+    "📐 Registered geometry: hypersphere",
+    "📐 Registered geometry: hypertetrahedron",
+    "📐 Registered geometry: torus",
+    "📐 Registered geometry: klein",
+    "📐 Registered geometry: fractal",
+    "📐 Registered geometry: wave",
+    "📐 Registered geometry: crystal",
+    "📐 Registered geometry: hypercube",
+    "📐 Registered geometry: hypersphere",
+    "📐 Registered geometry: hypertetrahedron",
+    "📐 Registered geometry: torus",
+    "📐 Registered geometry: klein",
+    "📐 Registered geometry: fractal",
+    "📐 Registered geometry: wave",
+    "📐 Registered geometry: crystal",
+    "📐 Registered geometry: hypercube",
+    "📐 Registered geometry: hypersphere",
+    "📐 Registered geometry: hypertetrahedron",
+    "📐 Registered geometry: torus",
+    "📐 Registered geometry: klein",
+    "📐 Registered geometry: fractal",
+    "📐 Registered geometry: wave",
+    "📐 Registered geometry: crystal",
+    "📐 Registered geometry: hypercube",
+    "📐 Registered geometry: hypersphere",
+    "📐 Registered geometry: hypertetrahedron",
+    "📐 Registered geometry: torus",
+    "📐 Registered geometry: klein",
+    "📐 Registered geometry: fractal",
+    "📐 Registered geometry: wave",
+    "📐 Registered geometry: crystal",
+    "📐 Registered projection: perspective",
+    "📐 Registered projection: orthographic",
+    "📐 Registered projection: stereographic",
+    "✅ Phase 2 Status: broken",
+    "📋 Testing Phase 4 Shader Uniform System...",
+    "✅ Phase 4 Status: broken",
+    "📋 Testing Phase 5 Parameter Mapping System...",
+    "✅ Phase 5 Status: broken",
+    "📋 Testing Complete Integration...",
+    "✅ Integration Status: broken",
+    "\n📊 VIB34D INTEGRATION DIAGNOSTIC REPORT",
+    "==========================================",
+    "❌ PHASE1: broken",
+    "  ✅ coreClassesExist: All core classes available",
+    "  ❌ hypercubeCoreInstantiation: HypercubeCore instantiation error: HTMLCanvasElement is not defined",
+    "  ✅ webglContextCreation: WebGL context created (WebGLRenderingContext)",
+    "  ✅ shaderManagerInit: ShaderManager initialized successfully",
+    "",
+    "❌ PHASE2: broken",
+    "  ✅ geometryShaderGeneration: 8/8 geometries generate valid shader code",
+    "  ✅ geometryManagerRegistration: GeometryManager has 8 registered geometries",
+    "  ✅ shaderUniformPresence: 8/8 required uniforms found in shader code",
+    "  ❌ geometryShaderHandoff: Geometry handoff error: this.gl.getShaderParameter is not a function",
+    "",
+    "❌ PHASE4: broken",
+    "  ❌ uniformRegistration: Uniform registration test not yet implemented",
+    "  ❌ uniformLocationBinding: Uniform location binding test not yet implemented",
+    "  ❌ uniformGPUUpdates: Uniform GPU updates test not yet implemented",
+    "  ❌ batchUpdateSystem: Batch update system test not yet implemented",
+    "",
+    "❌ PHASE5: broken",
+    "  ❌ interactionEngineConnection: Interaction engine connection test not yet implemented",
+    "  ❌ parameterMappingConfig: Parameter mapping config test not yet implemented",
+    "  ❌ eventDetection: Event detection test not yet implemented",
+    "  ❌ parameterSmoothing: Parameter smoothing test not yet implemented",
+    "",
+    "❌ INTEGRATION: broken",
+    "  ❌ endToEndDataFlow: End-to-end data flow test not yet implemented",
+    "  ❌ visualFeedback: Visual feedback test not yet implemented",
+    "  ❌ realtimePerformance: Realtime performance test not yet implemented",
+    "",
+    "🔧 PRIORITY FIX RECOMMENDATIONS",
+    "================================",
+    "❌ BROKEN PHASES: phase1, phase2, phase4, phase5, integration",
+    "✅ WORKING PHASES: ",
+    "🚨 HIGH PRIORITY: Fix Phase 1 Core Architecture first - all other phases depend on it",
+    "🚨 HIGH PRIORITY: Fix Phase 4 Shader Uniforms - visual system won't work without it",
+    "🎮 MEDIUM PRIORITY: Fix Phase 5 Parameter Mapping - interactions won't affect visuals",
+    "\n📋 NEXT STEPS:",
+    "1. Fix highest priority broken phases first",
+    "2. Run diagnostic again after each fix",
+    "3. Verify integration tests pass before proceeding to next phase"
+  ]
+}

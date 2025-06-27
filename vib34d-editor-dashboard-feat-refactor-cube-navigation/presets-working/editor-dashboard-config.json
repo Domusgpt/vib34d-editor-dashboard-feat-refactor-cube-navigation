@@ -1,0 +1,248 @@
+{
+  "editorDashboard": {
+    "version": "1.0.0",
+    "masterControls": {
+      "visualIntensity": {
+        "type": "slider",
+        "min": 0.1,
+        "max": 2.0,
+        "default": 0.8,
+        "step": 0.1,
+        "label": "Master Visual Intensity",
+        "cssProperty": "--master-intensity",
+        "affects": ["all-visualizers", "all-animations"]
+      },
+      "gridComplexity": {
+        "type": "slider", 
+        "min": 1,
+        "max": 5,
+        "default": 3,
+        "step": 1,
+        "label": "Grid Layer Complexity",
+        "cssProperty": "--grid-layers",
+        "affects": ["background-grids", "accent-patterns"]
+      },
+      "crystallineAccents": {
+        "type": "toggle",
+        "default": true,
+        "label": "Crystal Accent System",
+        "cssProperty": "--crystal-accents-enabled",
+        "affects": ["bezels", "buttons", "highlights"]
+      },
+      "colorVibrancy": {
+        "type": "slider",
+        "min": 0.3,
+        "max": 1.5,
+        "default": 0.9,
+        "step": 0.1,
+        "label": "Color Vibrancy",
+        "cssProperty": "--color-saturation",
+        "affects": ["all-colors", "glow-effects"]
+      },
+      "animationSpeed": {
+        "type": "slider",
+        "min": 0.5,
+        "max": 3.0,
+        "default": 1.0,
+        "step": 0.1,
+        "label": "Animation Speed Multiplier",
+        "cssProperty": "--animation-speed",
+        "affects": ["transitions", "rotations", "morphing"]
+      }
+    },
+    "pageRelations": {
+      "home": {
+        "role": "master",
+        "geometry": "hypercube",
+        "colorBase": [1.0, 0.0, 1.0],
+        "modifiers": {
+          "intensityModifier": 1.0,
+          "gridModifier": 1.0,
+          "speedModifier": 1.0
+        }
+      },
+      "tech": {
+        "role": "derivative",
+        "geometry": "tetrahedron", 
+        "colorBase": [0.0, 1.0, 1.0],
+        "modifiers": {
+          "intensityModifier": 0.7,
+          "gridModifier": 0.6,
+          "speedModifier": 1.2
+        },
+        "relationToMaster": "calculated"
+      },
+      "media": {
+        "role": "derivative",
+        "geometry": "sphere",
+        "colorBase": [1.0, 1.0, 0.0],
+        "modifiers": {
+          "intensityModifier": 1.3,
+          "gridModifier": 1.4,
+          "speedModifier": 0.8
+        },
+        "relationToMaster": "calculated"
+      },
+      "audio": {
+        "role": "derivative",
+        "geometry": "torus",
+        "colorBase": [0.0, 1.0, 0.0],
+        "modifiers": {
+          "intensityModifier": 0.9,
+          "gridModifier": 0.9,
+          "speedModifier": 1.1
+        },
+        "relationToMaster": "calculated"
+      },
+      "quantum": {
+        "role": "derivative",
+        "geometry": "wave",
+        "colorBase": [1.0, 0.0, 0.5],
+        "modifiers": {
+          "intensityModifier": 1.1,
+          "gridModifier": 1.2,
+          "speedModifier": 0.9
+        },
+        "relationToMaster": "calculated"
+      }
+    },
+    "interactionPresets": {
+      "cubeNavigation": {
+        "enabled": true,
+        "dragThreshold": {
+          "type": "slider",
+          "min": 20,
+          "max": 200,
+          "default": 80,
+          "label": "Drag Sensitivity"
+        },
+        "tensionBuildup": {
+          "type": "slider",
+          "min": 0.01,
+          "max": 0.1,
+          "default": 0.02,
+          "label": "Tension Buildup Rate"
+        },
+        "snapStrength": {
+          "type": "slider",
+          "min": 0.5,
+          "max": 2.0,
+          "default": 1.0,
+          "label": "Snap Feedback Strength"
+        }
+      },
+      "contentGravity": {
+        "enabled": true,
+        "gravityStrength": {
+          "type": "slider",
+          "min": 0.1,
+          "max": 1.0,
+          "default": 0.3,
+          "label": "Content Gravity Strength"
+        },
+        "proximityRadius": {
+          "type": "slider",
+          "min": 50,
+          "max": 300,
+          "default": 150,
+          "label": "Gravity Effect Radius"
+        }
+      },
+      "hoverEffects": {
+        "enabled": true,
+        "enlargementScale": {
+          "type": "slider",
+          "min": 1.05,
+          "max": 1.5,
+          "default": 1.15,
+          "label": "Hover Scale Factor"
+        },
+        "glowIntensity": {
+          "type": "slider",
+          "min": 0.2,
+          "max": 1.0,
+          "default": 0.6,
+          "label": "Hover Glow Intensity"
+        }
+      }
+    },
+    "visualEffects": {
+      "portalTransitions": {
+        "enabled": true,
+        "tearIntensity": {
+          "type": "slider",
+          "min": 0.3,
+          "max": 1.5,
+          "default": 0.8,
+          "label": "Reality Tear Intensity"
+        },
+        "morphDuration": {
+          "type": "slider",
+          "min": 300,
+          "max": 1500,
+          "default": 800,
+          "label": "Morph Duration (ms)"
+        }
+      },
+      "moireGlitchBorders": {
+        "enabled": false,
+        "frequency": {
+          "type": "slider",
+          "min": 10,
+          "max": 50,
+          "default": 25,
+          "label": "Interference Frequency"
+        },
+        "colorShift": {
+          "type": "toggle",
+          "default": true,
+          "label": "RGB Color Shifting"
+        }
+      },
+      "holographicShadows": {
+        "enabled": false,
+        "depthLayers": {
+          "type": "slider",
+          "min": 2,
+          "max": 6,
+          "default": 3,
+          "label": "Holographic Depth Layers"
+        },
+        "parallaxStrength": {
+          "type": "slider",
+          "min": 0.02,
+          "max": 0.2,
+          "default": 0.1,
+          "label": "Parallax Movement"
+        }
+      }
+    },
+    "scrollBehavior": {
+      "invisibleScrollbars": {
+        "enabled": true,
+        "snapToCenterX": {
+          "type": "toggle",
+          "default": true,
+          "label": "Auto-Center Horizontally"
+        },
+        "springReturn": {
+          "type": "slider",
+          "min": 0.1,
+          "max": 1.0,
+          "default": 0.6,
+          "label": "Spring Return Strength"
+        }
+      },
+      "dragScrolling": {
+        "enabled": true,
+        "sensitivity": {
+          "type": "slider",
+          "min": 0.5,
+          "max": 2.0,
+          "default": 1.0,
+          "label": "Drag Scroll Sensitivity"
+        }
+      }
+    }
+  }
+}

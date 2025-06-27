@@ -1,0 +1,634 @@
+{
+  "eventReactionManifest": {
+    "version": "3.0.0",
+    "lastModified": "2025-06-27T12:30:00.000Z",
+    "description": "Complete manifest of all events, reactions, relationships, and behaviors in VIB3STYLEPACK system",
+    
+    "layerManagement": {
+      "layerHierarchy": {
+        "background": { "zIndex": -1000, "type": "global", "alwaysVisible": true },
+        "backgroundEffects": { "zIndex": -500, "type": "effects", "conditional": true },
+        "cardContainers": { "zIndex": 0, "type": "content", "draggable": true },
+        "cardContent": { "zIndex": 100, "type": "content", "interactive": true },
+        "cardOverlays": { "zIndex": 200, "type": "ui", "temporary": true },
+        "interfaceElements": { "zIndex": 500, "type": "ui", "persistent": true },
+        "modals": { "zIndex": 1000, "type": "ui", "blocking": true },
+        "contextMenus": { "zIndex": 1500, "type": "ui", "temporary": true },
+        "tooltips": { "zIndex": 2000, "type": "ui", "temporary": true },
+        "debugOverlay": { "zIndex": 9999, "type": "debug", "optional": true }
+      },
+      "layerRules": {
+        "cardFocus": {
+          "description": "When card is focused, bring to front of cardContent layer",
+          "trigger": "card-focus",
+          "action": "elevateToLayerFront",
+          "targetLayer": "cardContent",
+          "zIndexBoost": 50
+        },
+        "cardHover": {
+          "description": "Subtle elevation on hover",
+          "trigger": "card-hover",
+          "action": "temporaryElevation",
+          "zIndexBoost": 10,
+          "duration": 300
+        },
+        "cardDrag": {
+          "description": "Maximum elevation during drag operations",
+          "trigger": "card-drag-start",
+          "action": "dragElevation",
+          "targetLayer": "cardOverlays",
+          "restoreOnDrop": true
+        },
+        "modalOpen": {
+          "description": "Disable lower layers when modal opens",
+          "trigger": "modal-open",
+          "action": "disableLowerLayers",
+          "affectedLayers": ["cardContainers", "cardContent", "interfaceElements"]
+        }
+      }
+    },
+
+    "eventTypes": {
+      "userInputEvents": {
+        "mouse": {
+          "click": {
+            "bubbling": true,
+            "capturable": true,
+            "defaultReactions": ["selectCard", "triggerCardAction", "backgroundDeselect"],
+            "contextDependent": true
+          },
+          "doubleclick": {
+            "bubbling": false,
+            "capturable": true,
+            "defaultReactions": ["openCardEditor", "maximizeCard"],
+            "preventSingleClick": true
+          },
+          "mouseenter": {
+            "bubbling": false,
+            "capturable": false,
+            "defaultReactions": ["cardHoverStart", "consciousnessPropagate", "parameterShift"],
+            "immediateEffect": true
+          },
+          "mouseleave": {
+            "bubbling": false,
+            "capturable": false,
+            "defaultReactions": ["cardHoverEnd", "consciousnessDecay", "parameterRestore"],
+            "immediateEffect": true
+          },
+          "mousemove": {
+            "bubbling": false,
+            "capturable": false,
+            "defaultReactions": ["updateCursor", "spatialAwareness", "proximityEffects"],
+            "throttled": true,
+            "throttleRate": 16.67
+          },
+          "mousedown": {
+            "bubbling": true,
+            "capturable": true,
+            "defaultReactions": ["startDrag", "cardPress", "layerElevation"],
+            "modifierDependent": true
+          },
+          "mouseup": {
+            "bubbling": true,
+            "capturable": true,
+            "defaultReactions": ["endDrag", "cardRelease", "layerRestore"],
+            "modifierDependent": true
+          },
+          "contextmenu": {
+            "bubbling": true,
+            "capturable": true,
+            "defaultReactions": ["showContextMenu", "preventDefault"],
+            "preventDefault": true
+          }
+        },
+        "keyboard": {
+          "keydown": {
+            "bubbling": true,
+            "capturable": true,
+            "defaultReactions": ["checkShortcuts", "navigationKeys", "modifierTracking"],
+            "modifierSupport": true
+          },
+          "keyup": {
+            "bubbling": true,
+            "capturable": true,
+            "defaultReactions": ["modifierRelease"],
+            "modifierSupport": true
+          }
+        },
+        "touch": {
+          "touchstart": {
+            "bubbling": true,
+            "capturable": true,
+            "defaultReactions": ["multiTouchStart", "gestureInitiation"],
+            "multiTouch": true
+          },
+          "touchmove": {
+            "bubbling": true,
+            "capturable": true,
+            "defaultReactions": ["gestureTracking", "touchDrag"],
+            "throttled": true,
+            "preventDefault": true
+          },
+          "touchend": {
+            "bubbling": true,
+            "capturable": true,
+            "defaultReactions": ["gestureComplete", "touchRelease"],
+            "multiTouch": true
+          }
+        }
+      },
+      "systemEvents": {
+        "parameterChange": {
+          "source": "internal",
+          "bubbling": false,
+          "defaultReactions": ["cascadeParameters", "updateVisuals", "consciousnessUpdate"],
+          "batchable": true
+        },
+        "sectionTransition": {
+          "source": "internal",
+          "bubbling": false,
+          "defaultReactions": ["transitionVisuals", "updateContent", "parameterInterpolation"],
+          "blocking": true
+        },
+        "themeChange": {
+          "source": "internal",
+          "bubbling": false,
+          "defaultReactions": ["updateColors", "rebindShaders", "cssVariableUpdate"],
+          "blocking": false
+        },
+        "configurationUpdate": {
+          "source": "internal",
+          "bubbling": false,
+          "defaultReactions": ["validateConfig", "applyChanges", "notifyComponents"],
+          "validation": true
+        }
+      },
+      "applicationEvents": {
+        "resize": {
+          "source": "window",
+          "bubbling": false,
+          "defaultReactions": ["recalculateLayout", "updateCanvasSizes", "responsiveAdjustments"],
+          "debounced": true,
+          "debounceDelay": 100
+        },
+        "focus": {
+          "source": "window",
+          "bubbling": false,
+          "defaultReactions": ["resumeAnimations", "restoreInteractivity"],
+          "stateChange": true
+        },
+        "blur": {
+          "source": "window",
+          "bubbling": false,
+          "defaultReactions": ["pauseAnimations", "saveState"],
+          "stateChange": true
+        },
+        "beforeunload": {
+          "source": "window",
+          "bubbling": false,
+          "defaultReactions": ["saveConfiguration", "cleanupResources"],
+          "critical": true
+        }
+      }
+    },
+
+    "reactionDefinitions": {
+      "cardReactions": {
+        "selectCard": {
+          "description": "Select card and update UI state",
+          "targets": ["selectedCard", "otherCards", "propertyEditor"],
+          "effects": {
+            "selectedCard": {
+              "visual": { "border": "2px solid var(--accent-color)", "shadow": "0 0 20px var(--accent-color)" },
+              "layer": { "zIndexBoost": 50 },
+              "state": { "selected": true },
+              "consciousness": { "attention": 1.0 }
+            },
+            "otherCards": {
+              "visual": { "opacity": 0.7, "filter": "brightness(0.8)" },
+              "consciousness": { "attention": 0.3 }
+            },
+            "propertyEditor": {
+              "action": "populateWithCardProperties",
+              "data": "selectedCardConfig"
+            }
+          },
+          "duration": 300,
+          "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
+        },
+        "cardHoverStart": {
+          "description": "Card hover with consciousness propagation",
+          "targets": ["hoveredCard", "nearbyCards", "background", "consciousness"],
+          "effects": {
+            "hoveredCard": {
+              "visual": { 
+                "transform": "scale(1.05) translateZ(10px)",
+                "filter": "brightness(1.2) saturate(1.1)",
+                "boxShadow": "0 10px 30px rgba(255, 0, 255, 0.3)"
+              },
+              "layer": { "zIndexBoost": 10 },
+              "consciousness": { "attention": 0.8, "awareness": 1.0 }
+            },
+            "nearbyCards": {
+              "calculation": "proximityBased",
+              "visual": { 
+                "transform": "scale(0.98)",
+                "opacity": 0.8,
+                "filter": "brightness(0.9)"
+              },
+              "consciousness": { "attention": 0.4 }
+            },
+            "background": {
+              "parameters": {
+                "morphFactor": "+0.1",
+                "gridDensity": "+2.0",
+                "rotationSpeed": "*1.2"
+              },
+              "consciousness": { "backgroundAwareness": 0.6 }
+            },
+            "consciousness": {
+              "propagation": {
+                "speed": 200,
+                "pattern": "ripple",
+                "intensity": 0.7,
+                "falloff": "quadratic"
+              }
+            }
+          },
+          "duration": 300,
+          "easing": "ease-out"
+        },
+        "cardHoverEnd": {
+          "description": "Restore from hover state",
+          "targets": ["hoveredCard", "nearbyCards", "background", "consciousness"],
+          "effects": {
+            "hoveredCard": {
+              "visual": "restore",
+              "layer": "restore",
+              "consciousness": { "attention": 0.5, "awareness": 0.6 }
+            },
+            "nearbyCards": {
+              "visual": "restore",
+              "consciousness": { "attention": 0.5 }
+            },
+            "background": {
+              "parameters": "restore",
+              "consciousness": { "backgroundAwareness": 0.5 }
+            },
+            "consciousness": {
+              "decay": {
+                "rate": 0.95,
+                "minThreshold": 0.1
+              }
+            }
+          },
+          "duration": 500,
+          "easing": "ease-in-out"
+        },
+        "startDrag": {
+          "description": "Initialize card dragging",
+          "targets": ["draggedCard", "otherCards", "workspace"],
+          "effects": {
+            "draggedCard": {
+              "visual": {
+                "cursor": "grabbing",
+                "transform": "scale(1.1) rotate(2deg)",
+                "filter": "brightness(1.3)",
+                "boxShadow": "0 20px 40px rgba(0, 0, 0, 0.3)"
+              },
+              "layer": { "moveToLayer": "cardOverlays" },
+              "state": { "dragging": true },
+              "consciousness": { "attention": 1.0, "focus": 1.0 }
+            },
+            "otherCards": {
+              "visual": {
+                "opacity": 0.5,
+                "filter": "blur(1px)",
+                "pointerEvents": "none"
+              },
+              "consciousness": { "attention": 0.2 }
+            },
+            "workspace": {
+              "state": { "dragMode": true },
+              "visual": { "cursor": "grabbing" }
+            }
+          },
+          "immediate": true
+        },
+        "endDrag": {
+          "description": "Complete card dragging",
+          "targets": ["draggedCard", "otherCards", "workspace"],
+          "effects": {
+            "draggedCard": {
+              "visual": "restore",
+              "layer": { "moveToLayer": "cardContent" },
+              "state": { "dragging": false },
+              "consciousness": { "attention": 0.8, "focus": 0.6 }
+            },
+            "otherCards": {
+              "visual": "restore",
+              "consciousness": { "attention": 0.5 }
+            },
+            "workspace": {
+              "state": { "dragMode": false },
+              "visual": { "cursor": "default" }
+            }
+          },
+          "duration": 200,
+          "easing": "ease-out"
+        }
+      },
+      "transitionReactions": {
+        "sectionTransition": {
+          "description": "Smooth transition between sections",
+          "phases": {
+            "preparation": {
+              "duration": 200,
+              "effects": {
+                "currentCards": {
+                  "visual": { "opacity": 0, "transform": "scale(0.9) translateY(20px)" }
+                },
+                "background": {
+                  "parameters": { "morphFactor": "*0.8" }
+                }
+              }
+            },
+            "transition": {
+              "duration": 400,
+              "effects": {
+                "background": {
+                  "geometry": "newSectionGeometry",
+                  "theme": "newSectionTheme",
+                  "parameters": "interpolateToNew"
+                },
+                "consciousness": {
+                  "reset": { "awareness": 0.3, "attention": 0.0 }
+                }
+              }
+            },
+            "revelation": {
+              "duration": 400,
+              "effects": {
+                "newCards": {
+                  "visual": { "opacity": 1, "transform": "scale(1) translateY(0)" }
+                },
+                "consciousness": {
+                  "emerge": { "awareness": 0.6, "attention": 0.5 }
+                }
+              }
+            }
+          },
+          "totalDuration": 1000,
+          "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
+        },
+        "portalTransition": {
+          "description": "Dimensional gateway transition",
+          "phases": {
+            "portalOpening": {
+              "duration": 800,
+              "effects": {
+                "sourceCard": {
+                  "visual": {
+                    "filter": "brightness(2) hue-rotate(90deg)",
+                    "transform": "scale(1.2)",
+                    "border": "3px solid cyan",
+                    "animation": "portalPulse 200ms infinite"
+                  }
+                },
+                "background": {
+                  "distortion": {
+                    "spacetime": 0.6,
+                    "quantum": 0.4
+                  }
+                },
+                "portalEffects": {
+                  "energyField": "electromagnetic",
+                  "interferencePatterns": true,
+                  "chromaticAberration": 0.005
+                }
+              }
+            },
+            "dimensionalTraversal": {
+              "duration": 600,
+              "effects": {
+                "sourceCard": {
+                  "visual": { "opacity": 0, "transform": "scale(0) rotateY(180deg)" }
+                },
+                "targetCard": {
+                  "visual": { "opacity": 1, "transform": "scale(1) rotateY(0deg)" }
+                },
+                "realityDistortion": {
+                  "intensity": 1.0,
+                  "type": "quantum"
+                }
+              }
+            },
+            "portalClosing": {
+              "duration": 400,
+              "effects": {
+                "portalEffects": "fadeOut",
+                "background": {
+                  "distortion": "restore"
+                },
+                "consciousness": {
+                  "stabilize": { "coherence": 0.8 }
+                }
+              }
+            }
+          },
+          "totalDuration": 1800
+        }
+      },
+      "consciousnessReactions": {
+        "consciousnessPropagate": {
+          "description": "Propagate consciousness wave through system",
+          "algorithm": "ripplePropagate",
+          "parameters": {
+            "speed": 200,
+            "intensity": 0.7,
+            "falloff": "quadratic",
+            "minThreshold": 0.1
+          },
+          "effects": {
+            "propagationWave": {
+              "visual": {
+                "background": "radial-gradient(circle, rgba(255,0,255,0.2) 0%, transparent 70%)",
+                "animation": "rippleExpand 1s ease-out"
+              }
+            }
+          }
+        },
+        "consciousnessDecay": {
+          "description": "Natural decay of consciousness over time",
+          "algorithm": "exponentialDecay",
+          "parameters": {
+            "rate": 0.95,
+            "interval": 100,
+            "minLevel": 0.1
+          }
+        },
+        "consciousnessEmerge": {
+          "description": "Emergence of higher-level consciousness patterns",
+          "triggers": ["multipleInteractions", "parameterComplexity", "systemCoherence"],
+          "threshold": 0.8,
+          "effects": {
+            "systemWide": {
+              "visual": {
+                "filter": "hue-rotate(10deg) saturate(1.1)",
+                "animation": "consciousnessGlow 2s ease-in-out infinite"
+              },
+              "parameters": {
+                "interactionSensitivity": "*1.2",
+                "cascadeMultiplier": "*1.1"
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "eventRelationships": {
+      "cardToCard": {
+        "proximity": {
+          "calculation": "euclideanDistance",
+          "thresholds": {
+            "immediate": 50,
+            "close": 150,
+            "distant": 300
+          },
+          "effects": {
+            "immediate": { "consciousnessSharing": 0.8, "parameterInfluence": 0.6 },
+            "close": { "consciousnessSharing": 0.4, "parameterInfluence": 0.3 },
+            "distant": { "consciousnessSharing": 0.1, "parameterInfluence": 0.1 }
+          }
+        },
+        "semantic": {
+          "sameGeometry": { "relationshipStrength": 0.7 },
+          "sameTheme": { "relationshipStrength": 0.5 },
+          "sameSection": { "relationshipStrength": 0.4 }
+        },
+        "temporal": {
+          "recentlyInteracted": { "relationshipStrength": 0.6, "decayRate": 0.9 },
+          "simultaneousCreation": { "relationshipStrength": 0.3 }
+        }
+      },
+      "cardToBackground": {
+        "influence": {
+          "selectedCard": { "backgroundInfluence": 0.8 },
+          "hoveredCard": { "backgroundInfluence": 0.6 },
+          "draggedCard": { "backgroundInfluence": 0.9 },
+          "focusedCard": { "backgroundInfluence": 0.7 }
+        },
+        "parameterMapping": {
+          "dimension": { "backgroundParameter": "morphFactor", "multiplier": 0.3 },
+          "morphFactor": { "backgroundParameter": "gridDensity", "multiplier": 2.0 },
+          "consciousness": { "backgroundParameter": "glitchIntensity", "multiplier": 0.5 }
+        }
+      },
+      "sectionRelationships": {
+        "master": {
+          "role": "home",
+          "influences": ["visualizers", "controls", "consciousness"],
+          "parameterAuthority": 1.0
+        },
+        "derivative": {
+          "roles": ["visualizers", "controls"],
+          "calculatedFrom": "master",
+          "parameterAuthority": 0.0
+        },
+        "emergent": {
+          "role": "consciousness",
+          "emergesFrom": ["master", "derivative"],
+          "parameterAuthority": 0.5
+        }
+      }
+    },
+
+    "behaviorPatterns": {
+      "interactionSequences": {
+        "doubleClickMaximize": {
+          "sequence": ["click", "click"],
+          "timing": { "maxInterval": 500 },
+          "reaction": "maximizeCard",
+          "preventDefault": ["singleClick"]
+        },
+        "hoverThenDrag": {
+          "sequence": ["mouseenter", "mousedown", "mousemove"],
+          "reaction": "enhancedDrag",
+          "modifiers": { "dragSensitivity": 1.2 }
+        },
+        "keyboardShortcutCombo": {
+          "sequence": ["Ctrl+Shift+keydown"],
+          "reactions": {
+            "P": "activatePortalMode",
+            "R": "triggerRealityDistortion",
+            "Q": "synchronizeQuantumEntanglement",
+            "C": "boostConsciousness"
+          }
+        }
+      },
+      "adaptiveBehaviors": {
+        "userActivity": {
+          "highActivity": {
+            "threshold": "5 interactions per second",
+            "adaptations": {
+              "increaseResponsiveness": 1.2,
+              "enhanceVisualFeedback": 1.1,
+              "reduceAnimationDuration": 0.8
+            }
+          },
+          "lowActivity": {
+            "threshold": "< 1 interaction per 5 seconds",
+            "adaptations": {
+              "enableIdleAnimations": true,
+              "consciousnessDecay": 0.95,
+              "backgroundActivity": 1.1
+            }
+          }
+        },
+        "systemPerformance": {
+          "highLoad": {
+            "threshold": "systemLoad > 0.8",
+            "adaptations": {
+              "reduceCascadeComplexity": 0.7,
+              "limitActiveAnimations": 5,
+              "simplifyVisualEffects": 0.8
+            }
+          },
+          "lowLoad": {
+            "threshold": "systemLoad < 0.3",
+            "adaptations": {
+              "enhanceVisualQuality": 1.2,
+              "increaseAnimationComplexity": 1.1,
+              "enableAdvancedEffects": true
+            }
+          }
+        }
+      }
+    },
+
+    "debuggingAndMonitoring": {
+      "eventLogging": {
+        "logLevels": ["error", "warn", "info", "debug", "trace"],
+        "categories": {
+          "userInput": { "enabled": true, "level": "info" },
+          "parameterChanges": { "enabled": true, "level": "debug" },
+          "consciousness": { "enabled": false, "level": "trace" },
+          "performance": { "enabled": true, "level": "warn" }
+        }
+      },
+      "performanceMonitoring": {
+        "metrics": [
+          "eventsPerSecond",
+          "reactionLatency", 
+          "consciousnessUpdateFrequency",
+          "parameterCascadeDepth"
+        ],
+        "alerts": {
+          "highLatency": { "threshold": 100, "action": "simplifyReactions" },
+          "cascadeOverflow": { "threshold": 10, "action": "limitCascadeDepth" }
+        }
+      }
+    }
+  }
+}

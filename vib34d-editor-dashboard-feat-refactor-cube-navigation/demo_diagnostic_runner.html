@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Demo Diagnostic Runner</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: monospace;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .status {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .error { border-color: #ff0000; background: rgba(255, 0, 0, 0.1); }
+        .success { border-color: #00ff00; background: rgba(0, 255, 0, 0.1); }
+        .warning { border-color: #ffff00; background: rgba(255, 255, 0, 0.1); }
+        #output {
+            background: #111;
+            border: 1px solid #333;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+        .hidden {
+            display: none;
+        }
+        .demo-frame {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 VIB34D Demo State Diagnostic</h1>
+    
+    <div class="status">
+        <h2>Current Analysis</h2>
+        <p id="currentStatus">Initializing diagnostic...</p>
+        <div id="loadingIndicator">⏳ Loading demo...</div>
+    </div>
+    
+    <div id="resultsContainer" class="hidden">
+        <h2>🎯 Diagnostic Results</h2>
+        <div id="summaryResults"></div>
+        
+        <h3>📊 Detailed Analysis</h3>
+        <div id="output"></div>
+        
+        <h3>👁️ Visual State</h3>
+        <div id="visualState"></div>
+    </div>
+    
+    <!-- Hidden iframe to test the demo -->
+    <iframe id="demoFrame" src="VIB34D_PHASE1_INTEGRATED_DEMO.html" class="hidden"></iframe>
+    
+    <script>
+        const currentStatus = document.getElementById('currentStatus');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const summaryResults = document.getElementById('summaryResults');
+        const output = document.getElementById('output');
+        const visualState = document.getElementById('visualState');
+        const demoFrame = document.getElementById('demoFrame');
+        
+        let diagnosticResults = null;
+        
+        function updateStatus(message, type = 'status') {
+            currentStatus.textContent = message;
+            currentStatus.parentElement.className = `status ${type}`;
+        }
+        
+        function logOutput(message) {
+            output.textContent += message + '\n';
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function analyzeDemoState() {
+            try {
+                const iframeDoc = demoFrame.contentDocument || demoFrame.contentWindow.document;
+                const iframeWindow = demoFrame.contentWindow;
+                
+                // Check basic page load
+                if (!iframeDoc || !iframeDoc.body) {
+                    throw new Error('Demo page did not load properly');
+                }
+                
+                logOutput('✅ Demo page loaded successfully');
+                
+                // Check if scripts loaded
+                const scriptElements = iframeDoc.querySelectorAll('script');
+                logOutput(`📊 Found ${scriptElements.length} script elements`);
+                
+                // Check Working Core Architecture
+                if (iframeWindow.VIB34D_WorkingCore) {
+                    const coreClasses = Object.keys(iframeWindow.VIB34D_WorkingCore);
+                    logOutput(`✅ Working Core Architecture loaded: ${coreClasses.length} classes`);
+                    logOutput(`   Classes: ${coreClasses.join(', ')}`);
+                } else {
+                    logOutput('❌ Working Core Architecture NOT loaded');
+                }
+                
+                // Check Central State Manager
+                if (iframeWindow.VIB34DCentralStateManager) {
+                    logOutput('✅ Central State Manager class available');
+                } else {
+                    logOutput('❌ Central State Manager class NOT available');
+                }
+                
+                // Check visualizer grid
+                const visualizerGrid = iframeDoc.getElementById('visualizer-grid');
+                if (visualizerGrid) {
+                    const cardCount = visualizerGrid.children.length;
+                    logOutput(`📊 Visualizer Grid: ${cardCount}/8 cards`);
+                    
+                    if (cardCount === 0) {
+                        logOutput('❌ No visualizer cards created - likely initialization failure');
+                    } else if (cardCount < 8) {
+                        logOutput(`⚠️ Partial creation - ${cardCount}/8 cards`);
+                    } else {
+                        logOutput('✅ All 8 visualizer cards created');
+                    }
+                    
+                    // Check card content
+                    Array.from(visualizerGrid.children).forEach((card, index) => {
+                        const canvas = card.querySelector('.card-canvas');
+                        const statusSpan = card.querySelector('[id^="status-"]');
+                        const status = statusSpan ? statusSpan.textContent : 'Unknown';
+                        logOutput(`   Card ${index + 1}: Canvas=${canvas ? 'Yes' : 'No'}, Status=${status}`);
+                    });
+                } else {
+                    logOutput('❌ Visualizer grid element not found');
+                }
+                
+                // Check status indicators
+                const statusElements = [
+                    'architectureStatus', 'hypercubeCoreCount', 'centralStateStatus'
+                ];
+                
+                statusElements.forEach(elementId => {
+                    const element = iframeDoc.getElementById(elementId);
+                    if (element) {
+                        logOutput(`📊 ${elementId}: ${element.textContent}`);
+                    } else {
+                        logOutput(`❌ Status element ${elementId} not found`);
+                    }
+                });
+                
+                // Check global variables
+                if (iframeWindow.centralStateManager) {
+                    logOutput('✅ centralStateManager instance exists');
+                    try {
+                        const debugState = iframeWindow.centralStateManager.getDebugState();
+                        logOutput(`📊 Manager visualizers: ${debugState ? debugState.visualizerCount || 0 : 'Unknown'}`);
+                    } catch (e) {
+                        logOutput(`❌ Error getting debug state: ${e.message}`);
+                    }
+                } else {
+                    logOutput('❌ centralStateManager instance NOT created');
+                }
+                
+                if (iframeWindow.visualizers) {
+                    logOutput(`📊 Visualizers array: ${iframeWindow.visualizers.length} items`);
+                } else {
+                    logOutput('❌ visualizers array not defined');
+                }
+                
+                // Check for error displays
+                const errorDisplays = iframeDoc.querySelectorAll('.error-display');
+                const successDisplays = iframeDoc.querySelectorAll('.success-display');
+                
+                logOutput(`📊 Error displays: ${errorDisplays.length}`);
+                logOutput(`📊 Success displays: ${successDisplays.length}`);
+                
+                if (errorDisplays.length > 0) {
+                    Array.from(errorDisplays).forEach((error, index) => {
+                        logOutput(`❌ Error ${index + 1}: ${error.textContent.replace(/\s+/g, ' ').trim()}`);
+                    });
+                }
+                
+                // Determine overall status
+                let overallStatus = 'Unknown';
+                let statusType = 'warning';
+                
+                if (errorDisplays.length > 0) {
+                    overallStatus = 'Demo has critical errors preventing visualization';
+                    statusType = 'error';
+                } else if (!iframeWindow.VIB34D_WorkingCore) {
+                    overallStatus = 'Working Core Architecture failed to load';
+                    statusType = 'error';
+                } else if (!iframeWindow.centralStateManager) {
+                    overallStatus = 'Central State Manager failed to initialize';
+                    statusType = 'error';
+                } else if (!visualizerGrid || visualizerGrid.children.length === 0) {
+                    overallStatus = 'No visualizer cards created - initialization failure';
+                    statusType = 'error';
+                } else if (visualizerGrid.children.length < 8) {
+                    overallStatus = `Partial success - ${visualizerGrid.children.length}/8 cards created`;
+                    statusType = 'warning';
+                } else {
+                    overallStatus = 'All 8 visualizer cards successfully created';
+                    statusType = 'success';
+                }
+                
+                updateStatus(overallStatus, statusType);
+                
+                // Update visual state
+                const isShowingCards = visualizerGrid && visualizerGrid.children.length > 0;
+                const isShowingLoading = errorDisplays.length === 0 && successDisplays.length === 0 && !isShowingCards;
+                
+                visualState.innerHTML = `
+                    <div class="status ${statusType}">
+                        <h4>Current Visual State</h4>
+                        <p><strong>8 Visualizer Cards:</strong> ${isShowingCards ? `${visualizerGrid.children.length}/8 visible` : 'Not visible'}</p>
+                        <p><strong>Loading Screen:</strong> ${isShowingLoading ? 'Still showing' : 'Not showing'}</p>
+                        <p><strong>Error Messages:</strong> ${errorDisplays.length > 0 ? `${errorDisplays.length} visible` : 'None'}</p>
+                        <p><strong>Success Messages:</strong> ${successDisplays.length > 0 ? `${successDisplays.length} visible` : 'None'}</p>
+                    </div>
+                `;
+                
+                // Show results
+                resultsContainer.classList.remove('hidden');
+                loadingIndicator.style.display = 'none';
+                
+                return {
+                    status: statusType,
+                    message: overallStatus,
+                    cardsVisible: isShowingCards,
+                    cardCount: visualizerGrid ? visualizerGrid.children.length : 0,
+                    hasErrors: errorDisplays.length > 0
+                };
+                
+            } catch (error) {
+                logOutput(`❌ Analysis failed: ${error.message}`);
+                updateStatus(`Analysis failed: ${error.message}`, 'error');
+                
+                visualState.innerHTML = `
+                    <div class="status error">
+                        <h4>Analysis Error</h4>
+                        <p>Could not analyze demo state: ${error.message}</p>
+                    </div>
+                `;
+                
+                resultsContainer.classList.remove('hidden');
+                loadingIndicator.style.display = 'none';
+                
+                return {
+                    status: 'error',
+                    message: error.message
+                };
+            }
+        }
+        
+        // Start analysis when iframe loads
+        demoFrame.onload = function() {
+            updateStatus('Demo loaded, analyzing state...', 'status');
+            
+            // Wait a bit for initialization
+            setTimeout(() => {
+                diagnosticResults = analyzeDemoState();
+                
+                // Generate summary
+                if (diagnosticResults) {
+                    let summaryClass = diagnosticResults.status;
+                    let summaryHTML = `
+                        <div class="status ${summaryClass}">
+                            <h3>🎯 SUMMARY</h3>
+                            <p><strong>Status:</strong> ${diagnosticResults.message}</p>
+                    `;
+                    
+                    if (diagnosticResults.cardsVisible) {
+                        summaryHTML += `<p><strong>Visualizer Cards:</strong> ${diagnosticResults.cardCount}/8 are displaying</p>`;
+                    } else {
+                        summaryHTML += `<p><strong>Issue:</strong> The 8 visualizer cards are not showing - likely stuck in loading or error state</p>`;
+                    }
+                    
+                    summaryHTML += '</div>';
+                    summaryResults.innerHTML = summaryHTML;
+                }
+            }, 3000); // Wait 3 seconds for full initialization
+        };
+        
+        demoFrame.onerror = function() {
+            updateStatus('Failed to load demo page', 'error');
+            logOutput('❌ Demo iframe failed to load');
+            resultsContainer.classList.remove('hidden');
+            loadingIndicator.style.display = 'none';
+        };
+        
+        // Initialize
+        updateStatus('Loading VIB34D demo for analysis...', 'status');
+        logOutput('🔍 VIB34D Demo Diagnostic Starting...');
+        logOutput('⏳ Loading demo page...');
+    </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+{
+  "url": "https://domusgpt.github.io/vib34d-hypercube-navigation/",
+  "title": "VIB3CODE | FIXED ARCHITECTURE - Reusable Canvas System",
+  "webglSupport": true,
+  "canvases": [
+    {
+      "index": 0,
+      "id": "backgroundCanvas",
+      "className": "vib34d-adaptive-canvas",
+      "width": 1920,
+      "height": 1080,
+      "displayWidth": 1920,
+      "displayHeight": 1080,
+      "visible": true,
+      "contextType": "webgl"
+    },
+    {
+      "index": 1,
+      "id": "cardCanvas1",
+      "className": "vib34d-adaptive-canvas",
+      "width": 766,
+      "height": 376,
+      "displayWidth": 768,
+      "displayHeight": 378,
+      "visible": true,
+      "contextType": "webgl"
+    },
+    {
+      "index": 2,
+      "id": "cardCanvas2",
+      "className": "vib34d-adaptive-canvas",
+      "width": 766,
+      "height": 376,
+      "displayWidth": 768,
+      "displayHeight": 378,
+      "visible": true,
+      "contextType": "webgl"
+    },
+    {
+      "index": 3,
+      "id": "cardCanvas3",
+      "className": "vib34d-adaptive-canvas",
+      "width": 766,
+      "height": 376,
+      "displayWidth": 768,
+      "displayHeight": 378,
+      "visible": true,
+      "contextType": "webgl"
+    },
+    {
+      "index": 4,
+      "id": "cardCanvasSidebar",
+      "className": "vib34d-adaptive-canvas",
+      "width": 766,
+      "height": 376,
+      "displayWidth": 768,
+      "displayHeight": 378,
+      "visible": true,
+      "contextType": "webgl"
+    }
+  ],
+  "visibleElements": {
+    ".face": {
+      "count": 0,
+      "visible": []
+    },
+    ".nav-item": {
+      "count": 0,
+      "visible": []
+    },
+    ".content-section": {
+      "count": 0,
+      "visible": []
+    },
+    "[data-face]": {
+      "count": 0,
+      "visible": []
+    },
+    ".hypercube-container": {
+      "count": 0,
+      "visible": []
+    }
+  },
+  "documentReady": "complete",
+  "errors": [],
+  "webglInfo": {
+    "vendor": "WebKit",
+    "renderer": "WebKit WebGL",
+    "version": "WebGL 1.0 (OpenGL ES 2.0 Chromium)"
+  }
+}

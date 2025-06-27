@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Browser Test Suite</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .pass { background: rgba(0, 255, 0, 0.2); border: 1px solid #0f0; }
+        .fail { background: rgba(255, 0, 0, 0.2); border: 1px solid #f00; }
+        .info { background: rgba(0, 255, 255, 0.2); border: 1px solid #0ff; }
+        #test-results { max-height: 400px; overflow-y: auto; }
+        button { 
+            background: #333; 
+            color: #fff; 
+            border: 1px solid #666; 
+            padding: 10px 20px; 
+            margin: 10px 5px;
+            cursor: pointer;
+        }
+        button:hover { background: #555; }
+        #demo-frame {
+            width: 100%;
+            height: 500px;
+            border: 2px solid #666;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 VIB34D Central State Manager Test Suite</h1>
+    
+    <div>
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="clearResults()">Clear Results</button>
+        <button onclick="loadDemo()">Load Demo</button>
+    </div>
+    
+    <div id="test-results"></div>
+    
+    <iframe id="demo-frame" src="about:blank"></iframe>
+    
+    <script>
+        let testResults = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            testResults.push({ timestamp, message, type });
+            updateDisplay();
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        function updateDisplay() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = testResults.map(result => 
+                `<div class="test-result ${result.type}">
+                    [${result.timestamp}] ${result.message}
+                </div>`
+            ).join('');
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+        
+        function clearResults() {
+            testResults = [];
+            updateDisplay();
+        }
+        
+        function loadDemo() {
+            log('Loading VIB34D Demo...', 'info');
+            document.getElementById('demo-frame').src = 'VIB34D_PHASE1_INTEGRATED_DEMO.html';
+        }
+        
+        async function testEndpoint(url) {
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    const text = await response.text();
+                    log(`✅ ${url}: OK (${text.length} bytes)`, 'pass');
+                    return { success: true, content: text };
+                } else {
+                    log(`❌ ${url}: HTTP ${response.status}`, 'fail');
+                    return { success: false };
+                }
+            } catch (error) {
+                log(`❌ ${url}: ${error.message}`, 'fail');
+                return { success: false };
+            }
+        }
+        
+        async function testSystemArchitecture() {
+            log('🔍 Testing System Architecture...', 'info');
+            
+            // Test HTML
+            const htmlResult = await testEndpoint('VIB34D_PHASE1_INTEGRATED_DEMO.html');
+            if (htmlResult.success) {
+                const hasTitle = htmlResult.content.includes('VIB34D - Phase 1 Integrated Central State Demo');
+                const hasScripts = htmlResult.content.includes('VIB34D_WORKING_CORE_ARCHITECTURE.js') &&
+                                  htmlResult.content.includes('VIB34D_CENTRAL_STATE_MANAGER.js');
+                const hasVisualizerGrid = htmlResult.content.includes('visualizer-grid');
+                const hasControls = htmlResult.content.includes('interaction-controls');
+                
+                log(`📄 HTML Structure: Title(${hasTitle}) Scripts(${hasScripts}) Grid(${hasVisualizerGrid}) Controls(${hasControls})`, 
+                    hasTitle && hasScripts && hasVisualizerGrid && hasControls ? 'pass' : 'fail');
+            }
+            
+            // Test Core Architecture
+            const coreResult = await testEndpoint('VIB34D_WORKING_CORE_ARCHITECTURE.js');
+            if (coreResult.success) {
+                const hasShaderManager = coreResult.content.includes('class ShaderManager');
+                const hasHypercubeCore = coreResult.content.includes('class HypercubeCore');
+                const hasBaseGeometry = coreResult.content.includes('class BaseGeometry');
+                const hasShaderConstructor = coreResult.content.includes('constructor(gl, geometryManager, projectionManager, options = {})');
+                
+                log(`🏗️ Core Classes: ShaderManager(${hasShaderManager}) HypercubeCore(${hasHypercubeCore}) BaseGeometry(${hasBaseGeometry})`, 
+                    hasShaderManager && hasHypercubeCore && hasBaseGeometry ? 'pass' : 'fail');
+                log(`🔧 ShaderManager Constructor Fix: ${hasShaderConstructor ? '✅ FIXED' : '❌ BROKEN'}`, 
+                    hasShaderConstructor ? 'pass' : 'fail');
+            }
+            
+            // Test State Manager
+            const stateResult = await testEndpoint('VIB34D_CENTRAL_STATE_MANAGER.js');
+            if (stateResult.success) {
+                const hasCentralManager = stateResult.content.includes('class VIB34DCentralStateManager');
+                const hasVisualizerMap = stateResult.content.includes('this.visualizers = new Map()');
+                const hasEventHandling = stateResult.content.includes('handleUserEvent');
+                const hasUpdateFocus = stateResult.content.includes('updateFocusState');
+                
+                log(`🎯 State Management: CentralManager(${hasCentralManager}) VisualizerMap(${hasVisualizerMap}) Events(${hasEventHandling}) Focus(${hasUpdateFocus})`, 
+                    hasCentralManager && hasVisualizerMap && hasEventHandling && hasUpdateFocus ? 'pass' : 'fail');
+            }
+        }
+        
+        async function testDemoFrame() {
+            log('🖼️ Testing Demo Frame...', 'info');
+            
+            const frame = document.getElementById('demo-frame');
+            if (!frame.src || frame.src === 'about:blank') {
+                log('❌ Demo not loaded. Click "Load Demo" first.', 'fail');
+                return;
+            }
+            
+            // Wait for frame to load
+            await new Promise(resolve => {
+                if (frame.contentDocument && frame.contentDocument.readyState === 'complete') {
+                    resolve();
+                } else {
+                    frame.onload = resolve;
+                }
+            });
+            
+            try {
+                const frameDoc = frame.contentDocument;
+                const frameWindow = frame.contentWindow;
+                
+                // Check basic elements
+                const hasTitle = frameDoc.querySelector('.demo-title');
+                const hasGrid = frameDoc.querySelector('.visualizer-grid');
+                const hasControls = frameDoc.querySelector('.interaction-controls');
+                const hasDashboard = frameDoc.querySelector('.state-dashboard');
+                
+                log(`📱 UI Elements: Title(${!!hasTitle}) Grid(${!!hasGrid}) Controls(${!!hasControls}) Dashboard(${!!hasDashboard})`, 
+                    hasTitle && hasGrid && hasControls && hasDashboard ? 'pass' : 'fail');
+                
+                // Check JavaScript objects
+                const hasWorkingCore = !!frameWindow.VIB34D_WorkingCore;
+                const hasCentralState = !!frameWindow.centralStateManager;
+                const hasVisualizers = !!frameWindow.visualizers;
+                
+                log(`🧠 JavaScript Objects: WorkingCore(${hasWorkingCore}) CentralState(${hasCentralState}) Visualizers(${hasVisualizers})`, 
+                    hasWorkingCore && hasCentralState && hasVisualizers ? 'pass' : 'fail');
+                
+                // Check visualizer cards
+                const cards = frameDoc.querySelectorAll('.visualizer-card');
+                log(`📦 Visualizer Cards: ${cards.length}/8 created`, 
+                    cards.length === 8 ? 'pass' : 'fail');
+                
+                // Test hover interaction
+                if (cards.length > 0) {
+                    log('🖱️ Testing hover interaction...', 'info');
+                    const firstCard = cards[0];
+                    
+                    // Simulate hover
+                    const hoverEvent = new MouseEvent('mouseenter', { bubbles: true });
+                    firstCard.dispatchEvent(hoverEvent);
+                    
+                    // Check for visual changes
+                    setTimeout(() => {
+                        const hasScaling = firstCard.style.transform || firstCard.classList.contains('focused');
+                        log(`🎯 Hover Response: ${hasScaling ? '✅ Visual scaling detected' : '⚠️ No clear visual change'}`, 
+                            hasScaling ? 'pass' : 'fail');
+                    }, 500);
+                }
+                
+                // Test control buttons
+                const buttons = frameDoc.querySelectorAll('.control-button');
+                log(`🎮 Control Buttons: ${buttons.length} found`, 
+                    buttons.length >= 5 ? 'pass' : 'fail');
+                
+                if (buttons.length > 0) {
+                    log('🔘 Testing control button click...', 'info');
+                    const testButton = Array.from(buttons).find(btn => btn.textContent.includes('Test Hover'));
+                    if (testButton) {
+                        testButton.click();
+                        
+                        // Check dashboard update
+                        setTimeout(() => {
+                            const globalInteractionEl = frameDoc.getElementById('globalInteraction');
+                            const interactionText = globalInteractionEl ? globalInteractionEl.textContent : '';
+                            log(`📊 Dashboard Update: Global interaction shows "${interactionText}"`, 
+                                interactionText !== 'idle' ? 'pass' : 'info');
+                        }, 300);
+                    }
+                }
+                
+            } catch (error) {
+                log(`❌ Frame testing error: ${error.message}`, 'fail');
+            }
+        }
+        
+        async function runAllTests() {
+            log('🚀 Starting VIB34D Test Suite...', 'info');
+            clearResults();
+            
+            await testSystemArchitecture();
+            
+            // Load demo if not already loaded
+            if (!document.getElementById('demo-frame').src || 
+                document.getElementById('demo-frame').src.includes('about:blank')) {
+                loadDemo();
+                // Wait for demo to load
+                await new Promise(resolve => setTimeout(resolve, 3000));
+            }
+            
+            await testDemoFrame();
+            
+            log('✅ Test suite completed!', 'info');
+            
+            // Summary
+            const passCount = testResults.filter(r => r.type === 'pass').length;
+            const failCount = testResults.filter(r => r.type === 'fail').length;
+            log(`📊 Results: ${passCount} passed, ${failCount} failed`, 
+                failCount === 0 ? 'pass' : 'fail');
+        }
+        
+        // Auto-load demo on page load
+        window.addEventListener('load', () => {
+            log('🌟 VIB34D Browser Test Suite Ready', 'info');
+            log('Click "Run All Tests" to begin automated testing', 'info');
+        });
+    </script>
+</body>
+</html>

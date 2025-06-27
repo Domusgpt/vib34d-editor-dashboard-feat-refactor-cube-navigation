@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple WebGL Fix Verification</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+            font-family: monospace;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        
+        .canvas-container {
+            width: 300px;
+            height: 200px;
+            border: 1px solid #555;
+            margin: 10px 0;
+            display: inline-block;
+            margin-right: 20px;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .success { background: rgba(0, 255, 0, 0.2); }
+        .error { background: rgba(255, 0, 0, 0.2); }
+        .warning { background: rgba(255, 255, 0, 0.2); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Simple WebGL Fix Verification</h1>
+        
+        <div class="test-section">
+            <h3>1. Basic WebGL Context Test</h3>
+            <div id="webgl-test-status" class="status">Testing...</div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. Simple Shader Compilation Test</h3>
+            <div id="shader-test-status" class="status">Testing...</div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. Visible Rendering Test</h3>
+            <div class="canvas-container" id="test-canvas-container"></div>
+            <div id="render-test-status" class="status">Testing...</div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. Fixed Visualizer Test</h3>
+            <div class="canvas-container" id="fixed-visualizer-container"></div>
+            <div id="visualizer-test-status" class="status">Testing...</div>
+        </div>
+    </div>
+    
+    <script src="VIB34D_ADAPTIVE_CARD_VISUALIZER_FIXED.js"></script>
+    
+    <script>
+        // Test 1: Basic WebGL Context
+        function testWebGLContext() {
+            const canvas = document.createElement('canvas');
+            let gl = null;
+            
+            try {
+                gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                
+                if (gl) {
+                    const version = gl.getParameter(gl.VERSION);
+                    const renderer = gl.getParameter(gl.RENDERER);
+                    
+                    document.getElementById('webgl-test-status').innerHTML = 
+                        `✅ SUCCESS: WebGL available<br>Version: ${version}<br>Renderer: ${renderer}`;
+                    document.getElementById('webgl-test-status').className = 'status success';
+                    return true;
+                } else {
+                    throw new Error('WebGL not supported');
+                }
+            } catch (error) {
+                document.getElementById('webgl-test-status').innerHTML = `❌ FAILED: ${error.message}`;
+                document.getElementById('webgl-test-status').className = 'status error';
+                return false;
+            }
+        }
+        
+        // Test 2: Simple Shader Compilation
+        function testShaderCompilation() {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            
+            if (!gl) {
+                document.getElementById('shader-test-status').innerHTML = '❌ FAILED: No WebGL context';
+                document.getElementById('shader-test-status').className = 'status error';
+                return false;
+            }
+            
+            try {
+                // Ultra-simple shaders
+                const vertexShader = `
+                    attribute vec2 a_position;
+                    void main() {
+                        gl_Position = vec4(a_position, 0.0, 1.0);
+                    }
+                `;
+                
+                const fragmentShader = `
+                    precision mediump float;
+                    void main() {
+                        gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+                    }
+                `;
+                
+                function createShader(type, source) {
+                    const shader = gl.createShader(type);
+                    gl.shaderSource(shader, source);
+                    gl.compileShader(shader);
+                    
+                    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                        throw new Error('Shader compilation failed: ' + gl.getShaderInfoLog(shader));
+                    }
+                    return shader;
+                }
+                
+                const vShader = createShader(gl.VERTEX_SHADER, vertexShader);
+                const fShader = createShader(gl.FRAGMENT_SHADER, fragmentShader);
+                
+                const program = gl.createProgram();
+                gl.attachShader(program, vShader);
+                gl.attachShader(program, fShader);
+                gl.linkProgram(program);
+                
+                if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                    throw new Error('Program linking failed: ' + gl.getProgramInfoLog(program));
+                }
+                
+                document.getElementById('shader-test-status').innerHTML = '✅ SUCCESS: Shaders compiled and linked';
+                document.getElementById('shader-test-status').className = 'status success';
+                return true;
+                
+            } catch (error) {
+                document.getElementById('shader-test-status').innerHTML = `❌ FAILED: ${error.message}`;
+                document.getElementById('shader-test-status').className = 'status error';
+                return false;
+            }
+        }
+        
+        // Test 3: Visible Rendering
+        function testVisibleRendering() {
+            const container = document.getElementById('test-canvas-container');
+            const canvas = document.createElement('canvas');
+            canvas.width = 280;
+            canvas.height = 180;
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            container.appendChild(canvas);
+            
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            
+            if (!gl) {
+                document.getElementById('render-test-status').innerHTML = '❌ FAILED: No WebGL context';
+                document.getElementById('render-test-status').className = 'status error';
+                return false;
+            }
+            
+            try {
+                // Set viewport
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                
+                // Clear with bright color
+                gl.clearColor(0.2, 0.0, 0.5, 1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                
+                // Create simple triangle
+                const vertices = new Float32Array([
+                    0.0,  0.5,
+                    -0.5, -0.5,
+                    0.5, -0.5
+                ]);
+                
+                const buffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+                
+                // Shaders
+                const vertexShader = `
+                    attribute vec2 a_position;
+                    void main() {
+                        gl_Position = vec4(a_position, 0.0, 1.0);
+                    }
+                `;
+                
+                const fragmentShader = `
+                    precision mediump float;
+                    uniform float u_time;
+                    void main() {
+                        float pulse = 0.7 + 0.3 * sin(u_time * 3.0);
+                        gl_FragColor = vec4(1.0 * pulse, 1.0 * pulse, 0.0, 1.0);
+                    }
+                `;
+                
+                function createShader(type, source) {
+                    const shader = gl.createShader(type);
+                    gl.shaderSource(shader, source);
+                    gl.compileShader(shader);
+                    return shader;
+                }
+                
+                const vShader = createShader(gl.VERTEX_SHADER, vertexShader);
+                const fShader = createShader(gl.FRAGMENT_SHADER, fragmentShader);
+                
+                const program = gl.createProgram();
+                gl.attachShader(program, vShader);
+                gl.attachShader(program, fShader);
+                gl.linkProgram(program);
+                
+                gl.useProgram(program);
+                
+                const positionLocation = gl.getAttribLocation(program, 'a_position');
+                const timeLocation = gl.getUniformLocation(program, 'u_time');
+                
+                gl.enableVertexAttribArray(positionLocation);
+                gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+                
+                // Animation loop
+                let startTime = Date.now();
+                function animate() {
+                    const time = (Date.now() - startTime) / 1000;
+                    
+                    gl.clearColor(0.1, 0.0, 0.2, 1.0);
+                    gl.clear(gl.COLOR_BUFFER_BIT);
+                    
+                    gl.uniform1f(timeLocation, time);
+                    gl.drawArrays(gl.TRIANGLES, 0, 3);
+                    
+                    requestAnimationFrame(animate);
+                }
+                animate();
+                
+                document.getElementById('render-test-status').innerHTML = '✅ SUCCESS: Triangle visible and animating';
+                document.getElementById('render-test-status').className = 'status success';
+                return true;
+                
+            } catch (error) {
+                document.getElementById('render-test-status').innerHTML = `❌ FAILED: ${error.message}`;
+                document.getElementById('render-test-status').className = 'status error';
+                return false;
+            }
+        }
+        
+        // Test 4: Fixed Visualizer
+        function testFixedVisualizer() {
+            const container = document.getElementById('fixed-visualizer-container');
+            
+            try {
+                if (!window.AdaptiveCardVisualizerFixed) {
+                    throw new Error('AdaptiveCardVisualizerFixed not loaded');
+                }
+                
+                const visualizer = new AdaptiveCardVisualizerFixed(container, {
+                    width: 280,
+                    height: 180,
+                    geometry: 0,
+                    intensity: 1.5,
+                    scale: 1.2
+                });
+                
+                // Check if it initialized
+                setTimeout(() => {
+                    if (visualizer.isInitialized) {
+                        const metrics = visualizer.getPerformanceMetrics();
+                        document.getElementById('visualizer-test-status').innerHTML = 
+                            `✅ SUCCESS: Fixed visualizer working<br>Mode: ${metrics.renderingMode}<br>FPS: ${metrics.fps || 'N/A'}`;
+                        document.getElementById('visualizer-test-status').className = 'status success';
+                    } else {
+                        document.getElementById('visualizer-test-status').innerHTML = '⚠️ WARNING: Visualizer initialized but may not be rendering';
+                        document.getElementById('visualizer-test-status').className = 'status warning';
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                document.getElementById('visualizer-test-status').innerHTML = `❌ FAILED: ${error.message}`;
+                document.getElementById('visualizer-test-status').className = 'status error';
+                return false;
+            }
+        }
+        
+        // Run all tests
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🧪 Running WebGL fix verification tests...');
+            
+            // Run tests in sequence with delays
+            setTimeout(() => testWebGLContext(), 100);
+            setTimeout(() => testShaderCompilation(), 300);
+            setTimeout(() => testVisibleRendering(), 500);
+            setTimeout(() => testFixedVisualizer(), 1000);
+        });
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3CODE | Refined Tesseract Navigation with JSON Configuration</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #000000 70%);
+            
+            /* INVISIBLE SCROLLBARS */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+            
+            /* Advanced CSS Variables for Real-time Reactivity */
+            --global-energy: 0.0;
+            --section-focus: 0;
+            --portal-intensity: 0.0;
+            --micro-chaos: 0.0;
+            --inverse-flow: 0.0;
+            --grid-vibrance: 1.0;
+            --transition-phase: 0.0;
+            --hover-section: -1;
+            --scroll-momentum: 0.0;
+            --reality-tear: 0.0;
+            
+            /* Smart Opacity Variables */
+            --visualizer-opacity: 0.8;
+            --focused-opacity: 0.9;
+            --reading-opacity: 0.7;
+            --gravity-opacity: 0.8;
+            --board-opacity: 0.7;
+            
+            /* Content Guidance Variables */
+            --content-gravity-x: 0.5;
+            --content-gravity-y: 0.5;
+            --content-flow-strength: 0.0;
+            --text-proximity: 0.0;
+        }
+        
+        body::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none; /* Chrome/Safari */
+        }
+        
+        /* TESSERACT 8-CELL HYPERCUBE CONTAINER */
+        .tesseract-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 2000px;
+            perspective-origin: center center;
+            overflow: hidden;
+        }
+        
+        .hypercube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            backface-visibility: visible;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        /* SINGLE DYNAMIC FACE WITH 8 GEOMETRY STATES */
+        .hypercube-face.active-face {
+            transform: translateZ(0px);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* GEOMETRY-BASED DYNAMIC STATES */
+        .active-face[data-geometry="hypercube"] { /* HOME STATE */
+            /* Keep existing layout with hypercube visualizers */
+        }
+        
+        .active-face[data-geometry="tetrahedron"] { /* TECH STATE */
+            /* Dynamic repositioning for tech content */
+        }
+        
+        .active-face[data-geometry="wave"] { /* RESEARCH STATE */
+            /* Dynamic repositioning for research content */
+        }
+        
+        .active-face[data-geometry="sphere"] { /* MEDIA STATE */
+            /* Dynamic repositioning for media content */
+        }
+        
+        .active-face[data-geometry="fractal"] { /* INNOVATION STATE */
+            /* Dynamic repositioning for innovation content */
+        }
+        
+        .active-face[data-geometry="crystal"] { /* CONTEXT STATE */
+            /* Dynamic repositioning for context content */
+        }
+        
+        .active-face[data-geometry="klein"] { /* KLEIN STATE */
+            /* Dynamic repositioning for klein content */
+        }
+        
+        .active-face[data-geometry="torus"] { /* TORUS STATE */
+            /* Dynamic repositioning for torus content */
+        }
+        
+        /* TESSERACT FOLDING STATES */
+        .tesseract-container.folding-right .hypercube-face.face-0 {
+            transform: rotateY(-90deg) translateZ(-100px);
+        }
+        
+        .tesseract-container.folding-right .hypercube-face.face-1 {
+            transform: rotateY(0deg) translateZ(0px);
+        }
+        
+        .tesseract-container.folding-left .hypercube-face.face-0 {
+            transform: rotateY(90deg) translateZ(-100px);
+        }
+        
+        .tesseract-container.folding-left .hypercube-face.face-3 {
+            transform: rotateY(0deg) translateZ(0px);
+        }
+        
+        .tesseract-container.folding-up .hypercube-face.face-0 {
+            transform: rotateX(90deg) translateZ(-100px);
+        }
+        
+        .tesseract-container.folding-up .hypercube-face.face-4 {
+            transform: rotateX(0deg) translateZ(0px);
+        }
+        
+        .tesseract-container.folding-down .hypercube-face.face-0 {
+            transform: rotateX(-90deg) translateZ(-100px);
+        }
+        
+        .tesseract-container.folding-down .hypercube-face.face-5 {
+            transform: rotateX(0deg) translateZ(0px);
+        }
+        
+        /* HYPERCUBE TENSION MECHANICS */
+        .tesseract-container.tension-building {
+            --tension-intensity: 0.0;
+            filter: blur(calc(var(--tension-intensity) * 2px));
+        }
+        
+        .tesseract-container.tension-building .hypercube-face {
+            transform: scale(calc(1.0 + var(--tension-intensity) * 0.05)) 
+                      rotateZ(calc(var(--tension-intensity) * 2deg));
+        }
+        
+        /* SCROLL WRAPPER SYSTEM */
+        .scroll-wrapper {
+            width: 100%;
+            height: 100%;
+            will-change: transform;
+            position: relative;
+            filter: blur(var(--page-content-area-blur, 0px));
+            transition: filter 0.5s ease-in-out;
+        }
+
+        #page-focus-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0,0,0,0.7);
+            opacity: 0;
+            display: none;
+            z-index: 900;
+            pointer-events: none;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        /* MULTI-LAYER VISUALIZER SYSTEM */
+        .visualizer-board {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: var(--board-opacity);
+            transition: opacity 0.3s ease;
+        }
+        
+        .visualizer-board canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+        
+        /* FLOATING BLOG CARDS */
+        .blog-card {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        /* Card positioning from sophisticated system */
+        #blog-card-1 { /* Header/Navigation */
+            top: 5%;
+            left: 5%;
+            width: 40%;
+            height: 25%;
+        }
+        
+        #blog-card-2 { /* Featured Article */
+            top: 5%;
+            right: 5%;
+            width: 50%;
+            height: 40%;
+        }
+        
+        #blog-card-3 { /* Quick Links */
+            top: 50%;
+            right: 5%;
+            width: 25%;
+            height: 45%;
+        }
+        
+        #blog-card-4 { /* Main Content */
+            bottom: 5%;
+            left: 5%;
+            width: 60%;
+            height: 40%;
+        }
+        
+        #blog-card-5 { /* Sidebar */
+            bottom: 5%;
+            right: 30%;
+            width: 35%;
+            height: 25%;
+        }
+        
+        #blog-card-6 { /* Status */
+            top: 35%;
+            left: 5%;
+            width: 30%;
+            height: 20%;
+        }
+        
+        .blog-card:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: scale(1.02);
+            background: rgba(0, 0, 0, 0.95);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            z-index: 100;
+        }
+        
+        /* CARD VISUALIZERS - Multi-layer system */
+        .card-visualizer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: 1;
+            opacity: var(--visualizer-opacity);
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .card-content {
+            position: relative;
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 2;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            will-change: transform;
+        }
+        
+        .card-content::-webkit-scrollbar {
+            width: 0;
+            display: none;
+        }
+        
+        .dynamic-content-block {
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .card-title, .blog-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        .card-subtitle {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+        
+        .article-content {
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+        
+        /* STATE INDICATOR */
+        .state-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            min-width: 200px;
+        }
+        
+        .state-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 2px 0;
+            color: #ff00ff;
+        }
+        
+        .state-value {
+            color: #00ffff;
+            font-weight: bold;
+        }
+        
+        /* DEV CONTROLS */
+        .dev-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .dev-controls button {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #00ffff;
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .dev-controls button:hover {
+            background: rgba(0, 255, 255, 0.3);
+            border-color: rgba(0, 255, 255, 1.0);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        /* Theme-specific colors from JSON */
+        .theme-hypercube .blog-card:hover { border-color: rgba(255, 0, 255, 1.0); box-shadow: 0 0 30px rgba(255, 0, 255, 0.5); }
+        .theme-tetrahedron .blog-card:hover { border-color: rgba(0, 255, 255, 1.0); box-shadow: 0 0 30px rgba(0, 255, 255, 0.5); }
+        .theme-sphere .blog-card:hover { border-color: rgba(255, 255, 0, 1.0); box-shadow: 0 0 30px rgba(255, 255, 0, 0.5); }
+        .theme-torus .blog-card:hover { border-color: rgba(0, 255, 0, 1.0); box-shadow: 0 0 30px rgba(0, 255, 0, 0.5); }
+        .theme-wave .blog-card:hover { border-color: rgba(255, 0, 128, 1.0); box-shadow: 0 0 30px rgba(255, 0, 128, 0.5); }
+        .theme-fractal .blog-card:hover { border-color: rgba(128, 0, 255, 1.0); box-shadow: 0 0 30px rgba(128, 0, 255, 0.5); }
+        .theme-crystal .blog-card:hover { border-color: rgba(0, 255, 128, 1.0); box-shadow: 0 0 30px rgba(0, 255, 128, 0.5); }
+        .theme-klein .blog-card:hover { border-color: rgba(255, 128, 0, 1.0); box-shadow: 0 0 30px rgba(255, 128, 0, 0.5); }
+        
+        /* Loading screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-text {
+            font-size: 2em;
+            color: #00ffff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+        
+        .loading-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .loading-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">🏠 VIB3CODE</div>
+        <div class="loading-text" style="font-size: 0.8em;">Initializing Refined Tesseract System...</div>
+        <div class="loading-progress">
+            <div class="loading-bar" id="loadingBar"></div>
+        </div>
+    </div>
+    
+    <!-- STATE INDICATOR -->
+    <div class="state-indicator">
+        <div class="state-row">Layout: <span class="state-value" id="current-layout">HOME</span></div>
+        <div class="state-row">Theme: <span class="state-value" id="current-theme">Hypercube Grid</span></div>
+        <div class="state-row">Geometry: <span class="state-value" id="current-geometry">hypercube</span></div>
+        <div class="state-row">Face: <span class="state-value" id="current-face">0</span></div>
+        <div class="state-row">Intensity: <span class="state-value" id="current-intensity">0.8</span></div>
+        <div class="state-row">Mode: <span class="state-value">Refined</span></div>
+    </div>
+    
+    <!-- DEV CONTROLS -->
+    <div class="dev-controls">
+        <div style="color: #00ffff; font-weight: bold; margin-bottom: 8px;">🔧 REFINED CONTROLS</div>
+        <button onclick="refinedSystem.navigateToFace(0)">HOME</button>
+        <button onclick="refinedSystem.navigateToFace(1)">TECH</button>
+        <button onclick="refinedSystem.navigateToFace(2)">RESEARCH</button>
+        <button onclick="refinedSystem.navigateToFace(3)">MEDIA</button>
+        <br>
+        <button onclick="refinedSystem.navigateToFace(4)">INNOVATION</button>
+        <button onclick="refinedSystem.navigateToFace(5)">CONTEXT</button>
+        <button onclick="refinedSystem.navigateToFace(6)">KLEIN</button>
+        <button onclick="refinedSystem.navigateToFace(7)">TORUS</button>
+        <br>
+        <button onclick="refinedSystem.cycleFace()">Cycle</button>
+        <button onclick="refinedSystem.testParameterChange()">Test</button>
+        <button onclick="refinedSystem.resetSystem()">Reset</button>
+        <div style="margin-top: 8px; font-size: 8px; color: #666;">
+            Arrow Keys = Navigate | Space = Cycle | R = Reset
+        </div>
+    </div>
+
+    <!-- Focus Mode Overlay -->
+    <div id="page-focus-overlay"></div>
+
+    <!-- SINGLE DYNAMIC LAYOUT CONTAINER -->
+    <div class="tesseract-container" id="tesseractContainer">
+        <!-- VIB34D HYBRID: Single dynamic face with 8 geometry states -->
+        <div class="hypercube-face active-face" id="dynamic-face" data-geometry="hypercube" data-face="0">
+            <div class="scroll-wrapper" id="page-content-scroll-area">
+        
+                <!-- VISUALIZER BACKGROUND BOARD -->
+                <div class="visualizer-board">
+                    <canvas id="board-visualizer"></canvas>
+                </div>
+                
+                <!-- FLOATING BLOG CARDS -->
+                <!-- Card 1: Header/Navigation -->
+                <div class="blog-card" id="blog-card-1">
+                    <canvas class="card-visualizer" id="card-visualizer-1"></canvas>
+                    <div class="card-content">
+                        <!-- Dynamic Content -->
+                    </div>
+                </div>
+                
+                <!-- Card 2: Featured Article -->
+                <div class="blog-card" id="blog-card-2">
+                    <canvas class="card-visualizer" id="card-visualizer-2"></canvas>
+                    <div class="card-content">
+                        <!-- Dynamic Content -->
+                    </div>
+                </div>
+                
+                <!-- Card 3: Quick Links -->
+                <div class="blog-card" id="blog-card-3">
+                    <canvas class="card-visualizer" id="card-visualizer-3"></canvas>
+                    <div class="card-content">
+                        <!-- Dynamic Content -->
+                    </div>
+                </div>
+                
+                <!-- Card 4: Main Content -->
+                <div class="blog-card" id="blog-card-4">
+                    <canvas class="card-visualizer" id="card-visualizer-4"></canvas>
+                    <div class="card-content">
+                        <!-- Dynamic Content -->
+                    </div>
+                </div>
+                
+                <!-- Card 5: Sidebar -->
+                <div class="blog-card" id="blog-card-5">
+                    <canvas class="card-visualizer" id="card-visualizer-5"></canvas>
+                    <div class="card-content">
+                        <!-- Dynamic Content -->
+                    </div>
+                </div>
+                
+                <!-- Card 6: Status -->
+                <div class="blog-card" id="blog-card-6">
+                    <canvas class="card-visualizer" id="card-visualizer-6"></canvas>
+                    <div class="card-content">
+                        <!-- Dynamic Content -->
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Core Systems -->
+    <script type="module" src="./core/VIB3HomeMaster.js"></script>
+    <script type="module" src="./core/UnifiedReactivityBridge.js"></script>
+    <script src="VIB3_JSON_CONFIG_SYSTEM.js"></script>
+    <script src="VIB3_REACTIVE_HYPERAV_CORE.js"></script>
+    <script src="VIB3_UNIFIED_EFFECTS_SYSTEM.js"></script>
+    <script src="VIB3_INTUITIVE_PRESETS.js"></script>
+    
+    <!-- Load Unified Effects CSS -->
+    <link rel="stylesheet" href="VIB3_UNIFIED_EFFECTS.css">
+
+    <script>
+        /**
+         * VIB3 REFINED TESSERACT SYSTEM
+         * 
+         * Implements the sophisticated architecture from the morphing blog
+         * Integrates VIB3HomeMaster, UnifiedReactivityBridge, multi-layer visualizers
+         * Full JSON configuration with advanced parameter relationships
+         */
+        
+        class VIB3RefinedTesseractSystem {
+            constructor() {
+                this.configSystem = null;
+                this.homeMaster = null;
+                this.reactivityBridge = null;
+                this.effectsSystem = null;
+                this.intuitivePresets = null;
+                this.visualizers = [];
+                this.currentFace = 0;
+                this.currentGeometry = 'hypercube';
+                this.isInitialized = false;
+                
+                // Sophisticated geometry mapping from refined architecture
+                this.geometryStates = [
+                    'hypercube',    // Face 0 - HOME (FRONT) - Hypercube sovereignty
+                    'tetrahedron',  // Face 1 - TECH (RIGHT) - Tetrahedron precision
+                    'wave',         // Face 2 - RESEARCH (BACK) - Wave function
+                    'sphere',       // Face 3 - MEDIA (LEFT) - Sphere potential
+                    'fractal',      // Face 4 - INNOVATION (TOP) - Fractal growth
+                    'crystal',      // Face 5 - CONTEXT (BOTTOM) - Crystal lattice
+                    'klein',        // Face 6 - INNER FRONT - Klein bottle topology
+                    'torus'         // Face 7 - INNER BACK - Torus flow
+                ];
+                
+                // Hypercube face geometry mapping from sophisticated system
+                this.hypercubeFaceGeometries = {
+                    'face-0': 'hypercube',    // HOME (FRONT) - Hypercube sovereignty
+                    'face-1': 'tetrahedron',  // TECH (RIGHT) - Tetrahedron precision
+                    'face-2': 'wave',         // RESEARCH (BACK) - Wave function
+                    'face-3': 'sphere',       // MEDIA (LEFT) - Sphere potential
+                    'face-4': 'fractal',      // INNOVATION (TOP) - Fractal growth
+                    'face-5': 'crystal',      // CONTEXT (BOTTOM) - Crystal lattice
+                    'face-6': 'klein',        // INNER FRONT - Klein bottle topology
+                    'face-7': 'torus'         // INNER BACK - Torus flow
+                };
+                
+                console.log('🏠 VIB3 Refined Tesseract System initializing...');
+                this.init();
+            }
+            
+            async init() {
+                try {
+                    this.updateLoadingProgress(10, 'Loading JSON configurations...');
+                    
+                    // Initialize JSON config system
+                    this.configSystem = new VIB3JsonConfigSystem();
+                    await this.configSystem.loadAllConfigs();
+                    
+                    this.updateLoadingProgress(30, 'Initializing VIB3HomeMaster...');
+                    
+                    // Initialize VIB3HomeMaster (Single Source of Truth)
+                    this.homeMaster = new VIB3HomeMaster();
+                    
+                    this.updateLoadingProgress(50, 'Setting up UnifiedReactivityBridge...');
+                    
+                    // Initialize UnifiedReactivityBridge
+                    this.reactivityBridge = new UnifiedReactivityBridge();
+                    
+                    this.updateLoadingProgress(60, 'Initializing Unified Effects System...');
+                    
+                    // Initialize Unified Effects System
+                    this.effectsSystem = new VIB3UnifiedEffectsSystem(this.homeMaster, this.reactivityBridge);
+                    this.intuitivePresets = new VIB3IntuitivePresets(this.effectsSystem);
+                    
+                    this.updateLoadingProgress(70, 'Creating multi-layer visualizers...');
+                    
+                    // Initialize multi-layer visualizer system
+                    this.initializeMultiLayerVisualizers();
+                    
+                    this.updateLoadingProgress(85, 'Building dynamic content...');
+                    
+                    // Build dynamic content from JSON
+                    this.buildDynamicContentFromJSON();
+                    
+                    this.updateLoadingProgress(95, 'Setting up sophisticated interactions...');
+                    
+                    // Setup sophisticated interactions
+                    this.setupSophisticatedInteractions();
+                    this.setupKeyboardControls();
+                    
+                    this.updateLoadingProgress(100, 'System ready!');
+                    
+                    // Hide loading screen
+                    setTimeout(() => {
+                        document.getElementById('loadingScreen').classList.add('hidden');
+                        this.isInitialized = true;
+                        console.log('✅ VIB3 Refined Tesseract System fully initialized');
+                        
+                        // Start parameter monitoring
+                        this.startParameterMonitoring();
+                    }, 500);
+                    
+                } catch (error) {
+                    console.error('❌ Failed to initialize VIB3 refined system:', error);
+                    this.updateLoadingProgress(0, 'Initialization failed');
+                }
+            }
+            
+            updateLoadingProgress(percent, text) {
+                const bar = document.getElementById('loadingBar');
+                const screen = document.getElementById('loadingScreen');
+                
+                if (bar) bar.style.width = percent + '%';
+                if (screen) {
+                    const textElement = screen.querySelector('.loading-text:last-of-type');
+                    if (textElement) textElement.textContent = text;
+                }
+            }
+            
+            initializeMultiLayerVisualizers() {
+                // Initialize multi-layer visualizer system like sophisticated architecture
+                
+                // 1. Board Visualizer (Background Layer)
+                const boardCanvas = document.getElementById('board-visualizer');
+                if (boardCanvas) {
+                    boardCanvas.width = window.innerWidth;
+                    boardCanvas.height = window.innerHeight;
+                    
+                    const boardVisualizer = new VIB3ReactiveHyperAVCore(
+                        boardCanvas, 
+                        this.homeMaster, 
+                        this.reactivityBridge
+                    );
+                    boardVisualizer.role = 'background';
+                    this.visualizers.push(boardVisualizer);
+                    
+                    console.log('🎨 Board visualizer initialized');
+                }
+                
+                // 2. Card Visualizers (Multiple Layers)
+                for (let i = 1; i <= 6; i++) {
+                    const cardCanvas = document.getElementById(`card-visualizer-${i}`);
+                    if (cardCanvas) {
+                        const cardElement = document.getElementById(`blog-card-${i}`);
+                        if (cardElement) {
+                            cardCanvas.width = cardElement.offsetWidth;
+                            cardCanvas.height = cardElement.offsetHeight;
+                            
+                            const cardVisualizer = new VIB3ReactiveHyperAVCore(
+                                cardCanvas,
+                                this.homeMaster,
+                                this.reactivityBridge
+                            );
+                            cardVisualizer.role = i <= 2 ? 'content' : 'accent';
+                            cardVisualizer.cardId = i;
+                            this.visualizers.push(cardVisualizer);
+                            
+                            console.log(`🎨 Card visualizer ${i} initialized with role: ${cardVisualizer.role}`);
+                        }
+                    }
+                }
+                
+                console.log(`✅ Multi-layer visualizer system initialized: ${this.visualizers.length} visualizers`);
+            }
+            
+            buildDynamicContentFromJSON() {
+                // Build dynamic content from JSON like sophisticated system
+                const sections = this.configSystem.getConfig('content', 'sections');
+                
+                if (!sections || !Array.isArray(sections)) {
+                    console.error('Invalid sections data in JSON config');
+                    return;
+                }
+                
+                // Start with HOME geometry (hypercube)
+                this.updateDynamicFaceContent(0);
+                
+                console.log('🏗️ Dynamic content system built from JSON configuration');
+            }
+            
+            updateDynamicFaceContent(faceIndex) {
+                // Sophisticated content update from refined architecture
+                const geometryName = this.geometryStates[faceIndex] || this.geometryStates[0];
+                
+                const dynamicFace = document.getElementById('dynamic-face');
+                if (!dynamicFace) {
+                    console.warn('Dynamic face not found');
+                    return;
+                }
+                
+                console.log(`🔄 DYNAMIC CONTENT: Switching to ${geometryName} (face ${faceIndex})`);
+                
+                dynamicFace.setAttribute('data-geometry', geometryName);
+                dynamicFace.setAttribute('data-face', faceIndex.toString());
+                
+                this.renderDynamicContentForSection(geometryName);
+                
+                // Update current state
+                this.currentGeometry = geometryName;
+                this.currentFace = faceIndex;
+                
+                // Trigger geometry change in all visualizers
+                this.triggerGeometryChange(geometryName, faceIndex);
+                
+                // Update VIB3HomeMaster section
+                this.homeMaster.transitionToSection(this.getSectionNameFromGeometry(geometryName));
+                
+                this.updateStateDisplay();
+            }
+            
+            renderDynamicContentForSection(geometryName) {
+                // Render content based on JSON configuration
+                const sections = this.configSystem.getConfig('content', 'sections');
+                if (!sections) {
+                    console.warn('No sections data available');
+                    return;
+                }
+                
+                // Find target section by geometry name
+                let targetSection = null;
+                const sectionMapping = {
+                    'hypercube': 'HOME',
+                    'tetrahedron': 'TECH',
+                    'wave': 'RESEARCH',
+                    'sphere': 'MEDIA',
+                    'fractal': 'INNOVATION',
+                    'crystal': 'CONTEXT',
+                    'klein': 'KLEIN',
+                    'torus': 'TORUS'
+                };
+                
+                const sectionName = sectionMapping[geometryName];
+                targetSection = sections.find(s => s.name === sectionName);
+                
+                if (!targetSection || !targetSection.content) {
+                    console.warn(`No content found for geometry: ${geometryName}`);
+                    return;
+                }
+                
+                // Clear all existing card content
+                document.querySelectorAll('#dynamic-face .blog-card .card-content').forEach(container => {
+                    container.innerHTML = '';
+                });
+                
+                // Populate cards with section content
+                targetSection.content.forEach((cardData, index) => {
+                    const cardElement = document.getElementById(`blog-card-${index + 1}`);
+                    if (!cardElement) return;
+                    
+                    const contentContainer = cardElement.querySelector('.card-content');
+                    if (!contentContainer) return;
+                    
+                    // Create title
+                    const title = document.createElement('div');
+                    title.className = 'card-title';
+                    title.textContent = cardData.title;
+                    contentContainer.appendChild(title);
+                    
+                    // Create content
+                    const content = document.createElement('div');
+                    content.className = 'article-content';
+                    content.textContent = cardData.content;
+                    contentContainer.appendChild(content);
+                    
+                    // Setup systematic reactivity from JSON
+                    if (cardData.reactivity) {
+                        this.setupCardReactivity(cardElement, cardData.reactivity);
+                    }
+                });
+            }
+            
+            setupCardReactivity(card, reactivityConfig) {
+                // Setup systematic reactivity like sophisticated system
+                card.addEventListener('mouseenter', () => {
+                    if (reactivityConfig.parameterChanges) {
+                        // Register interaction with VIB3HomeMaster
+                        this.homeMaster.registerInteraction('hover', 0.8);
+                        
+                        // Apply parameter changes to all visualizers
+                        this.visualizers.forEach(visualizer => {
+                            if (visualizer.updateParameters) {
+                                visualizer.updateParameters(reactivityConfig.parameterChanges);
+                            }
+                        });
+                        
+                        // Trigger systematic feedback
+                        this.triggerSystematicFeedback(card, reactivityConfig);
+                    }
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    // Return to theme defaults
+                    const currentParams = this.homeMaster.getParametersForGeometry(this.currentGeometry);
+                    this.visualizers.forEach(visualizer => {
+                        if (visualizer.updateParameters) {
+                            visualizer.updateParameters(currentParams);
+                        }
+                    });
+                });
+                
+                card.addEventListener('click', () => {
+                    // Dramatic click effect
+                    this.homeMaster.registerInteraction('click', 1.0);
+                    
+                    if (reactivityConfig.parameterChanges) {
+                        const dramaticParams = {};
+                        Object.entries(reactivityConfig.parameterChanges).forEach(([key, value]) => {
+                            dramaticParams[key] = value * 1.5; // 1.5x for click
+                        });
+                        
+                        this.visualizers.forEach(visualizer => {
+                            if (visualizer.updateParameters) {
+                                visualizer.updateParameters(dramaticParams);
+                            }
+                        });
+                        
+                        // Return to normal after 1 second
+                        setTimeout(() => {
+                            const currentParams = this.homeMaster.getParametersForGeometry(this.currentGeometry);
+                            this.visualizers.forEach(visualizer => {
+                                if (visualizer.updateParameters) {
+                                    visualizer.updateParameters(currentParams);
+                                }
+                            });
+                        }, 1000);
+                    }
+                });
+            }
+            
+            triggerSystematicFeedback(focusedCard, reactivityConfig) {
+                // Systematic feedback - unfocused elements react
+                const allCards = document.querySelectorAll('.blog-card');
+                const behaviorConfig = this.configSystem.getConfig('behavior', 'systematicFeedback');
+                
+                if (behaviorConfig && behaviorConfig.enabled) {
+                    allCards.forEach(card => {
+                        if (card !== focusedCard) {
+                            // Apply unfocused effect
+                            card.style.opacity = behaviorConfig.rules.focusResponse.unfocusedReduction || 0.6;
+                            card.style.transform = 'scale(0.98)';
+                        }
+                    });
+                }
+            }
+            
+            setupSophisticatedInteractions() {
+                // Advanced tesseract folding interactions from sophisticated architecture
+                const container = document.getElementById('tesseractContainer');
+                
+                // Mouse/touch drag interactions
+                container.addEventListener('mousedown', (e) => this.startDrag(e));
+                container.addEventListener('touchstart', (e) => this.startDrag(e), { passive: false });
+                
+                document.addEventListener('mousemove', (e) => this.handleDrag(e));
+                document.addEventListener('touchmove', (e) => this.handleDrag(e), { passive: false });
+                
+                document.addEventListener('mouseup', () => this.endDrag());
+                document.addEventListener('touchend', () => this.endDrag());
+                
+                // Bezel navigation
+                this.setupBezelNavigation();
+                
+                console.log('🎲 Sophisticated tesseract interactions initialized');
+            }
+            
+            setupBezelNavigation() {
+                // Bezel-based navigation detection
+                document.addEventListener('mousemove', (e) => {
+                    if (this.isNearBezel(e.clientX, e.clientY)) {
+                        document.body.style.cursor = 'grab';
+                    } else {
+                        document.body.style.cursor = 'crosshair';
+                    }
+                });
+            }
+            
+            isNearBezel(x, y) {
+                const bezelWidth = 80;
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                
+                return (x < bezelWidth || x > windowWidth - bezelWidth ||
+                        y < bezelWidth || y > windowHeight - bezelWidth);
+            }
+            
+            startDrag(e) {
+                this.isDragging = true;
+                this.startX = e.clientX || e.touches[0].clientX;
+                this.startY = e.clientY || e.touches[0].clientY;
+                this.tensionLevel = 0;
+                
+                this.isBezelDrag = this.isNearBezel(this.startX, this.startY);
+                
+                const container = document.getElementById('tesseractContainer');
+                container.style.cursor = 'grabbing';
+                document.body.style.userSelect = 'none';
+                
+                console.log(`🎲 Drag started - Bezel mode: ${this.isBezelDrag}`);
+            }
+            
+            handleDrag(e) {
+                if (!this.isDragging) return;
+                
+                e.preventDefault();
+                
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+                
+                const deltaX = clientX - this.startX;
+                const deltaY = clientY - this.startY;
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                
+                // Build tension
+                const threshold = 150;
+                this.tensionLevel = Math.min(distance / threshold, 1.0);
+                
+                // Apply tension visual effects
+                const container = document.getElementById('tesseractContainer');
+                container.style.setProperty('--tension-intensity', this.tensionLevel);
+                
+                if (this.tensionLevel > 0.3) {
+                    container.classList.add('tension-building');
+                }
+                
+                // Determine navigation direction
+                if (distance > threshold) {
+                    const angle = Math.atan2(deltaY, deltaX);
+                    this.determineNavigationDirection(angle);
+                }
+            }
+            
+            endDrag() {
+                if (!this.isDragging) return;
+                
+                this.isDragging = false;
+                
+                const container = document.getElementById('tesseractContainer');
+                container.style.cursor = 'crosshair';
+                document.body.style.userSelect = '';
+                
+                // Reset tension
+                container.classList.remove('tension-building');
+                container.style.setProperty('--tension-intensity', '0');
+                
+                console.log('🎲 Drag ended');
+            }
+            
+            determineNavigationDirection(angle) {
+                // Convert angle to navigation direction
+                const degrees = (angle * 180 / Math.PI + 360) % 360;
+                
+                let targetFace = this.currentFace;
+                
+                if (degrees >= 315 || degrees < 45) { // Right
+                    targetFace = 1; // TECH
+                } else if (degrees >= 45 && degrees < 135) { // Down
+                    targetFace = 5; // CONTEXT
+                } else if (degrees >= 135 && degrees < 225) { // Left
+                    targetFace = 3; // MEDIA
+                } else if (degrees >= 225 && degrees < 315) { // Up
+                    targetFace = 4; // INNOVATION
+                }
+                
+                if (targetFace !== this.currentFace) {
+                    this.navigateToFace(targetFace);
+                }
+            }
+            
+            navigateToFace(faceIndex) {
+                if (faceIndex === this.currentFace || this.isTransitioning) return;
+                
+                this.isTransitioning = true;
+                
+                // Apply tesseract folding animation
+                const container = document.getElementById('tesseractContainer');
+                
+                const foldingClasses = {
+                    1: 'folding-right',
+                    2: 'folding-back',
+                    3: 'folding-left', 
+                    4: 'folding-up',
+                    5: 'folding-down',
+                    6: 'folding-inner-front',
+                    7: 'folding-inner-back'
+                };
+                
+                // Remove all folding classes
+                Object.values(foldingClasses).forEach(cls => container.classList.remove(cls));
+                
+                // Add appropriate folding class
+                if (foldingClasses[faceIndex]) {
+                    container.classList.add(foldingClasses[faceIndex]);
+                }
+                
+                // Update content after folding animation
+                setTimeout(() => {
+                    this.updateDynamicFaceContent(faceIndex);
+                    
+                    // Reset folding state
+                    setTimeout(() => {
+                        Object.values(foldingClasses).forEach(cls => container.classList.remove(cls));
+                        this.isTransitioning = false;
+                    }, 400);
+                }, 400);
+                
+                console.log(`🎲 Navigated to face ${faceIndex}: ${this.geometryStates[faceIndex]}`);
+            }
+            
+            triggerGeometryChange(geometryName, faceIndex) {
+                // Trigger geometry change in all visualizers like sophisticated system
+                console.log(`🎨 Triggering geometry change: ${geometryName} (face ${faceIndex})`);
+                
+                this.visualizers.forEach(visualizer => {
+                    if (visualizer.setTheme) {
+                        visualizer.setTheme(geometryName);
+                    }
+                });
+                
+                // Update CSS theme class
+                document.body.className = `theme-${geometryName}`;
+                
+                // Update state display
+                this.updateStateDisplay();
+            }
+            
+            getSectionNameFromGeometry(geometryName) {
+                const geometryToSection = {
+                    'hypercube': 'HOME',
+                    'tetrahedron': 'TECH',
+                    'wave': 'RESEARCH',
+                    'sphere': 'MEDIA',
+                    'fractal': 'INNOVATION',
+                    'crystal': 'CONTEXT',
+                    'klein': 'KLEIN',
+                    'torus': 'TORUS'
+                };
+                
+                return geometryToSection[geometryName] || 'HOME';
+            }
+            
+            setupKeyboardControls() {
+                document.addEventListener('keydown', (e) => {
+                    if (!this.isInitialized) return;
+                    
+                    switch(e.key) {
+                        case 'd':
+                        case 'D':
+                            this.toggleDevMode();
+                            break;
+                        case ' ':
+                            e.preventDefault();
+                            this.cycleFace();
+                            break;
+                        case 'r':
+                        case 'R':
+                            this.resetSystem();
+                            break;
+                        case 'ArrowRight':
+                            this.navigateToFace(1); // TECH
+                            break;
+                        case 'ArrowLeft':
+                            this.navigateToFace(3); // MEDIA
+                            break;
+                        case 'ArrowUp':
+                            this.navigateToFace(4); // INNOVATION
+                            break;
+                        case 'ArrowDown':
+                            this.navigateToFace(5); // CONTEXT
+                            break;
+                    }
+                });
+            }
+            
+            cycleFace() {
+                const nextFace = (this.currentFace + 1) % this.geometryStates.length;
+                this.navigateToFace(nextFace);
+            }
+            
+            toggleDevMode() {
+                const devControls = document.querySelector('.dev-controls');
+                const stateIndicator = document.querySelector('.state-indicator');
+                
+                const isVisible = devControls.style.display !== 'none';
+                const newDisplay = isVisible ? 'none' : 'block';
+                
+                devControls.style.display = newDisplay;
+                stateIndicator.style.display = newDisplay;
+                
+                console.log(`🔧 Dev mode ${isVisible ? 'disabled' : 'enabled'}`);
+            }
+            
+            testParameterChange() {
+                if (this.homeMaster) {
+                    // Test parameter change through VIB3HomeMaster
+                    this.homeMaster.overrideParameters({
+                        intensity: 1.0,
+                        complexity: 0.8,
+                        dimension: 4.2
+                    });
+                    
+                    // Return to normal after 2 seconds
+                    setTimeout(() => {
+                        this.homeMaster.reset();
+                        console.log('🧪 Test parameters reset');
+                    }, 2000);
+                    
+                    console.log('🧪 Test parameter change applied');
+                }
+            }
+            
+            resetSystem() {
+                if (this.homeMaster) {
+                    this.homeMaster.reset();
+                }
+                
+                this.navigateToFace(0); // Return to HOME
+                console.log('🔄 System reset to baseline');
+            }
+            
+            updateStateDisplay() {
+                const geometryName = this.geometryStates[this.currentFace];
+                const sectionName = this.getSectionNameFromGeometry(geometryName);
+                
+                document.getElementById('current-layout').textContent = sectionName;
+                document.getElementById('current-theme').textContent = `${geometryName} Grid`;
+                document.getElementById('current-geometry').textContent = geometryName;
+                document.getElementById('current-face').textContent = this.currentFace;
+                
+                if (this.homeMaster) {
+                    const masterState = this.homeMaster.getSystemState();
+                    document.getElementById('current-intensity').textContent = masterState.masterState.intensity.toFixed(2);
+                }
+            }
+            
+            startParameterMonitoring() {
+                // Monitor VIB3HomeMaster parameters in real-time
+                setInterval(() => {
+                    this.updateStateDisplay();
+                    
+                    // Sync parameters to all visualizers
+                    if (this.homeMaster) {
+                        const currentParams = this.homeMaster.getParametersForGeometry(this.currentGeometry);
+                        this.visualizers.forEach(visualizer => {
+                            if (visualizer.updateParameters) {
+                                visualizer.updateParameters(currentParams);
+                            }
+                        });
+                    }
+                }, 100); // 10fps update rate
+            }
+            
+            // VIB3HomeMaster interface methods (for compatibility)
+            registerVisualizer(name, visualizer) {
+                console.log(`📝 Registered visualizer: ${name}`);
+                this.visualizers.push(visualizer);
+            }
+            
+            registerInteraction(type, intensity, duration) {
+                if (this.homeMaster) {
+                    this.homeMaster.registerInteraction(type, intensity, duration);
+                }
+            }
+            
+            transitionToSection(sectionIndex) {
+                this.navigateToFace(sectionIndex);
+            }
+            
+            onSectionChange(callback) {
+                this.sectionChangeCallback = callback;
+            }
+            
+            // UnifiedReactivityBridge interface methods (for compatibility)
+            syncShaderUniforms(uniforms) {
+                // Handle shader uniform sync
+            }
+            
+            triggerEffect(effectName, data) {
+                console.log(`✨ Effect triggered: ${effectName}`, data);
+            }
+        }
+        
+        // Global system instance and controls
+        window.refinedSystem = null;
+        
+        // Initialize system when page loads
+        window.addEventListener('load', () => {
+            window.refinedSystem = new VIB3RefinedTesseractSystem();
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Resize board visualizer
+            const boardCanvas = document.getElementById('board-visualizer');
+            if (boardCanvas) {
+                boardCanvas.width = window.innerWidth;
+                boardCanvas.height = window.innerHeight;
+            }
+            
+            // Resize card visualizers
+            for (let i = 1; i <= 6; i++) {
+                const cardCanvas = document.getElementById(`card-visualizer-${i}`);
+                const cardElement = document.getElementById(`blog-card-${i}`);
+                if (cardCanvas && cardElement) {
+                    cardCanvas.width = cardElement.offsetWidth;
+                    cardCanvas.height = cardElement.offsetHeight;
+                }
+            }
+        });
+        
+        console.log('🌟 VIB3 Refined Tesseract System script loaded');
+    </script>
+</body>
+</html>

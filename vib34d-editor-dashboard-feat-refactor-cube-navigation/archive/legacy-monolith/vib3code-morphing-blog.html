@@ -1,0 +1,3666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3CODE | Morphing Blog System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #000000 70%);
+            
+            /* INVISIBLE SCROLLBARS */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+        }
+        
+        body::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none; /* Chrome/Safari */
+        }
+        
+        /* TESSERACT 8-CELL HYPERCUBE CONTAINER */
+        .tesseract-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 2000px;
+            perspective-origin: center center;
+            overflow: hidden;
+        }
+        
+        .hypercube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            backface-visibility: visible;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        /* SINGLE DYNAMIC FACE WITH 8 GEOMETRY STATES */
+        .hypercube-face.active-face {
+            transform: translateZ(0px);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* GEOMETRY-BASED DYNAMIC STATES */
+        .active-face[data-geometry="hypercube"] { /* HOME STATE */
+            /* Keep existing layout with hypercube visualizers */
+        }
+        
+        .active-face[data-geometry="tetrahedron"] { /* TECH STATE */
+            /* Dynamic repositioning for tech content */
+        }
+        
+        .active-face[data-geometry="wave"] { /* RESEARCH STATE */
+            /* Dynamic repositioning for research content */
+        }
+        
+        .active-face[data-geometry="sphere"] { /* MEDIA STATE */
+            /* Dynamic repositioning for media content */
+        }
+        
+        .active-face[data-geometry="fractal"] { /* INNOVATION STATE */
+            /* Dynamic repositioning for innovation content */
+        }
+        
+        .active-face[data-geometry="crystal"] { /* CONTEXT STATE */
+            /* Dynamic repositioning for context content */
+        }
+        
+        .active-face[data-geometry="klein"] { /* KLEIN STATE */
+            /* Dynamic repositioning for klein content */
+        }
+        
+        .active-face[data-geometry="torus"] { /* TORUS STATE */
+            /* Dynamic repositioning for torus content */
+        }
+        
+        /* TESSERACT FOLDING STATES */
+        .tesseract-container.folding-right .hypercube-face.face-0 {
+            transform: rotateY(-90deg) translateZ(-100px);
+        }
+        
+        .tesseract-container.folding-right .hypercube-face.face-1 {
+            transform: rotateY(0deg) translateZ(0px);
+        }
+        
+        .tesseract-container.folding-left .hypercube-face.face-0 {
+            transform: rotateY(90deg) translateZ(-100px);
+        }
+        
+        .tesseract-container.folding-left .hypercube-face.face-3 {
+            transform: rotateY(0deg) translateZ(0px);
+        }
+        
+        .tesseract-container.folding-up .hypercube-face.face-0 {
+            transform: rotateX(90deg) translateZ(-100px);
+        }
+        
+        .tesseract-container.folding-up .hypercube-face.face-4 {
+            transform: rotateX(0deg) translateZ(0px);
+        }
+        
+        .tesseract-container.folding-down .hypercube-face.face-0 {
+            transform: rotateX(-90deg) translateZ(-100px);
+        }
+        
+        .tesseract-container.folding-down .hypercube-face.face-5 {
+            transform: rotateX(0deg) translateZ(0px);
+        }
+        
+        /* HYPERCUBE TENSION MECHANICS */
+        .tesseract-container.tension-building {
+            --tension-intensity: 0.0;
+            filter: blur(calc(var(--tension-intensity) * 2px));
+        }
+        
+        .tesseract-container.tension-building .hypercube-face {
+            transform: scale(calc(1.0 + var(--tension-intensity) * 0.05)) 
+                      rotateZ(calc(var(--tension-intensity) * 2deg));
+        }
+            
+            /* Advanced CSS Variables for Real-time Reactivity */
+            --global-energy: 0.0;
+            --section-focus: 0;
+            --portal-intensity: 0.0;
+            --micro-chaos: 0.0;
+            --inverse-flow: 0.0;
+            --grid-vibrance: 1.0;
+            --transition-phase: 0.0;
+            --hover-section: -1;
+            --scroll-momentum: 0.0;
+            --reality-tear: 0.0;
+            
+            /* Smart Opacity Variables */
+            --visualizer-opacity: 0.8;
+            --focused-opacity: 0.9;
+            --reading-opacity: 0.7;
+            --gravity-opacity: 0.8;
+            --board-opacity: 0.7;
+            
+            /* Content Guidance Variables */
+            --content-gravity-x: 0.5;
+            --content-gravity-y: 0.5;
+            --content-flow-strength: 0.0;
+            --text-proximity: 0.0;
+        }
+
+        .scroll-wrapper { /* For page-level drag scrolling */
+            width: 100%;
+            height: 100%;
+            /* CSS variables will be dynamically named based on elementId, e.g., --pageContentScrollWrapper-scroll-x */
+            /* transform: translate(var(--pageContentScrollWrapper-scroll-x, 0px), var(--pageContentScrollWrapper-scroll-y, 0px)); */
+            /* Actual transform will be applied by JS setting these vars, or specific CSS for the ID */
+            will-change: transform;
+            position: relative; /* Ensure it's a positioning context if children are absolute */
+            filter: blur(var(--page-content-area-blur, 0px)); /* Updated */
+            transition: filter 0.5s ease-in-out;
+        }
+
+        #page-focus-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0,0,0,0.7); /* Default, will be overridden by JS */
+            opacity: 0;
+            display: none;
+            z-index: 900; /* Below focused card (e.g. 1000), above other elements */
+            pointer-events: none;
+            transition: opacity 0.5s ease-in-out; /* Base transition */
+        }
+        
+        /* MAIN BLOG CONTAINER */
+        .blog-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* VISUALIZER BACKGROUND BOARD */
+        .visualizer-board {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        #board-visualizer {
+            width: 100%;
+            height: 100%;
+            opacity: var(--board-opacity, 0.3);
+            filter: blur(0.8px);
+            transition: opacity 0.8s ease;
+        }
+        
+        /* FLOATING BLOG CARDS */
+        .blog-card {
+            position: absolute;
+            backdrop-filter: blur(calc(20px + var(--grid-vibrance) * 10px)) saturate(calc(180% + var(--grid-vibrance) * 50%));
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, calc(0.18 + var(--global-energy) * 0.3));
+            z-index: 5;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+            box-shadow: 
+                0 calc(15px + var(--global-energy) * 20px) calc(35px + var(--global-energy) * 30px) rgba(0, 0, 0, 0.4),
+                0 5px 15px rgba(0, 255, 255, calc(0.1 + var(--grid-vibrance) * 0.2)),
+                inset 0 1px 1px rgba(255, 255, 255, calc(0.2 + var(--global-energy) * 0.2)),
+                inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, 
+                rgba(0, 0, 0, calc(0.85 + var(--global-energy) * 0.1)) 0%,
+                rgba(0, 0, 0, calc(0.90 + var(--global-energy) * 0.05)) 50%,
+                rgba(0, 0, 0, 0.95) 100%
+            );
+            transform-style: preserve-3d;
+            /* Base transform now combines global micro-chaos effects with card-specific scale/translateZ */
+            transform:
+                scale(calc(var(--self-scale, 1.0) + var(--micro-chaos, 0) * 0.02))
+                translateX(var(--self-translateX_px, 0px)) /* Added for potential future use */
+                translateY(var(--self-translateY_px, 0px)) /* Added for potential future use */
+                translateZ(var(--self-translateZ_px, 0px))
+                rotateX(calc(var(--inverse-flow, 0) * 2deg))
+                rotateY(calc(var(--inverse-flow, 0) * 1deg));
+            opacity: var(--self-opacity, 1.0);
+            border-color: var(--self-borderColor, rgba(255, 255, 255, calc(0.18 + var(--global-energy) * 0.3)));
+            backdrop-filter: blur(var(--self-backdropBlur_px, calc(20px + var(--grid-vibrance) * 10px))) saturate(var(--self-backdropSaturate_percent, calc(180 + var(--grid-vibrance) * 50))%);
+            z-index: var(--self-zIndex, 5);
+            /* Existing box-shadow and transition should still work fine */
+            will-change: transform, opacity, width, height, top, left, z-index, border-color, box-shadow;
+        }
+
+        /* SECTION HOVER ENLARGEMENT - REMOVE/COMMENT OUT if fully controlled by JS via CSS Vars */
+        /*
+        .blog-card[data-section-hover="true"] {
+            transform: scale(1.08) translateY(-15px) translateZ(30px) 
+                      rotateX(5deg) rotateY(2deg);
+            border-color: rgba(0, 255, 255, 0.6);
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.6),
+                0 15px 40px rgba(0, 255, 255, 0.3),
+                0 0 50px rgba(255, 0, 255, 0.2),
+                inset 0 1px 1px rgba(255, 255, 255, 0.4),
+                inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(30px) saturate(250%);
+            z-index: 10;
+        }
+        */
+        
+        /* INVERSE REACTION FOR NON-FOCUSED CARDS - REMOVE/COMMENT OUT if fully controlled by JS via CSS Vars */
+        /*
+        .blog-card[data-inverse="true"] {
+            transform: scale(0.95) translateZ(-10px);
+            opacity: 0.7;
+            backdrop-filter: blur(15px) saturate(120%);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        */
+        
+        .blog-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(calc(135deg + var(--transition-phase) * 180deg),
+                rgba(0, 255, 255, calc(0.08 + var(--grid-vibrance) * 0.12)) 0%,
+                rgba(255, 0, 255, calc(0.06 + var(--grid-vibrance) * 0.10)) 25%,
+                rgba(255, 255, 0, calc(0.04 + var(--grid-vibrance) * 0.08)) 50%,
+                rgba(0, 255, 0, calc(0.06 + var(--grid-vibrance) * 0.10)) 75%,
+                rgba(255, 0, 128, calc(0.08 + var(--grid-vibrance) * 0.12)) 100%
+            );
+            border-radius: inherit;
+            z-index: -1;
+            opacity: calc(0.6 + var(--global-energy) * 0.4);
+            transition: all 0.3s ease;
+            animation: pulse-glow calc(2s / (1 + var(--grid-vibrance))) ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { 
+                opacity: calc(0.6 + var(--global-energy) * 0.4); 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: calc(0.8 + var(--global-energy) * 0.4); 
+                transform: scale(1.02);
+            }
+        }
+        
+        /* PORTAL TRANSITION EFFECTS */
+        .portal-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: var(--portal-intensity);
+            background: 
+                radial-gradient(circle at var(--portal-x, 50%) var(--portal-y, 50%), 
+                    rgba(0, 255, 255, 0.3) 0%,
+                    rgba(255, 0, 255, 0.2) 20%,
+                    rgba(255, 255, 0, 0.1) 40%,
+                    transparent 60%
+                ),
+                conic-gradient(from 0deg at var(--portal-x, 50%) var(--portal-y, 50%),
+                    rgba(255, 0, 255, 0.2),
+                    rgba(0, 255, 255, 0.2),
+                    rgba(255, 255, 0, 0.2),
+                    rgba(255, 0, 255, 0.2)
+                );
+            animation: portal-spin calc(0.8s / (1 + var(--portal-intensity))) linear infinite;
+            backdrop-filter: blur(calc(var(--portal-intensity) * 20px)) 
+                           hue-rotate(calc(var(--portal-intensity) * 180deg));
+        }
+        
+        @keyframes portal-spin {
+            0% { transform: rotate(0deg) scale(0.5); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(0.5); }
+        }
+        
+        /* REALITY TEAR EFFECTS */
+        .reality-tear {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            opacity: var(--reality-tear);
+            background: 
+                repeating-linear-gradient(
+                    calc(45deg + var(--transition-phase) * 90deg),
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 0, 255, calc(0.1 * var(--reality-tear))) 2px,
+                    rgba(255, 0, 255, calc(0.1 * var(--reality-tear))) 4px
+                ),
+                repeating-linear-gradient(
+                    calc(-45deg + var(--transition-phase) * 90deg),
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 255, calc(0.1 * var(--reality-tear))) 2px,
+                    rgba(0, 255, 255, calc(0.1 * var(--reality-tear))) 4px
+                );
+            filter: contrast(calc(1 + var(--reality-tear) * 0.5)) 
+                   brightness(calc(1 + var(--reality-tear) * 0.3));
+            animation: reality-glitch calc(0.15s / (1 + var(--reality-tear))) infinite;
+        }
+        
+        @keyframes reality-glitch {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(calc(var(--reality-tear) * 2px)); }
+            50% { transform: translateX(0); }
+            75% { transform: translateX(calc(var(--reality-tear) * -2px)); }
+            100% { transform: translateX(0); }
+        }
+        
+        .blog-card:hover {
+            /* transform: translateY(-8px) translateZ(20px) scale(1.02); */ /* Now controlled by --self-scale, --self-translateY_px, --self-translateZ_px */
+            /* border-color: rgba(0, 255, 255, 0.4); */ /* Now controlled by --self-borderColor */
+            /* Box-shadow can remain a pure CSS hover effect or be simplified for JS control later */
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 10px 30px rgba(0, 255, 255, 0.2),
+                0 0 40px rgba(255, 0, 255, 0.15),
+                inset 0 1px 1px rgba(255, 255, 255, 0.3),
+                inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+            /* backdrop-filter: blur(25px) saturate(200%); */ /* Now controlled by --self-backdropBlur_px & --self-backdropSaturate_percent */
+        }
+        
+        .blog-card:hover::before {
+            opacity: 0.9;
+        }
+        
+        .card-visualizer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: var(--visualizer-opacity, 0.6);
+            transition: opacity 0.8s ease;
+            will-change: opacity, height; /* For content expansion */
+        }
+        
+        /* Smart opacity states */
+        .blog-card:hover .card-visualizer {
+            opacity: var(--focused-opacity, 0.1);
+        }
+        
+        .blog-card.reading-mode .card-visualizer {
+            opacity: var(--reading-opacity, 0.05);
+        }
+        
+        .blog-card.content-gravity .card-visualizer {
+            opacity: var(--gravity-opacity, 0.8);
+        }
+        
+        .card-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 25px;
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 255, 0.08) 0%,
+                rgba(255, 0, 255, 0.06) 25%,
+                rgba(255, 255, 0, 0.08) 50%,
+                rgba(0, 255, 0, 0.06) 75%,
+                rgba(255, 0, 128, 0.08) 100%
+            );
+            /* overflow-y: auto; */ /* Changed for transform-based scrolling */
+            overflow: hidden; /* Crucial for transform-based scrolling */
+            transition: all 0.3s ease; /* Existing transition, may need review with transform scrolling */
+            will-change: transform, padding, height; /* Performance hint for scrolling & content expansion */
+        }
+        
+        .card-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                rgba(0, 255, 255, 0.1) 0deg,
+                rgba(255, 0, 255, 0.08) 60deg,
+                rgba(255, 255, 0, 0.1) 120deg,
+                rgba(0, 255, 0, 0.08) 180deg,
+                rgba(255, 0, 128, 0.1) 240deg,
+                rgba(128, 0, 255, 0.08) 300deg,
+                rgba(0, 255, 255, 0.1) 360deg
+            );
+            z-index: -1;
+            animation: rotate-gradient 20s linear infinite;
+            opacity: var(--card-energy, 0.3);
+            transition: opacity 0.3s ease;
+        }
+        
+        @keyframes rotate-gradient {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* STATE-SPECIFIC BLOG LAYOUTS */
+        
+        /* HOME LAYOUT - Traditional Blog Grid */
+        .layout-home .blog-card:nth-child(2) { /* Header */
+            top: 3%; left: 50%; transform: translateX(-50%);
+            width: 90%; height: 15%;
+        }
+        
+        .layout-home .blog-card:nth-child(3) { /* Featured Article */
+            top: 20%; left: 5%;
+            width: 55%; height: 45%;
+        }
+        
+        .layout-home .blog-card:nth-child(4) { /* Sidebar */
+            top: 20%; right: 5%;
+            width: 35%; height: 70%;
+        }
+        
+        .layout-home .blog-card:nth-child(5) { /* Secondary Article */
+            top: 68%; left: 5%;
+            width: 35%; height: 27%;
+        }
+        
+        .layout-home .blog-card:nth-child(6) { /* Article List */
+            top: 68%; left: 42%;
+            width: 18%; height: 27%;
+        }
+        
+        .layout-home .blog-card:nth-child(7) { /* Navigation */
+            bottom: 3%; left: 50%; transform: translateX(-50%);
+            width: 60%; height: 10%;
+        }
+        
+        /* TECH LAYOUT - Documentation Style */
+        .layout-tech .blog-card:nth-child(2) { /* Header - Full Width */
+            top: 2%; left: 2%;
+            width: 96%; height: 10%;
+        }
+        
+        .layout-tech .blog-card:nth-child(3) { /* Left TOC */
+            top: 14%; left: 2%;
+            width: 20%; height: 82%;
+        }
+        
+        .layout-tech .blog-card:nth-child(4) { /* Main Content */
+            top: 14%; left: 24%;
+            width: 50%; height: 82%;
+        }
+        
+        .layout-tech .blog-card:nth-child(5) { /* Code Examples */
+            top: 14%; right: 2%;
+            width: 22%; height: 40%;
+        }
+        
+        .layout-tech .blog-card:nth-child(6) { /* API Reference */
+            top: 56%; right: 2%;
+            width: 22%; height: 40%;
+        }
+        
+        .layout-tech .blog-card:nth-child(7) { /* Hidden in tech */
+            opacity: 0; pointer-events: none;
+        }
+        
+        /* MEDIA LAYOUT - Magazine Style Radial */
+        .layout-media .blog-card:nth-child(2) { /* Center Feature */
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 40%; height: 45%;
+            border-radius: 30px;
+        }
+        
+        .layout-media .blog-card:nth-child(3) { /* Top Left */
+            top: 8%; left: 8%;
+            width: 35%; height: 35%;
+            border-radius: 25px;
+        }
+        
+        .layout-media .blog-card:nth-child(4) { /* Top Right */
+            top: 8%; right: 8%;
+            width: 35%; height: 35%;
+            border-radius: 25px;
+        }
+        
+        .layout-media .blog-card:nth-child(5) { /* Bottom Left */
+            bottom: 8%; left: 8%;
+            width: 35%; height: 35%;
+            border-radius: 25px;
+        }
+        
+        .layout-media .blog-card:nth-child(6) { /* Bottom Right */
+            bottom: 8%; right: 8%;
+            width: 35%; height: 35%;
+            border-radius: 25px;
+        }
+        
+        .layout-media .blog-card:nth-child(7) { /* Hidden in media */
+            opacity: 0; pointer-events: none;
+        }
+        
+        /* INNOVATION LAYOUT - Creative Flow */
+        .layout-innovation .blog-card:nth-child(2) { /* Left Column */
+            top: 5%; left: 5%;
+            width: 38%; height: 90%;
+            border-radius: 30px 15px 30px 15px;
+        }
+        
+        .layout-innovation .blog-card:nth-child(3) { /* Right Top */
+            top: 5%; right: 5%;
+            width: 52%; height: 42%;
+            border-radius: 15px 30px 15px 30px;
+        }
+        
+        .layout-innovation .blog-card:nth-child(4) { /* Right Bottom */
+            bottom: 5%; right: 5%;
+            width: 52%; height: 48%;
+            border-radius: 30px 15px 30px 15px;
+        }
+        
+        .layout-innovation .blog-card:nth-child(5) { /* Hidden */
+            opacity: 0; pointer-events: none;
+        }
+        
+        .layout-innovation .blog-card:nth-child(6) { /* Hidden */
+            opacity: 0; pointer-events: none;
+        }
+        
+        .layout-innovation .blog-card:nth-child(7) { /* Hidden */
+            opacity: 0; pointer-events: none;
+        }
+        
+        /* RESEARCH LAYOUT - Academic Style */
+        .layout-research .blog-card:nth-child(2) { /* Title */
+            top: 5%; left: 15%;
+            width: 70%; height: 12%;
+            transform: rotate(-1deg);
+        }
+        
+        .layout-research .blog-card:nth-child(3) { /* Abstract */
+            top: 20%; left: 10%;
+            width: 35%; height: 30%;
+            transform: rotate(2deg);
+        }
+        
+        .layout-research .blog-card:nth-child(4) { /* Main Paper */
+            top: 25%; right: 10%;
+            width: 45%; height: 65%;
+            transform: rotate(-1deg);
+        }
+        
+        .layout-research .blog-card:nth-child(5) { /* Methods */
+            bottom: 25%; left: 10%;
+            width: 35%; height: 25%;
+            transform: rotate(1deg);
+        }
+        
+        .layout-research .blog-card:nth-child(6) { /* References */
+            bottom: 5%; left: 25%;
+            width: 25%; height: 15%;
+            transform: rotate(-2deg);
+        }
+        
+        .layout-research .blog-card:nth-child(7) { /* Citations */
+            bottom: 5%; right: 25%;
+            width: 25%; height: 15%;
+            transform: rotate(1deg);
+        }
+        
+        /* TYPOGRAPHY SYSTEM */
+        .card-title {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: 900;
+            margin-bottom: 12px;
+            color: #ffffff;
+            text-shadow: 
+                0 0 5px #00ffff,
+                0 0 10px #00ffff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            line-height: 1.1;
+            will-change: font-size, margin-bottom; /* For content expansion */
+        }
+        
+        .card-subtitle {
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            color: #00ffff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 8px #00ffff;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            will-change: opacity, height, margin-bottom; /* For content expansion */
+        }
+        
+        .card-description {
+            font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.5;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .article-content {
+            font-size: clamp(0.65rem, 1.8vw, 0.85rem);
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 15px;
+        }
+        
+        .article-content h3 {
+            color: #ff00ff;
+            margin: 15px 0 8px 0;
+            font-size: clamp(0.8rem, 2.2vw, 1rem);
+        }
+        
+        .article-content p {
+            margin-bottom: 12px;
+        }
+        
+        .article-meta {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            font-size: clamp(0.5rem, 1.3vw, 0.7rem);
+            color: #00ffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            will-change: opacity, height, padding-top, margin-top, border-top; /* For content expansion */
+        }
+        
+        .tag {
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2));
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: clamp(0.5rem, 1.2vw, 0.6rem);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+        }
+        
+        /* 4D CUBE NAVIGATION BEZELS */
+        .cube-navigation-system {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2000;
+        }
+        
+        .nav-bezel {
+            position: absolute;
+            background: linear-gradient(45deg, 
+                rgba(0, 255, 255, 0.3) 0%,
+                rgba(255, 0, 255, 0.3) 50%,
+                rgba(255, 255, 0, 0.3) 100%
+            );
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(15px);
+            pointer-events: auto;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0.8;
+            overflow: hidden;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-bezel:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        /* LEFT/RIGHT BEZELS - Vertical strips */
+        .nav-bezel-left, .nav-bezel-right {
+            top: 20%;
+            height: 60%;
+            width: 25px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+        
+        .nav-bezel-left {
+            left: 0;
+            border-radius: 0 15px 15px 0;
+            background: linear-gradient(to right,
+                rgba(255, 0, 127, 0.15) 0%,
+                rgba(127, 0, 255, 0.1) 100%
+            );
+        }
+        
+        .nav-bezel-right {
+            right: 0;
+            border-radius: 15px 0 0 15px;
+            background: linear-gradient(to left,
+                rgba(0, 255, 255, 0.15) 0%,
+                rgba(0, 127, 255, 0.1) 100%
+            );
+        }
+        
+        /* TOP/BOTTOM BEZELS - Horizontal strips */
+        .nav-bezel-top, .nav-bezel-bottom {
+            left: 20%;
+            width: 60%;
+            height: 25px;
+        }
+        
+        .nav-bezel-top {
+            top: 0;
+            border-radius: 0 0 15px 15px;
+            background: linear-gradient(to bottom,
+                rgba(255, 255, 0, 0.15) 0%,
+                rgba(255, 127, 0, 0.1) 100%
+            );
+        }
+        
+        .nav-bezel-bottom {
+            bottom: 0;
+            border-radius: 15px 15px 0 0;
+            background: linear-gradient(to top,
+                rgba(127, 255, 0, 0.15) 0%,
+                rgba(0, 255, 127, 0.1) 100%
+            );
+        }
+        
+        .bezel-visualizer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.4;
+        }
+        
+        .bezel-content {
+            position: relative;
+            padding: 8px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+        
+        .bezel-title {
+            font-size: 0.7rem;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 0 8px #00ffff;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        
+        .bezel-subtitle {
+            font-size: 0.5rem;
+            color: #00ffff;
+            text-shadow: 0 0 4px #00ffff;
+            opacity: 0.8;
+        }
+        
+        .bezel-preview {
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #00ffff 0%, transparent 70%);
+            border-radius: 50%;
+            margin-top: 4px;
+            animation: pulse 2s infinite;
+        }
+        
+        .drag-indicator {
+            position: absolute;
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 700;
+            text-shadow: 0 0 6px rgba(0, 255, 255, 0.5);
+            pointer-events: none;
+        }
+        
+        .nav-bezel-left .drag-indicator { 
+            bottom: 10px; 
+            left: 50%; 
+            transform: translateX(-50%) rotate(-90deg);
+        }
+        .nav-bezel-right .drag-indicator { 
+            bottom: 10px; 
+            right: 50%; 
+            transform: translateX(50%) rotate(90deg);
+        }
+        .nav-bezel-top .drag-indicator { 
+            right: 10px; 
+            top: 50%; 
+            transform: translateY(-50%);
+        }
+        .nav-bezel-bottom .drag-indicator { 
+            right: 10px; 
+            bottom: 50%; 
+            transform: translateY(50%);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        /* BLOG STATE CONTROLS */
+        .blog-controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+            background: linear-gradient(135deg,
+                rgba(0, 0, 0, 0.9) 0%,
+                rgba(25, 0, 50, 0.9) 100%
+            );
+            padding: 15px 25px;
+            border-radius: 25px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .state-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .state-dot.active {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            box-shadow: 
+                0 0 15px #00ffff,
+                0 0 30px #ff00ff;
+            transform: scale(1.3);
+        }
+        
+        .state-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg,
+                rgba(0, 0, 0, 0.9) 0%,
+                rgba(25, 0, 50, 0.9) 100%
+            );
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #00ffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            z-index: 2000;
+            min-width: 200px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        .state-row {
+            margin: 4px 0;
+            color: #00ffff;
+            text-shadow: 0 0 5px #00ffff;
+        }
+        
+        .state-value {
+            color: #ffffff;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+        
+        /* SCROLL INTERACTION FEEDBACK */
+        .scroll-progress {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            z-index: 1000;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .scroll-fill {
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(to top,
+                #00ffff 0%,
+                #ff00ff 50%,
+                #ffff00 100%
+            );
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+        }
+        
+        .morphing-indicator {
+            position: fixed;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            color: #00ffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            writing-mode: vertical-rl;
+            text-shadow: 0 0 5px #00ffff;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .morphing-indicator.active {
+            opacity: 1;
+        }
+        
+        /* ARTICLE CONTENT STYLES */
+        .blog-header {
+            text-align: center;
+        }
+        
+        .blog-title {
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            overflow-x: auto;
+        }
+        
+        .link-button {
+            color: #00ffff;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .link-button:hover {
+            color: #ff00ff;
+            text-shadow: 0 0 8px #ff00ff;
+        }
+        
+        /* RESPONSIVE ADJUSTMENTS */
+        @media (max-width: 768px) {
+            .blog-controls {
+                bottom: 15px;
+                padding: 12px 20px;
+                gap: 12px;
+            }
+            
+            .state-dot {
+                width: 12px;
+                height: 12px;
+            }
+            
+            .state-indicator {
+                font-size: 0.6rem;
+                padding: 12px;
+                min-width: 180px;
+            }
+            
+            .card-content {
+                padding: 15px;
+            }
+        }
+
+        /* Emerging Buttons Styling */
+        .focus-mode-button { /* Base for all focus buttons */
+            padding: 10px 18px;
+            color: var(--text-color-light, #fff);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.3s ease;
+            opacity: 0; /* Initially hidden, JS controls this */
+            will-change: opacity, transform;
+        }
+
+        .focus-mode-button:hover {
+            transform: scale(1.05);
+        }
+
+        .focusModeFloatingButton {
+            background-color: rgba(40, 40, 60, 0.7);
+            border: 1px solid rgba(0, 255, 255, 0.5);
+        }
+        .focusModeFloatingButton:hover {
+            background-color: rgba(0, 255, 255, 0.3);
+        }
+
+        .focusModeActionButton {
+            background-color: var(--accent-color-interactive, #00AACC);
+        }
+        .focusModeActionButton:hover {
+            background-color: var(--accent-color-strong, #00FFFF);
+        }
+
+        .card-buttons-container {
+            position: absolute;
+            /* bottom, left, transform will be set by JS from preset */
+            display: flex;
+            gap: 10px;
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+        }
+        .card-buttons-container.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .card-buttons-container button {
+            pointer-events: auto;
+        }
+    </style>
+    
+    <!-- CORE ARCHITECTURE SYSTEMS -->
+    <script type="module" src="./core/VIB3HomeMaster.js"></script>
+    <script type="module" src="./core/UnifiedReactivityBridge.js"></script>
+    <script src="./core/DragScrollHandler.js"></script> <!-- Include the new handler -->
+    <style>
+        .no-select-during-drag {
+            user-select: none !important;
+            -webkit-user-select: none !important; /* Safari */
+            -moz-user-select: none !important;    /* Firefox */
+            -ms-user-select: none !important;     /* IE10+/Edge */
+        }
+
+        /* General style for scroll wrappers, including the page scroll area */
+        .scroll-wrapper {
+            width: 100%;
+            height: 100%;
+            will-change: transform;
+            position: relative; /* Important if children are absolutely positioned within it */
+        }
+
+        /* Specific rule for the main page scroll area */
+        #page-content-scroll-area {
+            transform: translate(var(--page-content-scroll-area-scroll-x, 0px), var(--page-content-scroll-area-scroll-y, 0px));
+        }
+
+        /* .card-content already has overflow:hidden and will-change:transform.
+           The transform for card content will be applied by UnifiedReactivityBridge setting
+           element-specific CSS variables like --blog-card-1-content-scroll-y,
+           which will then be used by inline styles or more specific CSS rules if needed.
+           For now, assuming the bridge sets these and they are picked up by element.style.transform
+           or specific CSS rules added later if required for cards.
+        */
+    </style>
+</head>
+<body>
+    <!-- STATE INDICATOR -->
+    <div class="state-indicator">
+        <div class="state-row">Layout: <span class="state-value" id="current-layout">HOME</span></div>
+        <div class="state-row">Theme: <span class="state-value" id="current-theme">Hypercube Grid</span></div>
+        <div class="state-row">Cards: <span class="state-value" id="card-count">6 Active</span></div>
+        <div class="state-row">Mode: <span class="state-value">Morphing</span></div>
+    </div>
+    
+    <!-- SCROLL PROGRESS -->
+    <div class="scroll-progress">
+        <div class="scroll-fill" id="scrollFill"></div>
+    </div>
+    
+    <!-- MORPHING INDICATOR -->
+    <div class="morphing-indicator" id="morphingIndicator">MORPHING IN PROGRESS</div>
+    
+    <!-- PORTAL TRANSITION OVERLAY -->
+    <div class="portal-transition" id="portalTransition"></div>
+    
+    <!-- REALITY TEAR OVERLAY -->
+    <div class="reality-tear" id="realityTear"></div>
+
+    <!-- SINGLE DYNAMIC LAYOUT CONTAINER (Following Reference Pattern) -->
+    <div class="tesseract-container" id="tesseractContainer">
+        <!-- VIB34D HYBRID: Single dynamic face with 8 geometry states -->
+        <div class="hypercube-face active-face" id="dynamic-face" data-geometry="hypercube" data-face="0">
+            <div class="scroll-wrapper" id="page-content-scroll-area"> <!-- NEW WRAPPER for page scroll -->
+        
+        <!-- VISUALIZER BACKGROUND BOARD -->
+        <div class="visualizer-board">
+            <canvas id="board-visualizer"></canvas>
+        </div>
+        
+        <!-- FLOATING BLOG CARDS -->
+        <!-- Card 1: Header/Navigation -->
+        <div class="blog-card" id="blog-card-1">
+            <canvas class="card-visualizer" id="card-visualizer-1"></canvas>
+            <div class="card-content">
+                <!-- Dynamic Content -->
+            </div>
+            <div class="card-buttons-container" id="blog-card-1-buttons-container"></div>
+        </div>
+        
+        <!-- Card 2: Featured Article -->
+        <div class="blog-card" id="blog-card-2">
+            <canvas class="card-visualizer" id="card-visualizer-2"></canvas>
+            <div class="card-content">
+                <!-- Dynamic Content -->
+            </div>
+            <div class="card-buttons-container" id="blog-card-2-buttons-container"></div>
+        </div>
+        
+        <!-- Card 3: Secondary Content -->
+        <div class="blog-card" id="blog-card-3">
+            <canvas class="card-visualizer" id="card-visualizer-3"></canvas>
+            <div class="card-content">
+                <!-- Dynamic Content -->
+            </div>
+            <div class="card-buttons-container" id="blog-card-3-buttons-container"></div>
+        </div>
+        
+        <!-- Card 4: Sidebar/Navigation -->
+        <div class="blog-card" id="blog-card-4">
+            <canvas class="card-visualizer" id="card-visualizer-4"></canvas>
+            <div class="card-content">
+                <div class="card-title" id="card-title-4">Navigation</div>
+                <div class="card-subtitle" id="card-subtitle-4">Article Categories</div>
+                <div class="article-content" id="article-content-4">
+                    <p><span class="link-button">→ Technical Architecture</span></p>
+                    <p><span class="link-button">→ Visual Mathematics</span></p>
+                    <p><span class="link-button">→ Innovation Showcase</span></p>
+                    <p><span class="link-button">→ Research Papers</span></p>
+                    <p><span class="link-button">→ Community</span></p>
+                </div>
+            </div>
+            <div class="card-buttons-container" id="blog-card-4-buttons-container"></div>
+        </div>
+        
+        <!-- Card 5: Article List -->
+        <div class="blog-card" id="blog-card-5">
+            <canvas class="card-visualizer" id="card-visualizer-5"></canvas>
+            <div class="card-content">
+                <div class="card-title" id="card-title-5">Latest</div>
+                <div class="card-subtitle" id="card-subtitle-5">Recent Articles</div>
+                <div class="article-content" id="article-content-5">
+                    <p><span class="link-button">Mandelbulb Innovation</span></p>
+                    <p><span class="link-button">Quantum Wave Fields</span></p>
+                    <p><span class="link-button">Klein Bottle UI</span></p>
+                    <p><span class="link-button">Torus Flow Patterns</span></p>
+                </div>
+            </div>
+            <div class="card-buttons-container" id="blog-card-5-buttons-container"></div>
+        </div>
+        
+        <!-- Card 6: Footer/Meta -->
+        <div class="blog-card" id="blog-card-6">
+            <canvas class="card-visualizer" id="card-visualizer-6"></canvas>
+            <div class="card-content">
+                <div class="card-title" id="card-title-6">System Status</div>
+                <div class="card-subtitle" id="card-subtitle-6">Live Metrics</div>
+                <div class="article-content" id="article-content-6">
+                    <p>Visualizers: <span class="state-value">13 Active</span></p>
+                    <p>Performance: <span class="state-value">60 FPS</span></p>
+                    <p>Reactivity: <span class="state-value">Unified</span></p>
+                </div>
+            </div>
+            <div class="card-buttons-container" id="blog-card-6-buttons-container"></div>
+        </div>
+        
+            </div> <!-- Close blog-container -->
+        </div> <!-- Close face-0 -->
+        
+        <!-- FACE 1: TECH (RIGHT) -->
+        <div class="hypercube-face face-1" id="face-1">
+            <div class="blog-container layout-tech">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+                    <div style="font-size: 4rem; color: #00ffff; text-shadow: 0 0 20px #00ffff;">TECH DOCS</div>
+                    <div style="font-size: 1.5rem; color: #ffffff; margin-top: 20px;">Tetrahedron Precision Architecture</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FACE 2: RESEARCH (BACK) -->
+        <div class="hypercube-face face-2" id="face-2">
+            <div class="blog-container layout-research">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+                    <div style="font-size: 4rem; color: #ff00ff; text-shadow: 0 0 20px #ff00ff;">RESEARCH</div>
+                    <div style="font-size: 1.5rem; color: #ffffff; margin-top: 20px;">Wave Function Mathematics</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FACE 3: MEDIA (LEFT) -->
+        <div class="hypercube-face face-3" id="face-3">
+            <div class="blog-container layout-media">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+                    <div style="font-size: 4rem; color: #ffff00; text-shadow: 0 0 20px #ffff00;">MEDIA</div>
+                    <div style="font-size: 1.5rem; color: #ffffff; margin-top: 20px;">Sphere Potential Infinite</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FACE 4: INNOVATION (TOP) -->
+        <div class="hypercube-face face-4" id="face-4">
+            <div class="blog-container layout-innovation">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+                    <div style="font-size: 4rem; color: #00ff00; text-shadow: 0 0 20px #00ff00;">INNOVATION</div>
+                    <div style="font-size: 1.5rem; color: #ffffff; margin-top: 20px;">Mandelbulb Growth Patterns</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FACE 5: CONTEXT (BOTTOM) -->
+        <div class="hypercube-face face-5" id="face-5">
+            <div class="blog-container layout-context">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+                    <div style="font-size: 4rem; color: #ff8800; text-shadow: 0 0 20px #ff8800;">CONTEXT</div>
+                    <div style="font-size: 1.5rem; color: #ffffff; margin-top: 20px;">Settings & Configuration</div>
+                </div>
+            </div>
+        </div>
+        
+        
+            </div> <!-- Close scroll-wrapper -->
+        </div> <!-- Close dynamic-face -->
+    </div> <!-- Close tesseract-container -->
+    
+    <!-- 4D CUBE NAVIGATION BEZELS -->
+    <div class="cube-navigation-system">
+        <!-- LEFT EDGE: Previous Section -->
+        <div class="nav-bezel nav-bezel-left" data-direction="left" data-target="research">
+            <canvas class="bezel-visualizer" id="bezel-visualizer-left"></canvas>
+            <div class="bezel-content">
+                <div class="bezel-title">RESEARCH</div>
+                <div class="bezel-subtitle">Wave Patterns</div>
+                <div class="bezel-preview"></div>
+            </div>
+            <div class="drag-indicator">← DRAG</div>
+        </div>
+        
+        <!-- RIGHT EDGE: Next Section -->
+        <div class="nav-bezel nav-bezel-right" data-direction="right" data-target="tech">
+            <canvas class="bezel-visualizer" id="bezel-visualizer-right"></canvas>
+            <div class="bezel-content">
+                <div class="bezel-title">TECH</div>
+                <div class="bezel-subtitle">Documentation</div>
+                <div class="bezel-preview"></div>
+            </div>
+            <div class="drag-indicator">DRAG →</div>
+        </div>
+        
+        <!-- TOP EDGE: Always Home -->
+        <div class="nav-bezel nav-bezel-top" data-direction="up" data-target="home">
+            <canvas class="bezel-visualizer" id="bezel-visualizer-top"></canvas>
+            <div class="bezel-content">
+                <div class="bezel-title">HOME</div>
+                <div class="bezel-subtitle">Hypercube Grid</div>
+                <div class="bezel-preview"></div>
+            </div>
+            <div class="drag-indicator">↑ HOME</div>
+        </div>
+        
+        <!-- BOTTOM EDGE: Context Menu -->
+        <div class="nav-bezel nav-bezel-bottom" data-direction="down" data-target="context">
+            <canvas class="bezel-visualizer" id="bezel-visualizer-bottom"></canvas>
+            <div class="bezel-content">
+                <div class="bezel-title">CONTEXT</div>
+                <div class="bezel-subtitle">Settings</div>
+                <div class="bezel-preview"></div>
+            </div>
+            <div class="drag-indicator">↓ MENU</div>
+        </div>
+    </div>
+
+    <!-- BLOG STATE CONTROLS (Legacy - will be replaced) -->
+    <div class="blog-controls" style="opacity: 0.3;">
+        <div class="state-dot active" data-state="0" title="HOME - Traditional Blog Grid"></div>
+        <div class="state-dot" data-state="1" title="TECH - Documentation Style"></div>
+        <div class="state-dot" data-state="2" title="MEDIA - Magazine Radial"></div>
+        <div class="state-dot" data-state="3" title="INNOVATION - Creative Flow"></div>
+        <div class="state-dot" data-state="4" title="RESEARCH - Academic Papers"></div>
+    </div>
+
+    <script>
+        console.log('🌌 VIB3CODE MORPHING BLOG SYSTEM');
+        
+        // REACTIVE HYPERAV CORE - REAL 4D POLYTOPAL SYSTEM
+        // RESTORED FROM DESKTOP DEMO WITH FULL FEATURES
+        class ReactiveHyperAVCore {
+            constructor(canvas, role = 'content', instanceId = Math.random()) {
+                this.canvas = canvas;
+                this.gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                this.role = role; // 'background', 'shadow', 'content', 'highlight', 'accent'
+                this.instanceId = instanceId;
+                
+                if (!this.gl) {
+                    console.error('WebGL not supported');
+                    return;
+                }
+                
+                // Core state
+                this.startTime = Date.now();
+                this.currentTheme = 'hypercube';
+                this.interactionState = {
+                    type: 'idle',
+                    intensity: 0,
+                    lastActivity: Date.now(),
+                    holdStart: 0,
+                    isHolding: false,
+                    scrollVelocity: 0,
+                    mouseX: 0.5,
+                    mouseY: 0.5
+                };
+                
+                // PROPER ROLE-BASED PARAMETERS FOR MULTI-LAYER SYSTEM
+                const roleParameterMap = {
+                    'background': { 
+                        densityMult: 0.4, speedMult: 0.2, colorShift: 0.0, intensity: 0.2,
+                        mouseReactivity: 0.3, clickReactivity: 0.1 
+                    },
+                    'shadow': { 
+                        densityMult: 0.8, speedMult: 0.3, colorShift: 180.0, intensity: 0.4,
+                        mouseReactivity: 0.5, clickReactivity: 0.3 
+                    },
+                    'content': { 
+                        densityMult: 1.0 + Math.random() * 0.5, speedMult: 0.6 + Math.random() * 0.3, 
+                        colorShift: Math.random() * 360, intensity: 0.7 + Math.random() * 0.2,
+                        mouseReactivity: 1.0, clickReactivity: 0.8 
+                    },
+                    'highlight': { 
+                        densityMult: 1.5, speedMult: 0.8, colorShift: 60.0, intensity: 0.6,
+                        mouseReactivity: 1.2, clickReactivity: 1.0 
+                    },
+                    'accent': { 
+                        densityMult: 0.6, speedMult: 0.4, colorShift: 300.0, intensity: 0.3,
+                        mouseReactivity: 1.5, clickReactivity: 1.2 
+                    },
+                    'board': {
+                        densityMult: 0.6, speedMult: 0.2, colorShift: 0.0, intensity: 0.3,
+                        mouseReactivity: 0.5, clickReactivity: 0.2
+                    },
+                    'bezel': {
+                        densityMult: 2.0, speedMult: 1.0, colorShift: 120.0, intensity: 0.8,
+                        mouseReactivity: 2.0, clickReactivity: 1.5
+                    },
+                    'card': {
+                        densityMult: 1.0, speedMult: 0.7, colorShift: 45.0, intensity: 0.8,
+                        mouseReactivity: 1.0, clickReactivity: 0.9
+                    }
+                };
+                
+                // ASSIGN ROLE PARAMETERS
+                this.roleParams = roleParameterMap[role] || { densityMult: 1.0, speedMult: 0.5, colorShift: 0.0, intensity: 0.5, mouseReactivity: 1.0, clickReactivity: 0.5 };
+                this.instanceParams = this.roleParams; // FOR COMPATIBILITY
+                
+                // ENSURE CRITICAL PROPERTIES ALWAYS EXIST
+                if (!this.instanceParams.intensity) this.instanceParams.intensity = 0.5;
+                if (!this.instanceParams.densityMult) this.instanceParams.densityMult = 1.0;
+                if (!this.instanceParams.speedMult) this.instanceParams.speedMult = 1.0;
+                if (!this.instanceParams.colorShift) this.instanceParams.colorShift = 0.0;
+                
+                // HYPERCUBE FACE GEOMETRY MAPPING - DEFINED FIRST!
+                // Fixed geometry assignments for each face of the tesseract
+                this.hypercubeFaceGeometries = {
+                    'face-0': 'hypercube',    // HOME (FRONT) - Hypercube sovereignty
+                    'face-1': 'tetrahedron',  // TECH (RIGHT) - Tetrahedron precision
+                    'face-2': 'wave',         // RESEARCH (BACK) - Wave function
+                    'face-3': 'sphere',       // MEDIA (LEFT) - Sphere potential
+                    'face-4': 'fractal',      // INNOVATION (TOP) - Fractal growth
+                    'face-5': 'crystal',      // CONTEXT (BOTTOM) - Crystal lattice
+                    'face-6': 'klein',        // INNER FRONT - Klein bottle topology
+                    'face-7': 'torus'         // INNER BACK - Torus flow
+                };
+                
+                // BASE THEME CONFIG (HOME/HYPERCUBE REFERENCE VALUES)
+                this.baseThemeConfig = {
+                    baseColor: [1.0, 0.0, 1.0],      // Magenta - HOME base
+                    gridDensity: 12.0,               // BASE density
+                    morphFactor: 0.5,                // BASE morph
+                    dimension: 3.5,                  // BASE dimension
+                    glitchIntensity: 0.3,             // BASE glitch
+                    rotationSpeed: 0.5                // BASE rotation
+                };
+                
+                // RELATIONAL GEOMETRY CONFIGURATIONS (relative to HOME base)
+                this.themeConfigs = {
+                    hypercube: {
+                        ...this.baseThemeConfig,
+                        geometry: 0.0  // FACE-0: HOME (BASE REFERENCE)
+                    },
+                    tetrahedron: {
+                        baseColor: [0.0, 1.0, 1.0],                    // Cyan
+                        gridDensity: this.baseThemeConfig.gridDensity * 0.67,  // 0.67x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 1.4,   // 1.4x base morph
+                        dimension: this.baseThemeConfig.dimension * 0.91,      // 0.91x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 0.67, // 0.67x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 1.4, // 1.4x base rotation
+                        geometry: 1.0  // FACE-1: TECH
+                    },
+                    sphere: {
+                        baseColor: [1.0, 1.0, 0.0],                    // Yellow
+                        gridDensity: this.baseThemeConfig.gridDensity * 1.25,  // 1.25x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 0.6,   // 0.6x base morph
+                        dimension: this.baseThemeConfig.dimension * 1.09,      // 1.09x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 0.33, // 0.33x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 0.6, // 0.6x base rotation
+                        geometry: 2.0  // FACE-3: MEDIA
+                    },
+                    torus: {
+                        baseColor: [0.0, 1.0, 0.0],                    // Green
+                        gridDensity: this.baseThemeConfig.gridDensity * 0.83,  // 0.83x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 1.6,   // 1.6x base morph
+                        dimension: this.baseThemeConfig.dimension * 1.03,      // 1.03x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 1.33, // 1.33x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 1.2, // 1.2x base rotation
+                        geometry: 3.0  // FACE-7: INNER BACK (Torus flow)
+                    },
+                    klein: {
+                        baseColor: [1.0, 0.5, 0.0],                    // Orange
+                        gridDensity: this.baseThemeConfig.gridDensity * 1.17,  // 1.17x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 1.8,   // 1.8x base morph
+                        dimension: this.baseThemeConfig.dimension * 1.11,      // 1.11x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 1.67, // 1.67x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 0.8, // 0.8x base rotation
+                        geometry: 4.0  // FACE-6: INNER FRONT (Klein topology)
+                    },
+                    fractal: {
+                        baseColor: [0.5, 0.0, 1.0],                    // Purple
+                        gridDensity: this.baseThemeConfig.gridDensity * 1.67,  // 1.67x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 1.2,   // 1.2x base morph
+                        dimension: this.baseThemeConfig.dimension * 1.06,      // 1.06x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 2.0, // 2.0x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 1.6, // 1.6x base rotation
+                        geometry: 5.0  // FACE-4: INNOVATION (Fractal growth)
+                    },
+                    wave: {
+                        baseColor: [1.0, 0.0, 0.5],                    // Pink
+                        gridDensity: this.baseThemeConfig.gridDensity * 1.33,  // 1.33x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 0.8,   // 0.8x base morph
+                        dimension: this.baseThemeConfig.dimension * 0.94,      // 0.94x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 1.0, // 1.0x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 1.8, // 1.8x base rotation
+                        geometry: 6.0  // FACE-2: RESEARCH (Wave function)
+                    },
+                    crystal: {
+                        baseColor: [0.0, 1.0, 0.5],                    // Mint
+                        gridDensity: this.baseThemeConfig.gridDensity * 1.5,   // 1.5x base density
+                        morphFactor: this.baseThemeConfig.morphFactor * 0.4,   // 0.4x base morph
+                        dimension: this.baseThemeConfig.dimension * 0.89,      // 0.89x base dimension
+                        glitchIntensity: this.baseThemeConfig.glitchIntensity * 0.67, // 0.67x base glitch
+                        rotationSpeed: this.baseThemeConfig.rotationSpeed * 0.4, // 0.4x base rotation
+                        geometry: 7.0  // FACE-5: CONTEXT (Crystal lattice)
+                    }
+                };
+                
+                // Current parameters (reactive) - Start with HOME/hypercube base
+                this.params = { ...this.themeConfigs.hypercube };
+                
+                // ENHANCED INTERACTION STATE SYSTEM  
+                // this.mouseX = 0.5; // Will be driven by params from bridge if needed for direct effects
+                // this.mouseY = 0.5;
+                // this.mouseIntensity = 0.0; // Local mouse intensity, if still needed for very specific shader effects not managed globally
+                // this.clickIntensity = 0.0; // Local click intensity
+                // this.clickDecay = 0.95;
+                
+                // GRID DENSITY CHANGES FOR REAL-TIME REACTIVITY
+                this.baseDensity = 6.0 + Math.random() * 4.0; // Retain for themeConfig generation, or make themeConfigs fully static
+                // this.densityVariation = 0.0; // Seems unused now
+                // this.densityTarget = 0.0;  // Seems unused now
+
+                // this.currentState = 0; // Deprecated: Theme/section state managed by HomeMaster
+                // this.targetState = 0;  // Deprecated
+                this.transitionProgress = 1.0; // Still used for theme transitions
+                this.transitionToParams = null; // Will hold target theme parameters during transition
+
+                this.chaosIntensity = 0.0; // Will be set by updateParameters
+                this.densityMultiplier = 1.0; // Default multiplier for ecosystem effects
+                this.overallOpacity = 1.0; // Default for master-controlled opacity
+                
+                // instanceParams already assigned above - just add missing properties
+                this.gridVibrance = 1.0;
+                this.sectionFocus = 0.0;
+                this.portalIntensity = 0.0;
+                this.microChaos = 0.0;
+                this.inverseFlow = 0.0;
+                this.contentGravityX = 0.5;
+                this.contentGravityY = 0.5;
+                this.contentFlowStrength = 0.0;
+                this.textProximity = 0.0;
+                
+                // ENHANCED 4D POLYTOPAL STATE DEFINITIONS (this.states) is now DEPRECATED.
+                // Theme parameters are stored in this.themeConfigs and applied via this.params and this.transitionToParams.
+                
+                // this.mouseX = 0.5; // These are now set by updateParameters if needed for local effects
+                // this.mouseY = 0.5;
+                this.startTime = Date.now();
+                
+                // Automatically determine geometry based on role if it's a hypercube face
+                this.autoDetectFaceGeometry();
+                
+                this.initShaders();
+                this.initBuffers();
+                this.setupInteractions();
+                this.resize();
+                
+                console.log(`✅ ReactiveHyperAVCore initialized (${role}) - Geometry: ${this.currentTheme}`);
+            }
+
+            updateParameters(newParams) {
+                // console.log(`Viz ${this.instanceId || this.role}: updateParameters received`, newParams);
+                if (!newParams) return;
+
+                // Theme/Geometry update
+                if (newParams.geometryThemeName && newParams.geometryThemeName !== this.currentTheme) {
+                    this.setTheme(newParams.geometryThemeName);
+                }
+
+                // Update direct properties used in render loop if they exist in newParams
+                // These were previously read from CSS vars or set by other systems directly.
+                const directParams = [
+                    'gridVibrance', 'sectionFocus', 'portalIntensity',
+                    'microChaos', 'inverseFlow', 'contentGravityX', 'contentGravityY',
+                    'contentFlowStrength', 'textProximity', 'chaosIntensity',
+                    'viewAngleOffsetX', 'viewAngleOffsetY' // Added new params
+                    // 'intensity' from instanceParams might be overridden if passed
+                ];
+
+                for (const key of directParams) {
+                    if (newParams.hasOwnProperty(key)) {
+                        this[key] = newParams[key];
+                    }
+                }
+
+                // Parameters that might affect 'this.params' (which are from themeConfigs)
+                // or 'this.instanceParams' (which are from roleParameterMap)
+                // For now, these are primarily set by setTheme and constructor.
+                // If HomeMaster/Bridge are to override these granularly, logic would go here.
+                // Example:
+                if (newParams.hasOwnProperty('baseColor') && this.params) {
+                     this.params.baseColor = newParams.baseColor;
+                }
+                if (newParams.hasOwnProperty('gridDensity') && this.params) {
+                     this.params.gridDensity = newParams.gridDensity; // Overrides theme's gridDensity
+                }
+                 if (newParams.hasOwnProperty('rotationSpeed') && this.params) {
+                     this.params.rotationSpeed = newParams.rotationSpeed;
+                }
+                if (newParams.hasOwnProperty('morphFactor') && this.params) {
+                    this.params.morphFactor = newParams.morphFactor;
+                }
+                if (newParams.hasOwnProperty('dimension') && this.params) {
+                    this.params.dimension = newParams.dimension;
+                }
+
+
+                // Parameters that might affect 'this.instanceParams'
+                // These are usually role-based and set at init. Overriding them here needs care.
+                if (newParams.hasOwnProperty('instanceIntensity') && this.instanceParams) { // Renamed to avoid conflict with global intensity
+                    this.instanceParams.intensity = newParams.instanceIntensity;
+                }
+                 if (newParams.hasOwnProperty('instanceDensityMult') && this.instanceParams) {
+                    this.instanceParams.densityMult = newParams.instanceDensityMult;
+                }
+                if (newParams.hasOwnProperty('instanceSpeedMult') && this.instanceParams) {
+                    this.instanceParams.speedMult = newParams.instanceSpeedMult;
+                }
+                if (newParams.hasOwnProperty('instanceColorShift') && this.instanceParams) { // Renamed to avoid conflict
+                    this.instanceParams.colorShift = newParams.instanceColorShift;
+                }
+
+                // For ecosystem effects like density changes
+                if (newParams.hasOwnProperty('densityMultiplier')) {
+                    this.densityMultiplier = newParams.densityMultiplier;
+                    // console.log(`Viz ${this.instanceId || this.role}: densityMultiplier set to ${this.densityMultiplier}`);
+                }
+                if (newParams.hasOwnProperty('opacity')) { // For card/board visualizer opacity control
+                    this.overallOpacity = newParams.opacity;
+                     // console.log(`Viz ${this.instanceId || this.role}: overallOpacity set to ${this.overallOpacity}`);
+                }
+            }
+            
+            autoDetectFaceGeometry() {
+                // Auto-detect if this canvas belongs to a hypercube face
+                const canvasId = this.canvas.id || 'unknown';
+                
+                // DEBUG: Log the detection process
+                console.log(`🔍 Detecting geometry for canvas: ${canvasId}`);
+                
+                // Check for face-specific canvases within hypercube faces
+                const parentFace = this.canvas.closest('.hypercube-face');
+                if (parentFace) {
+                    const faceId = parentFace.id;
+                    console.log(`🔍 Found parent face: ${faceId}`);
+                    
+                    if (this.hypercubeFaceGeometries && this.hypercubeFaceGeometries[faceId]) {
+                        const assignedGeometry = this.hypercubeFaceGeometries[faceId];
+                        this.setTheme(assignedGeometry);
+                        console.log(`🎯 Auto-assigned ${assignedGeometry} to ${faceId} visualizer`);
+                        return;
+                    } else {
+                        console.warn(`⚠️ No geometry mapping found for face: ${faceId}`);
+                        console.log('Available face geometries:', Object.keys(this.hypercubeFaceGeometries || {}));
+                    }
+                }
+                
+                // Check for bezel assignments
+                if (canvasId.includes('bezel-visualizer')) {
+                    const direction = canvasId.split('-')[2]; // left, right, top, bottom
+                    const bezelGeometryMap = {
+                        'left': 'wave',       // Research
+                        'right': 'tetrahedron', // Tech
+                        'top': 'hypercube',     // Home
+                        'bottom': 'crystal'     // Context
+                    };
+                    if (bezelGeometryMap[direction]) {
+                        this.setTheme(bezelGeometryMap[direction]);
+                        console.log(`🎯 Auto-assigned ${bezelGeometryMap[direction]} to ${direction} bezel`);
+                        return;
+                    }
+                }
+                
+                // Default assignment for other visualizers based on role
+                const roleGeometryMap = {
+                    'board': 'hypercube',     // Board uses base geometry
+                    'card': 'sphere',         // Cards use sphere by default
+                    'background': 'hypercube', // Background uses base
+                    'shadow': 'klein',        // Shadows use topology
+                    'content': 'hypercube',   // Content uses base
+                    'highlight': 'fractal',   // Highlights use complex geometry
+                    'accent': 'crystal'       // Accents use structured geometry
+                };
+                
+                if (roleGeometryMap[this.role]) {
+                    this.setTheme(roleGeometryMap[this.role]);
+                    console.log(`🎯 Auto-assigned ${roleGeometryMap[this.role]} to ${this.role} role`);
+                }
+            }
+            
+            setupInteractions() {
+                // Remove direct update of this.interactionState.
+                // Instead, queue events to UnifiedReactivityBridge.
+                // VIB3HomeMaster will process these and update global state.
+                // Effects will flow back via updateParameters().
+
+                const getCoords = (e) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    return {
+                        x: (e.clientX - rect.left) / rect.width,
+                        y: 1.0 - ((e.clientY - rect.top) / rect.height) // Inverted Y for typical shader coords
+                    };
+                };
+
+                this.canvas.addEventListener('mousemove', (e) => {
+                    if (window.vib3Bridge && window.vib3Bridge.queueEvent) {
+                        const coords = getCoords(e);
+                        window.vib3Bridge.queueEvent('visualizerInteraction', {
+                            type: 'mousemove',
+                            elementId: this.instanceId || this.role, // Use a unique ID
+                            canvasRole: this.role,
+                            normalizedX: coords.x,
+                            normalizedY: coords.y,
+                            clientX: e.clientX, clientY: e.clientY, // Raw screen coords might also be useful
+                            timestamp: performance.now()
+                        });
+                    }
+                });
+                
+                this.canvas.addEventListener('mousedown', (e) => {
+                    if (window.vib3Bridge && window.vib3Bridge.queueEvent) {
+                        const coords = getCoords(e);
+                        window.vib3Bridge.queueEvent('visualizerInteraction', {
+                            type: 'mousedown',
+                            elementId: this.instanceId || this.role,
+                            canvasRole: this.role,
+                            button: e.button,
+                            normalizedX: coords.x,
+                            normalizedY: coords.y,
+                            timestamp: performance.now()
+                        });
+                    }
+                });
+                
+                this.canvas.addEventListener('mouseup', (e) => {
+                     if (window.vib3Bridge && window.vib3Bridge.queueEvent) {
+                        const coords = getCoords(e);
+                        window.vib3Bridge.queueEvent('visualizerInteraction', {
+                            type: 'mouseup',
+                            elementId: this.instanceId || this.role,
+                            canvasRole: this.role,
+                            button: e.button,
+                            normalizedX: coords.x,
+                            normalizedY: coords.y,
+                            timestamp: performance.now()
+                        });
+                    }
+                });
+
+                this.canvas.addEventListener('click', (e) => { // Added click for distinct click vs mousedown/up
+                     if (window.vib3Bridge && window.vib3Bridge.queueEvent) {
+                        const coords = getCoords(e);
+                        window.vib3Bridge.queueEvent('visualizerInteraction', {
+                            type: 'click',
+                            elementId: this.instanceId || this.role,
+                            canvasRole: this.role,
+                            button: e.button,
+                            normalizedX: coords.x,
+                            normalizedY: coords.y,
+                            timestamp: performance.now()
+                        });
+                    }
+                });
+
+                // Touch support - simplified, could be expanded
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault(); // Often needed for touch on canvas
+                    if (e.touches[0] && window.vib3Bridge && window.vib3Bridge.queueEvent) {
+                        const coords = getCoords(e.touches[0]);
+                        window.vib3Bridge.queueEvent('visualizerInteraction', {
+                            type: 'touchstart',
+                            elementId: this.instanceId || this.role,
+                            canvasRole: this.role,
+                            normalizedX: coords.x,
+                            normalizedY: coords.y,
+                            timestamp: performance.now()
+                        });
+                    }
+                }, { passive: false });
+
+                this.canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault(); // Often needed for touch on canvas
+                     if (e.touches[0] && window.vib3Bridge && window.vib3Bridge.queueEvent) {
+                        const coords = getCoords(e.touches[0]);
+                        window.vib3Bridge.queueEvent('visualizerInteraction', {
+                            type: 'touchmove',
+                            elementId: this.instanceId || this.role,
+                            canvasRole: this.role,
+                            normalizedX: coords.x,
+                            normalizedY: coords.y,
+                            timestamp: performance.now()
+                        });
+                    }
+                }, { passive: false });
+
+                this.canvas.addEventListener('touchend', (e) => {
+                    e.preventDefault(); // Often needed for touch on canvas
+                     if (window.vib3Bridge && window.vib3Bridge.queueEvent) {
+                        // Touchend doesn't have coordinates in e.touches directly in the same way.
+                        // We might need to use changedTouches or rely on last known from touchmove.
+                        // For simplicity, not passing coords for touchend for now, or use last known if stored.
+                        window.vib3Bridge.queueEvent('visualizerInteraction', {
+                            type: 'touchend',
+                            elementId: this.instanceId || this.role,
+                            canvasRole: this.role,
+                            timestamp: performance.now()
+                        });
+                    }
+                }, { passive: false });
+
+                // Removed window scroll listener from here as it's global, not per-visualizer.
+                // Removed updateInteractionState as it's no longer used.
+            }
+            
+            // updateInteractionState(type, intensity) { // No longer needed
+            //     this.interactionState.type = type;
+            //     this.interactionState.intensity = Math.max(this.interactionState.intensity, intensity);
+            // }
+            
+            setTheme(themeName) {
+                if (this.themeConfigs && this.themeConfigs[themeName]) {
+                    const newConfig = this.themeConfigs[themeName];
+                    
+                    // Smooth parameter transition
+                    this.transitionToParams = {...newConfig};
+                    this.transitionProgress = 0;
+                    this.currentTheme = themeName;
+                    
+                    console.log(`🎨 Theme set to: ${themeName}`);
+                } else {
+                    console.warn(`⚠️ Theme not found: ${themeName}`);
+                    console.log('Available themes:', Object.keys(this.themeConfigs || {}));
+                }
+            }
+            
+            initShaders() {
+                const vertexShaderSource = `
+                    attribute vec2 a_position;
+                    void main() {
+                        gl_Position = vec4(a_position, 0.0, 1.0);
+                    }
+                `;
+                
+                const fragmentShaderSource = `
+                    precision highp float;
+                    
+                    uniform vec2 u_resolution;
+                    uniform float u_time;
+                    uniform vec2 u_mouse;
+                    uniform float u_geometry;
+                    uniform float u_density;
+                    uniform float u_speed;
+                    uniform vec3 u_color;
+                    uniform float u_intensity;
+                    uniform float u_instanceDensity;
+                    uniform float u_instanceSpeed;
+                    uniform float u_colorShift;
+                    uniform float u_chaosIntensity;
+                    uniform float u_gridVibrance;
+                    uniform float u_sectionFocus;
+                    uniform float u_portalIntensity;
+                    uniform float u_microChaos;
+                    uniform float u_inverseFlow;
+                    uniform vec2 u_contentGravity;
+                    uniform float u_contentFlowStrength;
+                    uniform float u_textProximity;
+                    uniform float u_overallOpacity; // New uniform for master-controlled opacity
+                    uniform float u_viewAngleOffsetX; // For global mouse effects
+                    uniform float u_viewAngleOffsetY; // For global mouse effects
+                    
+                    mat4 rotateXW(float theta) {
+                        float c = cos(theta);
+                        float s = sin(theta);
+                        return mat4(c, 0, 0, -s, 0, 1, 0, 0, 0, 0, 1, 0, s, 0, 0, c);
+                    }
+                    
+                    mat4 rotateYW(float theta) {
+                        float c = cos(theta);
+                        float s = sin(theta);
+                        return mat4(c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1);
+                    }
+                    
+                    vec3 project4Dto3D(vec4 p) {
+                        float w = 2.0 / (2.0 + p.w);
+                        return vec3(p.x * w, p.y * w, p.z * w);
+                    }
+                    
+                    float hypercubeLattice(vec3 p, float gridSize) {
+                        vec3 grid = fract(p * gridSize);
+                        vec3 edges = 1.0 - smoothstep(0.0, 0.01 + u_gridVibrance * 0.02, abs(grid - 0.5));
+                        float lattice = max(max(edges.x, edges.y), edges.z);
+                        
+                        // Enhanced grid effects
+                        float pulse = sin(u_time * 0.003 + length(p) * 5.0) * 0.5 + 0.5;
+                        lattice += pulse * u_gridVibrance * 0.3;
+                        
+                        // Section focus enhancement
+                        float focus = exp(-length(p - vec3(0.0, 0.0, u_sectionFocus * 0.5)) * 2.0);
+                        lattice += focus * u_sectionFocus * 0.4;
+                        
+                        return lattice;
+                    }
+                    
+                    float tetrahedronLattice(vec3 p, float gridSize) {
+                        vec3 q = fract(p * gridSize) - 0.5;
+                        float d1 = length(q);
+                        float d2 = length(q - vec3(0.5, 0.0, 0.0));
+                        float d3 = length(q - vec3(0.0, 0.5, 0.0));
+                        float d4 = length(q - vec3(0.0, 0.0, 0.5));
+                        return 1.0 - smoothstep(0.0, 0.08, min(min(d1, d2), min(d3, d4)));
+                    }
+                    
+                    float sphereLattice(vec3 p, float gridSize) {
+                        vec3 q = fract(p * gridSize) - 0.5;
+                        float r = length(q);
+                        return 1.0 - smoothstep(0.1, 0.35, r);
+                    }
+                    
+                    float mandelbulbLattice(vec3 p, float gridSize) {
+                        vec3 q = fract(p * gridSize) - 0.5;
+                        vec3 z = q;
+                        float dr = 1.0;
+                        float r = 0.0;
+                        for (int i = 0; i < 4; i++) {
+                            r = length(z);
+                            if (r > 2.0) break;
+                            
+                            float theta = acos(z.z / r) * 8.0;
+                            float phi = atan(z.y, z.x) * 8.0;
+                            dr = pow(r, 7.0) * 8.0 * dr + 1.0;
+                            
+                            float zr = pow(r, 8.0);
+                            theta *= 8.0;
+                            phi *= 8.0;
+                            
+                            z = zr * vec3(sin(theta) * cos(phi), sin(phi) * sin(theta), cos(theta));
+                            z += q;
+                        }
+                        return 1.0 - smoothstep(0.0, 0.15, r);
+                    }
+                    
+                    float waveLattice(vec3 p, float gridSize) {
+                        vec3 q = p * gridSize;
+                        float wave1 = sin(q.x * 1.2 + u_time * u_speed * 0.0008);
+                        float wave2 = sin(q.y * 1.2 + u_time * u_speed * 0.001);
+                        float wave3 = sin(q.z * 1.2 + u_time * u_speed * 0.0006);
+                        return smoothstep(-0.4, 0.4, wave1 * wave2 * wave3);
+                    }
+                    
+                    float getGeometryValue(vec3 p, float gridSize, float geomType) {
+                        if (geomType < 0.5) return hypercubeLattice(p, gridSize);
+                        else if (geomType < 1.5) return tetrahedronLattice(p, gridSize);
+                        else if (geomType < 2.5) return sphereLattice(p, gridSize);
+                        else if (geomType < 6.5) return waveLattice(p, gridSize);
+                        else return mandelbulbLattice(p, gridSize);
+                    }
+                    
+                    vec3 hsv2rgb(vec3 c) {
+                        vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+                        vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+                        return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+                    }
+                    
+                    void main() {
+                        vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+                        float aspectRatio = u_resolution.x / u_resolution.y;
+                        uv.x *= aspectRatio;
+                        uv -= 0.5;
+                        
+                        float time = u_time * 0.0008 * u_speed * u_instanceSpeed;
+                        
+                        // Enhanced 4D rotation with portal effects and view angle offsets
+                        vec4 p4d = vec4(uv, sin(time * 0.2) * 0.3, cos(time * 0.15) * 0.3);
+                        float angleXW = time * (0.3 + u_portalIntensity * 0.5) + u_viewAngleOffsetX;
+                        float angleYW = time * (0.2 + u_microChaos * 0.3) + u_viewAngleOffsetY;
+                        p4d = rotateXW(angleXW) * p4d;
+                        p4d = rotateYW(angleYW) * p4d;
+                        
+                        vec3 p = project4Dto3D(p4d);
+                        
+                        // CONTENT GUIDANCE SYSTEM - Particles flow toward text
+                        vec2 contentDirection = normalize(u_contentGravity - uv);
+                        float contentDistance = length(u_contentGravity - uv);
+                        
+                        // Apply content gravity to the geometry position
+                        vec2 gravityPull = contentDirection * u_contentFlowStrength * 0.1;
+                        p.xy += gravityPull * (1.0 - u_textProximity);
+                        
+                        // Create flow lines toward content
+                        float flowLines = sin(dot(p.xy, contentDirection) * 20.0 + time * 2.0) * u_contentFlowStrength * 0.3;
+                        
+                        // Enhanced density with vibrance AND content awareness
+                        float instanceDensity = u_density * u_instanceDensity * (1.0 + u_gridVibrance * 0.5);
+                        float lattice = getGeometryValue(p, instanceDensity, u_geometry);
+                        
+                        // Add flow guidance to lattice
+                        lattice += flowLines;
+                        
+                        // Portal distortion effects
+                        float portalDistort = sin(length(p) * 10.0 + time * 2.0) * u_portalIntensity * 0.1;
+                        lattice += portalDistort;
+                        
+                        // Micro chaos effects
+                        float chaos = sin(p.x * 50.0 + time * 5.0) * sin(p.y * 47.0 + time * 4.8) * u_microChaos * 0.2;
+                        lattice += chaos;
+                        
+                        // Inverse flow effects
+                        float inverseFlow = cos(length(p) * 8.0 - time * 1.5) * u_inverseFlow * 0.15;
+                        lattice -= inverseFlow;
+                        
+                        // Enhanced color with vibrance
+                        float hue = atan(u_color.r, u_color.g) + u_colorShift * 0.017453 + time * 0.1;
+                        float saturation = 0.7 + lattice * 0.3 + u_gridVibrance * 0.2;
+                        float brightness = 0.2 + lattice * 0.8 + u_intensity * 0.3 + u_gridVibrance * 0.2;
+                        
+                        vec3 color = hsv2rgb(vec3(hue, saturation, brightness));
+                        
+                        // Enhanced mouse interaction
+                        float mouseDist = length(uv - (u_mouse - 0.5) * vec2(aspectRatio, 1.0));
+                        float mouseGlow = exp(-mouseDist * (2.0 + u_sectionFocus * 2.0)) * (0.2 + u_gridVibrance * 0.3);
+                        color += vec3(mouseGlow) * u_color * (0.5 + u_gridVibrance * 0.5);
+                        
+                        // Section focus glow
+                        float focusGlow = exp(-length(uv) * (3.0 - u_sectionFocus * 2.0)) * u_sectionFocus * 0.3;
+                        color += vec3(focusGlow) * mix(u_color, vec3(1.0), 0.5);
+                        
+                        // Portal intensity enhancement
+                        color += vec3(u_portalIntensity * 0.2) * vec3(0.0, 1.0, 1.0);
+                        
+                        float baseAlpha = 0.85 + u_gridVibrance * 0.15; // Original alpha calculation
+                        gl_FragColor = vec4(color, baseAlpha * u_overallOpacity); // Modulate with master opacity
+                    }
+                `;
+                
+                this.program = this.createProgram(vertexShaderSource, fragmentShaderSource);
+                this.uniforms = {
+                    resolution: this.gl.getUniformLocation(this.program, 'u_resolution'),
+                    time: this.gl.getUniformLocation(this.program, 'u_time'),
+                    mouse: this.gl.getUniformLocation(this.program, 'u_mouse'),
+                    geometry: this.gl.getUniformLocation(this.program, 'u_geometry'),
+                    density: this.gl.getUniformLocation(this.program, 'u_density'),
+                    speed: this.gl.getUniformLocation(this.program, 'u_speed'),
+                    color: this.gl.getUniformLocation(this.program, 'u_color'),
+                    intensity: this.gl.getUniformLocation(this.program, 'u_intensity'),
+                    instanceDensity: this.gl.getUniformLocation(this.program, 'u_instanceDensity'),
+                    instanceSpeed: this.gl.getUniformLocation(this.program, 'u_instanceSpeed'),
+                    colorShift: this.gl.getUniformLocation(this.program, 'u_colorShift'),
+                    chaosIntensity: this.gl.getUniformLocation(this.program, 'u_chaosIntensity'),
+                    gridVibrance: this.gl.getUniformLocation(this.program, 'u_gridVibrance'),
+                    sectionFocus: this.gl.getUniformLocation(this.program, 'u_sectionFocus'),
+                    portalIntensity: this.gl.getUniformLocation(this.program, 'u_portalIntensity'),
+                    microChaos: this.gl.getUniformLocation(this.program, 'u_microChaos'),
+                    inverseFlow: this.gl.getUniformLocation(this.program, 'u_inverseFlow'),
+                    contentGravity: this.gl.getUniformLocation(this.program, 'u_contentGravity'),
+                    contentFlowStrength: this.gl.getUniformLocation(this.program, 'u_contentFlowStrength'),
+                    textProximity: this.gl.getUniformLocation(this.program, 'u_textProximity'),
+                    overallOpacity: this.gl.getUniformLocation(this.program, 'u_overallOpacity'),
+                    viewAngleOffsetX: this.gl.getUniformLocation(this.program, 'u_viewAngleOffsetX'),
+                    viewAngleOffsetY: this.gl.getUniformLocation(this.program, 'u_viewAngleOffsetY')
+                };
+            }
+            
+            createProgram(vertexSource, fragmentSource) {
+                const vertexShader = this.createShader(this.gl.VERTEX_SHADER, vertexSource);
+                const fragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, fragmentSource);
+                
+                const program = this.gl.createProgram();
+                this.gl.attachShader(program, vertexShader);
+                this.gl.attachShader(program, fragmentShader);
+                this.gl.linkProgram(program);
+                
+                if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
+                    console.error('Program linking failed:', this.gl.getProgramInfoLog(program));
+                    return null;
+                }
+                
+                return program;
+            }
+            
+            createShader(type, source) {
+                const shader = this.gl.createShader(type);
+                this.gl.shaderSource(shader, source);
+                this.gl.compileShader(shader);
+                
+                if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+                    console.error('Shader compilation failed:', this.gl.getShaderInfoLog(shader));
+                    return null;
+                }
+                
+                return shader;
+            }
+            
+            initBuffers() {
+                const positions = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+                
+                this.buffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
+                
+                const positionLocation = this.gl.getAttribLocation(this.program, 'a_position');
+                this.gl.enableVertexAttribArray(positionLocation);
+                this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+            }
+            
+            resize() {
+                this.canvas.width = this.canvas.clientWidth;
+                this.canvas.height = this.canvas.clientHeight;
+                this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+            }
+            
+            // snapToState(stateIndex) { // Deprecated: setTheme is used now.
+            //     if (stateIndex !== this.targetState) {
+            //         this.targetState = stateIndex;
+            //         this.transitionProgress = 0.0;
+            //     }
+            // }
+            
+            updateInteraction(mouseX, mouseY) {
+                this.mouseX = mouseX;
+                this.mouseY = mouseY;
+            }
+            
+            render() {
+                if (!this.program) return;
+                
+                this.resize();
+                this.gl.useProgram(this.program);
+                
+                if (this.transitionProgress < 1.0) {
+                    this.transitionProgress = Math.min(1.0, this.transitionProgress + 0.025);
+                }
+                
+                // Safety check for state bounds -- DEPRECATED internal state machine
+
+                let paramsForUniforms = { // Start with current theme's base values, mapping names
+                    geometry: this.params.geometry,
+                    density: this.params.gridDensity,
+                    speed: this.params.rotationSpeed,
+                    color: this.params.baseColor,
+                    // Include other params that might be part of the theme and used by shaders directly or indirectly
+                    dimension: this.params.dimension,
+                    morphFactor: this.params.morphFactor,
+                    glitchIntensity: this.params.glitchIntensity
+                };
+
+                if (this.transitionToParams && this.transitionProgress < 1.0) {
+                    const t = this.transitionProgress * this.transitionProgress * (3.0 - 2.0 * this.transitionProgress); // Smoothstep
+
+                    const currentP = this.params; // Parameters of the theme being transitioned FROM
+                    const targetP = this.transitionToParams; // Parameters of the theme being transitioned TO
+
+                    paramsForUniforms = {
+                        geometry: currentP.geometry + (targetP.geometry - currentP.geometry) * t,
+                        density: currentP.gridDensity + (targetP.gridDensity - currentP.gridDensity) * t,
+                        speed: currentP.rotationSpeed + (targetP.rotationSpeed - currentP.rotationSpeed) * t,
+                        color: currentP.baseColor.map((val, i) => val + (targetP.baseColor[i] - val) * t),
+                        dimension: currentP.dimension + (targetP.dimension - currentP.dimension) * t,
+                        morphFactor: currentP.morphFactor + (targetP.morphFactor - currentP.morphFactor) * t,
+                        glitchIntensity: currentP.glitchIntensity + (targetP.glitchIntensity - currentP.glitchIntensity) * t,
+                    };
+                } else if (this.transitionToParams && this.transitionProgress >= 1.0) {
+                    this.params = { ...this.transitionToParams }; // Transition complete, adopt target params fully
+                    this.transitionToParams = null; // Clear target
+                    paramsForUniforms = { // Use final target values, mapping names
+                        geometry: this.params.geometry,
+                        density: this.params.gridDensity,
+                        speed: this.params.rotationSpeed,
+                        color: this.params.baseColor,
+                        dimension: this.params.dimension,
+                        morphFactor: this.params.morphFactor,
+                        glitchIntensity: this.params.glitchIntensity,
+                    };
+                }
+                // If no transition, paramsForUniforms already holds this.params correctly mapped.
+
+                // Apply densityMultiplier
+                paramsForUniforms.density *= (this.densityMultiplier !== undefined ? this.densityMultiplier : 1.0);
+                
+                const time = Date.now() - this.startTime;
+                
+                this.gl.uniform2f(this.uniforms.resolution, this.canvas.width, this.canvas.height);
+                this.gl.uniform1f(this.uniforms.time, time);
+                // Use normalizedMouseXOnViz/Y if provided by updateParameters, otherwise current mouseX/Y (which might be stale or default)
+                const mouseXToUse = this.normalizedMouseXOnViz !== undefined ? this.normalizedMouseXOnViz : (this.mouseX !== undefined ? this.mouseX : 0.5);
+                const mouseYToUse = this.normalizedMouseYOnViz !== undefined ? this.normalizedMouseYOnViz : (this.mouseY !== undefined ? this.mouseY : 0.5);
+                this.gl.uniform2f(this.uniforms.mouse, mouseXToUse, mouseYToUse);
+
+                this.gl.uniform1f(this.uniforms.geometry, paramsForUniforms.geometry);
+                this.gl.uniform1f(this.uniforms.density, paramsForUniforms.density); // Already modulated by densityMultiplier
+                this.gl.uniform1f(this.uniforms.speed, paramsForUniforms.speed);
+                this.gl.uniform3fv(this.uniforms.color, new Float32Array(paramsForUniforms.color));
+
+                // ENSURE INSTANCEPARAMS EXISTS (should be set in constructor)
+                if (!this.instanceParams) { // This should ideally not happen if constructor is robust
+                    this.instanceParams = {
+                        intensity: 0.5,
+                        densityMult: 1.0,
+                        speedMult: 1.0,
+                        colorShift: 0.0
+                    };
+                }
+                
+                // Safe parameter access
+                const safeIntensity = this.instanceParams.intensity || 0.5;
+                const safeDensityMult = this.instanceParams.densityMult || 1.0;
+                const safeSpeedMult = this.instanceParams.speedMult || 1.0;
+                const safeColorShift = this.instanceParams.colorShift || 0.0;
+                
+                this.gl.uniform1f(this.uniforms.intensity, safeIntensity);
+                this.gl.uniform1f(this.uniforms.instanceDensity, safeDensityMult);
+                this.gl.uniform1f(this.uniforms.instanceSpeed, safeSpeedMult);
+                this.gl.uniform1f(this.uniforms.colorShift, safeColorShift);
+                this.gl.uniform1f(this.uniforms.chaosIntensity, this.chaosIntensity !== undefined ? this.chaosIntensity : 0.0);
+
+                // Enhanced reactivity uniforms - Now using internal properties set by updateParameters()
+                this.gl.uniform1f(this.uniforms.gridVibrance, this.gridVibrance !== undefined ? this.gridVibrance : 1.0);
+                this.gl.uniform1f(this.uniforms.sectionFocus, this.sectionFocus !== undefined ? this.sectionFocus : 0.0);
+                this.gl.uniform1f(this.uniforms.portalIntensity, this.portalIntensity !== undefined ? this.portalIntensity : 0.0);
+                this.gl.uniform1f(this.uniforms.microChaos, this.microChaos !== undefined ? this.microChaos : 0.0);
+                this.gl.uniform1f(this.uniforms.inverseFlow, this.inverseFlow !== undefined ? this.inverseFlow : 0.0);
+
+                // Content guidance uniforms - Now using internal properties
+                this.gl.uniform2f(this.uniforms.contentGravity,
+                    this.contentGravityX !== undefined ? this.contentGravityX : 0.5,
+                    this.contentGravityY !== undefined ? this.contentGravityY : 0.5);
+                this.gl.uniform1f(this.uniforms.contentFlowStrength, this.contentFlowStrength !== undefined ? this.contentFlowStrength : 0.0);
+                this.gl.uniform1f(this.uniforms.textProximity, this.textProximity !== undefined ? this.textProximity : 0.0);
+                this.gl.uniform1f(this.uniforms.overallOpacity, this.overallOpacity !== undefined ? this.overallOpacity : 1.0);
+                this.gl.uniform1f(this.uniforms.viewAngleOffsetX, this.viewAngleOffsetX !== undefined ? this.viewAngleOffsetX : 0.0);
+                this.gl.uniform1f(this.uniforms.viewAngleOffsetY, this.viewAngleOffsetY !== undefined ? this.viewAngleOffsetY : 0.0);
+                
+                this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+            }
+        }
+        
+        // MORPHING BLOG SYSTEM
+        class MorphingBlogSystem {
+            constructor(homeMaster) { // Accept homeMaster instance
+                this.homeMaster = homeMaster; // Store it
+                this.visualizers = [];
+                this.currentState = 0;
+                this.mouseX = 0.5;
+                this.mouseY = 0.5;
+                this.isTransitioning = false;
+                
+                this.layoutNames = ['HOME', 'TECH', 'MEDIA', 'INNOVATION', 'RESEARCH'];
+                this.layoutClasses = ['layout-home', 'layout-tech', 'layout-media', 'layout-innovation', 'layout-research'];
+                
+                // State-specific blog content - Now superseded by presets/site-content.json and DualNavigationSystem
+                
+                this.initialize();
+            }
+            
+            initialize() {
+                console.log('🎨 Initializing Morphing Blog System...');
+                
+                // Create board visualizer
+                const boardCanvas = document.getElementById('board-visualizer');
+                if (boardCanvas) {
+                    const boardViz = new ReactiveHyperAVCore(boardCanvas, 'board', 'board-visualizer-instance');
+                    this.visualizers.push(boardViz);
+                    if (this.homeMaster) this.homeMaster.registerVisualizer(boardViz.instanceId, boardViz.role);
+                }
+                
+                // Create card visualizers
+                for (let i = 1; i <= 6; i++) {
+                    const cardCanvas = document.getElementById(`card-visualizer-${i}`);
+                    const cardId = `blog-card-${i}`; // Assuming blog-card-i is the ID of the parent .blog-card div
+                    if (cardCanvas) {
+                        const vizInstanceId = cardId + "-visualizer"; // e.g. blog-card-1-visualizer
+                        const cardViz = new ReactiveHyperAVCore(cardCanvas, 'card', vizInstanceId);
+                        this.visualizers.push(cardViz);
+                        if (this.homeMaster) this.homeMaster.registerVisualizer(cardViz.instanceId, cardViz.role);
+                    }
+                }
+                
+                // Create bezel visualizers
+                const bezelDirections = ['left', 'right', 'top', 'bottom'];
+                const bezelGeometries = [6.0, 1.0, 0.0, 2.0]; // Wave, Tetrahedron, Hypercube, Sphere
+                const bezelColors = [
+                    [1.0, 0.0, 0.5], // Pink for Research
+                    [0.0, 1.0, 1.0], // Cyan for Tech
+                    [1.0, 1.0, 0.0], // Yellow for Home
+                    [0.0, 1.0, 0.5]  // Green for Context
+                ];
+                
+                bezelDirections.forEach((direction, index) => {
+                    const bezelCanvas = document.getElementById(`bezel-visualizer-${direction}`);
+                    if (bezelCanvas) {
+                        const vizInstanceId = `bezel-visualizer-${direction}-instance`;
+                        const bezelViz = new ReactiveHyperAVCore(bezelCanvas, 'bezel', vizInstanceId);
+                        // Set specific geometry and color for each bezel
+                        bezelViz.states = [{
+                            geometry: bezelGeometries[index],
+                            density: 6.0,
+                            speed: 0.3,
+                            color: bezelColors[index],
+                            dimension: 3.4
+                        }];
+                        bezelViz.snapToState(0); // This might be deprecated if setTheme is fully adopted
+                        this.visualizers.push(bezelViz);
+                        if (this.homeMaster) this.homeMaster.registerVisualizer(bezelViz.instanceId, bezelViz.role);
+                    }
+                });
+                
+                this.setupInteractions();
+                this.setupStateControls(); // This is already commented out internally
+                // this.setupScrolling(); // Commented out to disable old scroll logic
+                this.startRenderLoop();
+                // this.updateContent(); // Superseded by DualNavigationSystem dynamic rendering and now removed
+                
+                console.log(`✅ Morphing Blog System ready - ${this.visualizers.length} visualizers with dynamic content`);
+            }
+            
+            setupInteractions() {
+                // Enhanced mouse tracking with energy buildup
+                document.addEventListener('mousemove', (e) => {
+                    this.mouseX = e.clientX / window.innerWidth;
+                    this.mouseY = 1.0 - (e.clientY / window.innerHeight);
+                    
+                    // Increase global energy with mouse movement
+                    this.globalEnergy = Math.min(1.0, this.globalEnergy + 0.05);
+                    document.documentElement.style.setProperty('--global-energy', this.globalEnergy);
+                    
+                    // Find hovered section
+                    const hoveredCard = this.getHoveredCard(e.clientX, e.clientY);
+                    this.updateSectionHover(hoveredCard);
+                    
+                    this.visualizers.forEach((viz, index) => {
+                        viz.updateInteraction(this.mouseX, this.mouseY);
+                        viz.globalEnergy = this.globalEnergy;
+                        viz.sectionFocus = hoveredCard === index - 1 ? 1.0 : 0.0;
+                    });
+                });
+                
+                // Enhanced card hover effects with section focus
+                // THIS ENTIRE BLOCK IS BEING REPLACED BY HomeMaster/Bridge DRIVEN EFFECTS
+                // BASED ON 'visualizerInteraction' EVENTS FROM ReactiveHyperAVCore instances on cards.
+                /*
+                document.querySelectorAll('.blog-card').forEach((card, index) => {
+                    card.addEventListener('mouseenter', () => {
+                        // ... OLD LOGIC ...
+                    });
+                    
+                    card.addEventListener('mouseleave', () => {
+                        // ... OLD LOGIC ...
+                    });
+                    
+                    // Click to enter READING MODE
+                    card.addEventListener('click', (e) => {
+                        // ... OLD LOGIC ...
+                        // This will be refactored to use HomeMaster state for reading mode
+                    });
+                    
+                    // Section-specific scroll reactivity
+                    card.addEventListener('wheel', (e) => {
+                        // ... OLD LOGIC ...
+                        // This will be refactored if micro-chaos on scroll is desired via HomeMaster
+                    }, { passive: false });
+                });
+                */
+                
+                // Global mouse energy decay
+                setInterval(() => {
+                    this.globalEnergy *= 0.98;
+                    document.documentElement.style.setProperty('--global-energy', this.globalEnergy);
+                }, 50);
+                
+                // 4D CUBE NAVIGATION DRAG SYSTEM
+                // this.setupCubeNavigation(); // Now handled by DualNavigationSystem
+            }
+            
+            /* // Entire setupCubeNavigation and its helpers are superseded by DualNavigationSystem
+            setupCubeNavigation() {
+                console.log('🔳 Setting up 4D Cube Navigation System...');
+                
+                // Drag state tracking
+                this.dragState = {
+                    isDragging: false,
+                    startX: 0,
+                    startY: 0,
+                    currentX: 0,
+                    currentY: 0,
+                    direction: null,
+                    threshold: 80, // pixels to drag before snap
+                    tension: 0.0   // 0-1 resistance buildup
+                };
+                
+                // Edge zones for drag detection - SMALLER AND MORE PRECISE
+                this.edgeZones = {
+                    left: { x: 0, width: 100, direction: 'left', target: 'research' },
+                    right: { x: window.innerWidth - 100, width: 100, direction: 'right', target: 'tech' },
+                    top: { y: 0, height: 100, direction: 'up', target: 'home' },
+                    bottom: { y: window.innerHeight - 100, height: 100, direction: 'down', target: 'context' }
+                };
+                
+                // Mouse/Touch drag detection
+                document.addEventListener('mousedown', (e) => this.handleDragStart(e));
+                document.addEventListener('mousemove', (e) => this.handleDragMove(e));
+                document.addEventListener('mouseup', (e) => this.handleDragEnd(e));
+                
+                // Touch events for mobile
+                document.addEventListener('touchstart', (e) => this.handleDragStart(e.touches[0]));
+                document.addEventListener('touchmove', (e) => this.handleDragMove(e.touches[0]));
+                document.addEventListener('touchend', (e) => this.handleDragEnd(e));
+                
+                // Bezel hover effects
+                document.querySelectorAll('.nav-bezel').forEach(bezel => {
+                    bezel.addEventListener('mouseenter', () => {
+                        bezel.style.transform = 'scale(1.1)';
+                        bezel.style.opacity = '0.9';
+                    });
+                    
+                    bezel.addEventListener('mouseleave', () => {
+                        bezel.style.transform = 'scale(1.0)';
+                        bezel.style.opacity = '0.4';
+                    });
+                });
+                
+                console.log('✅ 4D Cube Navigation ready - drag edges to rotate cube faces');
+            }
+            
+            handleDragStart(event) {
+                const { clientX: x, clientY: y } = event;
+                
+                console.log(`🔍 DRAG START DEBUG: x=${x}, y=${y}, window=${window.innerWidth}x${window.innerHeight}`);
+                
+                // CHECK: if drag started in edge zone (removed restrictive element targeting)
+                const edgeZone = this.detectEdgeZone(x, y);
+                
+                console.log(`🔍 EDGE ZONE RESULT:`, edgeZone);
+                
+                if (!edgeZone) {
+                    console.log(`❌ No edge zone detected at ${x}, ${y}`);
+                    return;
+                }
+                
+                console.log(`🔳 CUBE DRAG START: ${edgeZone.direction} → ${edgeZone.target}`);
+                
+                this.dragState.isDragging = true;
+                this.dragState.startX = x;
+                this.dragState.startY = y;
+                this.dragState.currentX = x;
+                this.dragState.currentY = y;
+                this.dragState.direction = edgeZone.direction;
+                this.dragState.target = edgeZone.target;
+                
+                // Visual feedback - activate corresponding bezel
+                const bezel = document.querySelector(`.nav-bezel-${edgeZone.direction}`);
+                if (bezel) {
+                    bezel.style.transform = 'scale(1.15)';
+                    bezel.style.opacity = '1.0';
+                    bezel.style.boxShadow = '0 0 40px rgba(0, 255, 255, 0.6)';
+                }
+                
+                // Start tension buildup
+                this.dragState.tension = 0.0;
+                document.documentElement.style.setProperty('--cube-tension', '0.0');
+            }
+            
+            handleDragMove(event) {
+                if (!this.dragState.isDragging) return;
+                
+                const { clientX: x, clientY: y } = event;
+                this.dragState.currentX = x;
+                this.dragState.currentY = y;
+                
+                // Calculate drag distance in appropriate direction
+                let dragDistance = 0;
+                switch (this.dragState.direction) {
+                    case 'left':
+                        dragDistance = this.dragState.startX - x; // Drag left = positive
+                        break;
+                    case 'right':
+                        dragDistance = x - this.dragState.startX; // Drag right = positive
+                        break;
+                    case 'up':
+                        dragDistance = this.dragState.startY - y; // Drag up = positive
+                        break;
+                    case 'down':
+                        dragDistance = y - this.dragState.startY; // Drag down = positive
+                        break;
+                }
+                
+                // Calculate tension (0-1) based on drag distance
+                this.dragState.tension = Math.min(1.0, Math.max(0.0, dragDistance / this.dragState.threshold));
+                
+                // Update CSS variables for visual feedback
+                document.documentElement.style.setProperty('--cube-tension', this.dragState.tension);
+                document.documentElement.style.setProperty('--portal-intensity', this.dragState.tension * 0.5);
+                
+                // Update visualizers with tension effects
+                this.visualizers.forEach(viz => {
+                    viz.portalIntensity = this.dragState.tension * 0.5;
+                    viz.microChaos = this.dragState.tension * 0.3;
+                    viz.gridVibrance = 1.0 + this.dragState.tension * 0.5;
+                });
+                
+                // Threshold reached - trigger snap
+                if (this.dragState.tension >= 1.0) {
+                    this.triggerCubeRotation();
+                }
+            }
+            
+            handleDragEnd(event) {
+                if (!this.dragState.isDragging) return;
+                
+                console.log(`🔳 CUBE DRAG END: tension=${this.dragState.tension.toFixed(2)}`);
+                
+                // Reset bezel visual state
+                document.querySelectorAll('.nav-bezel').forEach(bezel => {
+                    bezel.style.transform = 'scale(1.0)';
+                    bezel.style.opacity = '0.4';
+                    bezel.style.boxShadow = '';
+                });
+                
+                // If threshold wasn't reached, animate back to start
+                if (this.dragState.tension < 1.0) {
+                    this.animateTensionRelease();
+                }
+                
+                // Reset drag state
+                this.dragState.isDragging = false;
+                this.dragState.direction = null;
+                this.dragState.tension = 0.0;
+            }
+            
+            detectEdgeZone(x, y) {
+                const zones = this.edgeZones;
+                
+                // Check left edge
+                if (x <= zones.left.width) return zones.left;
+                
+                // Check right edge  
+                if (x >= zones.right.x) return zones.right;
+                
+                // Check top edge
+                if (y <= zones.top.height) return zones.top;
+                
+                // Check bottom edge
+                if (y >= zones.bottom.y) return zones.bottom;
+                
+                return null;
+            }
+            
+            triggerCubeRotation() {
+                console.log(`🌀 CUBE ROTATION TRIGGERED: ${this.dragState.direction} → ${this.dragState.target}`);
+                
+                // Map targets to state indices
+                const targetMap = {
+                    'home': 0,
+                    'tech': 1, 
+                    'research': 4,
+                    'context': 2  // Use media for now as context placeholder
+                };
+                
+                const targetState = targetMap[this.dragState.target];
+                if (targetState !== undefined) {
+                    console.log(`🎯 NAVIGATING TO STATE: ${targetState} (${this.dragState.target})`);
+                    this.triggerStateTransition(targetState);
+                }
+                
+                this.animateTensionRelease();
+                
+                // Reset drag state
+                this.dragState.isDragging = false;
+                this.dragState.direction = null;
+                this.dragState.tension = 0.0;
+            }
+            
+            animateTensionRelease() {
+                // Smooth release animation back to zero tension
+                let currentTension = this.dragState.tension;
+                const releaseInterval = setInterval(() => {
+                    currentTension *= 0.9;
+                    
+                    document.documentElement.style.setProperty('--cube-tension', currentTension);
+                    document.documentElement.style.setProperty('--portal-intensity', currentTension * 0.5);
+                    
+                    this.visualizers.forEach(viz => {
+                        viz.portalIntensity = currentTension * 0.5;
+                        viz.microChaos = currentTension * 0.3;
+                        viz.gridVibrance = 1.0 + currentTension * 0.5;
+                    });
+                    
+                    if (currentTension < 0.01) {
+                        clearInterval(releaseInterval);
+                        document.documentElement.style.setProperty('--cube-tension', '0');
+                        document.documentElement.style.setProperty('--portal-intensity', '0');
+                    }
+                }, 16);
+            }
+            
+            getHoveredCard(x, y) {
+                const cards = document.querySelectorAll('.blog-card');
+                for (let i = 0; i < cards.length; i++) {
+                    const rect = cards[i].getBoundingClientRect();
+                    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+            
+            updateSectionHover(hoveredIndex) {
+                this.hoveredSection = hoveredIndex;
+                document.documentElement.style.setProperty('--micro-chaos', hoveredIndex >= 0 ? '0.5' : '0.0');
+            }
+            
+            // setupStateControls() { // Superseded by DualNavigationSystem and HomeMaster
+            //     document.querySelectorAll('.state-dot').forEach((dot, index) => {
+            //         dot.addEventListener('click', () => {
+            //             this.snapToState(index);
+                        
+            //             document.querySelectorAll('.state-dot').forEach(d => d.classList.remove('active'));
+            //             dot.classList.add('active');
+            //         });
+            //     });
+            // }
+            
+            setupScrolling() {
+                /*  Entire method commented out to disable old scroll logic.
+                    New Universal Click/Drag scrolling will be managed by DragScrollHandler
+                    and VIB3HomeMaster.
+
+                let scrollAccumulation = 0;
+                let scrollPosition = 0;
+                let scrollTimeout;
+                let snapBackTimeout;
+                
+                // INFINITE SCROLL WITH VISUAL EFFECTS AND SNAP-BACK
+                document.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    
+                    if (this.isTransitioning) return;
+                    
+                    const direction = e.deltaY > 0 ? 1 : -1;
+                    const scrollSpeed = Math.abs(e.deltaY);
+                    
+                    // Infinite scroll position (accumulates indefinitely)
+                    scrollPosition += e.deltaY * 0.5;
+                    scrollAccumulation += direction * 0.5;
+                    
+                    // Apply infinite scroll visual effects
+                    const scrollIntensity = Math.min(scrollSpeed / 100, 2.0);
+                    document.documentElement.style.setProperty('--scroll-momentum', scrollIntensity.toString());
+                    document.documentElement.style.setProperty('--scroll-position', (scrollPosition * 0.001).toString());
+                    
+                    // Visual scroll effects on all cards
+                    const allCards = document.querySelectorAll('.blog-card');
+                    allCards.forEach((card, index) => {
+                        const offset = (scrollPosition * 0.1 + index * 100) % 400 - 200;
+                        card.style.transform = `translateY(${offset}px) scale(${1.0 + scrollIntensity * 0.1})`;
+                    });
+                    
+                    // Show morphing indicator during scroll
+                    const indicator = document.getElementById('morphingIndicator');
+                    indicator.classList.add('active');
+                    
+                    // Update scroll progress
+                    const progress = Math.abs(scrollAccumulation) / 3 * 100;
+                    document.getElementById('scrollFill').style.height = `${Math.min(100, progress)}%`;
+                    
+                    // Section transition threshold (still works)
+                    if (Math.abs(scrollAccumulation) >= 3) {
+                        const newState = (this.currentState + (direction > 0 ? 1 : -1) + 5) % 5;
+                        this.triggerStateTransition(newState);
+                        scrollAccumulation = 0;
+                    }
+                    
+                    // Reset snap-back timer
+                    clearTimeout(scrollTimeout);
+                    clearTimeout(snapBackTimeout);
+                    
+                    scrollTimeout = setTimeout(() => {
+                        scrollAccumulation = 0;
+                        document.getElementById('scrollFill').style.height = '0%';
+                        indicator.classList.remove('active');
+                        
+                        // SNAP BACK CONTENT WHEN INTERACTION STOPS
+                        snapBackTimeout = setTimeout(() => {
+                            this.snapContentBack();
+                        }, 500);
+                        
+                    }, 1000);
+                }, { passive: false });
+                
+                // Add smooth snap-back functionality
+                this.snapContentBack = () => {
+                    const startPosition = scrollPosition;
+                    const snapDuration = 800;
+                    const startTime = performance.now();
+                    
+                    const animateSnapBack = (currentTime) => {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / snapDuration, 1);
+                        const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+                        
+                        scrollPosition = startPosition * (1 - easeProgress);
+                        
+                        // Apply snap-back visual effects
+                        document.documentElement.style.setProperty('--scroll-position', (scrollPosition * 0.001).toString());
+                        const allCards = document.querySelectorAll('.blog-card');
+                        allCards.forEach((card, index) => {
+                            const offset = (scrollPosition * 0.1 + index * 100) % 400 - 200;
+                            const snapProgress = easeProgress;
+                            card.style.transform = `translateY(${offset * (1 - snapProgress)}px) scale(1.0)`;
+                        });
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(animateSnapBack);
+                        } else {
+                            // Fully snapped back
+                            scrollPosition = 0;
+                            document.documentElement.style.setProperty('--scroll-momentum', '0');
+                            document.documentElement.style.setProperty('--scroll-position', '0');
+                        }
+                    };
+                    
+                    requestAnimationFrame(animateSnapBack);
+                };
+            }
+            */ // End of commented out setupScrolling method
+            
+            /* // triggerStateTransition is largely superseded by DualNavigationSystem -> HomeMaster -> Bridge
+            triggerStateTransition(newState) {
+                if (newState === this.currentState || this.isTransitioning) return;
+                
+                console.log(`🎭 MORPHING BLOG TRANSITION DISABLED - VIB34D ACTIVE`);
+                
+                // DISABLE OLD TRANSITIONS - VIB34D SYSTEM HANDLES VISUALS
+                return;
+                
+                this.isTransitioning = true;
+                
+                // PORTAL TRANSITION SEQUENCE
+                this.triggerPortalTransition(() => {
+                    this.currentState = newState;
+                    
+                    // Show morphing indicator
+                    document.getElementById('morphingIndicator').classList.add('active');
+                    
+                    // Change layout class with dramatic effect
+                    const blogContainer = document.getElementById('blogContainer');
+                    blogContainer.className = `blog-container ${this.layoutClasses[newState]}`;
+                    
+                    // Enhanced visualizer state changes
+                    this.visualizers.forEach((viz, index) => {
+                        viz.snapToState(newState);
+                        viz.portalIntensity = 1.0;
+                        viz.gridVibrance = 2.0;
+                        
+                        // Staggered activation for dramatic effect
+                        setTimeout(() => {
+                            viz.portalIntensity = 0.0;
+                            viz.gridVibrance = 1.5;
+                        }, index * 100);
+                    });
+                    
+                    // Update content and UI
+                    this.updateContent();
+                    
+                    document.querySelectorAll('.state-dot').forEach(d => d.classList.remove('active'));
+                    document.querySelectorAll('.state-dot')[newState].classList.add('active');
+                    
+                    document.getElementById('current-layout').textContent = this.layoutNames[newState];
+                    document.getElementById('current-theme').textContent = this.visualizers[0].states[newState].geometryName;
+                    
+                    // Update card count based on layout
+                    const visibleCards = this.getVisibleCardCount(newState);
+                    document.getElementById('card-count').textContent = `${visibleCards} Active`;
+                    
+                    // Reality stabilization
+                    setTimeout(() => {
+                        this.isTransitioning = false;
+                        document.getElementById('morphingIndicator').classList.remove('active');
+                        this.visualizers.forEach(viz => {
+                            viz.gridVibrance = 1.0;
+                            viz.realityTear = 0.0;
+                        });
+                    }, 1400);
+                });
+            }
+            */ // End of triggerStateTransition
+            
+            /* // triggerPortalTransition is superseded by HomeMaster state + Bridge sync
+            triggerPortalTransition(callback) {
+                // Portal position (center of screen)
+                document.documentElement.style.setProperty('--portal-x', '50%');
+                document.documentElement.style.setProperty('--portal-y', '50%');
+                
+                // Phase 1: Portal opening
+                document.documentElement.style.setProperty('--portal-intensity', '0');
+                document.documentElement.style.setProperty('--reality-tear', '0');
+                document.documentElement.style.setProperty('--transition-phase', '0');
+                
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--portal-intensity', '1.0');
+                    this.visualizers.forEach(viz => {
+                        viz.portalIntensity = 1.0;
+                    });
+                }, 50);
+                
+                // Phase 2: Reality tear
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--reality-tear', '1.0');
+                    document.documentElement.style.setProperty('--transition-phase', '0.5');
+                    this.visualizers.forEach(viz => {
+                        viz.realityTear = 1.0;
+                    });
+                }, 200);
+                
+                // Phase 3: Execute transition at peak distortion
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--transition-phase', '1.0');
+                    callback();
+                }, 400);
+                
+                // Phase 4: Portal closing
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--portal-intensity', '0');
+                    document.documentElement.style.setProperty('--reality-tear', '0.3');
+                }, 800);
+                
+                // Phase 5: Reality stabilization
+                setTimeout(() => {
+                    document.documentElement.style.setProperty('--reality-tear', '0');
+                    document.documentElement.style.setProperty('--transition-phase', '0');
+                }, 1200);
+            }
+            */ // End of triggerPortalTransition
+            
+            getVisibleCardCount(state) { // This might still be used if the state indicator UI is kept for dev/debug
+                switch(state) {
+                    case 0: return 6; // HOME
+                    case 1: return 5; // TECH
+                    case 2: return 5; // MEDIA
+                    case 3: return 3; // INNOVATION
+                    case 4: return 6; // RESEARCH
+                    default: return 6;
+                }
+            }
+            
+            // snapToState(stateIndex) { // Superseded
+            //     this.triggerStateTransition(stateIndex);
+            // }
+            
+            // updateContent, updateStateSpecificContent, and formatContent are now removed as they are superseded
+            // by DualNavigationSystem.updateDynamicFaceContent and the JSON-driven content system.
+            
+            startRenderLoop() {
+                const render = () => {
+                    this.visualizers.forEach(viz => {
+                        viz.render();
+                    });
+                    requestAnimationFrame(render);
+                };
+                
+                render();
+                console.log('🎬 Morphing blog render loop started');
+            }
+        }
+        
+        // DUAL NAVIGATION SYSTEM: Tesseract + Scroll
+        // PROPERLY INTEGRATED WITH VIB3HOMEMASTER ARCHITECTURE
+        class DualNavigationSystem {
+            constructor(homeMaster, reactivityBridge) {
+                this.homeMaster = homeMaster;
+                this.reactivityBridge = reactivityBridge;
+                this.tesseractContainer = document.getElementById('tesseractContainer');
+                this.dynamicFace = document.getElementById('dynamic-face');
+
+                this.geometryStates = ['hypercube', 'tetrahedron', 'wave', 'sphere', 'fractal', 'crystal', 'klein', 'torus'];
+                this.currentFace = 0; // Default to HOME
+
+                this.isDragging = false;
+                this.startX = 0;
+                this.startY = 0;
+                this.dragVelocity = 0;
+                this.tensionLevel = 0;
+                this.isTransitioning = false;
+                this.lastDragTime = 0;
+                this.isScrolling = false; // Used for drag-as-scroll
+                this.scrollMomentum = 0; // Used for drag-as-scroll
+
+                // These will be loaded from config
+                this.config = {
+                    navigationParameters: {
+                        dragThreshold: { value: 80 },
+                        tensionBuildupRate: { value: 0.02 },
+                        snapStrength: { value: 1.0 },
+                        bezelWidth: { value: 80 },
+                        dragSensitivity: { value: 1.0 },
+                        springStrength: { value: 0.6 },
+                        dragThresholdToSnap: { value: 0.7 }
+                    },
+                    edgeMappings: { // Default mappings, will be overridden by loaded config
+                        left: { homeMasterSectionKey: 4, targetFaceIndexForVisuals: 2 },
+                        right: { homeMasterSectionKey: 1, targetFaceIndexForVisuals: 1 },
+                        up: { homeMasterSectionKey: 0, targetFaceIndexForVisuals: 0 },
+                        down: { homeMasterSectionKey: 5, targetFaceIndexForVisuals: 5 }
+                    }
+                };
+                
+                this.init();
+            }
+
+            loadConfig() {
+                if (this.homeMaster && this.homeMaster.editorConfig && this.homeMaster.editorConfig.navigationConfig) {
+                    const navConfig = this.homeMaster.editorConfig.navigationConfig;
+                    if (navConfig.navigationParameters) {
+                        for (const key in navConfig.navigationParameters) {
+                            if (this.config.navigationParameters[key] && navConfig.navigationParameters[key].hasOwnProperty('value')) {
+                                this.config.navigationParameters[key].value = navConfig.navigationParameters[key].value;
+                            }
+                        }
+                    }
+                    if (navConfig.edgeMappings) {
+                        this.config.edgeMappings = navConfig.edgeMappings;
+                    }
+                    console.log('🎲 DualNavigationSystem: Loaded navigation config from HomeMaster:', this.config);
+                } else {
+                    console.warn('🎲 DualNavigationSystem: Navigation config not found in HomeMaster. Using defaults.');
+                }
+
+                // Update bezel elements based on loaded config
+                this.updateBezelContent();
+            }
+
+            updateBezelContent() {
+                if (!this.config.edgeMappings) return;
+
+                for (const direction in this.config.edgeMappings) {
+                    const mapping = this.config.edgeMappings[direction];
+                    const bezelElement = document.querySelector(`.nav-bezel-${direction}`);
+                    if (bezelElement) {
+                        const titleEl = bezelElement.querySelector('.bezel-title');
+                        const subtitleEl = bezelElement.querySelector('.bezel-subtitle');
+                        if (titleEl && mapping.bezelTitle) titleEl.textContent = mapping.bezelTitle.toUpperCase();
+                        if (subtitleEl && mapping.bezelSubtitle) subtitleEl.textContent = mapping.bezelSubtitle;
+                        // Color can be applied if needed, e.g., bezelElement.style.setProperty('--bezel-color', mapping.color);
+                    }
+                }
+            }
+            
+            init() {
+                console.log('🎲 Dual Navigation System initializing...');
+                this.loadConfig(); // Load config at initialization
+
+                this.tesseractContainer.addEventListener('mousedown', (e) => this.startDrag(e), { passive: false });
+                document.addEventListener('mousemove', (e) => this.handleDrag(e), { passive: false });
+                document.addEventListener('mouseup', () => this.endDrag(), { passive: false });
+                
+                this.tesseractContainer.addEventListener('touchstart', (e) => this.startDrag(e.touches[0]), { passive: false });
+                document.addEventListener('touchmove', (e) => this.handleDrag(e.touches[0]), { passive: false });
+                document.addEventListener('touchend', () => this.endDrag(), { passive: false });
+                
+                document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+                
+                console.log('✅ Dual Navigation System ready - Tesseract folding + Scroll mechanics');
+            }
+            
+            updateDynamicFaceContent(faceIndex) {
+                const geometryName = this.geometryStates[faceIndex] || this.geometryStates[0];
+                
+                if (!this.dynamicFace) {
+                    console.warn('Dynamic face not found');
+                    return;
+                }
+                
+                console.log(`🔄 DYNAMIC CONTENT: Switching to ${geometryName} (face ${faceIndex})`);
+                
+                this.dynamicFace.setAttribute('data-geometry', geometryName);
+                this.dynamicFace.setAttribute('data-face', faceIndex.toString());
+                
+                // const template = document.getElementById(`template-${geometryName}`);
+                // if (template) {
+                //     this.updateCardContent(template); // OLD WAY - relies on MorphingBlogSystem
+                // }
+                this._renderDynamicContentForSection(geometryName); // NEW WAY
+                
+                const blogContainer = this.dynamicFace.querySelector('.blog-container'); // More specific selector
+                if (blogContainer) {
+                    // Remove old layout classes
+                    this.geometryStates.forEach(geom => blogContainer.classList.remove(`layout-${geom}`));
+                    // Add new layout class
+                    blogContainer.classList.add(`layout-${geometryName}`);
+                }
+                
+                // This call should ideally be handled by HomeMaster reacting to section change
+                // For now, keeping direct call to ensure visualizers update
+                // this.triggerVIB34DGeometryChange(geometryName, faceIndex); // Commented out: Bridge will handle this.
+            }
+
+            _getElementTagForBlockType(blockType) {
+                switch (blockType) {
+                    case 'heading': return `h${blockData.level || 2}`; // Default to h2 if no level
+                    case 'paragraph': return 'p';
+                    case 'image': return 'img';
+                    case 'video': return 'video';
+                    case 'codeblock': return 'pre'; // Will wrap a <code> element
+                    case 'metadata': return 'div'; // Or 'ul' for list of tags
+                    default: return 'div';
+                }
+            }
+
+            _applyStylesFromPreset(element, stylesObject) {
+                if (!element || !stylesObject) return;
+                for (const prop in stylesObject) {
+                    element.style[prop] = stylesObject[prop];
+                }
+            }
+
+            _renderDynamicContentForSection(geometryName) {
+                if (!this.homeMaster || !this.homeMaster.siteContentData || !this.homeMaster.editorConfig?.contentPresentation) {
+                    console.warn("DualNavigationSystem: HomeMaster missing siteContentData or contentPresentation config. Cannot render dynamic content.");
+                    // Fallback to old method or clear content if necessary
+                    // For now, let's try to call the old updateCardContent if morphingBlogSystem exists
+                    if (window.morphingBlogSystem && typeof window.morphingBlogSystem.updateCardContent === 'function') {
+                        const template = document.getElementById(`template-${geometryName}`);
+                        if (template) {
+                            console.warn("DualNavigationSystem: Falling back to legacy content update for template:", geometryName);
+                            window.morphingBlogSystem.updateCardContent(template); // This uses MorphingBlogSystem's stateContent
+                        }
+                    }
+                    return;
+                }
+
+                let targetSectionKey = null;
+                // Find sectionKey (e.g., "HOME") from geometryName (e.g., "hypercube")
+                for (const [key, modifier] of Object.entries(this.homeMaster.sectionModifiers)) {
+                    if (modifier.geometryThemeName === geometryName) {
+                        targetSectionKey = modifier.name; // This is the string key like "HOME"
+                        break;
+                    }
+                }
+
+                if (!targetSectionKey) {
+                    console.warn(`DualNavigationSystem: No sectionKey found for geometryName: ${geometryName}`);
+                    return;
+                }
+
+                const sectionData = this.homeMaster.siteContentData.sections?.find(s => s.sectionKey === targetSectionKey);
+                if (!sectionData || !sectionData.cards) {
+                    console.warn(`DualNavigationSystem: No content found for sectionKey: ${targetSectionKey} in site-content.json`);
+                    // Clear content of all cards in this face perhaps?
+                    document.querySelectorAll(`#dynamic-face .blog-card .card-content`).forEach(cc => cc.innerHTML = '');
+                    return;
+                }
+
+                const presentationConfig = this.homeMaster.editorConfig.contentPresentation;
+                const defaultBlockStyles = presentationConfig.defaultBlockStyles || {};
+
+                // Clear all existing cards' dynamic content first for this face to handle cases where JSON has fewer cards
+                document.querySelectorAll(`#dynamic-face .blog-card`).forEach(cardDiv => {
+                    const কন্টেইনার = cardDiv.querySelector('.card-content');
+                    if (কন্টেইনার) কন্টেইনার.innerHTML = ''; // Clear previous dynamic blocks
+                });
+
+
+                sectionData.cards.forEach(cardData => {
+                    const cardElement = document.getElementById(cardData.cardId);
+                    if (!cardElement) {
+                        console.warn(`DualNavigationSystem: Card element with ID ${cardData.cardId} not found in DOM.`);
+                        return;
+                    }
+                    const contentContainer = cardElement.querySelector('.card-content');
+                    if (!contentContainer) {
+                        console.warn(`DualNavigationSystem: .card-content container not found in card ${cardData.cardId}.`);
+                        return;
+                    }
+                    contentContainer.innerHTML = ''; // Clear previous content for this specific card
+
+                    const cardLayoutKey = `${sectionData.sectionKey}_${cardData.layoutRole || cardData.cardId}`;
+                    const cardLayoutPreset = presentationConfig.cardLayouts?.[cardLayoutKey];
+
+                    cardData.contentBlocks.forEach(blockData => {
+                        let elementTag = 'div'; // Default
+                        if (blockData.type === 'heading') {
+                            elementTag = `h${blockData.level || 2}`;
+                        } else if (blockData.type === 'paragraph') {
+                            elementTag = 'p';
+                        } else if (blockData.type === 'image') {
+                            elementTag = 'img';
+                        } else if (blockData.type === 'video') {
+                            elementTag = 'video';
+                        } else if (blockData.type === 'codeblock') {
+                            elementTag = 'pre';
+                        } else if (blockData.type === 'metadata') {
+                            elementTag = 'div'; // Could be a UL/LI structure too
+                        }
+
+                        const element = document.createElement(elementTag);
+                        element.id = blockData.blockId; // Essential for animation/styling targeting
+                        element.classList.add('dynamic-content-block'); // Common class for all dynamic blocks
+
+                        // Populate content
+                        if (blockData.type === 'heading' || blockData.type === 'paragraph') {
+                            element.textContent = blockData.text || '';
+                        } else if (blockData.type === 'image') {
+                            element.src = blockData.src || '';
+                            element.alt = blockData.alt || '';
+                            if (blockData.caption) {
+                                const figure = document.createElement('figure');
+                                const figcaption = document.createElement('figcaption');
+                                figcaption.textContent = blockData.caption;
+                                figure.appendChild(element);
+                                figure.appendChild(figcaption);
+                                contentContainer.appendChild(figure);
+                            } else {
+                                contentContainer.appendChild(element);
+                            }
+                        } else if (blockData.type === 'video') {
+                            element.src = blockData.src || '';
+                            element.poster = blockData.poster || '';
+                            if (blockData.controls) element.controls = true;
+                            contentContainer.appendChild(element);
+                        } else if (blockData.type === 'codeblock') {
+                            const codeEl = document.createElement('code');
+                            if (blockData.language) codeEl.classList.add(`language-${blockData.language}`);
+                            codeEl.textContent = blockData.code || '';
+                            element.appendChild(codeEl); // pre > code
+                            contentContainer.appendChild(element);
+                        } else if (blockData.type === 'metadata') {
+                            element.classList.add('metadata-block'); // For specific styling
+                            let metaHTML = '';
+                            if (blockData.tags && blockData.tags.length) {
+                                metaHTML += `<span class="tags">Tags: ${blockData.tags.join(', ')}</span>`;
+                            }
+                            if (blockData.date) {
+                                metaHTML += `<span class="date">Date: ${blockData.date}</span>`;
+                            }
+                            element.innerHTML = metaHTML;
+                            contentContainer.appendChild(element);
+                        } else {
+                             contentContainer.appendChild(element); // Default append for other types
+                        }
+
+                        // Apply default styles for block type
+                        if (defaultBlockStyles[blockData.type]) {
+                            this._applyStylesFromPreset(element, defaultBlockStyles[blockData.type]);
+                        }
+
+                        // Apply layout-specific styles
+                        let appearanceAnimName = null;
+                        if (cardLayoutPreset && cardLayoutPreset.blockStyles) {
+                            const styleRule = cardLayoutPreset.blockStyles.find(
+                                r => r.targetBlockId === blockData.blockId || r.targetBlockType === blockData.type
+                            );
+                            if (styleRule) {
+                                if (styleRule.styles) this._applyStylesFromPreset(element, styleRule.styles);
+                                appearanceAnimName = styleRule.appearanceAnimation; // Get animation name
+                            }
+                        }
+
+                        // Trigger appearance animation if defined
+                        if (appearanceAnimName && this.homeMaster.triggerContentBlockAnimation) {
+                            // Temporarily set opacity to 0 before animation starts if it's a fade-in type
+                            const animDef = presentationConfig.contentBlockAnimations?.[appearanceAnimName];
+                            if (animDef && ( (animDef.type === 'opacity' && animDef.from === 0) || (animDef.type==='sequence' && animDef.steps?.find(s=>s.property==='opacity' && s.from ===0))  ) ) {
+                                element.style.opacity = '0';
+                            }
+                             this.homeMaster.triggerContentBlockAnimation(cardData.cardId, blockData.blockId, appearanceAnimName, 'appearance');
+                        } else {
+                            // If no animation, ensure it's visible (in case default was opacity 0)
+                             if (element.style.opacity === '0') element.style.opacity = '1';
+                        }
+                    });
+                });
+            }
+            
+            updateCardContent(template) { // THIS IS THE OLD METHOD, CALLED BY THE HTML TEMPLATE LOGIC.
+                                          // IT WILL BE REPLACED BY _renderDynamicContentForSection
+                const cards = this.dynamicFace.querySelectorAll('.blog-card .card-content');
+                cards.forEach((cardContent, index) => {
+                    const templateTitle = template.querySelector('.card-title')?.textContent;
+                    const templateSubtitle = template.querySelector('.card-subtitle')?.textContent;
+                    const templateArticle = template.querySelector('.article-content')?.textContent;
+
+                    if (index === 0) { // Header card
+                        const titleEl = cardContent.querySelector('.card-title, .blog-title');
+                        const subtitleEl = cardContent.querySelector('.card-subtitle');
+                        if (titleEl) titleEl.textContent = templateTitle || 'VIB3CODE';
+                        if (subtitleEl) subtitleEl.textContent = templateSubtitle || 'Emergent Interface';
+                    } else if (index === 1) { // Main content card (example)
+                        const titleEl = cardContent.querySelector('.card-title');
+                        const subtitleEl = cardContent.querySelector('.card-subtitle');
+                        const articleEl = cardContent.querySelector('.article-content');
+                        if (titleEl) titleEl.textContent = templateTitle || 'Section Specific Title';
+                        if (subtitleEl) subtitleEl.textContent = templateSubtitle || 'Details about this section';
+                        if (articleEl) articleEl.innerHTML = templateArticle ? `<p>${templateArticle.replace(/\n/g, '</p><p>')}</p>` : '<p>Content for this section.</p>';
+                    }
+                    // Add more specific card updates if needed for other cards
+                });
+            }
+            
+            triggerVIB34DGeometryChange(geometryName, faceIndex) {
+                // This function might become redundant if HomeMaster + Bridge handle visualizer updates
+                console.log(`🎨 Triggering VIB34D GEOMETRY change for visualizers: ${geometryName} (face ${faceIndex})`);
+                if (window.morphingBlogSystem && window.morphingBlogSystem.visualizers) {
+                    window.morphingBlogSystem.visualizers.forEach((viz, index) => {
+                        if (viz && viz.setTheme) {
+                            viz.setTheme(geometryName);
+                        }
+                    });
+                }
+            }
+            
+            startDrag(e) {
+                if (this.isTransitioning || !e) return;
+                
+                this.isDragging = true;
+                this.startX = e.clientX !== undefined ? e.clientX : e.pageX;
+                this.startY = e.clientY !== undefined ? e.clientY : e.pageY;
+                this.tensionLevel = 0;
+                this.dragVelocity = 0;
+                this.lastDragTime = performance.now();
+                this.isScrolling = false;
+                
+                this.isBezelDrag = this.isNearBezel(this.startX, this.startY);
+                
+                if (this.isBezelDrag && this.homeMaster && this.homeMaster.editorConfig && this.homeMaster.editorConfig.navigationConfig) {
+                     const interactionEvents = this.homeMaster.editorConfig.navigationConfig.interactionEvents;
+                     if (interactionEvents && interactionEvents.dragStart) {
+                        this.homeMaster.registerInteraction(
+                            interactionEvents.dragStart.reaction,
+                            interactionEvents.dragStart.intensity
+                        );
+                     }
+                }
+
+                this.tesseractContainer.style.cursor = 'grabbing';
+                document.body.style.userSelect = 'none';
+                console.log(`🎲 Drag started - Bezel mode: ${this.isBezelDrag}`);
+            }
+            
+            isNearBezel(x, y) {
+                const bezelW = this.config.navigationParameters.bezelWidth.value;
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                
+                return (x < bezelW || x > windowWidth - bezelW ||
+                        y < bezelW || y > windowHeight - bezelW);
+            }
+            
+            handleDrag(e) {
+                if (!this.isDragging || this.isTransitioning || !e) return;
+                
+                if (e.preventDefault && typeof e.preventDefault === 'function') e.preventDefault();
+                
+                const clientX = e.clientX !== undefined ? e.clientX : e.pageX;
+                const clientY = e.clientY !== undefined ? e.clientY : e.pageY;
+                if (clientX === undefined || clientY === undefined) return;
+                
+                const currentTime = performance.now();
+                const deltaTime = currentTime - this.lastDragTime;
+                const deltaX = (clientX - this.startX) * this.config.navigationParameters.dragSensitivity.value;
+                const deltaY = (clientY - this.startY) * this.config.navigationParameters.dragSensitivity.value;
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                
+                if (deltaTime > 0) this.dragVelocity = distance / deltaTime;
+                
+                if (this.isBezelDrag) {
+                    this.handleTesseractDrag(deltaX, deltaY, distance);
+                } else {
+                    this.handleScrollDrag(deltaX, deltaY);
+                }
+                this.lastDragTime = currentTime;
+            }
+            
+            handleTesseractDrag(deltaX, deltaY, distance) {
+                const dragThreshold = this.config.navigationParameters.dragThreshold.value;
+                this.tensionLevel = Math.min(distance / dragThreshold, 1.0) ; // Tension now reaches 1.0 at threshold
+
+                const foldDirection = this.determineFoldDirection(deltaX, deltaY);
+
+                if (this.homeMaster) {
+                    // More targeted interaction type for tension
+                    this.homeMaster.registerInteraction('cubeTension', this.tensionLevel, 200);
+                }
+                
+                if (this.reactivityBridge) {
+                    this.reactivityBridge.triggerCubeNavigation(foldDirection, this.tensionLevel, false);
+                }
+                
+                // Visual feedback for folding preparation (CSS classes)
+                if (this.tensionLevel > 0.3) { // Threshold to start showing fold hint
+                    this.prepareFold(foldDirection);
+                } else {
+                     this.tesseractContainer.classList.remove('folding-left', 'folding-right', 'folding-up', 'folding-down', 'tension-building');
+                }
+                 if (this.tensionLevel > 0.01) {
+                    this.tesseractContainer.classList.add('tension-building');
+                } else {
+                    this.tesseractContainer.classList.remove('tension-building');
+                }
+
+                console.log(`🎲 Tesseract Tension: ${this.tensionLevel.toFixed(2)} -> ${foldDirection}`);
+            }
+            
+            determineFoldDirection(deltaX, deltaY) {
+                const absX = Math.abs(deltaX);
+                const absY = Math.abs(deltaY);
+                if (absX > absY) return deltaX > 0 ? 'right' : 'left';
+                return deltaY > 0 ? 'down' : 'up';
+            }
+            
+            handleScrollDrag(deltaX, deltaY) {
+                this.isScrolling = true;
+                const scrollIntensity = Math.min(Math.abs(deltaY) / 50, 2.0);
+                
+                // Pass to HomeMaster for generic scroll interaction
+                if (this.homeMaster) {
+                    this.homeMaster.updateInteraction('scroll', {
+                        velocity: scrollIntensity, // Keep this for existing scroll effects
+                        rawDeltaY: deltaY, // Pass raw delta for more direct control if needed
+                        chaos: Math.abs(this.dragVelocity) * 0.5
+                    });
+                }
+                 // This will trigger CSS updates via UnifiedReactivityBridge if it's listening to scroll related CSS vars
+                if (this.reactivityBridge) this.reactivityBridge.syncAllLayers();
+
+                console.log(`📜 Drag-as-scroll: ΔY: ${deltaY}, velocity: ${this.dragVelocity.toFixed(2)}`);
+            }
+            
+            prepareFold(direction) {
+                this.tesseractContainer.classList.remove('folding-left', 'folding-right', 'folding-up', 'folding-down');
+                this.tesseractContainer.classList.add(`folding-${direction}`);
+            }
+            
+            endDrag() {
+                if (!this.isDragging) return;
+                this.isDragging = false;
+                this.tesseractContainer.style.cursor = '';
+                document.body.style.userSelect = '';
+
+                const configuredDragThresholdToSnap = this.config.navigationParameters.dragThresholdToSnap.value;
+
+                if (this.isBezelDrag) {
+                    if (this.tensionLevel >= configuredDragThresholdToSnap) {
+                        this.executeFold();
+                         if (this.homeMaster && this.homeMaster.editorConfig && this.homeMaster.editorConfig.navigationConfig) {
+                            const interactionEvents = this.homeMaster.editorConfig.navigationConfig.interactionEvents;
+                             if (interactionEvents && interactionEvents.dragComplete) {
+                                this.homeMaster.registerInteraction(
+                                    interactionEvents.dragComplete.reaction,
+                                    1.0, // Full intensity for completion
+                                    interactionEvents.dragComplete.duration
+                                );
+                             }
+                        }
+                    } else {
+                        this.snapBackTesseract();
+                    }
+                    console.log(`🎲 Tesseract drag ended - tension: ${this.tensionLevel.toFixed(2)}`);
+                } else if (this.isScrolling) {
+                    this.applyScrollMomentum();
+                    console.log(`📜 Scroll drag ended - velocity: ${this.dragVelocity.toFixed(2)}`);
+                }
+                this.tensionLevel = 0; // Reset tension
+                if (this.reactivityBridge) { // Ensure bridge updates visuals on drag end
+                    this.reactivityBridge.triggerCubeNavigation(this.determineFoldDirection(0,0), 0, true); // Reset tension visuals
+                }
+                 this.tesseractContainer.classList.remove('tension-building');
+
+            }
+            
+            applyScrollMomentum() {
+                // Simplified: actual scroll momentum is complex and part of main scroll system.
+                // This just ensures any drag-induced scroll effects are reset.
+                if (this.homeMaster) {
+                    this.homeMaster.updateInteraction('scroll', { velocity: 0, chaos: 0 });
+                }
+                if (this.reactivityBridge) this.reactivityBridge.syncAllLayers();
+                this.isScrolling = false;
+            }
+
+            snapBackTesseract() {
+                this.tesseractContainer.classList.remove('tension-building', 'folding-left', 'folding-right', 'folding-up', 'folding-down');
+                // Tell the bridge to reset tension visuals
+                if (this.reactivityBridge) {
+                     this.reactivityBridge.triggerCubeNavigation(this.determineFoldDirection(0,0), 0, true);
+                }
+                console.log('🎲 Snapping back tesseract');
+            }
+            
+            executeFold() {
+                if (this.isTransitioning) return;
+                this.isTransitioning = true;
+                
+                const foldDirection = this.tesseractContainer.classList.contains('folding-right') ? 'right' :
+                                      this.tesseractContainer.classList.contains('folding-left') ? 'left' :
+                                      this.tesseractContainer.classList.contains('folding-up') ? 'up' :
+                                      this.tesseractContainer.classList.contains('folding-down') ? 'down' : null;
+
+                if (!foldDirection || !this.config.edgeMappings[foldDirection]) {
+                    console.warn(`Invalid fold direction or mapping: ${foldDirection}`);
+                    this.isTransitioning = false;
+                    this.snapBackTesseract();
+                    return;
+                }
+                
+                const mapping = this.config.edgeMappings[foldDirection];
+                const homeMasterSectionKey = mapping.homeMasterSectionKey;
+                const targetFaceIndexForVisuals = mapping.targetFaceIndexForVisuals; // Use this for local content updates
+                
+                console.log(`🎲 Executing tesseract fold to sectionKey ${homeMasterSectionKey} (visuals for face ${targetFaceIndexForVisuals}, direction: ${foldDirection})`);
+                this.transitionToFace(homeMasterSectionKey, targetFaceIndexForVisuals);
+            }
+            
+            transitionToFace(homeMasterSectionKey, targetFaceIndexForVisuals) {
+                // homeMasterSectionKey is for VIB3HomeMaster
+                // targetFaceIndexForVisuals is for local DOM/CSS updates if they use a different indexing or concept
+
+                if (homeMasterSectionKey === (this.homeMaster ? this.homeMaster.masterState.activeSection : this.currentFace) && !this.isTransitioning) {
+                    this.snapBackTesseract();
+                    this.isTransitioning = false;
+                    return;
+                }
+                
+                // Update internal currentFace concept if it's used elsewhere, perhaps align with targetFaceIndexForVisuals
+                this.currentFace = targetFaceIndexForVisuals;
+
+                // Primary state change through HomeMaster
+                if (this.homeMaster) {
+                    this.homeMaster.transitionToSection(homeMasterSectionKey);
+                }
+
+                // Update local dynamic content using targetFaceIndexForVisuals
+                this.updateDynamicFaceContent(targetFaceIndexForVisuals);
+
+                // Visual transition (CSS classes will handle animation based on data-face, etc.)
+                // We just need to ensure the correct classes are set for the target state.
+                // The `folding-*` classes are for pre-visualization of the fold.
+                // The final state is achieved by the `active-face` logic and `data-geometry` styles.
+
+                // After CSS transition duration (approx 800ms from style)
+                setTimeout(() => {
+                    this.tesseractContainer.classList.remove('folding-left', 'folding-right', 'folding-up', 'folding-down', 'tension-building');
+                    
+                    // Ensure all visualizers are synced via the bridge after transition
+                    if (this.reactivityBridge) {
+                        this.reactivityBridge.syncAllLayers();
+                    }
+
+                    this.isTransitioning = false;
+                    console.log(`🎲 Tesseract folded to face ${faceIndex}. Current section via HomeMaster: ${this.homeMaster ? this.homeMaster.masterState.activeSection : 'N/A'}`);
+                }, 800); // Match CSS transition time
+            }
+            
+            handleKeyboard(e) {
+                if (this.isTransitioning || !this.config.edgeMappings) return;
+                let mapping = null;
+
+                switch(e.key) {
+                    case 'ArrowLeft': e.preventDefault(); mapping = this.config.edgeMappings.left; break;
+                    case 'ArrowRight': e.preventDefault(); mapping = this.config.edgeMappings.right; break;
+                    case 'ArrowUp': e.preventDefault(); mapping = this.config.edgeMappings.up; break;
+                    case 'ArrowDown': e.preventDefault(); mapping = this.config.edgeMappings.down; break;
+                    case 'Home': case 'Escape':
+                        e.preventDefault();
+                        mapping = this.config.edgeMappings.up; // Assuming 'up' is HOME
+                        if (!mapping) mapping = { homeMasterSectionKey: 0, targetFaceIndexForVisuals: 0}; // Fallback
+                        break;
+                }
+
+                if (mapping && mapping.homeMasterSectionKey !== undefined) {
+                    console.log(`⌨️ Keyboard navigation to sectionKey ${mapping.homeMasterSectionKey} (visuals for face ${mapping.targetFaceIndexForVisuals})`);
+                    this.isTransitioning = true;
+                    this.transitionToFace(mapping.homeMasterSectionKey, mapping.targetFaceIndexForVisuals);
+                }
+            }
+            
+            // Method for editor to update parameters (simplified)
+            updateFromEditor(parameter, value) {
+                if (this.config.navigationParameters[parameter]) {
+                    this.config.navigationParameters[parameter].value = value;
+                    console.log(`🔧 Editor update: ${parameter} = ${value}`);
+                }
+                 // If mappings change, update bezels
+                if (parameter === 'edgeMappings') {
+                    this.config.edgeMappings = value;
+                    this.updateBezelContent();
+                }
+            }
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', async () => {
+            console.log('🚀 Initializing Morphing Blog System...');
+            
+            try {
+                // Import core architecture systems
+                const { default: VIB3HomeMaster } = await import('./core/VIB3HomeMaster.js');
+                const { default: UnifiedReactivityBridge } = await import('./core/UnifiedReactivityBridge.js');
+                
+                // Initialize core architecture systems (CRITICAL for proper operation)
+                console.log('🏠 Initializing VIB3HomeMaster...');
+                const homeMaster = new VIB3HomeMaster();
+                window.vib3HomeMaster = homeMaster;
+                
+                console.log('🌉 Initializing UnifiedReactivityBridge...');
+                const reactivityBridge = new UnifiedReactivityBridge(homeMaster, []);
+                window.vib3Bridge = reactivityBridge;
+                
+                // Initialize blog system
+                const system = new MorphingBlogSystem(homeMaster); // Pass homeMaster
+                window.morphingBlogSystem = system;
+                
+                // Initialize DUAL navigation system with proper architecture
+                console.log('🎲 Initializing DualNavigationSystem with proper architecture...');
+                const dualNavSystem = new DualNavigationSystem(homeMaster, reactivityBridge);
+                window.dualNavigationSystem = dualNavSystem;
+                
+                // 🌈 CRITICAL ADDITION: Initialize Moiré RGB System for glitchy borders
+                console.log('🌈 Initializing VIB34D Moiré RGB System...');
+                
+                // Load and initialize the Moiré RGB Engine
+                const moireScript = document.createElement('script');
+                moireScript.src = './VIB34D_MOIRE_RGB_SYSTEM.js';
+                moireScript.onload = () => {
+                    if (window.VIB34DMoireRGBEngine) {
+                        const moireEngine = new window.VIB34DMoireRGBEngine();
+                        moireEngine.initialize();
+                        window.vib3MoireEngine = moireEngine;
+                        console.log('🌈 Moiré RGB Engine initialized - glitchy borders active');
+                    }
+                };
+                document.head.appendChild(moireScript);
+                
+                // 💎 CRITICAL ADDITION: Initialize Emerging Button Crystallization System
+                console.log('💎 Initializing VIB34D Emerging Button System...');
+                
+                const buttonScript = document.createElement('script');
+                buttonScript.src = './VIB34D_EMERGING_BUTTON_SYSTEM.js';
+                buttonScript.onload = () => {
+                    if (window.VIB34DEmergingButtonEngine) {
+                        const buttonEngine = new window.VIB34DEmergingButtonEngine();
+                        buttonEngine.initialize();
+                        window.vib3ButtonEngine = buttonEngine;
+                        console.log('💎 Emerging Button Engine initialized - crystallization active');
+                    }
+                };
+                document.head.appendChild(buttonScript);
+                
+                console.log('✅ All systems initialized with proper architecture');
+            } catch (error) {
+                console.error('❌ Error initializing core systems:', error);
+                console.log('🔄 Falling back to standalone mode...');
+                
+                // Initialize blog system in standalone mode
+                const system = new MorphingBlogSystem();
+                window.morphingBlogSystem = system;
+                
+                // Initialize basic dual navigation (without full architecture)
+                const basicNavSystem = new DualNavigationSystem(null, null);
+                window.dualNavigationSystem = basicNavSystem;
+            }
+
+            // Initialize DragScrollHandlers after core systems are ready
+            const homeMasterInstance = window.vib3HomeMaster;
+            if (homeMasterInstance && typeof DragScrollHandler === 'function') {
+                // 1. Page Scroll
+                const pageScrollArea = document.getElementById('page-content-scroll-area');
+                if (pageScrollArea) {
+                    new DragScrollHandler(pageScrollArea, homeMasterInstance, 'page-content-scroll-area', 'pageScroll');
+                    // The CSS for #page-content-scroll-area already applies the transform with these vars.
+                    console.log('🖱️ DragScrollHandler initialized for page-content-scroll-area (profile: pageScroll).');
+                } else {
+                    console.warn('#page-content-scroll-area not found for DragScrollHandler.');
+                }
+
+                // 2. Card Content Scroll
+                document.querySelectorAll('.blog-card').forEach(card => {
+                    const cardContent = card.querySelector('.card-content');
+                    const cardId = card.id; // e.g., "blog-card-1"
+                    if (cardContent && cardId) {
+                        const elementId = cardId + "-content"; // e.g., "blog-card-1-content"
+                        new DragScrollHandler(cardContent, homeMasterInstance, elementId, 'cardContentScroll');
+                        // Dynamically set the transform style for this specific card content element
+                        // to use its unique CSS variables that the bridge will update.
+                        cardContent.style.transform = `translate(var(--${elementId}-scroll-x, 0px), var(--${elementId}-scroll-y, 0px))`;
+                        console.log(`🖱️ DragScrollHandler initialized for ${elementId} (profile: cardContentScroll).`);
+                    }
+                });
+            } else {
+                if (!homeMasterInstance) console.error('VIB3HomeMaster instance (window.vib3HomeMaster) not found. DragScrollHandlers not initialized.');
+                if (typeof DragScrollHandler !== 'function') console.error('DragScrollHandler class not found. DragScrollHandlers not initialized.');
+            }
+
+        });
+        
+    </script>
+
+    <!-- Page Focus Overlay (for Card Focus Mode) -->
+    <div id="page-focus-overlay"></div>
+
+    <!-- VIB34D COMPLETE SYSTEM LOADING -->
+    <script src="VIB34D_PHASE1_CORE_ARCHITECTURE.js"></script>
+    <script src="VIB34D_PHASE2_GEOMETRY_IMPLEMENTATIONS.js"></script>
+    <script src="VIB34D_PHASE3_PROJECTION_SYSTEM.js"></script>
+    <script src="VIB34D_PHASE4_SHADER_UNIFORM_SYSTEM.js"></script>
+    <script src="VIB34D_PHASE5_INTERACTION_INTEGRATION.js"></script>
+    <script src="VIB34D_PHASE6_CHROMATIC_INTEGRATION.js"></script>
+    <script src="VIB34D_PHASE7_VIB3_INTEGRATION.js"></script>
+    <script src="VIB34D_PHASE8_EDITOR_DASHBOARD.js"></script>
+    
+    <!-- ENHANCED SYSTEMS -->
+    <script src="VIB34D_MOIRE_RGB_SYSTEM.js"></script>
+    <script src="VIB34D_ENHANCED_MOIRE_INTEGRATION.js"></script>
+    <script src="VIB34D_EMERGING_BUTTON_SYSTEM.js"></script>
+    <script src="VIB34D_ADAPTIVE_CARD_VISUALIZER.js"></script>
+    <script src="VIB34D_ADAPTIVE_INTEGRATION.js"></script>
+    
+    <!-- INTEGRATION INJECT (BACKUP) -->
+    <script src="VIB34D_BLOG_INTEGRATION_INJECT.js?v=4"></script>
+    
+    <!-- ENHANCED ADAPTIVE INTEGRATION - Updated with better detection -->
+    <script>
+        console.log('🎯 Blog page loaded - AdaptiveCardVisualizer integration should begin shortly...');
+        console.log('🔍 Available integration systems:', {
+            'ADAPTIVE_INTEGRATION': !!document.querySelector('script[src*="ADAPTIVE_INTEGRATION"]'),
+            'ADAPTIVE_CARD_VISUALIZER': !!document.querySelector('script[src*="ADAPTIVE_CARD_VISUALIZER"]'),
+            'Integration ready': document.readyState
+        });
+    </script>
+</body>
+</html>

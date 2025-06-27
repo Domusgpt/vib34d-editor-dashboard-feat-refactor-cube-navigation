@@ -1,0 +1,331 @@
+{
+  "interactionPresets": {
+    "version": "1.0.0",
+    "description": "VIB3 Enhanced Interaction System Configuration",
+    
+    "presets": {
+      "beginner": {
+        "name": "Beginner Mode",
+        "description": "Maximum visual feedback and guidance for new users",
+        "visualFeedback": {
+          "enabled": true,
+          "intensity": 1.0,
+          "hoverEffects": true,
+          "dragVisualization": true,
+          "transitionPreviews": true,
+          "pulseFrequency": 3000,
+          "glowIntensity": 0.8
+        },
+        "gestureDetection": {
+          "enabled": true,
+          "sensitivityLevel": "low",
+          "dragThreshold": 50,
+          "tensionMultiplier": 1.5,
+          "momentumEnabled": true,
+          "smartThresholds": true
+        },
+        "uiDiscovery": {
+          "enabled": true,
+          "showHints": true,
+          "animatedGuides": true,
+          "firstTimeHelp": true,
+          "idleHintDelay": 10000,
+          "discoveryPulse": true
+        },
+        "accessibility": {
+          "highContrast": false,
+          "reducedMotion": false,
+          "keyboardOnly": false,
+          "screenReader": false,
+          "largeTargets": true
+        },
+        "tutorial": {
+          "autoShow": true,
+          "stepDelay": 2000,
+          "completionTracking": true
+        }
+      },
+      
+      "standard": {
+        "name": "Standard Mode",
+        "description": "Balanced interaction experience for regular users",
+        "visualFeedback": {
+          "enabled": true,
+          "intensity": 0.8,
+          "hoverEffects": true,
+          "dragVisualization": true,
+          "transitionPreviews": true,
+          "pulseFrequency": 5000,
+          "glowIntensity": 0.6
+        },
+        "gestureDetection": {
+          "enabled": true,
+          "sensitivityLevel": "medium",
+          "dragThreshold": 80,
+          "tensionMultiplier": 1.0,
+          "momentumEnabled": true,
+          "smartThresholds": true
+        },
+        "uiDiscovery": {
+          "enabled": true,
+          "showHints": true,
+          "animatedGuides": false,
+          "firstTimeHelp": true,
+          "idleHintDelay": 15000,
+          "discoveryPulse": true
+        },
+        "accessibility": {
+          "highContrast": false,
+          "reducedMotion": false,
+          "keyboardOnly": false,
+          "screenReader": false,
+          "largeTargets": false
+        },
+        "tutorial": {
+          "autoShow": false,
+          "stepDelay": 1500,
+          "completionTracking": true
+        }
+      },
+      
+      "advanced": {
+        "name": "Advanced Mode",
+        "description": "Refined interaction experience for experienced users",
+        "visualFeedback": {
+          "enabled": true,
+          "intensity": 0.6,
+          "hoverEffects": true,
+          "dragVisualization": true,
+          "transitionPreviews": false,
+          "pulseFrequency": 8000,
+          "glowIntensity": 0.4
+        },
+        "gestureDetection": {
+          "enabled": true,
+          "sensitivityLevel": "high",
+          "dragThreshold": 120,
+          "tensionMultiplier": 0.8,
+          "momentumEnabled": true,
+          "smartThresholds": true
+        },
+        "uiDiscovery": {
+          "enabled": false,
+          "showHints": false,
+          "animatedGuides": false,
+          "firstTimeHelp": false,
+          "idleHintDelay": 30000,
+          "discoveryPulse": false
+        },
+        "accessibility": {
+          "highContrast": false,
+          "reducedMotion": false,
+          "keyboardOnly": false,
+          "screenReader": false,
+          "largeTargets": false
+        },
+        "tutorial": {
+          "autoShow": false,
+          "stepDelay": 1000,
+          "completionTracking": false
+        }
+      },
+      
+      "expert": {
+        "name": "Expert Mode",
+        "description": "Minimal interface for power users",
+        "visualFeedback": {
+          "enabled": true,
+          "intensity": 0.4,
+          "hoverEffects": false,
+          "dragVisualization": true,
+          "transitionPreviews": false,
+          "pulseFrequency": 0,
+          "glowIntensity": 0.2
+        },
+        "gestureDetection": {
+          "enabled": true,
+          "sensitivityLevel": "high",
+          "dragThreshold": 150,
+          "tensionMultiplier": 0.6,
+          "momentumEnabled": true,
+          "smartThresholds": false
+        },
+        "uiDiscovery": {
+          "enabled": false,
+          "showHints": false,
+          "animatedGuides": false,
+          "firstTimeHelp": false,
+          "idleHintDelay": 0,
+          "discoveryPulse": false
+        },
+        "accessibility": {
+          "highContrast": false,
+          "reducedMotion": false,
+          "keyboardOnly": false,
+          "screenReader": false,
+          "largeTargets": false
+        },
+        "tutorial": {
+          "autoShow": false,
+          "stepDelay": 500,
+          "completionTracking": false
+        }
+      },
+      
+      "minimal": {
+        "name": "Minimal Mode",
+        "description": "Ultra-clean interface with minimal feedback",
+        "visualFeedback": {
+          "enabled": true,
+          "intensity": 0.2,
+          "hoverEffects": false,
+          "dragVisualization": false,
+          "transitionPreviews": false,
+          "pulseFrequency": 0,
+          "glowIntensity": 0.1
+        },
+        "gestureDetection": {
+          "enabled": true,
+          "sensitivityLevel": "medium",
+          "dragThreshold": 100,
+          "tensionMultiplier": 0.5,
+          "momentumEnabled": false,
+          "smartThresholds": false
+        },
+        "uiDiscovery": {
+          "enabled": false,
+          "showHints": false,
+          "animatedGuides": false,
+          "firstTimeHelp": false,
+          "idleHintDelay": 0,
+          "discoveryPulse": false
+        },
+        "accessibility": {
+          "highContrast": false,
+          "reducedMotion": true,
+          "keyboardOnly": false,
+          "screenReader": false,
+          "largeTargets": false
+        },
+        "tutorial": {
+          "autoShow": false,
+          "stepDelay": 0,
+          "completionTracking": false
+        }
+      },
+      
+      "accessibility": {
+        "name": "Accessibility Mode",
+        "description": "Optimized for users with accessibility needs",
+        "visualFeedback": {
+          "enabled": true,
+          "intensity": 1.0,
+          "hoverEffects": true,
+          "dragVisualization": true,
+          "transitionPreviews": true,
+          "pulseFrequency": 4000,
+          "glowIntensity": 1.0
+        },
+        "gestureDetection": {
+          "enabled": true,
+          "sensitivityLevel": "low",
+          "dragThreshold": 40,
+          "tensionMultiplier": 2.0,
+          "momentumEnabled": false,
+          "smartThresholds": true
+        },
+        "uiDiscovery": {
+          "enabled": true,
+          "showHints": true,
+          "animatedGuides": true,
+          "firstTimeHelp": true,
+          "idleHintDelay": 8000,
+          "discoveryPulse": true
+        },
+        "accessibility": {
+          "highContrast": true,
+          "reducedMotion": false,
+          "keyboardOnly": true,
+          "screenReader": true,
+          "largeTargets": true
+        },
+        "tutorial": {
+          "autoShow": true,
+          "stepDelay": 3000,
+          "completionTracking": true
+        }
+      }
+    },
+    
+    "keyboardShortcuts": {
+      "navigation": {
+        "ArrowLeft": "previousFace",
+        "ArrowRight": "nextFace", 
+        "ArrowUp": "upNavigation",
+        "ArrowDown": "downNavigation"
+      },
+      "ui": {
+        "Space": "toggleMenu",
+        "h": "toggleHelp",
+        "t": "showTutorial",
+        "Escape": "closeOverlays",
+        "?": "showKeyboardShortcuts"
+      },
+      "accessibility": {
+        "Tab": "focusNext",
+        "Shift+Tab": "focusPrevious",
+        "Enter": "activate",
+        "Escape": "cancel"
+      }
+    },
+    
+    "touchGestures": {
+      "swipeThreshold": 50,
+      "swipeVelocity": 0.3,
+      "pinchEnabled": false,
+      "rotationEnabled": false,
+      "longPressDelay": 500
+    },
+    
+    "animations": {
+      "durations": {
+        "fast": 200,
+        "normal": 400,
+        "slow": 800,
+        "transition": 1000
+      },
+      "easings": {
+        "smooth": "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        "bounce": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        "swift": "cubic-bezier(0.4, 0, 0.2, 1)"
+      }
+    },
+    
+    "colors": {
+      "primary": "#00ffff",
+      "secondary": "#ff00ff", 
+      "success": "#00ff00",
+      "warning": "#ffff00",
+      "danger": "#ff0000",
+      "neutral": "#ffffff"
+    },
+    
+    "responsive": {
+      "mobile": {
+        "bezelWidth": 150,
+        "dragThreshold": 30,
+        "touchTargetSize": 44
+      },
+      "tablet": {
+        "bezelWidth": 200,
+        "dragThreshold": 60,
+        "touchTargetSize": 40
+      },
+      "desktop": {
+        "bezelWidth": 250,
+        "dragThreshold": 80,
+        "touchTargetSize": 32
+      }
+    }
+  }
+}

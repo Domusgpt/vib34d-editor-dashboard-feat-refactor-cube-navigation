@@ -1,0 +1,216 @@
+{
+  "timestamp": "2025-06-27T09:25:34.932Z",
+  "url": "https://domusgpt.github.io/vib34d-hypercube-navigation/",
+  "tests": [
+    {
+      "category": "Console",
+      "test": "JavaScript Error",
+      "result": "FAIL",
+      "details": "Failed to load resource: the server responded with a status of 404 ()",
+      "timestamp": "2025-06-27T09:25:36.256Z"
+    },
+    {
+      "category": "Bezel Drag",
+      "test": "Top bezel drag",
+      "result": "PASS",
+      "details": "Drag completed successfully",
+      "timestamp": "2025-06-27T09:25:39.932Z"
+    },
+    {
+      "category": "Bezel Drag",
+      "test": "Bottom bezel drag",
+      "result": "PASS",
+      "details": "Drag completed successfully",
+      "timestamp": "2025-06-27T09:25:41.147Z"
+    },
+    {
+      "category": "Bezel Drag",
+      "test": "Left bezel drag",
+      "result": "PASS",
+      "details": "Drag completed successfully",
+      "timestamp": "2025-06-27T09:25:42.330Z"
+    },
+    {
+      "category": "Bezel Drag",
+      "test": "Right bezel drag",
+      "result": "PASS",
+      "details": "Drag completed successfully",
+      "timestamp": "2025-06-27T09:25:43.515Z"
+    },
+    {
+      "category": "Rapid Drags",
+      "test": "Multiple rapid drags",
+      "result": "PASS",
+      "details": "No race conditions detected",
+      "timestamp": "2025-06-27T09:25:45.512Z"
+    },
+    {
+      "category": "Corner Drags",
+      "test": "Top-left corner drag",
+      "result": "PASS",
+      "details": "Corner drag triggered animation",
+      "timestamp": "2025-06-27T09:25:46.199Z"
+    },
+    {
+      "category": "Corner Drags",
+      "test": "Top-right corner drag",
+      "result": "PASS",
+      "details": "Corner drag triggered animation",
+      "timestamp": "2025-06-27T09:25:46.882Z"
+    },
+    {
+      "category": "Corner Drags",
+      "test": "Bottom-left corner drag",
+      "result": "PASS",
+      "details": "Corner drag triggered animation",
+      "timestamp": "2025-06-27T09:25:47.568Z"
+    },
+    {
+      "category": "Corner Drags",
+      "test": "Bottom-right corner drag",
+      "result": "PASS",
+      "details": "Corner drag triggered animation",
+      "timestamp": "2025-06-27T09:25:48.249Z"
+    },
+    {
+      "category": "Partial Drags",
+      "test": "Incomplete drag gesture",
+      "result": "PASS",
+      "details": "Partial drag handled correctly",
+      "timestamp": "2025-06-27T09:25:48.849Z"
+    },
+    {
+      "category": "Click Tests",
+      "test": "Find clickable elements",
+      "result": "INFO",
+      "details": "No clickable elements found",
+      "timestamp": "2025-06-27T09:25:48.851Z"
+    },
+    {
+      "category": "Keyboard",
+      "test": "Tab navigation",
+      "result": "PASS",
+      "details": "Focused: BODY",
+      "timestamp": "2025-06-27T09:25:49.056Z"
+    },
+    {
+      "category": "Keyboard",
+      "test": "ArrowUp navigation",
+      "result": "PASS",
+      "details": "Key press handled",
+      "timestamp": "2025-06-27T09:25:49.359Z"
+    },
+    {
+      "category": "Keyboard",
+      "test": "ArrowDown navigation",
+      "result": "PASS",
+      "details": "Key press handled",
+      "timestamp": "2025-06-27T09:25:49.670Z"
+    },
+    {
+      "category": "Keyboard",
+      "test": "ArrowLeft navigation",
+      "result": "PASS",
+      "details": "Key press handled",
+      "timestamp": "2025-06-27T09:25:49.973Z"
+    },
+    {
+      "category": "Keyboard",
+      "test": "ArrowRight navigation",
+      "result": "PASS",
+      "details": "Key press handled",
+      "timestamp": "2025-06-27T09:25:50.275Z"
+    },
+    {
+      "category": "Keyboard",
+      "test": "Enter key activation",
+      "result": "PASS",
+      "details": "Enter key handled",
+      "timestamp": "2025-06-27T09:25:50.778Z"
+    },
+    {
+      "category": "Resize",
+      "test": "Resize during animation",
+      "result": "PASS",
+      "details": "Layout maintained during resize",
+      "timestamp": "2025-06-27T09:25:51.973Z"
+    },
+    {
+      "category": "Refresh",
+      "test": "Page refresh during transition",
+      "result": "PASS",
+      "details": "Page recovered from refresh",
+      "timestamp": "2025-06-27T09:25:54.984Z"
+    },
+    {
+      "category": "Screen Sizes",
+      "test": "mobile viewport (375x667)",
+      "result": "PASS",
+      "details": "Interactions work at this size",
+      "timestamp": "2025-06-27T09:25:56.606Z"
+    },
+    {
+      "category": "Screen Sizes",
+      "test": "tablet viewport (768x1024)",
+      "result": "PASS",
+      "details": "Interactions work at this size",
+      "timestamp": "2025-06-27T09:25:58.223Z"
+    },
+    {
+      "category": "Screen Sizes",
+      "test": "desktop viewport (1920x1080)",
+      "result": "PASS",
+      "details": "Interactions work at this size",
+      "timestamp": "2025-06-27T09:25:59.824Z"
+    },
+    {
+      "category": "Console",
+      "test": "JavaScript Error",
+      "result": "FAIL",
+      "details": "Ignored attempt to cancel a touchstart event with cancelable=false, for example because scrolling is in progress and cannot be interrupted.",
+      "timestamp": "2025-06-27T09:26:00.561Z"
+    },
+    {
+      "category": "Touch Events",
+      "test": "Touch tap",
+      "result": "PASS",
+      "details": "Touch events supported",
+      "timestamp": "2025-06-27T09:26:01.086Z"
+    },
+    {
+      "category": "Console",
+      "test": "JavaScript Error",
+      "result": "FAIL",
+      "details": "Ignored attempt to cancel a touchstart event with cancelable=false, for example because scrolling is in progress and cannot be interrupted.",
+      "timestamp": "2025-06-27T09:26:01.120Z"
+    },
+    {
+      "category": "Touch Events",
+      "test": "Touch drag gesture",
+      "result": "PASS",
+      "details": "Touch drag completed",
+      "timestamp": "2025-06-27T09:26:02.193Z"
+    },
+    {
+      "category": "Performance",
+      "test": "Page load metrics",
+      "result": "INFO",
+      "details": "Load: 0ms, DOM: 2.399999998509884ms, Total: 412.6000000014901ms",
+      "timestamp": "2025-06-27T09:26:02.195Z"
+    },
+    {
+      "category": "Performance",
+      "test": "Animation frame rate",
+      "result": "PASS",
+      "details": "61 FPS detected",
+      "timestamp": "2025-06-27T09:26:03.204Z"
+    },
+    {
+      "category": "Visual",
+      "test": "Screenshot captured",
+      "result": "INFO",
+      "details": "Screenshot saved for visual inspection",
+      "timestamp": "2025-06-27T09:26:03.301Z"
+    }
+  ]
+}

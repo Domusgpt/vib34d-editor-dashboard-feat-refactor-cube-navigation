@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Navigation Test</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0f0;
+            padding: 20px;
+            margin: 0;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            border: 1px solid #333;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .edge-zone {
+            position: fixed;
+            background: rgba(0, 255, 255, 0.2);
+            border: 2px solid #0ff;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        .edge-left { left: 0; top: 0; width: 100px; height: 100vh; }
+        .edge-right { right: 0; top: 0; width: 100px; height: 100vh; }
+        .edge-top { top: 0; left: 0; width: 100vw; height: 100px; }
+        .edge-bottom { bottom: 0; left: 0; width: 100vw; height: 100px; }
+        
+        .instructions {
+            background: rgba(0, 100, 0, 0.2);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .status {
+            background: rgba(100, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .link {
+            color: #0ff;
+            text-decoration: none;
+            border: 1px solid #0ff;
+            padding: 10px;
+            display: block;
+            margin: 10px 0;
+            border-radius: 3px;
+            text-align: center;
+        }
+        
+        .link:hover {
+            background: rgba(0, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Visual edge zones for reference -->
+    <div class="edge-zone edge-left"></div>
+    <div class="edge-zone edge-right"></div>
+    <div class="edge-zone edge-top"></div>
+    <div class="edge-zone edge-bottom"></div>
+
+    <div class="test-container">
+        <h1>🎯 VIB34D Navigation Test Suite</h1>
+        
+        <div class="instructions">
+            <h2>🎮 How to Test Bezel Navigation</h2>
+            <ol>
+                <li><strong>Edge Zones</strong>: Blue highlighted areas show drag zones (100px from edges)</li>
+                <li><strong>Drag Left Edge</strong>: Should go to RESEARCH section (wave geometry)</li>
+                <li><strong>Drag Right Edge</strong>: Should go to TECH section (tetrahedron geometry)</li>
+                <li><strong>Drag Top Edge</strong>: Should return to HOME section (hypercube geometry)</li>
+                <li><strong>Drag Bottom Edge</strong>: Should go to CONTEXT section (crystal geometry)</li>
+            </ol>
+        </div>
+
+        <div class="status" id="test-status">
+            <strong>Test Status:</strong> Ready for navigation testing
+        </div>
+
+        <div class="test-section">
+            <h2>🔗 Navigation Links</h2>
+            <a href="http://localhost:8080/vib3code-morphing-blog-repaired.html" class="link" target="_blank">
+                🔧 Fixed Navigation System
+            </a>
+            <a href="http://localhost:8080/site-content.json" class="link" target="_blank">
+                📄 Site Content (5 sections)
+            </a>
+            <a href="http://localhost:8080/test-complete-system.html" class="link" target="_blank">
+                🧪 Complete System Test
+            </a>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 Expected Results</h2>
+            <div style="margin: 10px 0;">
+                <strong>🏠 HOME (face-0):</strong> VIB3CODE header, Foundational Trinity, Navigation Realms<br>
+                <strong>⚙️ TECH (face-1):</strong> Technical Architecture, Shader System, API Documentation<br>
+                <strong>🔬 RESEARCH (face-2):</strong> 4D Mathematics, Cognitive Studies, Future Directions<br>
+                <strong>🎬 MEDIA (face-3):</strong> Visual Showcase, Video Tutorials, Community Gallery<br>
+                <strong>💡 INNOVATION (face-4):</strong> Breakthrough Concepts, Experimental Features, Roadmap<br>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 Fixed Issues</h2>
+            <div style="color: #0f0;">
+                ✅ Bezel drag detection (no longer requires clicking on bezel elements)<br>
+                ✅ Larger edge zones (100px instead of 30px)<br>
+                ✅ Dynamic content loading per section<br>
+                ✅ Multiple sections in site-content.json (5 sections)<br>
+                ✅ Face transition triggers content updates<br>
+                ✅ Keyboard navigation removed (bezel drag only)<br>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🚨 Testing Instructions</h2>
+            <ol>
+                <li>Open the <strong>Fixed Navigation System</strong> link above</li>
+                <li>Watch browser console for debug messages</li>
+                <li>Try dragging from the blue edge zones</li>
+                <li>Verify content changes when switching sections</li>
+                <li>Check that visualizer geometries update per section</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Simple edge zone interaction feedback
+        document.addEventListener('mousemove', (e) => {
+            const status = document.getElementById('test-status');
+            const x = e.clientX;
+            const y = e.clientY;
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            let zone = '';
+            if (x < 100) zone = 'LEFT (→ RESEARCH)';
+            else if (x > w - 100) zone = 'RIGHT (→ TECH)';
+            else if (y < 100) zone = 'TOP (→ HOME)';
+            else if (y > h - 100) zone = 'BOTTOM (→ CONTEXT)';
+            else zone = 'CENTER (no navigation)';
+            
+            status.innerHTML = `<strong>Mouse Position:</strong> ${x}, ${y} | <strong>Zone:</strong> ${zone}`;
+        });
+    </script>
+</body>
+</html>

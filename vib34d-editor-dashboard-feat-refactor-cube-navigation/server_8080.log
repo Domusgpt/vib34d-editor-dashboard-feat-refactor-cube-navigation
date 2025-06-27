@@ -1,0 +1,23 @@
+127.0.0.1 - - [24/Jun/2025 14:51:32] "HEAD /VIB34D_ADAPTIVE_CARD_DEMO.html HTTP/1.1" 200 -
+127.0.0.1 - - [24/Jun/2025 14:51:54] "GET /VIB34D_ADAPTIVE_CARD_DEMO.html HTTP/1.1" 200 -
+127.0.0.1 - - [24/Jun/2025 14:51:54] "GET /VIB34D_ADAPTIVE_CARD_VISUALIZER.js HTTP/1.1" 200 -
+127.0.0.1 - - [24/Jun/2025 14:51:54] code 404, message File not found
+127.0.0.1 - - [24/Jun/2025 14:51:54] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [24/Jun/2025 14:52:18] "GET /VIB34D_ADAPTIVE_CARD_DEMO.html HTTP/1.1" 200 -
+127.0.0.1 - - [24/Jun/2025 14:52:18] "GET /VIB34D_ADAPTIVE_CARD_VISUALIZER.js HTTP/1.1" 200 -
+127.0.0.1 - - [24/Jun/2025 14:52:26] "GET /VIB34D_ADAPTIVE_CARD_DEMO.html HTTP/1.1" 200 -
+127.0.0.1 - - [24/Jun/2025 14:52:26] "GET /VIB34D_ADAPTIVE_CARD_VISUALIZER.js HTTP/1.1" 200 -
+127.0.0.1 - - [24/Jun/2025 14:52:26] code 404, message File not found
+127.0.0.1 - - [24/Jun/2025 14:52:26] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [24/Jun/2025 14:53:03] "GET /test_vib34d_execution.html HTTP/1.1" 200 -
+127.0.0.1 - - [24/Jun/2025 14:53:03] "GET /VIB34D_ADAPTIVE_CARD_VISUALIZER.js HTTP/1.1" 200 -
+127.0.0.1 - - [24/Jun/2025 14:53:03] code 404, message File not found
+127.0.0.1 - - [24/Jun/2025 14:53:03] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [24/Jun/2025 14:53:53] "GET /VIB34D_ADAPTIVE_CARD_DEMO.html HTTP/1.1" 200 -
+127.0.0.1 - - [24/Jun/2025 14:53:53] "GET /VIB34D_ADAPTIVE_CARD_VISUALIZER.js HTTP/1.1" 200 -
+127.0.0.1 - - [24/Jun/2025 14:53:53] code 404, message File not found
+127.0.0.1 - - [24/Jun/2025 14:53:53] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [24/Jun/2025 14:54:10] "GET /test_vib34d_execution.html HTTP/1.1" 200 -
+127.0.0.1 - - [24/Jun/2025 14:54:10] "GET /VIB34D_ADAPTIVE_CARD_VISUALIZER.js HTTP/1.1" 200 -
+127.0.0.1 - - [24/Jun/2025 14:54:10] code 404, message File not found
+127.0.0.1 - - [24/Jun/2025 14:54:10] "GET /favicon.ico HTTP/1.1" 404 -

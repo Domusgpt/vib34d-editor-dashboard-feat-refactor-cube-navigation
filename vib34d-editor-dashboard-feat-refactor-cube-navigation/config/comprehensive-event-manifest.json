@@ -1,0 +1,677 @@
+{
+  "vib3EventManifest": {
+    "version": "3.0.0",
+    "lastModified": "2025-06-27T13:00:00.000Z",
+    "description": "Comprehensive active/passive event-reaction system for VIB3STYLEPACK",
+    
+    "eventClassification": {
+      "passive": {
+        "description": "Events that provide feedback but don't change content or state",
+        "characteristics": ["non-destructive", "reversible", "feedback-only", "no-state-change"],
+        "examples": ["hover", "mousemove", "scroll", "focus", "blur"]
+      },
+      "active": {
+        "description": "Events that change content, navigate, or cause lasting effects",
+        "characteristics": ["state-changing", "navigation", "content-modification", "persistent"],
+        "examples": ["click", "drag", "submit", "delete", "create"]
+      }
+    },
+
+    "passiveEvents": {
+      "mouse": {
+        "mouseenter": {
+          "category": "passive",
+          "intent": "feedback",
+          "reversible": true,
+          "effects": {
+            "target": {
+              "visual": {
+                "hover": true,
+                "brightness": 1.1,
+                "scale": 1.02,
+                "transition": "all 0.2s ease"
+              },
+              "consciousness": {
+                "attention": 0.3,
+                "awareness": 0.2
+              }
+            },
+            "others": {
+              "visual": {
+                "dimming": 0.9,
+                "transition": "all 0.2s ease"
+              }
+            },
+            "system": {
+              "cursorChange": "pointer",
+              "tooltipDelay": 1000
+            }
+          },
+          "autoReverse": {
+            "trigger": "mouseleave",
+            "duration": 300
+          }
+        },
+        "mouseleave": {
+          "category": "passive", 
+          "intent": "feedback-reset",
+          "reversible": false,
+          "effects": {
+            "target": {
+              "visual": "restore",
+              "consciousness": {
+                "attention": 0.1,
+                "awareness": 0.1
+              }
+            },
+            "others": {
+              "visual": "restore"
+            },
+            "system": {
+              "cursorChange": "default",
+              "tooltipHide": true
+            }
+          }
+        },
+        "mousemove": {
+          "category": "passive",
+          "intent": "spatial-awareness",
+          "throttled": true,
+          "throttleRate": 16.67,
+          "effects": {
+            "system": {
+              "cursorTracking": true,
+              "proximityCalculation": true,
+              "spatialConsciousness": "continuous"
+            },
+            "nearby": {
+              "calculation": "distance-based",
+              "threshold": 100,
+              "effects": {
+                "awareness": "proximity-based",
+                "subtle-glow": "distance-inverse"
+              }
+            }
+          }
+        },
+        "mouseover": {
+          "category": "passive",
+          "intent": "element-discovery",
+          "bubbling": true,
+          "effects": {
+            "target": {
+              "highlighting": "subtle",
+              "info-display": "delayed"
+            }
+          }
+        },
+        "mouseout": {
+          "category": "passive",
+          "intent": "element-exit",
+          "effects": {
+            "target": {
+              "highlighting": "remove",
+              "info-display": "hide"
+            }
+          }
+        }
+      },
+      "keyboard": {
+        "keydown": {
+          "category": "passive",
+          "intent": "input-preview",
+          "modifierAware": true,
+          "effects": {
+            "system": {
+              "shortcut-preview": true,
+              "modifier-tracking": true
+            }
+          }
+        },
+        "keyup": {
+          "category": "passive",
+          "intent": "input-release",
+          "effects": {
+            "system": {
+              "modifier-release": true
+            }
+          }
+        }
+      },
+      "scroll": {
+        "wheel": {
+          "category": "passive",
+          "intent": "navigation-preview",
+          "effects": {
+            "viewport": {
+              "scroll-indicator": true,
+              "zoom-preview": "conditional"
+            }
+          }
+        },
+        "scroll": {
+          "category": "passive",
+          "intent": "position-awareness",
+          "throttled": true,
+          "effects": {
+            "system": {
+              "position-tracking": true,
+              "scroll-progress": true
+            }
+          }
+        }
+      },
+      "focus": {
+        "focus": {
+          "category": "passive",
+          "intent": "attention-indication",
+          "effects": {
+            "target": {
+              "visual": {
+                "outline": "focus-ring",
+                "accessibility": true
+              },
+              "consciousness": {
+                "attention": 0.6
+              }
+            }
+          }
+        },
+        "blur": {
+          "category": "passive",
+          "intent": "attention-release", 
+          "effects": {
+            "target": {
+              "visual": {
+                "outline": "remove"
+              },
+              "consciousness": {
+                "attention": 0.1
+              }
+            }
+          }
+        }
+      },
+      "touch": {
+        "touchstart": {
+          "category": "passive",
+          "intent": "touch-feedback",
+          "multiTouch": true,
+          "effects": {
+            "target": {
+              "visual": {
+                "touch-ripple": true,
+                "haptic-feedback": "light"
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "activeEvents": {
+      "navigation": {
+        "click": {
+          "category": "active",
+          "intent": "selection-action",
+          "stateChanging": true,
+          "effects": {
+            "target": {
+              "state": {
+                "selected": true,
+                "active": true
+              },
+              "visual": {
+                "selection-indicator": true,
+                "active-state": true
+              },
+              "consciousness": {
+                "attention": 1.0,
+                "focus": 0.8
+              }
+            },
+            "others": {
+              "state": {
+                "selected": false
+              },
+              "visual": {
+                "deselected": true
+              }
+            },
+            "system": {
+              "selection-change": true,
+              "property-panel-update": true
+            }
+          },
+          "undoable": true
+        },
+        "doubleclick": {
+          "category": "active", 
+          "intent": "activation-action",
+          "stateChanging": true,
+          "preventDefault": ["click"],
+          "effects": {
+            "target": {
+              "action": "open-editor",
+              "state": {
+                "editing": true,
+                "maximized": "conditional"
+              }
+            },
+            "system": {
+              "modal-open": "conditional",
+              "editor-activate": true
+            }
+          }
+        },
+        "contextmenu": {
+          "category": "active",
+          "intent": "context-action",
+          "stateChanging": true,
+          "preventDefault": true,
+          "effects": {
+            "system": {
+              "context-menu": {
+                "show": true,
+                "position": "mouse",
+                "content": "target-specific"
+              }
+            },
+            "target": {
+              "state": {
+                "context-active": true
+              }
+            }
+          }
+        }
+      },
+      "manipulation": {
+        "dragstart": {
+          "category": "active",
+          "intent": "manipulation-begin",
+          "stateChanging": true,
+          "effects": {
+            "target": {
+              "state": {
+                "dragging": true,
+                "elevated": true
+              },
+              "visual": {
+                "drag-placeholder": true,
+                "elevation": 100,
+                "opacity": 0.8
+              },
+              "layer": {
+                "moveToLayer": "drag-overlay",
+                "zIndexBoost": 1000
+              }
+            },
+            "others": {
+              "visual": {
+                "drop-zones": "highlight",
+                "dimming": 0.6
+              },
+              "interaction": {
+                "disabled": "conditional"
+              }
+            },
+            "system": {
+              "drag-mode": true,
+              "cursor": "grabbing"
+            }
+          }
+        },
+        "drag": {
+          "category": "active",
+          "intent": "manipulation-continue",
+          "stateChanging": true,
+          "throttled": true,
+          "effects": {
+            "target": {
+              "position": "follow-cursor",
+              "visual": {
+                "drag-trail": "optional"
+              }
+            },
+            "dropzones": {
+              "visual": {
+                "proximity-highlight": "distance-based"
+              }
+            }
+          }
+        },
+        "dragend": {
+          "category": "active",
+          "intent": "manipulation-complete",
+          "stateChanging": true,
+          "effects": {
+            "target": {
+              "state": {
+                "dragging": false,
+                "elevated": false,
+                "position": "finalized"
+              },
+              "visual": "restore",
+              "layer": {
+                "restoreLayer": true
+              }
+            },
+            "others": {
+              "visual": "restore",
+              "interaction": "restore"
+            },
+            "system": {
+              "drag-mode": false,
+              "cursor": "default",
+              "position-save": true
+            }
+          },
+          "validation": {
+            "drop-zone": "required",
+            "collision": "check"
+          },
+          "undoable": true
+        },
+        "drop": {
+          "category": "active",
+          "intent": "placement-action", 
+          "stateChanging": true,
+          "effects": {
+            "target": {
+              "position": "drop-zone",
+              "state": {
+                "dropped": true
+              }
+            },
+            "dropzone": {
+              "state": {
+                "contains": "target"
+              },
+              "visual": {
+                "drop-success": true
+              }
+            }
+          },
+          "undoable": true
+        }
+      },
+      "content": {
+        "input": {
+          "category": "active",
+          "intent": "data-entry",
+          "stateChanging": true,
+          "throttled": true,
+          "effects": {
+            "target": {
+              "state": {
+                "value": "user-input",
+                "modified": true
+              },
+              "validation": "real-time"
+            },
+            "system": {
+              "auto-save": "debounced",
+              "change-tracking": true
+            }
+          },
+          "undoable": true
+        },
+        "change": {
+          "category": "active",
+          "intent": "value-commit",
+          "stateChanging": true,
+          "effects": {
+            "target": {
+              "state": {
+                "committed": true
+              }
+            },
+            "related": {
+              "parameter-cascade": true,
+              "dependent-updates": true
+            },
+            "system": {
+              "save-state": true
+            }
+          },
+          "undoable": true
+        },
+        "submit": {
+          "category": "active",
+          "intent": "form-commit",
+          "stateChanging": true,
+          "validation": "required",
+          "effects": {
+            "form": {
+              "state": {
+                "submitted": true,
+                "processing": true
+              }
+            },
+            "system": {
+              "data-processing": true,
+              "navigation": "conditional"
+            }
+          },
+          "undoable": false
+        }
+      },
+      "creation": {
+        "create": {
+          "category": "active",
+          "intent": "content-creation",
+          "stateChanging": true,
+          "effects": {
+            "system": {
+              "new-element": true,
+              "id-generation": true
+            },
+            "workspace": {
+              "element-addition": true
+            }
+          },
+          "undoable": true
+        },
+        "duplicate": {
+          "category": "active",
+          "intent": "content-duplication", 
+          "stateChanging": true,
+          "effects": {
+            "target": {
+              "action": "clone"
+            },
+            "workspace": {
+              "element-addition": true
+            }
+          },
+          "undoable": true
+        }
+      },
+      "destruction": {
+        "delete": {
+          "category": "active",
+          "intent": "content-removal",
+          "stateChanging": true,
+          "confirmation": "conditional",
+          "effects": {
+            "target": {
+              "state": {
+                "deleted": true,
+                "removed": true
+              }
+            },
+            "related": {
+              "orphan-handling": true
+            },
+            "system": {
+              "cleanup": true
+            }
+          },
+          "undoable": true
+        }
+      }
+    },
+
+    "eventRelationships": {
+      "exclusive": {
+        "description": "Events that cancel each other",
+        "pairs": [
+          ["mouseenter", "mouseleave"],
+          ["dragstart", "dragend"],
+          ["focus", "blur"],
+          ["touchstart", "touchend"]
+        ]
+      },
+      "sequential": {
+        "description": "Events that must occur in sequence",
+        "chains": [
+          ["mousedown", "drag", "dragend"],
+          ["touchstart", "touchmove", "touchend"],
+          ["focus", "input", "change", "blur"]
+        ]
+      },
+      "preventable": {
+        "description": "Events that can prevent others",
+        "rules": [
+          {
+            "event": "doubleclick",
+            "prevents": ["click"],
+            "timing": "within-500ms"
+          },
+          {
+            "event": "dragstart", 
+            "prevents": ["click"],
+            "condition": "drag-initiated"
+          }
+        ]
+      }
+    },
+
+    "reactionPatterns": {
+      "consciousness": {
+        "pattern": "awareness-propagation",
+        "trigger": "any-interaction",
+        "effects": {
+          "global": {
+            "consciousness-boost": 0.1,
+            "system-awakening": "gradual"
+          },
+          "local": {
+            "element-awareness": "proximity-based",
+            "attention-focusing": "target-element"
+          }
+        },
+        "decay": {
+          "rate": 0.95,
+          "interval": 100,
+          "minimum": 0.1
+        }
+      },
+      "cascade": {
+        "pattern": "parameter-cascade",
+        "trigger": "parameter-change",
+        "effects": {
+          "direct": {
+            "dependent-parameters": "calculated",
+            "related-elements": "updated"
+          },
+          "indirect": {
+            "visual-feedback": "propagated",
+            "consciousness-ripple": "radial"
+          }
+        },
+        "dampening": 0.8,
+        "maxDepth": 3
+      },
+      "feedback": {
+        "pattern": "visual-feedback",
+        "trigger": "passive-event",
+        "effects": {
+          "immediate": {
+            "visual-change": "instant",
+            "cursor-feedback": "immediate"
+          },
+          "delayed": {
+            "tooltip": 1000,
+            "context-info": 1500
+          }
+        },
+        "reversible": true
+      }
+    },
+
+    "layerManagement": {
+      "eventDrivenLayers": {
+        "hover": {
+          "zIndexBoost": 5,
+          "duration": "while-active",
+          "restoration": "auto"
+        },
+        "focus": {
+          "zIndexBoost": 10,
+          "duration": "while-active",
+          "restoration": "auto"
+        },
+        "drag": {
+          "moveToLayer": "drag-overlay",
+          "zIndexBoost": 1000,
+          "restoration": "on-drop"
+        },
+        "modal": {
+          "moveToLayer": "modal-overlay",
+          "backgroundDisable": true,
+          "restoration": "on-close"
+        }
+      }
+    },
+
+    "performanceOptimization": {
+      "throttling": {
+        "mousemove": 16.67,
+        "scroll": 16.67,
+        "resize": 100,
+        "input": 50
+      },
+      "debouncing": {
+        "search": 300,
+        "auto-save": 1000,
+        "resize": 200
+      },
+      "batching": {
+        "parameter-updates": 10,
+        "dom-updates": 5,
+        "visual-effects": 3
+      }
+    },
+
+    "accessibility": {
+      "keyboardNavigation": {
+        "tabSequence": "logical",
+        "focusTrapping": "modal-context",
+        "skipLinks": "available"
+      },
+      "screenReader": {
+        "announcements": "state-changes",
+        "descriptions": "visual-elements",
+        "landmarks": "navigation"
+      },
+      "reducedMotion": {
+        "respectPreference": true,
+        "fallbacks": "instant-transitions"
+      }
+    },
+
+    "debugSupport": {
+      "eventLogging": {
+        "enabled": true,
+        "levels": ["passive", "active", "system"],
+        "performance": true
+      },
+      "visualization": {
+        "eventFlow": "optional",
+        "layerInspector": "optional",
+        "consciousnessMonitor": "optional"
+      }
+    }
+  }
+}

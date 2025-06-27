@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VIB3CODE Phase 1 Re-Test</title>
+    <style>
+        body { 
+            margin: 0; 
+            background: #000; 
+            color: #fff; 
+            font-family: Arial, sans-serif; 
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 5px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 3px;
+        }
+        .pass { background: rgba(0, 255, 0, 0.2); }
+        .fail { background: rgba(255, 0, 0, 0.2); }
+        .warning { background: rgba(255, 255, 0, 0.2); }
+        button {
+            background: #333;
+            color: #fff;
+            border: 1px solid #666;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        button:hover { background: #555; }
+        #testFrame {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #00ffff;
+            margin: 20px 0;
+        }
+        .console-log {
+            background: #111;
+            border: 1px solid #333;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔄 VIB3CODE Phase 1 Re-Test Verification</h1>
+    
+    <div class="test-section">
+        <h2>Test Configuration</h2>
+        <p>Testing critical HTML structure fix at: <strong>vib3code-morphing-blog.html</strong></p>
+        <button onclick="loadMainPage()">Load Main Page</button>
+        <button onclick="runFullTest()">Run Full Phase 1 Test</button>
+        <button onclick="clearConsole()">Clear Console</button>
+    </div>
+
+    <iframe id="testFrame" src="about:blank"></iframe>
+
+    <div class="test-section">
+        <h2>📋 Phase 1 Test Results</h2>
+        <div id="testResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Console Output</h2>
+        <div id="consoleOutput" class="console-log"></div>
+    </div>
+
+    <script>
+        let testFrame;
+        let testResults = [];
+        let consoleBuffer = [];
+
+        function loadMainPage() {
+            testFrame = document.getElementById('testFrame');
+            testFrame.src = './vib3code-morphing-blog.html';
+            
+            // Wait for load then start monitoring
+            testFrame.onload = function() {
+                logMessage('✅ Main page loaded, starting monitoring...');
+                startConsoleMonitoring();
+                setTimeout(() => runStructureTests(), 2000);
+            };
+        }
+
+        function startConsoleMonitoring() {
+            const frameWindow = testFrame.contentWindow;
+            if (!frameWindow) return;
+
+            // Override console methods to capture logs
+            const originalLog = frameWindow.console.log;
+            const originalWarn = frameWindow.console.warn;
+            const originalError = frameWindow.console.error;
+
+            frameWindow.console.log = function(...args) {
+                logMessage('LOG: ' + args.join(' '));
+                originalLog.apply(this, args);
+            };
+
+            frameWindow.console.warn = function(...args) {
+                logMessage('WARN: ' + args.join(' '));
+                originalWarn.apply(this, args);
+            };
+
+            frameWindow.console.error = function(...args) {
+                logMessage('ERROR: ' + args.join(' '));
+                originalError.apply(this, args);
+            };
+        }
+
+        function logMessage(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            consoleBuffer.push(`[${timestamp}] ${message}`);
+            updateConsoleDisplay();
+        }
+
+        function updateConsoleDisplay() {
+            const consoleDiv = document.getElementById('consoleOutput');
+            consoleDiv.innerHTML = consoleBuffer.slice(-50).join('<br>');
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        function runStructureTests() {
+            logMessage('🔍 Running HTML Structure Tests...');
+            const frameDoc = testFrame.contentDocument;
+            
+            if (!frameDoc) {
+                addTestResult('❌ Cannot access frame document', 'fail');
+                return;
+            }
+
+            // Test 1: HTML Structure Verification
+            const dynamicFace = frameDoc.getElementById('dynamic-face');
+            if (dynamicFace) {
+                addTestResult('✅ dynamic-face element exists', 'pass');
+                
+                const geometry = dynamicFace.getAttribute('data-geometry');
+                const face = dynamicFace.getAttribute('data-face');
+                
+                if (geometry === 'hypercube') {
+                    addTestResult('✅ Initial geometry: hypercube', 'pass');
+                } else {
+                    addTestResult(`❌ Wrong initial geometry: ${geometry}`, 'fail');
+                }
+                
+                if (face === '0') {
+                    addTestResult('✅ Initial face: 0', 'pass');
+                } else {
+                    addTestResult(`❌ Wrong initial face: ${face}`, 'fail');
+                }
+            } else {
+                addTestResult('❌ dynamic-face element missing', 'fail');
+            }
+
+            // Test 2: Content Templates
+            const templates = ['hypercube', 'tetrahedron', 'wave', 'sphere'];
+            templates.forEach(template => {
+                const templateEl = frameDoc.getElementById(`template-${template}`);
+                if (templateEl) {
+                    addTestResult(`✅ Template ${template} exists`, 'pass');
+                } else {
+                    addTestResult(`❌ Template ${template} missing`, 'fail');
+                }
+            });
+
+            // Test 3: Bezel Elements
+            const bezels = ['left', 'right', 'top', 'bottom'];
+            bezels.forEach(direction => {
+                const bezel = frameDoc.querySelector(`.nav-bezel-${direction}`);
+                if (bezel) {
+                    addTestResult(`✅ Bezel ${direction} exists`, 'pass');
+                } else {
+                    addTestResult(`❌ Bezel ${direction} missing`, 'fail');
+                }
+            });
+
+            logMessage('📋 Structure tests completed');
+        }
+
+        function runFullTest() {
+            logMessage('🚀 Starting Full Phase 1 Test...');
+            testResults = [];
+            
+            if (!testFrame.src.includes('vib3code-morphing-blog.html')) {
+                loadMainPage();
+                setTimeout(() => runFullTest(), 3000);
+                return;
+            }
+
+            setTimeout(() => {
+                runStructureTests();
+                setTimeout(() => runContentSwitchingTest(), 1000);
+            }, 1000);
+        }
+
+        function runContentSwitchingTest() {
+            logMessage('🔄 Testing Content Switching...');
+            const frameDoc = testFrame.contentDocument;
+            const frameWindow = testFrame.contentWindow;
+            
+            if (!frameDoc || !frameWindow) {
+                addTestResult('❌ Cannot access frame for content switching test', 'fail');
+                return;
+            }
+
+            // Simulate left bezel drag (x: 40, y: 400 → x: 300, y: 400)
+            const startX = 40;
+            const startY = 400;
+            const endX = 300;
+            const endY = 400;
+
+            // Create mouse events
+            const mouseDown = new MouseEvent('mousedown', {
+                clientX: startX,
+                clientY: startY,
+                bubbles: true
+            });
+
+            const mouseMove = new MouseEvent('mousemove', {
+                clientX: endX,
+                clientY: endY,
+                bubbles: true
+            });
+
+            const mouseUp = new MouseEvent('mouseup', {
+                clientX: endX,
+                clientY: endY,
+                bubbles: true
+            });
+
+            logMessage(`🖱️ Simulating drag: (${startX}, ${startY}) → (${endX}, ${endY})`);
+
+            // Monitor for console messages
+            let switchingDetected = false;
+            const originalLog = frameWindow.console.log;
+            frameWindow.console.log = function(...args) {
+                const message = args.join(' ');
+                if (message.includes('DYNAMIC CONTENT: Switching')) {
+                    switchingDetected = true;
+                    logMessage('✅ Content switching detected: ' + message);
+                }
+                originalLog.apply(this, args);
+            };
+
+            // Perform drag sequence
+            setTimeout(() => {
+                frameDoc.dispatchEvent(mouseDown);
+                setTimeout(() => {
+                    frameDoc.dispatchEvent(mouseMove);
+                    setTimeout(() => {
+                        frameDoc.dispatchEvent(mouseUp);
+                        
+                        // Check results
+                        setTimeout(() => {
+                            if (switchingDetected) {
+                                addTestResult('✅ Content switching functionality working', 'pass');
+                            } else {
+                                addTestResult('❌ Content switching not detected', 'fail');
+                            }
+                            
+                            // Check if geometry changed
+                            const dynamicFace = frameDoc.getElementById('dynamic-face');
+                            if (dynamicFace) {
+                                const geometry = dynamicFace.getAttribute('data-geometry');
+                                if (geometry !== 'hypercube') {
+                                    addTestResult(`✅ Geometry changed to: ${geometry}`, 'pass');
+                                } else {
+                                    addTestResult('⚠️ Geometry did not change', 'warning');
+                                }
+                            }
+                            
+                            logMessage('🎯 Content switching test completed');
+                        }, 500);
+                    }, 100);
+                }, 100);
+            }, 100);
+        }
+
+        function addTestResult(message, type) {
+            testResults.push({ message, type });
+            updateTestResults();
+        }
+
+        function updateTestResults() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = testResults.map(result => 
+                `<div class="test-result ${result.type}">${result.message}</div>`
+            ).join('');
+        }
+
+        function clearConsole() {
+            consoleBuffer = [];
+            updateConsoleDisplay();
+        }
+
+        // Auto-load on page ready
+        document.addEventListener('DOMContentLoaded', () => {
+            logMessage('🎲 Phase 1 Test System Ready');
+        });
+    </script>
+</body>
+</html>

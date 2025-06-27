@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Clean Styles Pack - Editor Configurable Reactivity System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: radial-gradient(circle at center, #0a001a, #000000);
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        /* Main visualizer container - single optimized canvas */
+        .vib3-styles-pack-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .vib3-primary-visualizer {
+            width: 80vw;
+            height: 80vh;
+            border: 2px solid rgba(255, 0, 255, 0.3);
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 
+                0 0 50px rgba(255, 0, 255, 0.3),
+                inset 0 0 100px rgba(0, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .vib3-primary-visualizer:hover {
+            border-color: rgba(0, 255, 255, 0.8);
+            box-shadow: 
+                0 0 100px rgba(0, 255, 255, 0.5),
+                inset 0 0 150px rgba(255, 0, 255, 0.2);
+            transform: scale(1.02);
+        }
+        
+        /* Clean interaction layer - no UI clutter */
+        .vib3-interaction-layer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        /* Subtle style indicator */
+        .vib3-style-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 0, 255, 0.5);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        .style-name {
+            color: #ff00ff;
+            font-weight: bold;
+        }
+        
+        .style-type {
+            color: #00ffff;
+            margin-left: 8px;
+        }
+        
+        /* Editor dashboard - hidden in production */
+        .vib3-editor-dashboard {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 350px;
+            min-height: 400px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 0 50px rgba(0, 255, 255, 0.3),
+                inset 0 0 30px rgba(0, 255, 255, 0.05);
+            font-size: 12px;
+            z-index: 1000;
+            display: none; /* Hidden by default */
+        }
+        
+        .editor-title {
+            color: #00ffff;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        
+        .config-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 0, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #ff00ff;
+        }
+        
+        .section-title {
+            color: #ffff00;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .param-control {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .param-label {
+            color: #fff;
+            font-size: 10px;
+            min-width: 120px;
+        }
+        
+        .param-input {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            color: #00ff00;
+            padding: 4px 8px;
+            width: 80px;
+            font-size: 10px;
+        }
+        
+        .param-slider {
+            width: 100px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        
+        .param-slider:hover {
+            opacity: 1;
+        }
+        
+        .editor-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .editor-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #ff00ff, #00ffff);
+            border: none;
+            border-radius: 6px;
+            color: #000;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .editor-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+        
+        /* Production mode indicator */
+        .production-mode {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 255, 0, 0.8);
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 1001;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .vib3-primary-visualizer {
+                width: 95vw;
+                height: 70vh;
+            }
+            
+            .vib3-editor-dashboard {
+                width: 90vw;
+                right: 5vw;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Styles Pack Container -->
+    <div class="vib3-styles-pack-container">
+        <!-- Single Optimized Visualizer -->
+        <canvas id="vib3-primary-visualizer" class="vib3-primary-visualizer" width="1200" height="800"></canvas>
+        
+        <!-- Clean Interaction Layer -->
+        <div class="vib3-interaction-layer" id="vib3-interaction-layer"></div>
+    </div>
+    
+    <!-- Subtle Style Indicator -->
+    <div class="vib3-style-indicator">
+        <span class="style-name" id="current-style-name">Hypercube Sovereignty</span>
+        <span class="style-type" id="current-style-type">4D Lattice</span>
+    </div>
+    
+    <!-- Production Mode Indicator (shown when not in editor mode) -->
+    <div class="production-mode" id="production-indicator">
+        🎨 VIB34D Styles Pack - Production Mode
+    </div>
+    
+    <!-- Editor Dashboard (hidden by default) -->
+    <div class="vib3-editor-dashboard" id="vib3-editor-dashboard">
+        <div class="editor-title">🎛️ VIB34D STYLES PACK EDITOR</div>
+        
+        <!-- Geometry Configuration -->
+        <div class="config-section">
+            <div class="section-title">Geometry & Projection</div>
+            
+            <div class="param-control">
+                <span class="param-label">Geometry Type:</span>
+                <select class="param-input" id="geometryType">
+                    <option value="hypercube">Hypercube</option>
+                    <option value="hypersphere">Hypersphere</option>
+                    <option value="hypertetrahedron">Tetrahedron</option>
+                    <option value="torus">Torus</option>
+                    <option value="klein">Klein Bottle</option>
+                    <option value="fractal">Fractal</option>
+                    <option value="wave">Wave Function</option>
+                    <option value="crystal">Crystal</option>
+                </select>
+            </div>
+            
+            <div class="param-control">
+                <span class="param-label">Projection:</span>
+                <select class="param-input" id="projectionType">
+                    <option value="perspective">Perspective</option>
+                    <option value="orthographic">Orthographic</option>
+                    <option value="stereographic">Stereographic</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- 4D Mathematics -->
+        <div class="config-section">
+            <div class="section-title">4D Mathematics</div>
+            
+            <div class="param-control">
+                <span class="param-label">Dimension:</span>
+                <input type="range" class="param-slider" id="dimension" min="3.0" max="4.5" step="0.1" value="4.0">
+                <input type="number" class="param-input" id="dimensionValue" min="3.0" max="4.5" step="0.1" value="4.0">
+            </div>
+            
+            <div class="param-control">
+                <span class="param-label">Morph Factor:</span>
+                <input type="range" class="param-slider" id="morphFactor" min="0.0" max="1.5" step="0.1" value="0.7">
+                <input type="number" class="param-input" id="morphFactorValue" min="0.0" max="1.5" step="0.1" value="0.7">
+            </div>
+            
+            <div class="param-control">
+                <span class="param-label">Grid Density:</span>
+                <input type="range" class="param-slider" id="gridDensity" min="1.0" max="25.0" step="1.0" value="12.0">
+                <input type="number" class="param-input" id="gridDensityValue" min="1.0" max="25.0" step="1.0" value="12.0">
+            </div>
+            
+            <div class="param-control">
+                <span class="param-label">Rotation Speed:</span>
+                <input type="range" class="param-slider" id="rotationSpeed" min="0.0" max="3.0" step="0.1" value="0.8">
+                <input type="number" class="param-input" id="rotationSpeedValue" min="0.0" max="3.0" step="0.1" value="0.8">
+            </div>
+        </div>
+        
+        <!-- Reactivity Configuration -->
+        <div class="config-section">
+            <div class="section-title">User Interaction Reactivity</div>
+            
+            <div class="param-control">
+                <span class="param-label">Hover Intensity:</span>
+                <input type="range" class="param-slider" id="hoverIntensity" min="0.0" max="2.0" step="0.1" value="1.0">
+                <input type="number" class="param-input" id="hoverIntensityValue" min="0.0" max="2.0" step="0.1" value="1.0">
+            </div>
+            
+            <div class="param-control">
+                <span class="param-label">Click Response:</span>
+                <input type="range" class="param-slider" id="clickResponse" min="0.0" max="3.0" step="0.1" value="1.5">
+                <input type="number" class="param-input" id="clickResponseValue" min="0.0" max="3.0" step="0.1" value="1.5">
+            </div>
+            
+            <div class="param-control">
+                <span class="param-label">Scroll Reactivity:</span>
+                <input type="range" class="param-slider" id="scrollReactivity" min="0.0" max="1.5" step="0.1" value="0.5">
+                <input type="number" class="param-input" id="scrollReactivityValue" min="0.0" max="1.5" step="0.1" value="0.5">
+            </div>
+        </div>
+        
+        <!-- Visual Effects -->
+        <div class="config-section">
+            <div class="section-title">Visual Effects</div>
+            
+            <div class="param-control">
+                <span class="param-label">Pattern Intensity:</span>
+                <input type="range" class="param-slider" id="patternIntensity" min="0.0" max="2.0" step="0.1" value="1.3">
+                <input type="number" class="param-input" id="patternIntensityValue" min="0.0" max="2.0" step="0.1" value="1.3">
+            </div>
+            
+            <div class="param-control">
+                <span class="param-label">Glitch Intensity:</span>
+                <input type="range" class="param-slider" id="glitchIntensity" min="0.0" max="0.15" step="0.01" value="0.02">
+                <input type="number" class="param-input" id="glitchIntensityValue" min="0.0" max="0.15" step="0.01" value="0.02">
+            </div>
+            
+            <div class="param-control">
+                <span class="param-label">Color Shift:</span>
+                <input type="range" class="param-slider" id="colorShift" min="-1.0" max="1.0" step="0.1" value="0.0">
+                <input type="number" class="param-input" id="colorShiftValue" min="-1.0" max="1.0" step="0.1" value="0.0">
+            </div>
+        </div>
+        
+        <!-- Editor Controls -->
+        <div class="editor-buttons">
+            <button class="editor-btn" onclick="previewStyle()">Preview</button>
+            <button class="editor-btn" onclick="saveStyle()">Save</button>
+            <button class="editor-btn" onclick="exportStyle()">Export</button>
+        </div>
+    </div>
+    
+    <!-- Core System Files -->
+    <script src="VIB34D_WORKING_CORE_ARCHITECTURE.js"></script>
+    <script src="VIB34D_CENTRAL_STATE_MANAGER.js"></script>
+    <script src="VIB34D_WEBGL_FALLBACK.js"></script>
+    
+    <script>
+        // VIB34D Clean Styles Pack System
+        class VIB34DStylesPack {
+            constructor() {
+                this.isEditorMode = false;
+                this.currentStyle = null;
+                this.visualizer = null;
+                this.centralStateManager = null;
+                
+                // Current style configuration
+                this.styleConfig = {
+                    name: "Hypercube Sovereignty",
+                    type: "4D Lattice",
+                    geometry: "hypercube",
+                    projection: "perspective",
+                    parameters: {
+                        u_dimension: 4.0,
+                        u_morphFactor: 0.7,
+                        u_gridDensity: 12.0,
+                        u_rotationSpeed: 0.8,
+                        u_patternIntensity: 1.3,
+                        u_glitchIntensity: 0.02,
+                        u_colorShift: 0.0,
+                        u_lineThickness: 0.03,
+                        u_universeModifier: 1.0
+                    },
+                    reactivity: {
+                        hoverIntensity: 1.0,
+                        clickResponse: 1.5,
+                        scrollReactivity: 0.5
+                    }
+                };
+                
+                console.log('🎨 VIB34D Styles Pack initializing...');
+            }
+            
+            async initialize() {
+                // Check for editor mode (URL parameter or localStorage)
+                this.isEditorMode = new URLSearchParams(window.location.search).has('editor') || 
+                                   localStorage.getItem('vib34d-editor') === 'true';
+                
+                if (this.isEditorMode) {
+                    this.enableEditorMode();
+                } else {
+                    this.enableProductionMode();
+                }
+                
+                // Initialize single visualizer
+                await this.initializeVisualizer();
+                
+                // Setup interaction handling
+                this.setupInteractionHandlers();
+                
+                console.log(`✅ VIB34D Styles Pack ready - ${this.isEditorMode ? 'EDITOR' : 'PRODUCTION'} mode`);
+            }
+            
+            enableEditorMode() {
+                document.getElementById('vib3-editor-dashboard').style.display = 'block';
+                document.getElementById('production-indicator').style.display = 'none';
+                
+                // Setup editor controls
+                this.setupEditorControls();
+                
+                console.log('🎛️ Editor mode enabled');
+            }
+            
+            enableProductionMode() {
+                document.getElementById('vib3-editor-dashboard').style.display = 'none';
+                document.getElementById('production-indicator').style.display = 'block';
+                
+                console.log('🎨 Production mode enabled');
+            }
+            
+            async initializeVisualizer() {
+                const canvas = document.getElementById('vib3-primary-visualizer');
+                
+                try {
+                    // Check for WebGL fallback system first
+                    if (window.VIB34D_WEBGL_FALLBACK && !window.VIB34D_WEBGL_FALLBACK.isWebGLSupported) {
+                        console.log(`🎨 Using Canvas 2D fallback for styles pack`);
+                        
+                        // Create fallback visualizer
+                        const fallbackRenderer = window.VIB34D_WEBGL_FALLBACK.createFallbackVisualizer(canvas, {
+                            geometryType: this.styleConfig.geometry,
+                            gridDensity: this.styleConfig.parameters.u_gridDensity,
+                            rotationSpeed: this.styleConfig.parameters.u_rotationSpeed,
+                            patternIntensity: this.styleConfig.parameters.u_patternIntensity,
+                            morphFactor: this.styleConfig.parameters.u_morphFactor,
+                            dimension: this.styleConfig.parameters.u_dimension,
+                            lineThickness: this.styleConfig.parameters.u_lineThickness
+                        });
+                        
+                        if (fallbackRenderer) {
+                            fallbackRenderer.start();
+                            this.visualizer = fallbackRenderer;
+                            console.log(`✅ Fallback visualizer created for styles pack`);
+                            return;
+                        }
+                    }
+                    
+                    // Try WebGL system
+                    if (!window.VIB34D_WorkingCore) {
+                        throw new Error('VIB34D_WorkingCore not available');
+                    }
+                    
+                    console.log(`🎨 Using WebGL for styles pack`);
+                    
+                    // Create single optimized visualizer
+                    this.visualizer = new window.VIB34D_WorkingCore.HypercubeCore(canvas, {
+                        geometryType: this.styleConfig.geometry,
+                        projectionMethod: this.styleConfig.projection,
+                        onError: (error) => {
+                            console.error('WebGL visualizer error:', error);
+                            
+                            // Fallback to Canvas 2D if WebGL fails
+                            if (window.VIB34D_WEBGL_FALLBACK) {
+                                console.log(`🎨 WebGL failed, switching to Canvas 2D fallback`);
+                                const fallbackRenderer = window.VIB34D_WEBGL_FALLBACK.createFallbackVisualizer(canvas, {
+                                    geometryType: this.styleConfig.geometry,
+                                    gridDensity: this.styleConfig.parameters.u_gridDensity,
+                                    rotationSpeed: this.styleConfig.parameters.u_rotationSpeed,
+                                    patternIntensity: this.styleConfig.parameters.u_patternIntensity,
+                                    morphFactor: this.styleConfig.parameters.u_morphFactor,
+                                    dimension: this.styleConfig.parameters.u_dimension
+                                });
+                                
+                                if (fallbackRenderer) {
+                                    fallbackRenderer.start();
+                                    this.visualizer = fallbackRenderer;
+                                }
+                            }
+                        }
+                    });
+                    
+                    // Initialize central state manager for interaction handling
+                    if (window.VIB34DCentralStateManager) {
+                        this.centralStateManager = new window.VIB34DCentralStateManager();
+                        this.centralStateManager.registerVisualizer('primary', this.visualizer, {
+                            position: { x: 0.5, y: 0.5 },
+                            geometry: this.styleConfig.geometry,
+                            projection: this.styleConfig.projection,
+                            reactivityLevel: 1.0
+                        });
+                    }
+                    
+                    // Apply current style configuration
+                    this.applyStyleConfiguration();
+                    
+                    // Start visualizer
+                    this.visualizer.start();
+                    
+                } catch (error) {
+                    console.error('Failed to initialize visualizer:', error);
+                }
+            }
+            
+            applyStyleConfiguration() {
+                if (!this.visualizer) return;
+                
+                // Apply all parameters from current style
+                this.visualizer.updateParameters(this.styleConfig.parameters);
+                
+                // Update style indicator
+                document.getElementById('current-style-name').textContent = this.styleConfig.name;
+                document.getElementById('current-style-type').textContent = this.styleConfig.type;
+            }
+            
+            setupInteractionHandlers() {
+                const canvas = document.getElementById('vib3-primary-visualizer');
+                const reactivity = this.styleConfig.reactivity;
+                
+                // Hover effects
+                canvas.addEventListener('mouseenter', () => {
+                    if (!this.visualizer) return;
+                    
+                    this.visualizer.updateParameters({
+                        u_patternIntensity: this.styleConfig.parameters.u_patternIntensity * (1 + reactivity.hoverIntensity * 0.5),
+                        u_audioBass: reactivity.hoverIntensity * 0.4
+                    });
+                });
+                
+                canvas.addEventListener('mouseleave', () => {
+                    if (!this.visualizer) return;
+                    
+                    this.visualizer.updateParameters({
+                        u_patternIntensity: this.styleConfig.parameters.u_patternIntensity,
+                        u_audioBass: 0.0
+                    });
+                });
+                
+                // Click effects  
+                canvas.addEventListener('click', () => {
+                    if (!this.visualizer) return;
+                    
+                    // Momentary spike effect
+                    this.visualizer.updateParameters({
+                        u_glitchIntensity: this.styleConfig.parameters.u_glitchIntensity + reactivity.clickResponse * 0.05,
+                        u_audioBass: reactivity.clickResponse * 0.8,
+                        u_audioHigh: reactivity.clickResponse * 0.6
+                    });
+                    
+                    // Return to normal after brief period
+                    setTimeout(() => {
+                        this.visualizer.updateParameters({
+                            u_glitchIntensity: this.styleConfig.parameters.u_glitchIntensity,
+                            u_audioBass: 0.0,
+                            u_audioHigh: 0.0
+                        });
+                    }, 400);
+                });
+                
+                // Scroll effects
+                let scrollTimeout;
+                window.addEventListener('scroll', () => {
+                    if (!this.visualizer || reactivity.scrollReactivity === 0) return;
+                    
+                    clearTimeout(scrollTimeout);
+                    
+                    this.visualizer.updateParameters({
+                        u_rotationSpeed: this.styleConfig.parameters.u_rotationSpeed * (1 + reactivity.scrollReactivity),
+                        u_audioMid: reactivity.scrollReactivity * 0.6
+                    });
+                    
+                    scrollTimeout = setTimeout(() => {
+                        this.visualizer.updateParameters({
+                            u_rotationSpeed: this.styleConfig.parameters.u_rotationSpeed,
+                            u_audioMid: 0.0
+                        });
+                    }, 1000);
+                });
+            }
+            
+            setupEditorControls() {
+                // Link sliders to number inputs and update parameters
+                const parameterIds = ['dimension', 'morphFactor', 'gridDensity', 'rotationSpeed', 
+                                    'patternIntensity', 'glitchIntensity', 'colorShift',
+                                    'hoverIntensity', 'clickResponse', 'scrollReactivity'];
+                
+                parameterIds.forEach(id => {
+                    const slider = document.getElementById(id);
+                    const input = document.getElementById(id + 'Value');
+                    
+                    if (slider && input) {
+                        // Sync slider and input
+                        slider.addEventListener('input', () => {
+                            input.value = slider.value;
+                            this.updateParameter(id, parseFloat(slider.value));
+                        });
+                        
+                        input.addEventListener('input', () => {
+                            slider.value = input.value;
+                            this.updateParameter(id, parseFloat(input.value));
+                        });
+                    }
+                });
+                
+                // Geometry and projection selectors
+                document.getElementById('geometryType').addEventListener('change', (e) => {
+                    this.updateGeometry(e.target.value);
+                });
+                
+                document.getElementById('projectionType').addEventListener('change', (e) => {
+                    this.updateProjection(e.target.value);
+                });
+            }
+            
+            updateParameter(paramId, value) {
+                // Map editor parameter IDs to shader uniform names
+                const paramMapping = {
+                    'dimension': 'u_dimension',
+                    'morphFactor': 'u_morphFactor', 
+                    'gridDensity': 'u_gridDensity',
+                    'rotationSpeed': 'u_rotationSpeed',
+                    'patternIntensity': 'u_patternIntensity',
+                    'glitchIntensity': 'u_glitchIntensity',
+                    'colorShift': 'u_colorShift'
+                };
+                
+                const uniformName = paramMapping[paramId];
+                if (uniformName) {
+                    this.styleConfig.parameters[uniformName] = value;
+                    
+                    if (this.visualizer) {
+                        this.visualizer.updateParameters({ [uniformName]: value });
+                    }
+                } else if (paramId.includes('Reactivity') || paramId.includes('Intensity') || paramId.includes('Response')) {
+                    // Update reactivity settings
+                    this.styleConfig.reactivity[paramId] = value;
+                    this.setupInteractionHandlers(); // Refresh interaction handlers
+                }
+            }
+            
+            updateGeometry(geometryType) {
+                this.styleConfig.geometry = geometryType;
+                // Would reinitialize visualizer with new geometry
+                console.log(`🔄 Geometry changed to: ${geometryType}`);
+            }
+            
+            updateProjection(projectionType) {
+                this.styleConfig.projection = projectionType;  
+                // Would update projection method
+                console.log(`🔄 Projection changed to: ${projectionType}`);
+            }
+        }
+        
+        // Global functions for editor buttons
+        function previewStyle() {
+            console.log('🎬 Preview style');
+            // Toggle editor dashboard visibility for preview
+            const dashboard = document.getElementById('vib3-editor-dashboard');
+            dashboard.style.opacity = dashboard.style.opacity === '0.3' ? '1' : '0.3';
+        }
+        
+        function saveStyle() {
+            console.log('💾 Save style configuration');
+            // Save current configuration to localStorage
+            localStorage.setItem('vib34d-current-style', JSON.stringify(stylesPack.styleConfig));
+        }
+        
+        function exportStyle() {
+            console.log('📤 Export production-ready style');
+            // Generate export package
+            const exportData = {
+                ...stylesPack.styleConfig,
+                exported: new Date().toISOString(),
+                version: '1.0.0'
+            };
+            
+            // Download as JSON file
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `vib34d-style-${stylesPack.styleConfig.name.toLowerCase().replace(/\s+/g, '-')}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Initialize the Clean Styles Pack System
+        let stylesPack;
+        
+        window.addEventListener('DOMContentLoaded', async () => {
+            stylesPack = new VIB34DStylesPack();
+            await stylesPack.initialize();
+            
+            console.log('🌟 VIB34D Clean Styles Pack - Ready for configuration and deployment');
+        });
+        
+        // Export for console access in editor mode
+        window.VIB34DStylesPack = VIB34DStylesPack;
+    </script>
+</body>
+</html>

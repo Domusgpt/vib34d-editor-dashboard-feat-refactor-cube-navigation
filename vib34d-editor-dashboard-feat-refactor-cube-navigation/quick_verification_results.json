@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-06-27T19:51:03.440Z",
+  "elements": {
+    "reactiveCanvas": true,
+    "magazineLayer": true,
+    "sections": 8,
+    "navDots": 8,
+    "interactionIndicator": true,
+    "devControls": true
+  },
+  "systems": {
+    "vib3SystemExists": true,
+    "isInitialized": false,
+    "hasReactiveCore": false,
+    "hasHomeMaster": true,
+    "hasEffectsSystem": true,
+    "hasIntuitivePresets": true,
+    "hasConfigSystem": true,
+    "currentSection": "home",
+    "homeMasterState": {
+      "hasSystemState": true,
+      "intensity": 0.3,
+      "coherence": 1,
+      "activeSection": 0
+    },
+    "cssVariables": {
+      "globalIntensity": "0.8",
+      "systemCoherence": "1",
+      "dimensionalDepth": "3.5"
+    }
+  },
+  "errors": []
+}

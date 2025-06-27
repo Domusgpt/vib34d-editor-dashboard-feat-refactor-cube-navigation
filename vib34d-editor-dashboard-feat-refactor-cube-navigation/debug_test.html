@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VIB34D Debug Test</title>
+    <style>
+        body { font-family: monospace; background: #000; color: #00ff00; padding: 20px; }
+        .error { color: #ff0000; }
+        .success { color: #00ff00; }
+        .warning { color: #ffff00; }
+    </style>
+</head>
+<body>
+    <h1>🔍 VIB34D System Debug Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = message;
+            results.appendChild(div);
+            console.log(message);
+        }
+        
+        // Override error handling
+        window.onerror = function(message, source, lineno, colno, error) {
+            log(`❌ SCRIPT ERROR: ${message} at ${source}:${lineno}`, 'error');
+            return false;
+        };
+        
+        log('🚀 Starting debug test...');
+        
+        // Test 1: Check if basic classes load
+        function testPhase1() {
+            log('<br>📋 PHASE 1 TEST: Core Architecture');
+            
+            const scriptCount = document.scripts.length;
+            log(`📄 Total scripts loaded: ${scriptCount}`);
+            
+            // Check each phase file load
+            const phaseFiles = [
+                'VIB34D_PHASE1_CORE_ARCHITECTURE.js',
+                'VIB34D_PHASE2_GEOMETRY_IMPLEMENTATIONS.js',
+                'VIB34D_PHASE3_PROJECTION_SYSTEM.js',
+                'VIB34D_PHASE4_SHADER_UNIFORM_SYSTEM.js',
+                'VIB34D_PHASE5_INTERACTION_INTEGRATION.js',
+                'VIB34D_PHASE6_CHROMATIC_INTEGRATION.js',
+                'VIB34D_PHASE7_VIB3_INTEGRATION.js',
+                'VIB34D_PHASE8_EDITOR_DASHBOARD.js'
+            ];
+            
+            setTimeout(() => {
+                phaseFiles.forEach((file, index) => {
+                    // Just check if the script tag exists
+                    const script = document.querySelector(`script[src="${file}"]`);
+                    if (script) {
+                        log(`✅ Script tag found: ${file}`, 'success');
+                    } else {
+                        log(`❌ Script tag missing: ${file}`, 'error');
+                    }
+                });
+                
+                setTimeout(testClasses, 500);
+            }, 200);
+        }
+        
+        function testClasses() {
+            log('<br>🔍 TESTING CLASS AVAILABILITY:');
+            
+            const classes = [
+                'BaseGeometry',
+                'GeometryManager', 
+                'HypercubeCore',
+                'HypercubeGeometry',
+                'VIB34DInteractionEngine'
+            ];
+            
+            classes.forEach(className => {
+                try {
+                    if (typeof window[className] !== 'undefined') {
+                        log(`✅ ${className} class available`, 'success');
+                        
+                        // Try to create instance (for non-abstract classes)
+                        if (className === 'GeometryManager' || className === 'HypercubeCore') {
+                            try {
+                                const instance = new window[className]();
+                                log(`  ✅ ${className} instance created successfully`, 'success');
+                            } catch (e) {
+                                log(`  ⚠️ ${className} instantiation failed: ${e.message}`, 'warning');
+                            }
+                        }
+                    } else {
+                        log(`❌ ${className} class NOT AVAILABLE`, 'error');
+                    }
+                } catch (e) {
+                    log(`❌ Error checking ${className}: ${e.message}`, 'error');
+                }
+            });
+            
+            // Test WebGL availability
+            setTimeout(testWebGL, 300);
+        }
+        
+        function testWebGL() {
+            log('<br>🎮 TESTING WEBGL:');
+            
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+                
+                if (gl) {
+                    log('✅ WebGL context available', 'success');
+                    log(`  📊 WebGL version: ${gl.getParameter(gl.VERSION)}`, 'info');
+                    log(`  🎨 Renderer: ${gl.getParameter(gl.RENDERER)}`, 'info');
+                } else {
+                    log('❌ WebGL NOT available', 'error');
+                }
+            } catch (e) {
+                log(`❌ WebGL test failed: ${e.message}`, 'error');
+            }
+            
+            log('<br>✅ Debug test complete!');
+        }
+        
+        // Start tests
+        testPhase1();
+    </script>
+    
+    <!-- Load Phase Files -->
+    <script src="VIB34D_PHASE1_CORE_ARCHITECTURE.js"></script>
+    <script src="VIB34D_PHASE2_GEOMETRY_IMPLEMENTATIONS.js"></script>
+    <script src="VIB34D_PHASE3_PROJECTION_SYSTEM.js"></script>
+    <script src="VIB34D_PHASE4_SHADER_UNIFORM_SYSTEM.js"></script>
+    <script src="VIB34D_PHASE5_INTERACTION_INTEGRATION.js"></script>
+    <script src="VIB34D_PHASE6_CHROMATIC_INTEGRATION.js"></script>
+    <script src="VIB34D_PHASE7_VIB3_INTEGRATION.js"></script>
+    <script src="VIB34D_PHASE8_EDITOR_DASHBOARD.js"></script>
+</body>
+</html>

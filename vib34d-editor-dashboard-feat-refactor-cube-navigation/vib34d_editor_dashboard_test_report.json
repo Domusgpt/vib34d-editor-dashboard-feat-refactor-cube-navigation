@@ -1,0 +1,102 @@
+{
+  "timestamp": "2025-06-25T01:22:45.269Z",
+  "url": "http://localhost:8000/VIB34D_EDITOR_DASHBOARD.html",
+  "pageStatus": 200,
+  "pageAnalysis": {
+    "title": "VIB34D Editor Dashboard - Reactive UI Builder",
+    "hasEditorContainer": true,
+    "hasToolbar": true,
+    "hasElementLibrary": true,
+    "hasCanvasWorkspace": true,
+    "hasPropertiesPanel": true,
+    "hasVIB34DWorkingCore": true,
+    "hasVIB34DMoireRGB": true,
+    "hasVIB34DIntegratedBridge": true,
+    "hasEditorDashboard": false,
+    "draggableElementsCount": 12,
+    "canvasElementsCount": 1,
+    "webglSupported": false,
+    "visibleErrors": [],
+    "geometryOptions": 8,
+    "sliderElements": 8
+  },
+  "consoleLogs": [
+    {
+      "type": "log",
+      "text": "✅ VIB34D Working Core Architecture loaded successfully",
+      "timestamp": 1750814561378
+    },
+    {
+      "type": "log",
+      "text": "📊 Available geometries: JSHandle@array",
+      "timestamp": 1750814561379
+    },
+    {
+      "type": "log",
+      "text": "📊 Available projections: JSHandle@array",
+      "timestamp": 1750814561379
+    },
+    {
+      "type": "log",
+      "text": "🌈 VIB34D Moiré RGB System loaded and exported to window",
+      "timestamp": 1750814561380
+    },
+    {
+      "type": "log",
+      "text": "🌉 VIB34D Integrated System Bridge loaded and exported to window",
+      "timestamp": 1750814561380
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "timestamp": 1750814561397
+    }
+  ],
+  "pageErrors": [
+    {
+      "message": "Unexpected end of input",
+      "stack": "SyntaxError: Unexpected end of input",
+      "timestamp": 1750814561380
+    },
+    {
+      "message": "Identifier 'VIB34DMoireRGBEngine' has already been declared",
+      "stack": "SyntaxError: Identifier 'VIB34DMoireRGBEngine' has already been declared",
+      "timestamp": 1750814561381
+    },
+    {
+      "message": "Unexpected token '{'",
+      "stack": "SyntaxError: Unexpected token '{'",
+      "timestamp": 1750814561381
+    }
+  ],
+  "networkErrors": [],
+  "specificIssues": [
+    "WebGL not supported or not available"
+  ],
+  "buttonTest": {
+    "buttons": {
+      "newProject": true,
+      "loadProject": true,
+      "saveProject": true,
+      "togglePreview": true,
+      "exportCode": true,
+      "generatePage": true
+    },
+    "functions": {
+      "newProject": false,
+      "loadProject": false,
+      "saveProject": false,
+      "togglePreview": false,
+      "exportCode": false,
+      "generatePage": false
+    }
+  },
+  "summary": {
+    "overallStatus": "ISSUES_DETECTED",
+    "criticalIssues": 3,
+    "javascriptDependenciesLoaded": true,
+    "uiElementsPresent": true,
+    "interactivityReady": false,
+    "webglSupported": false
+  }
+}
