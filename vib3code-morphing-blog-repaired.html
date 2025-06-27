@@ -43,6 +43,8 @@
             perspective: 2000px;
             perspective-origin: center center;
             overflow: hidden;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
         .hypercube-face {
@@ -3237,7 +3239,7 @@
             }
             
             isNearBezel(x, y) {
-                const bezelWidth = 80; // 80px from edges
+                const bezelWidth = 120; // 120px from edges (larger bezel zone)
                 const windowWidth = window.innerWidth;
                 const windowHeight = window.innerHeight;
                 
@@ -3278,8 +3280,8 @@
             }
             
             handleTesseractDrag(deltaX, deltaY, distance) {
-                // Build tension based on drag distance
-                this.tensionLevel = Math.min(distance / 200, 1.0); // Max tension at 200px drag
+                // Build tension based on drag distance (easier to trigger)
+                this.tensionLevel = Math.min(distance / 100, 1.0); // Max tension at 100px drag
                 
                 // PROPER ARCHITECTURE: Register interaction with HomeMaster (if available)
                 if (this.homeMaster) {
@@ -3387,13 +3389,13 @@
                 document.body.style.userSelect = '';
                 
                 if (this.isBezelDrag) {
-                    // TESSERACT MODE: Check if tension is high enough to trigger fold
-                    if (this.tensionLevel > 0.5) {
+                    // TESSERACT MODE: Check if tension is high enough to trigger fold (lowered threshold)
+                    if (this.tensionLevel > 0.2) {
                         this.executeFold();
                     } else {
                         this.snapBack();
                     }
-                    console.log(`🎲 Tesseract drag ended - tension: ${this.tensionLevel.toFixed(2)}`);
+                    console.log(`🎲 Tesseract drag ended - tension: ${this.tensionLevel.toFixed(2)} (threshold: 0.2)`);
                 } else {
                     // SCROLL MODE: Apply momentum and smooth scrolling
                     this.applyScrollMomentum();
@@ -3516,6 +3518,9 @@
                 
                 this.currentFace = faceIndex;
                 
+                // Apply hypercube rotations to show the target face
+                this.applyHypercubeRotation(faceIndex);
+                
                 // Remove all fold classes and set final state
                 setTimeout(() => {
                     this.tesseractContainer.classList.remove('folding-left', 'folding-right', 'folding-up', 'folding-down', 'tension-building');
@@ -3536,9 +3541,54 @@
                     // CRITICAL: Load content for the new section
                     this.loadSectionContent(faceIndex);
                     
+                    // Update visualizer geometries
+                    this.updateVisualizerGeometry(faceIndex);
+                    
                     this.isTransitioning = false;
                     console.log(`🎲 Tesseract folded to face ${faceIndex}`);
                 }, 800);
+            }
+            
+            applyHypercubeRotation(faceIndex) {
+                // Apply CSS transforms to rotate the hypercube to show the target face
+                const rotations = {
+                    0: 'rotateY(0deg) rotateX(0deg)',      // HOME (FRONT)
+                    1: 'rotateY(-90deg) rotateX(0deg)',    // TECH (RIGHT)
+                    2: 'rotateY(-180deg) rotateX(0deg)',   // RESEARCH (BACK)
+                    3: 'rotateY(90deg) rotateX(0deg)',     // MEDIA (LEFT)
+                    4: 'rotateY(0deg) rotateX(90deg)',     // INNOVATION (TOP)
+                    5: 'rotateY(0deg) rotateX(-90deg)'     // CONTEXT (BOTTOM)
+                };
+                
+                const rotation = rotations[faceIndex] || rotations[0];
+                this.tesseractContainer.style.transform = rotation;
+                
+                console.log(`🎲 Applied hypercube rotation: ${rotation} for face ${faceIndex}`);
+            }
+            
+            updateVisualizerGeometry(faceIndex) {
+                // Map face to geometry for visualizer updates
+                const geometryMap = {
+                    0: 'hypercube',    // HOME
+                    1: 'tetrahedron',  // TECH
+                    2: 'wave',         // RESEARCH
+                    3: 'sphere',       // MEDIA
+                    4: 'fractal',      // INNOVATION
+                    5: 'crystal'       // CONTEXT
+                };
+                
+                const geometry = geometryMap[faceIndex] || 'hypercube';
+                
+                // Update all visualizers to use the new geometry
+                if (window.morphingBlogSystem && window.morphingBlogSystem.visualizers) {
+                    window.morphingBlogSystem.visualizers.forEach(viz => {
+                        if (viz.transitionToGeometry) {
+                            viz.transitionToGeometry(geometry);
+                        }
+                    });
+                }
+                
+                console.log(`🎨 Updated visualizer geometry to: ${geometry}`);
             }
             
             loadSectionContent(faceIndex) {
