@@ -324,7 +324,11 @@
                 
                 // Initialize PresetManager
                 presetManager = new PresetManager();
-                await presetManager.loadThemeCollection('vib3code-blog');
+                if (presetManager.loadThemeCollection) {
+                    await presetManager.loadThemeCollection('vib3code-blog');
+                } else {
+                    console.log('🎨 Using basic preset configuration');
+                }
                 
                 console.log('✅ VIB3STYLEPACK core systems initialized');
                 
@@ -516,15 +520,15 @@
             }
             
             setupNavigation() {
-                // Mouse/touch events for bezel navigation
-                document.addEventListener('mousedown', this.onDragStart.bind(this));
-                document.addEventListener('mousemove', this.onDragMove.bind(this));
-                document.addEventListener('mouseup', this.onDragEnd.bind(this));
+                // Mouse/touch events for bezel navigation (with passive: false to allow preventDefault)
+                document.addEventListener('mousedown', this.onDragStart.bind(this), { passive: false });
+                document.addEventListener('mousemove', this.onDragMove.bind(this), { passive: false });
+                document.addEventListener('mouseup', this.onDragEnd.bind(this), { passive: false });
                 
                 // Touch events
-                document.addEventListener('touchstart', this.onDragStart.bind(this));
-                document.addEventListener('touchmove', this.onDragMove.bind(this));
-                document.addEventListener('touchend', this.onDragEnd.bind(this));
+                document.addEventListener('touchstart', this.onDragStart.bind(this), { passive: false });
+                document.addEventListener('touchmove', this.onDragMove.bind(this), { passive: false });
+                document.addEventListener('touchend', this.onDragEnd.bind(this), { passive: false });
                 
                 // Keyboard navigation
                 document.addEventListener('keydown', this.onKeyDown.bind(this));
@@ -597,22 +601,42 @@
             }
             
             updateContent(content) {
-                // Update same card elements with new content
-                document.getElementById('cardTitle1').textContent = content.card1.title;
-                document.getElementById('cardSubtitle1').textContent = content.card1.subtitle;
-                document.getElementById('articleContent1').textContent = content.card1.content;
+                // Update same card elements with new content AND add visual feedback
+                console.log('🎨 Updating content with visual feedback');
                 
-                document.getElementById('cardTitle2').textContent = content.card2.title;
-                document.getElementById('cardSubtitle2').textContent = content.card2.subtitle;
-                document.getElementById('articleContent2').textContent = content.card2.content;
+                // Add transition animation to all cards
+                const cards = document.querySelectorAll('.blog-card');
+                cards.forEach(card => {
+                    card.style.transform = 'scale(0.95)';
+                    card.style.opacity = '0.7';
+                });
                 
-                document.getElementById('cardTitle3').textContent = content.card3.title;
-                document.getElementById('cardSubtitle3').textContent = content.card3.subtitle;
-                document.getElementById('articleContent3').textContent = content.card3.content;
-                
-                document.getElementById('cardTitleSidebar').textContent = content.sidebar.title;
-                document.getElementById('cardSubtitleSidebar').textContent = content.sidebar.subtitle;
-                document.getElementById('articleContentSidebar').textContent = content.sidebar.content;
+                setTimeout(() => {
+                    // Update content
+                    document.getElementById('cardTitle1').textContent = content.card1.title;
+                    document.getElementById('cardSubtitle1').textContent = content.card1.subtitle;
+                    document.getElementById('articleContent1').textContent = content.card1.content;
+                    
+                    document.getElementById('cardTitle2').textContent = content.card2.title;
+                    document.getElementById('cardSubtitle2').textContent = content.card2.subtitle;
+                    document.getElementById('articleContent2').textContent = content.card2.content;
+                    
+                    document.getElementById('cardTitle3').textContent = content.card3.title;
+                    document.getElementById('cardSubtitle3').textContent = content.card3.subtitle;
+                    document.getElementById('articleContent3').textContent = content.card3.content;
+                    
+                    document.getElementById('cardTitleSidebar').textContent = content.sidebar.title;
+                    document.getElementById('cardSubtitleSidebar').textContent = content.sidebar.subtitle;
+                    document.getElementById('articleContentSidebar').textContent = content.sidebar.content;
+                    
+                    // Animate back in with new content
+                    cards.forEach(card => {
+                        card.style.transform = 'scale(1)';
+                        card.style.opacity = '1';
+                    });
+                    
+                    console.log('✨ Content transition complete');
+                }, 200);
             }
             
             // BEZEL NAVIGATION METHODS

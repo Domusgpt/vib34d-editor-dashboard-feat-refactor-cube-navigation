@@ -783,7 +783,7 @@ class AdaptiveCardVisualizer {
         
         // Update WebGL uniforms to reflect new geometry and VIB3 parameters
         if (this.gl && this.program) {
-            this.setGeometryUniforms();
+            this.setupUniforms(); // Use existing method
             this.updateVIB3Uniforms(vib3Params);
         }
     }
@@ -793,7 +793,7 @@ class AdaptiveCardVisualizer {
         
         const gl = this.gl;
         
-        // Apply VIB3 parameters to shader uniforms
+        // Apply VIB3 parameters to shader uniforms with visual feedback
         if (params.intensity !== undefined) {
             const intensityLocation = gl.getUniformLocation(this.program, 'u_intensity');
             if (intensityLocation) gl.uniform1f(intensityLocation, params.intensity);
@@ -814,7 +814,23 @@ class AdaptiveCardVisualizer {
             if (coherenceLocation) gl.uniform1f(coherenceLocation, params.coherence);
         }
         
-        console.log('✅ VIB3 uniforms updated');
+        // Update geometry uniform based on current geometry
+        const geometryMap = {
+            'hypercube': 1.0,
+            'tetrahedron': 2.0,
+            'sphere': 3.0,
+            'torus': 4.0,
+            'fractal': 5.0
+        };
+        
+        const geometryValue = geometryMap[this.options.geometry] || 1.0;
+        const geometryLocation = gl.getUniformLocation(this.program, 'u_geometry');
+        if (geometryLocation) {
+            gl.uniform1f(geometryLocation, geometryValue);
+            console.log(`🔄 Geometry uniform updated: ${this.options.geometry} = ${geometryValue}`);
+        }
+        
+        console.log('✅ VIB3 uniforms updated with visual changes');
     }
 
     destroy() {
