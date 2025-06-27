@@ -3169,11 +3169,13 @@
         }
         
         // DUAL NAVIGATION SYSTEM: Tesseract + Scroll
-        // PROPERLY INTEGRATED WITH VIB3HOMEMASTER ARCHITECTURE
+        // PROPERLY INTEGRATED WITH VIB34D CORE ARCHITECTURE
         class DualNavigationSystem {
-            constructor(homeMaster, reactivityBridge) {
+            constructor(homeMaster, reactivityBridge, presetManager = null, transitionCoordinator = null) {
                 this.homeMaster = homeMaster;
                 this.reactivityBridge = reactivityBridge;
+                this.presetManager = presetManager;
+                this.transitionCoordinator = transitionCoordinator;
                 this.tesseractContainer = document.getElementById('tesseractContainer');
                 this.faces = ['face-0', 'face-1', 'face-2', 'face-3', 'face-4', 'face-5'];
                 this.currentFace = 0;
@@ -3509,17 +3511,42 @@
                 console.log('🎲 Snapping back to current face');
             }
             
-            transitionToFace(faceIndex) {
+            async transitionToFace(faceIndex) {
                 if (faceIndex === this.currentFace) {
                     this.snapBack();
                     this.isTransitioning = false;
                     return;
                 }
                 
+                const previousFace = this.currentFace;
                 this.currentFace = faceIndex;
+                
+                // Get section keys for transition coordinator
+                const sectionMap = {
+                    0: 'HOME', 1: 'TECH', 2: 'RESEARCH', 3: 'MEDIA', 4: 'INNOVATION', 5: 'CONTEXT'
+                };
+                
+                const fromSection = sectionMap[previousFace];
+                const toSection = sectionMap[faceIndex];
+                
+                // Use TransitionCoordinator if available for smooth mathematical transitions
+                if (this.transitionCoordinator) {
+                    console.log(`🎭 Using TransitionCoordinator: ${fromSection} → ${toSection}`);
+                    
+                    await this.transitionCoordinator.executePageTransition(fromSection, toSection, {
+                        style: 'slide_portal',
+                        hypercubeRotation: true
+                    });
+                }
                 
                 // Apply hypercube rotations to show the target face
                 this.applyHypercubeRotation(faceIndex);
+                
+                // Apply preset-based styling if PresetManager is available
+                if (this.presetManager) {
+                    const sectionConfig = this.presetManager.getSectionConfiguration(toSection);
+                    this.applySectionConfiguration(sectionConfig, faceIndex);
+                }
                 
                 // Remove all fold classes and set final state
                 setTimeout(() => {
@@ -3545,7 +3572,7 @@
                     this.updateVisualizerGeometry(faceIndex);
                     
                     this.isTransitioning = false;
-                    console.log(`🎲 Tesseract folded to face ${faceIndex}`);
+                    console.log(`🎲 Tesseract folded to face ${faceIndex} (${toSection})`);
                 }, 800);
             }
             
@@ -3589,6 +3616,38 @@
                 }
                 
                 console.log(`🎨 Updated visualizer geometry to: ${geometry}`);
+            }
+            
+            applySectionConfiguration(sectionConfig, faceIndex) {
+                if (!sectionConfig) return;
+                
+                console.log(`🎨 Applying section configuration for face ${faceIndex}:`, sectionConfig.section);
+                
+                // Apply visual style configuration
+                if (sectionConfig.visual && sectionConfig.visual.parameters) {
+                    const visual = sectionConfig.visual.parameters;
+                    
+                    // Update CSS custom properties for the face
+                    const faceElement = document.getElementById(`face-${faceIndex}`);
+                    if (faceElement) {
+                        if (visual.baseColor) faceElement.style.setProperty('--section-color', visual.baseColor);
+                        if (visual.opacity) faceElement.style.setProperty('--section-opacity', visual.opacity);
+                        if (visual.density) faceElement.style.setProperty('--section-density', visual.density);
+                    }
+                }
+                
+                // Apply reactivity configuration
+                if (sectionConfig.reactivity && this.reactivityBridge) {
+                    this.reactivityBridge.applySectionReactivity(sectionConfig.section, sectionConfig.reactivity);
+                }
+                
+                // Apply layout configuration
+                if (sectionConfig.layout) {
+                    const blogContainer = document.querySelector(`#face-${faceIndex} .blog-container`);
+                    if (blogContainer) {
+                        blogContainer.className = `blog-container layout-${sectionConfig.layout}`;
+                    }
+                }
             }
             
             loadSectionContent(faceIndex) {
@@ -3789,6 +3848,16 @@
                 // Import core architecture systems
                 const { default: VIB3HomeMaster } = await import('./core/VIB3HomeMaster.js');
                 const { default: UnifiedReactivityBridge } = await import('./core/UnifiedReactivityBridge.js');
+                const { default: PresetManager } = await import('./core/PresetManager.js');
+                
+                // Import transition coordinator
+                let TransitionCoordinator = null;
+                try {
+                    TransitionCoordinator = (await import('./core/transition-coordinator.js')).default;
+                } catch (e) {
+                    // Try global access fallback
+                    TransitionCoordinator = window.VIB34DTransitionCoordinator;
+                }
                 
                 // Initialize core architecture systems (CRITICAL for proper operation)
                 console.log('🏠 Initializing VIB3HomeMaster...');
@@ -3799,16 +3868,37 @@
                 const reactivityBridge = new UnifiedReactivityBridge(homeMaster, []);
                 window.vib3Bridge = reactivityBridge;
                 
+                // Initialize PresetManager
+                console.log('🎨 Initializing PresetManager...');
+                const presetManager = new PresetManager();
+                await presetManager.loadPresets('./presets/');
+                window.vib3PresetManager = presetManager;
+                
+                // Initialize TransitionCoordinator
+                let transitionCoordinator = null;
+                if (TransitionCoordinator) {
+                    console.log('🎭 Initializing TransitionCoordinator...');
+                    transitionCoordinator = new TransitionCoordinator();
+                    window.vib3TransitionCoordinator = transitionCoordinator;
+                }
+                
                 // Initialize blog system
                 const system = new MorphingBlogSystem();
                 window.morphingBlogSystem = system;
                 
-                // Initialize DUAL navigation system with proper architecture
-                console.log('🎲 Initializing DualNavigationSystem with proper architecture...');
-                const dualNavSystem = new DualNavigationSystem(homeMaster, reactivityBridge);
+                // Initialize DUAL navigation system with full architecture
+                console.log('🎲 Initializing DualNavigationSystem with full VIB34D architecture...');
+                const dualNavSystem = new DualNavigationSystem(homeMaster, reactivityBridge, presetManager, transitionCoordinator);
                 window.dualNavigationSystem = dualNavSystem;
                 
-                console.log('✅ All systems initialized with proper architecture');
+                // Apply initial theme
+                if (presetManager.isLoaded) {
+                    const theme = presetManager.autoDetectTheme(document.body);
+                    presetManager.applyTheme(theme, document.body);
+                    console.log(`🎨 Applied theme: ${theme}`);
+                }
+                
+                console.log('✅ All systems initialized with full VIB34D architecture');
             } catch (error) {
                 console.error('❌ Error initializing core systems:', error);
                 console.log('🔄 Falling back to standalone mode...');
@@ -3818,7 +3908,7 @@
                 window.morphingBlogSystem = system;
                 
                 // Initialize basic dual navigation (without full architecture)
-                const basicNavSystem = new DualNavigationSystem(null, null);
+                const basicNavSystem = new DualNavigationSystem(null, null, null, null);
                 window.dualNavigationSystem = basicNavSystem;
             }
         });
