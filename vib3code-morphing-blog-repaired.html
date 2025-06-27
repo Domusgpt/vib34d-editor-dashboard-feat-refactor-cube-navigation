@@ -3191,8 +3191,8 @@
                 this.isScrolling = false;
                 this.scrollMomentum = 0;
                 
-                // Bezel detection zone (configurable via editor)
-                this.bezelWidth = 80;
+                // Bezel detection zone (configurable via editor) - Made much larger for easier access
+                this.bezelWidth = 250;
                 
                 this.init();
             }
@@ -3241,7 +3241,7 @@
             }
             
             isNearBezel(x, y) {
-                const bezelWidth = 120; // 120px from edges (larger bezel zone)
+                const bezelWidth = this.bezelWidth; // Use the configurable bezel width
                 const windowWidth = window.innerWidth;
                 const windowHeight = window.innerHeight;
                 
@@ -3392,12 +3392,12 @@
                 
                 if (this.isBezelDrag) {
                     // TESSERACT MODE: Check if tension is high enough to trigger fold (lowered threshold)
-                    if (this.tensionLevel > 0.2) {
+                    if (this.tensionLevel > 0.05) {
                         this.executeFold();
                     } else {
                         this.snapBack();
                     }
-                    console.log(`🎲 Tesseract drag ended - tension: ${this.tensionLevel.toFixed(2)} (threshold: 0.2)`);
+                    console.log(`🎲 Tesseract drag ended - tension: ${this.tensionLevel.toFixed(2)} (threshold: 0.05)`);
                 } else {
                     // SCROLL MODE: Apply momentum and smooth scrolling
                     this.applyScrollMomentum();
