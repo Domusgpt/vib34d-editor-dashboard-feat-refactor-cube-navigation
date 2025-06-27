@@ -1,0 +1,525 @@
+{
+  "_metadata": {
+    "version": "2.0.0",
+    "description": "VIB3STYLEPACK Reactivity Presets - Ecosystem-wide Interaction Behaviors",
+    "architecture": "Data-driven interaction system with coordinated ecosystem reactions",
+    "presetCount": 12,
+    "lastUpdated": "2025-06-22",
+    "compatibleWith": "VIB3HomeMaster + NEOSKEUOMORPHIC_HOLOGRAPHIC_UI"
+  },
+
+  "interactionBehaviors": {
+    "gravitational-well": {
+      "name": "Gravitational Well",
+      "description": "Creates attractive force effect that pulls surrounding visuals toward interaction point",
+      "event": "mouseover",
+      "target": {
+        "actions": {
+          "speed": "*0.5",
+          "lineThickness": "*1.2", 
+          "scale": "1.03",
+          "dimension": "+0.1",
+          "mouseAttraction": "1.0"
+        },
+        "transition": {
+          "duration": 400,
+          "easing": "ease-out"
+        }
+      },
+      "ecosystem": [
+        {
+          "selector": ".visualizer-container.background",
+          "actions": {
+            "speed": "*1.5",
+            "density": "*1.1",
+            "gravitationalPull": "0.3"
+          },
+          "transition": {
+            "duration": 400,
+            "easing": "ease-out"
+          }
+        },
+        {
+          "selector": "[data-vib3-style*='content']",
+          "actions": {
+            "morphFactor": "*1.2",
+            "pullToward": "target"
+          },
+          "transition": {
+            "duration": 300,
+            "easing": "ease-in-out"
+          }
+        }
+      ],
+      "useCases": ["card-hover", "navigation-elements", "interactive-content"]
+    },
+
+    "quantum-flip": {
+      "name": "Quantum Flip",
+      "description": "Instantaneous reality inversion with chromatic separation effects",
+      "event": "click",
+      "target": {
+        "actions": {
+          "color": "invert",
+          "rotation": "reverse",
+          "glitchIntensity": "1.0",
+          "dimension": "+0.3"
+        },
+        "transition": {
+          "duration": 100,
+          "easing": "ease-in"
+        }
+      },
+      "ecosystem": [
+        {
+          "selector": ".glass-panel",
+          "actions": {
+            "glitchIntensity": "0.3",
+            "colorShift": "+180",
+            "chromaticAberration": "0.5"
+          },
+          "transition": {
+            "duration": 150,
+            "easing": "ease-out"
+          }
+        },
+        {
+          "selector": ".visualizer-canvas",
+          "actions": {
+            "invertColors": "true",
+            "rgbSeparation": "0.4"
+          },
+          "transition": {
+            "duration": 200,
+            "easing": "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+          }
+        }
+      ],
+      "useCases": ["button-clicks", "modal-toggles", "state-changes"]
+    },
+
+    "reality-glitch": {
+      "name": "Reality Glitch",
+      "description": "System-wide digital artifact effects with VHS-style distortion",
+      "event": "click",
+      "target": {
+        "actions": {
+          "glitchIntensity": "1.0",
+          "speed": "*3.0",
+          "digitalNoise": "0.8",
+          "scanlines": "true"
+        },
+        "transition": {
+          "duration": 100
+        }
+      },
+      "ecosystem": [
+        {
+          "selector": ".visualizer-container",
+          "actions": {
+            "glitchIntensity": "0.3",
+            "speed": "*0.5",
+            "analogDistortion": "0.4"
+          },
+          "transition": {
+            "duration": 500
+          }
+        },
+        {
+          "selector": "body",
+          "cssClass": "reality-glitch-active",
+          "actions": {
+            "filter": "hue-rotate(180deg) contrast(1.2)",
+            "scanlineOverlay": "true"
+          },
+          "transition": {
+            "duration": 300
+          }
+        }
+      ],
+      "useCases": ["error-states", "system-feedback", "dramatic-emphasis"]
+    },
+
+    "dimensional-dive": {
+      "name": "Dimensional Dive",
+      "description": "Progressive 4D space exploration with depth perception effects", 
+      "event": "scroll",
+      "continuous": true,
+      "target": {
+        "actions": {
+          "dimension": "scroll_velocity * 0.01 + 3.0",
+          "rotationSpeed": "scroll_velocity * 0.005",
+          "depthOfField": "scroll_position * 0.001"
+        },
+        "transition": {
+          "duration": 50,
+          "easing": "linear"
+        }
+      },
+      "ecosystem": [
+        {
+          "selector": ".visualizer-container.background",
+          "actions": {
+            "dimension": "scroll_position * 0.01 + 3.0",
+            "parallaxShift": "scroll_velocity * 0.1"
+          },
+          "transition": {
+            "duration": 50
+          }
+        },
+        {
+          "selector": ".depth-layer",
+          "actions": {
+            "transform": "translateZ(scroll_position * layer_depth * 0.1)",
+            "perspective": "1200px + scroll_velocity * 2"
+          },
+          "transition": {
+            "duration": 30
+          }
+        }
+      ],
+      "useCases": ["page-scrolling", "content-navigation", "immersive-exploration"]
+    },
+
+    "temporal-ripple": {
+      "name": "Temporal Ripple",
+      "description": "Time-based wave propagation emanating from interaction point",
+      "event": "click",
+      "target": {
+        "actions": {
+          "waveSource": "click_position",
+          "temporalDistortion": "1.0",
+          "rippleSpeed": "2.0"
+        },
+        "transition": {
+          "duration": 200,
+          "easing": "ease-out"
+        }
+      },
+      "ecosystem": [
+        {
+          "selector": "[data-vib3-geometry='wave']",
+          "actions": {
+            "waveAmplitude": "*2.0",
+            "propagationSpeed": "*1.5",
+            "interferencePattern": "true"
+          },
+          "transition": {
+            "duration": 800,
+            "easing": "ease-out"
+          }
+        },
+        {
+          "selector": ".visualizer-container",
+          "actions": {
+            "timeDelayRipple": "distance_from_click * 0.05",
+            "temporalEcho": "0.3"
+          },
+          "transition": {
+            "duration": 1200,
+            "easing": "cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+          }
+        }
+      ],
+      "useCases": ["dramatic-clicks", "temporal-content", "audio-visualization"]
+    },
+
+    "consciousness-sync": {
+      "name": "Consciousness Sync",
+      "description": "Unified breathing pattern across all system visualizers",
+      "event": "idle",
+      "continuous": true,
+      "target": {
+        "actions": {
+          "breathingRate": "0.1",
+          "coherenceAmplitude": "0.2",
+          "unifiedPhase": "true"
+        },
+        "transition": {
+          "duration": 3000,
+          "easing": "ease-in-out"
+        }
+      },
+      "ecosystem": [
+        {
+          "selector": ".visualizer-container",
+          "actions": {
+            "breathingSync": "true",
+            "amplitude": "0.15",
+            "phase": "synchronized"
+          },
+          "transition": {
+            "duration": 3000,
+            "easing": "ease-in-out"
+          }
+        }
+      ],
+      "useCases": ["idle-states", "meditation-mode", "ambient-presence"]
+    },
+
+    "fractal-cascade": {
+      "name": "Fractal Cascade",
+      "description": "Self-similar propagation effect with recursive visual echoes",
+      "event": "click",
+      "target": {
+        "actions": {
+          "fractalDepth": "+2",
+          "selfSimilarity": "1.0",
+          "recursiveEcho": "0.8"
+        },
+        "transition": {
+          "duration": 300,
+          "easing": "ease-out"
+        }
+      },
+      "ecosystem": [
+        {
+          "selector": "[data-vib3-geometry*='fractal']",
+          "actions": {
+            "iterations": "+1",
+            "scale": "*1.1",
+            "recursionAmplification": "0.3"
+          },
+          "transition": {
+            "duration": 500,
+            "easing": "ease-out"
+          }
+        },
+        {
+          "selector": ".visualizer-container",
+          "actions": {
+            "fractalResonance": "0.2",
+            "selfSimilarPattern": "propagate"
+          },
+          "transition": {
+            "duration": 800,
+            "easing": "cubic-bezier(0.23, 1, 0.32, 1)"
+          }
+        }
+      ],
+      "useCases": ["complex-interactions", "mathematical-content", "recursive-navigation"]
+    },
+
+    "portal-burst": {
+      "name": "Portal Burst",
+      "description": "High-energy transition with chromatic aberration and reality tear effects",
+      "event": "fast_scroll",
+      "threshold": "velocity > 1500",
+      "target": {
+        "actions": {
+          "portalIntensity": "1.0",
+          "chromaticAberration": "0.8",
+          "realityTear": "true",
+          "energyBurst": "2.0"
+        },
+        "transition": {
+          "duration": 200,
+          "easing": "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+        }
+      },
+      "ecosystem": [
+        {
+          "selector": "body",
+          "cssClass": "portal-burst-active",
+          "actions": {
+            "filter": "hue-rotate(360deg) brightness(1.5) contrast(1.3)",
+            "chromaticSeparation": "true"
+          },
+          "transition": {
+            "duration": 800,
+            "easing": "ease-out"
+          }
+        },
+        {
+          "selector": ".visualizer-container",
+          "actions": {
+            "portalDistortion": "0.6",
+            "energyResonance": "0.4",
+            "realityGlitch": "true"
+          },
+          "transition": {
+            "duration": 600,
+            "easing": "ease-out"
+          }
+        }
+      ],
+      "useCases": ["section-transitions", "high-energy-navigation", "dramatic-state-changes"]
+    }
+  },
+
+  "legacyPresets": {
+    "reading-ambient": {
+      "name": "Reading Ambient Mode",
+      "description": "Subtle background activity for content consumption",
+      "event": "continuous",
+      "mappedTo": "consciousness-sync",
+      "parameters": {
+        "mouse": {
+          "sensitivity": 0.2,
+          "radius": 100,
+          "decay": 2000,
+          "max_influence": 0.3
+        },
+        "scroll": {
+          "sensitivity": 0.4,
+          "accumulation": false,
+          "velocity_mapping": true,
+          "threshold": 10
+        },
+        "idle": {
+          "timeout": 5000,
+          "calm_mode": true,
+          "reduce_intensity": 0.5,
+          "breathing_pattern": true
+        },
+        "focus": {
+          "reading_detection": true,
+          "minimize_distractions": true,
+          "eye_strain_reduction": true
+        }
+      }
+    },
+
+    "interactive-focus": {
+      "name": "Interactive Focus Mode",
+      "description": "High responsiveness for UI elements and cards",
+      "event": "hover_click",
+      "mappedTo": "gravitational-well",
+      "parameters": {
+        "mouse": {
+          "sensitivity": 1.0,
+          "radius": 150,
+          "decay": 500,
+          "prediction": true
+        },
+        "hover": {
+          "preview": true,
+          "transition": 300,
+          "anticipation": 100,
+          "magnetic_effect": 0.7
+        },
+        "click": {
+          "intensity": 2.0,
+          "duration": 1000,
+          "ripple_effect": true,
+          "feedback_strength": 1.5
+        },
+        "touch": {
+          "pressure_sensitivity": true,
+          "gesture_recognition": true,
+          "momentum_scrolling": true
+        }
+      }
+    },
+
+    "high-energy": {
+      "name": "High Energy Interactive",
+      "description": "Maximum responsiveness for landing pages and showcases",
+      "event": "all_interactions",
+      "mappedTo": "portal-burst",
+      "parameters": {
+        "mouse": {
+          "sensitivity": 1.5,
+          "radius": 200,
+          "decay": 200,
+          "trail_effects": true
+        },
+        "scroll": {
+          "sensitivity": 1.2,
+          "momentum_amplification": 2.0,
+          "velocity_effects": true,
+          "chaos_buildup": true
+        },
+        "click": {
+          "intensity": 3.0,
+          "duration": 1500,
+          "reality_distortion": true,
+          "particle_burst": true
+        },
+        "audio": {
+          "reactive": true,
+          "frequency_mapping": true,
+          "beat_detection": true
+        }
+      }
+    }
+  },
+
+  "eventTypes": {
+    "click": {
+      "description": "Single click or tap interaction",
+      "properties": ["position", "target", "timestamp"]
+    },
+    "mouseover": {
+      "description": "Mouse enter or touch start",
+      "properties": ["position", "target", "movement_velocity"]
+    },
+    "scroll": {
+      "description": "Continuous scroll interaction",
+      "properties": ["velocity", "direction", "position", "accumulated"]
+    },
+    "hold": {
+      "description": "Press and hold interaction",
+      "properties": ["duration", "position", "pressure"]
+    },
+    "idle": {
+      "description": "No user interaction for specified time",
+      "properties": ["idle_duration", "last_interaction"]
+    },
+    "fast_scroll": {
+      "description": "High-velocity scroll exceeding threshold",
+      "properties": ["velocity", "direction", "peak_velocity"]
+    }
+  },
+
+  "actionTypes": {
+    "parameter_modification": {
+      "speed": "Multiply (*) or add (+) to animation speed",
+      "density": "Modify grid density",
+      "dimension": "Adjust 4D projection parameter",
+      "glitchIntensity": "Set digital glitch amount",
+      "morphFactor": "Control geometry morphing"
+    },
+    "visual_effects": {
+      "color": "Color manipulation (invert, shift, etc.)",
+      "filter": "CSS filter effects",
+      "chromaticAberration": "RGB channel separation",
+      "blur": "Gaussian blur application",
+      "glow": "Glow effect intensity"
+    },
+    "geometric_transformation": {
+      "scale": "Size transformation",
+      "rotation": "Rotation transformation",
+      "topologyMorph": "Non-orientable surface changes",
+      "fractalDepth": "Fractal iteration depth",
+      "organicGrowth": "Organic expansion effects"
+    },
+    "ecosystem_coordination": {
+      "propagationSpeed": "Effect spread rate",
+      "resonanceFrequency": "Harmonic response",
+      "coherenceAmplitude": "System-wide synchronization",
+      "gravitationalPull": "Attractive force simulation"
+    }
+  },
+
+  "performanceProfiles": {
+    "minimal": {
+      "description": "Optimized for low-end devices",
+      "maxSimultaneousEffects": 2,
+      "transitionDurationMultiplier": 0.5,
+      "complexEffectsDisabled": ["fractal-cascade", "portal-burst"]
+    },
+    "standard": {
+      "description": "Balanced performance and visual quality", 
+      "maxSimultaneousEffects": 5,
+      "transitionDurationMultiplier": 1.0,
+      "complexEffectsDisabled": []
+    },
+    "premium": {
+      "description": "Maximum visual fidelity",
+      "maxSimultaneousEffects": 10,
+      "transitionDurationMultiplier": 1.2,
+      "enhancedEffects": ["portal-burst", "fractal-cascade", "dimensional-dive"]
+    }
+  }
+}

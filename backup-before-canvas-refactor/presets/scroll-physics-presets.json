@@ -1,0 +1,62 @@
+{
+  "_metadata": {
+    "version": "1.0.0",
+    "description": "Configuration for Universal Click/Drag Scrolling and Snap-Back Physics.",
+    "documentation": "Defines sensitivity, snap-back behavior, and other physics for scrollable elements."
+  },
+  "defaultProfile": {
+    "sensitivity": {
+      "x": 1.0,
+      "y": 1.0,
+      "description": "Multiplier for scroll distance based on drag distance."
+    },
+    "dragThreshold": {
+      "value": 5,
+      "unit": "px",
+      "description": "Minimum drag distance to initiate a scroll."
+    },
+    "snapBack": {
+      "enabled": true,
+      "springTension": 100,
+      "damping": 15,
+      "description": "Physics for snap-back animation (e.g., using a simple spring model)."
+    },
+    "momentum": {
+        "enabled": true,
+        "friction": 0.05,
+        "minVelocityToSustain": 0.1,
+        "description": "Physics for momentum-based scrolling after drag release."
+    },
+    "allowedDirections": {
+      "value": "all", "options": ["all", "vertical", "horizontal"],
+      "description": "Constrains scroll direction."
+    },
+    "infiniteScroll": {
+      "enabled": false,
+      "loopPaddingFactor": 0.5,
+      "description": "Settings for infinite scroll illusion. Loop padding is a factor of viewport size."
+    }
+  },
+  "profiles": {
+    "pageScroll": {
+      "_extends": "defaultProfile",
+      "sensitivity": { "x": 1.2, "y": 1.2 },
+      "snapBack": { "enabled": false },
+      "infiniteScroll": { "enabled": true, "loopPaddingFactor": 0.2 }
+    },
+    "cardContentScroll": {
+      "_extends": "defaultProfile",
+      "sensitivity": { "x": 0.8, "y": 1.0 },
+      "allowedDirections": "vertical",
+      "snapBack": { "enabled": true, "springTension": 120, "damping": 20 },
+      "infiniteScroll": { "enabled": false }
+    },
+    "horizontalGalleryScroll": {
+        "_extends": "defaultProfile",
+        "sensitivity": { "x": 1.0, "y": 0.3 },
+        "allowedDirections": "horizontal",
+        "snapBack": { "enabled": true, "springTension": 80, "damping": 18 },
+        "infiniteScroll": { "enabled": true, "loopPaddingFactor": 0.3 }
+    }
+  }
+}
