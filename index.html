@@ -541,7 +541,7 @@
                 console.log('🎮 Navigation setup complete');
             }
             
-            loadFace(faceIndex) {
+            loadFace(faceIndex, direction = 'direct') {
                 if (this.isTransitioning || faceIndex === this.currentFace) return;
                 
                 console.log(`🎲 Loading face ${faceIndex}: ${FACE_CONFIGS[faceIndex].name}`);
@@ -551,19 +551,24 @@
                 
                 const faceConfig = FACE_CONFIGS[faceIndex];
                 
-                // Register section transition with VIB3HomeMaster
+                // Register section transition with VIB3HomeMaster (proper Home-Master Controls Everything)
                 if (window.homeMaster) {
                     window.homeMaster.transitionToSection(faceConfig.name);
                     console.log(`🎯 VIB3 section transition: ${faceConfig.name}`);
                 }
                 
-                // Trigger reactivity bridge updates
+                // Trigger sophisticated reactivity bridge coordination with proper API
                 if (window.reactivityBridge) {
-                    window.reactivityBridge.triggerReaction('sectionTransition', {
-                        section: faceConfig.name,
-                        geometry: faceConfig.geometry,
-                        intensity: 0.8
-                    });
+                    // Cube navigation with tension and snap point
+                    window.reactivityBridge.triggerCubeNavigation(direction, this.tensionLevel, true);
+                    
+                    // Trigger coordinated dimensional shift effect
+                    window.reactivityBridge.triggerEffect('dimensional-shift');
+                    
+                    // Register interaction with HomeMaster through the bridge
+                    if (window.homeMaster.registerInteraction) {
+                        window.homeMaster.registerInteraction('cubeRotation', this.tensionLevel, 800);
+                    }
                 }
                 
                 // Update face indicator
@@ -571,10 +576,10 @@
                 document.getElementById('currentFaceIndex').textContent = faceIndex;
                 document.getElementById('currentGeometry').textContent = faceConfig.geometry;
                 
-                // Update all visualizers to new geometry - REUSING SAME CANVASES
+                // Update all visualizers to new geometry with VIB3 parameters - REUSING SAME CANVASES
                 this.updateVisualizersGeometry(faceConfig.geometry);
                 
-                // Update content in same elements
+                // Update content with sophisticated transition animation
                 this.updateContent(faceConfig.content);
                 
                 setTimeout(() => {
@@ -606,18 +611,25 @@
             }
             
             updateContent(content) {
-                // Update same card elements with new content AND add visual feedback
-                console.log('🎨 Updating content with visual feedback');
+                // Update content with sophisticated VIB3 coordinated transitions
+                console.log('🎨 Updating content with VIB3 coordinated transition');
                 
-                // Add transition animation to all cards
+                // Trigger portal-transition-effect through reactivity bridge
+                if (window.reactivityBridge) {
+                    window.reactivityBridge.triggerEffect('portal-burst');
+                }
+                
+                // Add sophisticated transition classes to all cards
                 const cards = document.querySelectorAll('.blog-card');
                 cards.forEach(card => {
-                    card.style.transform = 'scale(0.95)';
-                    card.style.opacity = '0.7';
+                    card.classList.add('portal-transition-effect');
+                    card.style.transform = 'scale(0.9) perspective(1200px) rotateY(5deg)';
+                    card.style.opacity = '0.3';
+                    card.style.filter = 'blur(2px)';
                 });
                 
                 setTimeout(() => {
-                    // Update content
+                    // Update content during portal transition
                     document.getElementById('cardTitle1').textContent = content.card1.title;
                     document.getElementById('cardSubtitle1').textContent = content.card1.subtitle;
                     document.getElementById('articleContent1').textContent = content.card1.content;
@@ -634,14 +646,26 @@
                     document.getElementById('cardSubtitleSidebar').textContent = content.sidebar.subtitle;
                     document.getElementById('articleContentSidebar').textContent = content.sidebar.content;
                     
-                    // Animate back in with new content
-                    cards.forEach(card => {
-                        card.style.transform = 'scale(1)';
-                        card.style.opacity = '1';
+                    // Sophisticated emergence animation
+                    cards.forEach((card, index) => {
+                        setTimeout(() => {
+                            card.classList.remove('portal-transition-effect');
+                            card.classList.add('dimensional-shift');
+                            card.style.transform = 'scale(1) perspective(1200px) rotateY(0deg)';
+                            card.style.opacity = '1';
+                            card.style.filter = 'blur(0px)';
+                        }, index * 100); // Staggered emergence
                     });
                     
-                    console.log('✨ Content transition complete');
-                }, 200);
+                    console.log('✨ VIB3 coordinated content transition complete');
+                }, 400);
+                
+                // Clean up classes after full transition
+                setTimeout(() => {
+                    cards.forEach(card => {
+                        card.classList.remove('dimensional-shift');
+                    });
+                }, 1200);
             }
             
             // BEZEL NAVIGATION METHODS
@@ -718,7 +742,7 @@
                         break;
                 }
                 
-                this.loadFace(nextFace);
+                this.loadFace(nextFace, direction);
             }
             
             onKeyDown(e) {
