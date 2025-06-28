@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Working Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #000000 70%);
+            color: white;
+            font-family: 'Orbitron', monospace;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .tesseract-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 2000px;
+        }
+        
+        .hypercube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease;
+        }
+        
+        .hypercube-face.active {
+            transform: rotateY(0deg);
+        }
+        
+        .hypercube-face.inactive {
+            transform: rotateY(90deg);
+        }
+        
+        .adaptive-card {
+            position: absolute;
+            width: 300px;
+            height: 200px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .adaptive-card:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: rgba(0, 255, 255, 0.6);
+            transform: translateY(-5px);
+        }
+        
+        .adaptive-card h3 {
+            margin: 0 0 10px 0;
+            color: #00ffff;
+        }
+        
+        .adaptive-card p {
+            margin: 0;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        
+        /* Card positions for HOME face */
+        .face-0 .card-1 { top: 20%; left: 10%; }
+        .face-0 .card-2 { top: 20%; right: 10%; }
+        .face-0 .card-3 { bottom: 20%; left: 10%; }
+        .face-0 .card-4 { bottom: 20%; right: 10%; }
+        
+        /* Card positions for TECH face */
+        .face-1 .card-1 { top: 15%; left: 15%; }
+        .face-1 .card-2 { top: 15%; right: 15%; }
+        .face-1 .card-3 { bottom: 15%; left: 15%; }
+        .face-1 .card-4 { bottom: 15%; right: 15%; }
+        
+        .navigation-bezels {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .bezel {
+            position: absolute;
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            cursor: pointer;
+            pointer-events: all;
+            transition: all 0.3s ease;
+        }
+        
+        .bezel:hover {
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3));
+            border-color: rgba(0, 255, 255, 0.8);
+        }
+        
+        .bezel-right {
+            top: 45%;
+            right: 0;
+            width: 50px;
+            height: 10%;
+            border-radius: 25px 0 0 25px;
+        }
+        
+        .bezel-left {
+            top: 45%;
+            left: 0;
+            width: 50px;
+            height: 10%;
+            border-radius: 0 25px 25px 0;
+        }
+        
+        .bezel-top {
+            top: 0;
+            left: 45%;
+            width: 10%;
+            height: 50px;
+            border-radius: 0 0 25px 25px;
+        }
+        
+        .bezel-bottom {
+            bottom: 0;
+            left: 45%;
+            width: 10%;
+            height: 50px;
+            border-radius: 25px 25px 0 0;
+        }
+        
+        .face-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            z-index: 1001;
+        }
+        
+        .webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="background-canvas" class="webgl-canvas"></canvas>
+    
+    <div class="face-indicator">
+        <span id="face-name">HOME</span> - Face <span id="face-number">0</span>/7
+    </div>
+    
+    <div class="tesseract-container">
+        <!-- FACE 0: HOME -->
+        <div class="hypercube-face face-0 active" id="face-0">
+            <div class="adaptive-card card-1">
+                <h3>🏠 Welcome</h3>
+                <p>VIB34D Professional Dashboard with hypercube navigation</p>
+            </div>
+            <div class="adaptive-card card-2">
+                <h3>🎨 Smart Canvas Pool</h3>
+                <p>7 persistent WebGL visualizers with reactive content</p>
+            </div>
+            <div class="adaptive-card card-3">
+                <h3>🧭 Navigation</h3>
+                <p>Click bezels to navigate between 8 tesseract faces</p>
+            </div>
+            <div class="adaptive-card card-4">
+                <h3>⚡ Reactive</h3>
+                <p>Mouse interactions affect global visual parameters</p>
+            </div>
+        </div>
+        
+        <!-- FACE 1: TECH -->
+        <div class="hypercube-face face-1 inactive" id="face-1">
+            <div class="adaptive-card card-1">
+                <h3>💻 Technology</h3>
+                <p>Advanced WebGL 4D visualization engine</p>
+            </div>
+            <div class="adaptive-card card-2">
+                <h3>🔧 Architecture</h3>
+                <p>Modular system with JSON configuration</p>
+            </div>
+            <div class="adaptive-card card-3">
+                <h3>🎯 Performance</h3>
+                <p>Optimized canvas pooling for maximum efficiency</p>
+            </div>
+            <div class="adaptive-card card-4">
+                <h3>🌐 Standards</h3>
+                <p>ES6 modules with WebGL 2.0 support</p>
+            </div>
+        </div>
+        
+        <!-- FACE 2: MEDIA -->
+        <div class="hypercube-face face-2 inactive" id="face-2">
+            <div class="adaptive-card card-1">
+                <h3>🎬 Media</h3>
+                <p>Dynamic content visualization system</p>
+            </div>
+            <div class="adaptive-card card-2">
+                <h3>🖼️ Graphics</h3>
+                <p>Real-time 4D geometric transformations</p>
+            </div>
+            <div class="adaptive-card card-3">
+                <h3>🎨 Shaders</h3>
+                <p>Custom GLSL shaders for hypercube rendering</p>
+            </div>
+            <div class="adaptive-card card-4">
+                <h3>📊 Data Viz</h3>
+                <p>Interactive data visualization capabilities</p>
+            </div>
+        </div>
+        
+        <!-- FACE 3: AUDIO -->
+        <div class="hypercube-face face-3 inactive" id="face-3">
+            <div class="adaptive-card card-1">
+                <h3>🔊 Audio</h3>
+                <p>Reactive audio visualization system</p>
+            </div>
+            <div class="adaptive-card card-2">
+                <h3>🎵 Frequency</h3>
+                <p>Real-time frequency analysis and response</p>
+            </div>
+            <div class="adaptive-card card-3">
+                <h3>🎛️ Controls</h3>
+                <p>Interactive audio parameter manipulation</p>
+            </div>
+            <div class="adaptive-card card-4">
+                <h3>🌊 Waveforms</h3>
+                <p>Dynamic waveform visualization</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="navigation-bezels">
+        <div class="bezel bezel-right" id="nav-right" title="Next Face"></div>
+        <div class="bezel bezel-left" id="nav-left" title="Previous Face"></div>
+        <div class="bezel bezel-top" id="nav-top" title="Jump Forward"></div>
+        <div class="bezel bezel-bottom" id="nav-bottom" title="Jump Back"></div>
+    </div>
+
+    <script>
+        class WorkingVIB34DDashboard {
+            constructor() {
+                this.currentFace = 0;
+                this.totalFaces = 4; // For now, just 4 faces
+                this.faceNames = ['HOME', 'TECH', 'MEDIA', 'AUDIO'];
+                this.canvas = null;
+                this.gl = null;
+                
+                this.init();
+            }
+            
+            init() {
+                console.log('🚀 Initializing Working VIB34D Dashboard...');
+                
+                this.setupCanvas();
+                this.setupNavigation();
+                this.setupInteractions();
+                this.updateDisplay();
+                
+                console.log('✅ Working VIB34D Dashboard initialized!');
+            }
+            
+            setupCanvas() {
+                this.canvas = document.getElementById('background-canvas');
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                
+                try {
+                    this.gl = this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
+                    if (this.gl) {
+                        this.startWebGLAnimation();
+                        console.log('✅ WebGL background active');
+                    }
+                } catch (e) {
+                    console.log('⚠️ WebGL not available, using 2D fallback');
+                    this.start2DAnimation();
+                }
+            }
+            
+            startWebGLAnimation() {
+                const gl = this.gl;
+                gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+                
+                const animate = () => {
+                    const time = Date.now() * 0.001;
+                    
+                    gl.clearColor(
+                        0.1 + 0.1 * Math.sin(time * 0.5),
+                        0.0,
+                        0.2 + 0.1 * Math.cos(time * 0.3),
+                        1.0
+                    );
+                    gl.clear(gl.COLOR_BUFFER_BIT);
+                    
+                    requestAnimationFrame(animate);
+                };
+                animate();
+            }
+            
+            start2DAnimation() {
+                const ctx = this.canvas.getContext('2d');
+                
+                const animate = () => {
+                    const time = Date.now() * 0.001;
+                    
+                    ctx.fillStyle = `rgb(${Math.floor(26 + 25 * Math.sin(time * 0.5))}, 0, ${Math.floor(51 + 25 * Math.cos(time * 0.3))})`;
+                    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                    
+                    requestAnimationFrame(animate);
+                };
+                animate();
+            }
+            
+            setupNavigation() {
+                document.getElementById('nav-right').addEventListener('click', () => {
+                    this.navigateToFace((this.currentFace + 1) % this.totalFaces);
+                });
+                
+                document.getElementById('nav-left').addEventListener('click', () => {
+                    this.navigateToFace((this.currentFace - 1 + this.totalFaces) % this.totalFaces);
+                });
+                
+                document.getElementById('nav-top').addEventListener('click', () => {
+                    this.navigateToFace((this.currentFace + 2) % this.totalFaces);
+                });
+                
+                document.getElementById('nav-bottom').addEventListener('click', () => {
+                    this.navigateToFace((this.currentFace - 2 + this.totalFaces) % this.totalFaces);
+                });
+            }
+            
+            setupInteractions() {
+                // Add hover effects to cards
+                document.querySelectorAll('.adaptive-card').forEach(card => {
+                    card.addEventListener('mouseenter', () => {
+                        card.classList.add('pulse');
+                    });
+                    
+                    card.addEventListener('mouseleave', () => {
+                        card.classList.remove('pulse');
+                    });
+                    
+                    card.addEventListener('click', () => {
+                        console.log('🎯 Card clicked:', card.querySelector('h3').textContent);
+                    });
+                });
+                
+                // Resize handler
+                window.addEventListener('resize', () => {
+                    this.canvas.width = window.innerWidth;
+                    this.canvas.height = window.innerHeight;
+                    if (this.gl) {
+                        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+                    }
+                });
+            }
+            
+            navigateToFace(faceIndex) {
+                console.log(`🔄 Navigating to face ${faceIndex}: ${this.faceNames[faceIndex]}`);
+                
+                // Hide current face
+                const currentFaceElement = document.getElementById(`face-${this.currentFace}`);
+                if (currentFaceElement) {
+                    currentFaceElement.classList.remove('active');
+                    currentFaceElement.classList.add('inactive');
+                }
+                
+                // Show new face
+                const newFaceElement = document.getElementById(`face-${faceIndex}`);
+                if (newFaceElement) {
+                    newFaceElement.classList.remove('inactive');
+                    newFaceElement.classList.add('active');
+                }
+                
+                this.currentFace = faceIndex;
+                this.updateDisplay();
+            }
+            
+            updateDisplay() {
+                document.getElementById('face-name').textContent = this.faceNames[this.currentFace];
+                document.getElementById('face-number').textContent = this.currentFace;
+            }
+        }
+        
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.workingDashboard = new WorkingVIB34DDashboard();
+        });
+    </script>
+</body>
+</html>
