@@ -359,10 +359,19 @@ class ReactiveHyperAVCore {
         
         // Setup vertex attributes using ShaderManager
         const positionLocation = this.shaderManager.getAttributeLocation('a_position');
-        if (positionLocation !== null) {
+        if (positionLocation !== null && this.positionBuffer) {
             this.gl.enableVertexAttribArray(positionLocation);
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
             this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+        } else if (!this.positionBuffer) {
+            // Reinitialize buffers if missing
+            console.warn('⚠️ Position buffer missing, reinitializing...');
+            this.initBuffers();
+            if (positionLocation !== null) {
+                this.gl.enableVertexAttribArray(positionLocation);
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+                this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+            }
         }
         
         // Set uniforms using ShaderManager

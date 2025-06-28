@@ -123,6 +123,59 @@ class VIB34DCanvasPool {
         }
     }
     
+    setupContentManagement() {
+        console.log('🔧 Setting up dynamic content management system...');
+        
+        // Initialize content tracking
+        this.contentQueue = [];
+        this.activeAssignments = new Map();
+        
+        // Set up resize handling
+        window.addEventListener('resize', () => {
+            this.handleResize();
+        });
+        
+        // Set up intersection observer for canvas visibility
+        if (window.IntersectionObserver) {
+            this.visibilityObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const canvasId = entry.target.id;
+                    const canvasData = Array.from(this.canvasPool.values())
+                        .find(data => data.canvas.id === canvasId);
+                    
+                    if (canvasData && canvasData.visualizer) {
+                        if (entry.isIntersecting) {
+                            canvasData.visualizer.resume();
+                        } else {
+                            canvasData.visualizer.pause();
+                        }
+                    }
+                });
+            });
+            
+            // Observe all pool canvases
+            for (const canvasData of this.canvasPool.values()) {
+                this.visibilityObserver.observe(canvasData.canvas);
+            }
+        }
+        
+        console.log('✅ Content management system ready');
+    }
+    
+    handleResize() {
+        for (const [role, canvasData] of this.canvasPool) {
+            if (role === 'background' || role === 'navigation' || role === 'effects') {
+                // Fullscreen canvases
+                canvasData.canvas.width = window.innerWidth;
+                canvasData.canvas.height = window.innerHeight;
+            }
+            
+            if (canvasData.visualizer) {
+                canvasData.visualizer.resize();
+            }
+        }
+    }
+    
     createPoolCanvas(role) {
         const canvas = document.createElement('canvas');
         canvas.id = `pool-canvas-${role}`;
