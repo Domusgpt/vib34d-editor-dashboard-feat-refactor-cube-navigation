@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick ReactiveHyperAVCore Test</title>
+    <style>
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+        }
+        canvas {
+            border: 1px solid #333;
+            display: block;
+            margin: 20px 0;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        button {
+            background: #333;
+            color: white;
+            border: 1px solid #666;
+            padding: 8px 16px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #555;
+        }
+        .status {
+            background: #111;
+            padding: 10px;
+            border: 1px solid #333;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ReactiveHyperAVCore Module Test</h1>
+    
+    <div id="status" class="status">
+        Loading modules...
+    </div>
+    
+    <canvas id="testCanvas" width="800" height="600"></canvas>
+    
+    <div class="controls">
+        <button onclick="testSetGeometry('hypercube')">Hypercube</button>
+        <button onclick="testSetGeometry('tetrahedron')">Tetrahedron</button>
+        <button onclick="testSetGeometry('sphere')">Sphere</button>
+        <button onclick="testSetGeometry('torus')">Torus</button>
+        <button onclick="testSetGeometry('kleinbottle')">Klein Bottle</button>
+        <button onclick="testSetGeometry('fractal')">Fractal</button>
+        <button onclick="testSetGeometry('wave')">Wave</button>
+        <button onclick="testSetGeometry('crystal')">Crystal</button>
+    </div>
+    
+    <div class="controls">
+        <button onclick="testSetTheme('hypercube')">Hypercube Theme</button>
+        <button onclick="testSetTheme('cosmic')">Cosmic Theme</button>
+        <button onclick="testSetTheme('neon')">Neon Theme</button>
+    </div>
+    
+    <script type="module">
+        let hyperAVCore = null;
+        const statusDiv = document.getElementById('status');
+        
+        function updateStatus(message) {
+            statusDiv.innerHTML += '<br>' + message;
+            console.log(message);
+        }
+        
+        async function loadAndTest() {
+            try {
+                updateStatus('🔄 Loading ReactiveHyperAVCore module...');
+                
+                // Dynamic import with error handling
+                const module = await import('./core/ReactiveHyperAVCore.js');
+                updateStatus('✅ ReactiveHyperAVCore module loaded successfully!');
+                
+                // Get canvas and create instance
+                const canvas = document.getElementById('testCanvas');
+                updateStatus('🎨 Creating ReactiveHyperAVCore instance...');
+                
+                hyperAVCore = new module.default(canvas, {
+                    currentTheme: 'hypercube',
+                    currentGeometry: 'hypercube'
+                });
+                
+                updateStatus('✅ ReactiveHyperAVCore instance created successfully!');
+                updateStatus('🎯 WebGL visualization is now running!');
+                updateStatus('🎮 Use the buttons above to test geometry and theme changes');
+                
+                // Make it globally accessible for button handlers
+                window.hyperAVCore = hyperAVCore;
+                
+            } catch (error) {
+                updateStatus('❌ Failed to load or initialize ReactiveHyperAVCore:');
+                updateStatus('   Error: ' + error.message);
+                updateStatus('   Stack: ' + error.stack);
+                console.error('Full error:', error);
+            }
+        }
+        
+        // Test geometry changes
+        window.testSetGeometry = async function(geometry) {
+            if (hyperAVCore) {
+                updateStatus(`🔧 Setting geometry to: ${geometry}`);
+                try {
+                    await hyperAVCore.setGeometry(geometry);
+                    updateStatus(`✅ Geometry changed to: ${geometry}`);
+                } catch (error) {
+                    updateStatus(`❌ Failed to set geometry: ${error.message}`);
+                }
+            } else {
+                updateStatus('❌ ReactiveHyperAVCore not initialized');
+            }
+        };
+        
+        // Test theme changes
+        window.testSetTheme = function(theme) {
+            if (hyperAVCore) {
+                updateStatus(`🎨 Setting theme to: ${theme}`);
+                try {
+                    hyperAVCore.setTheme(theme);
+                    updateStatus(`✅ Theme changed to: ${theme}`);
+                } catch (error) {
+                    updateStatus(`❌ Failed to set theme: ${error.message}`);
+                }
+            } else {
+                updateStatus('❌ ReactiveHyperAVCore not initialized');
+            }
+        };
+        
+        // Get system state
+        window.getSystemState = function() {
+            if (hyperAVCore) {
+                const state = hyperAVCore.getSystemState();
+                updateStatus('📊 System State:');
+                updateStatus(JSON.stringify(state, null, 2));
+                return state;
+            } else {
+                updateStatus('❌ ReactiveHyperAVCore not initialized');
+                return null;
+            }
+        };
+        
+        // Start loading
+        loadAndTest();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (hyperAVCore) {
+                const canvas = document.getElementById('testCanvas');
+                canvas.width = Math.min(800, window.innerWidth - 40);
+                canvas.height = Math.min(600, window.innerHeight - 200);
+            }
+        });
+        
+    </script>
+    
+    <div class="controls">
+        <button onclick="getSystemState()">Get System State</button>
+        <button onclick="location.reload()">Reload Test</button>
+    </div>
+    
+</body>
+</html>

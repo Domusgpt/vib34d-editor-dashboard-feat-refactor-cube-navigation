@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3CODE | Complete Unified System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow-x: hidden;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+        
+        /* REACTIVE HYPERAV CANVAS - Full Background */
+        #reactive-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 1;
+            opacity: 0.9;
+        }
+        
+        /* HOLD INTERACTION INDICATOR */
+        .hold-indicator {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            border: 2px solid rgba(0, 255, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.2), transparent);
+        }
+        
+        .hold-indicator.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            animation: hold-pulse 2s ease-in-out;
+        }
+        
+        @keyframes hold-pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+        
+        /* MAGAZINE CONTENT LAYER */
+        .magazine-layer {
+            position: relative;
+            z-index: 10;
+            background: transparent;
+        }
+        
+        .section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            position: relative;
+            backdrop-filter: blur(2px);
+            transition: all 0.8s ease;
+        }
+        
+        .section-content {
+            max-width: 800px;
+            text-align: center;
+            padding: 3rem;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s ease;
+        }
+        
+        .section-content:hover {
+            background: rgba(0, 0, 0, 0.85);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+        }
+        
+        .section h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+        }
+        
+        .section h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 1.5rem;
+            color: #00ffff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .section p {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+        
+        /* THEME-SPECIFIC SECTION STYLING */
+        .section[data-theme="hypercube"] .section-content {
+            border-color: rgba(255, 0, 255, 0.3);
+            box-shadow: 0 0 40px rgba(255, 0, 255, 0.2);
+        }
+        
+        .section[data-theme="tetrahedron"] .section-content {
+            border-color: rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.2);
+        }
+        
+        .section[data-theme="sphere"] .section-content {
+            border-color: rgba(255, 255, 0, 0.3);
+            box-shadow: 0 0 40px rgba(255, 255, 0, 0.2);
+        }
+        
+        .section[data-theme="torus"] .section-content {
+            border-color: rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.2);
+        }
+        
+        .section[data-theme="klein"] .section-content {
+            border-color: rgba(255, 128, 0, 0.3);
+            box-shadow: 0 0 40px rgba(255, 128, 0, 0.2);
+        }
+        
+        .section[data-theme="fractal"] .section-content {
+            border-color: rgba(128, 0, 255, 0.3);
+            box-shadow: 0 0 40px rgba(128, 0, 255, 0.2);
+        }
+        
+        .section[data-theme="wave"] .section-content {
+            border-color: rgba(255, 0, 128, 0.3);
+            box-shadow: 0 0 40px rgba(255, 0, 128, 0.2);
+        }
+        
+        .section[data-theme="crystal"] .section-content {
+            border-color: rgba(0, 255, 128, 0.3);
+            box-shadow: 0 0 40px rgba(0, 255, 128, 0.2);
+        }
+        
+        /* INTERACTION FEEDBACK PANEL */
+        .interaction-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            min-width: 200px;
+        }
+        
+        .indicator-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 2px 0;
+            color: #ff00ff;
+        }
+        
+        .indicator-value {
+            color: #00ffff;
+            font-weight: bold;
+        }
+        
+        /* SECTION NAVIGATION */
+        .section-nav {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+        
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-dot:hover {
+            background: rgba(255, 255, 255, 0.7);
+            transform: scale(1.3);
+        }
+        
+        .nav-dot.active {
+            background: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            transform: scale(1.5);
+        }
+        
+        .nav-dot::after {
+            content: attr(title);
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 10px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .nav-dot:hover::after {
+            opacity: 1;
+        }
+        
+        /* DEV CONTROLS */
+        .dev-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            font-family: 'JetBrains Mono', monospace;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .dev-controls.visible {
+            transform: translateX(0);
+        }
+        
+        .dev-controls button {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #00ffff;
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .dev-controls button:hover {
+            background: rgba(0, 255, 255, 0.3);
+            border-color: rgba(0, 255, 255, 1.0);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            .section {
+                padding: 2rem 1rem;
+            }
+            
+            .section-content {
+                padding: 2rem;
+            }
+            
+            .interaction-indicator {
+                font-size: 8px;
+                padding: 10px;
+                min-width: 150px;
+            }
+            
+            .section-nav {
+                right: 10px;
+                gap: 10px;
+            }
+            
+            .nav-dot {
+                width: 10px;
+                height: 10px;
+            }
+        }
+    </style>
+    
+    <!-- Load Unified Effects CSS -->
+    <link rel="stylesheet" href="VIB3_UNIFIED_EFFECTS.css">
+</head>
+<body class="vib3-consciousness-breathing vib3-dimensional-shift vib3-reactive-element">
+    
+    <!-- Reactive HyperAV Canvas -->
+    <canvas id="reactive-canvas" class="vib3-quantum-entangled"></canvas>
+    
+    <!-- Hold Interaction Indicator -->
+    <div class="hold-indicator" id="holdIndicator"></div>
+    
+    <!-- Magazine Content -->
+    <div class="magazine-layer">
+        <!-- Home Section - Prime Theme (Hypercube) -->
+        <section class="section vib3-micro-interactive" data-theme="hypercube" data-section="home">
+            <div class="section-content">
+                <h1 class="vib3-vhs-glitch" data-text="VIB3CODE">VIB3CODE</h1>
+                <p>Digital Sovereignty Platform</p>
+                <p>Reactive HyperAV Visualization Core</p>
+                <p style="font-size: 0.9rem; color: #888;">Scroll, click, hold, or stay idle to morph the hypercube lattice</p>
+            </div>
+        </section>
+        
+        <!-- HyperAV Section - Tetrahedron Theme -->
+        <section class="section vib3-micro-interactive" data-theme="tetrahedron" data-section="hyperav">
+            <div class="section-content">
+                <h2>🔮 HyperAV Technology</h2>
+                <p>Experience reactive 4D geometry that responds to your interaction patterns. Each shape represents a different dimensional perspective.</p>
+                <p>Tetrahedron lattices create stability patterns that adapt to user engagement levels and reading behavior.</p>
+            </div>
+        </section>
+        
+        <!-- EMA Section - Sphere Theme -->
+        <section class="section vib3-micro-interactive" data-theme="sphere" data-section="ema">
+            <div class="section-content">
+                <h2>👥 EMA Compliance</h2>
+                <p>Spherical geometries represent infinite potential and user sovereignty. The visualization maintains complete privacy while adapting to interaction.</p>
+                <p>Every parameter change respects digital autonomy and user-controlled data sovereignty.</p>
+            </div>
+        </section>
+        
+        <!-- Audio Section - Torus Theme -->
+        <section class="section vib3-micro-interactive" data-theme="torus" data-section="audio">
+            <div class="section-content">
+                <h2>🎵 Audio Integration</h2>
+                <p>Toroidal flow patterns mirror audio waveforms and frequency analysis. ParseHer episodes and Gen-RL-MiLLz content drive the morphology.</p>
+                <p>The torus represents continuous flow between dimensions of sound and visual harmony.</p>
+            </div>
+        </section>
+        
+        <!-- Community Section - Klein Bottle Theme -->
+        <section class="section vib3-micro-interactive" data-theme="klein" data-section="community">
+            <div class="section-content">
+                <h2>🏆 Community</h2>
+                <p>Klein bottle topology represents impossible connections - the community that exists both inside and outside traditional boundaries.</p>
+                <p>Developer certification and collaboration patterns flow through non-orientable manifolds.</p>
+            </div>
+        </section>
+        
+        <!-- Development Section - Fractal Theme -->
+        <section class="section vib3-micro-interactive" data-theme="fractal" data-section="development">
+            <div class="section-content">
+                <h2>🤖 Agentic Development</h2>
+                <p>Fractal structures represent recursive collaboration between human and AI agents. Self-similar patterns at every scale.</p>
+                <p>Claude Code + Jules workflows create infinite complexity from simple collaboration rules.</p>
+            </div>
+        </section>
+        
+        <!-- Research Section - Wave Function Theme -->
+        <section class="section vib3-micro-interactive" data-theme="wave" data-section="research">
+            <div class="section-content">
+                <h2>🧬 Research</h2>
+                <p>Wave function visualization represents probability spaces and quantum-inspired computation patterns.</p>
+                <p>Interference patterns emerge from interaction between user intent and system response.</p>
+            </div>
+        </section>
+        
+        <!-- Innovation Section - Crystal Lattice Theme -->
+        <section class="section vib3-micro-interactive" data-theme="crystal" data-section="innovation">
+            <div class="section-content">
+                <h2>💎 Innovation</h2>
+                <p>Crystal lattice structures represent systematic growth and ordered complexity. Each innovation builds upon previous discoveries.</p>
+                <p>The visualization crystallizes ideas into geometric form, creating lasting patterns of technological advancement.</p>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Interaction Feedback -->
+    <div class="interaction-indicator">
+        <div style="color: #ff00ff; font-weight: bold; margin-bottom: 8px;">📊 SYSTEM STATE</div>
+        <div class="indicator-row">
+            <span class="indicator-label">Theme:</span>
+            <span class="indicator-value" id="currentTheme">Hypercube</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Interaction:</span>
+            <span class="indicator-value" id="interactionType">Idle</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Morph Level:</span>
+            <span class="indicator-value" id="morphLevel">0.5</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Grid Density:</span>
+            <span class="indicator-value" id="gridDensity">12.0</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Dimension:</span>
+            <span class="indicator-value" id="dimensionLevel">3.5</span>
+        </div>
+        <div class="indicator-row">
+            <span class="indicator-label">Intensity:</span>
+            <span class="indicator-value" id="globalIntensity">0.8</span>
+        </div>
+    </div>
+    
+    <!-- Section Navigation -->
+    <div class="section-nav">
+        <div class="nav-dot active" data-section="home" title="Home - Hypercube"></div>
+        <div class="nav-dot" data-section="hyperav" title="HyperAV - Tetrahedron"></div>
+        <div class="nav-dot" data-section="ema" title="EMA - Sphere"></div>
+        <div class="nav-dot" data-section="audio" title="Audio - Torus"></div>
+        <div class="nav-dot" data-section="community" title="Community - Klein"></div>
+        <div class="nav-dot" data-section="development" title="Development - Fractal"></div>
+        <div class="nav-dot" data-section="research" title="Research - Wave"></div>
+        <div class="nav-dot" data-section="innovation" title="Innovation - Crystal"></div>
+    </div>
+    
+    <!-- Dev Controls -->
+    <div class="dev-controls" id="devControls">
+        <div style="color: #00ffff; font-weight: bold; margin-bottom: 8px;">🔧 VIB3 EFFECTS</div>
+        <button onclick="vib3System.triggerEffect('card-focus-in')">Focus In</button>
+        <button onclick="vib3System.triggerEffect('card-focus-out')">Focus Out</button>
+        <button onclick="vib3System.triggerEffect('card-click-pulse')">Click Pulse</button>
+        <button onclick="vib3System.triggerEffect('reality-glitch-click')">Reality Glitch</button>
+        <br>
+        <button onclick="vib3System.triggerEffect('unified-breathing')">Breathing</button>
+        <button onclick="vib3System.triggerEffect('quantum-entanglement')">Quantum</button>
+        <button onclick="vib3System.triggerEffect('portal-warp')">Portal</button>
+        <button onclick="vib3System.triggerEffect('vhs-glitch-cascade')">VHS Glitch</button>
+        <br>
+        <button onclick="vib3System.testParameterChange()">Test Params</button>
+        <button onclick="vib3System.resetSystem()">Reset</button>
+        <div style="margin-top: 8px; font-size: 8px; color: #666;">
+            D = Toggle Dev | Space = Next Section | Click sections for effects
+        </div>
+    </div>
+
+    <!-- Load Core Systems -->
+    <script src="./core/VIB3HomeMaster.js"></script>
+    <script src="./core/UnifiedReactivityBridge.js"></script>
+    <script src="VIB3_JSON_CONFIG_SYSTEM.js"></script>
+    <script src="VIB3_REACTIVE_HYPERAV_CORE.js"></script>
+    <script src="VIB3_UNIFIED_EFFECTS_SYSTEM.js"></script>
+    <script src="VIB3_INTUITIVE_PRESETS.js"></script>
+
+    <script>
+        console.log('🔮 VIB3CODE Complete Unified System Loading...');
+        
+        /**
+         * VIB3 COMPLETE UNIFIED SYSTEM
+         * 
+         * Combines ReactiveHyperAVCore with VIB3HomeMaster, UnifiedReactivityBridge,
+         * Unified Effects System, and Intuitive Presets for total system coherence
+         */
+        
+        class VIB3CompleteUnifiedSystem {
+            constructor() {
+                this.configSystem = null;
+                this.homeMaster = null;
+                this.reactivityBridge = null;
+                this.effectsSystem = null;
+                this.intuitivePresets = null;
+                this.reactiveCore = null;
+                this.currentSection = 'home';
+                this.isInitialized = false;
+                
+                console.log('🏠 Initializing VIB3 Complete Unified System...');
+                this.init();
+            }
+            
+            async init() {
+                try {
+                    // 1. Initialize JSON configuration system
+                    this.configSystem = new VIB3JsonConfigSystem();
+                    await this.configSystem.loadAllConfigs();
+                    console.log('✅ JSON Config System loaded');
+                    
+                    // 2. Initialize VIB3HomeMaster (Single Source of Truth)
+                    this.homeMaster = new VIB3HomeMaster();
+                    console.log('✅ VIB3HomeMaster initialized');
+                    
+                    // 3. Initialize UnifiedReactivityBridge
+                    this.reactivityBridge = new UnifiedReactivityBridge();
+                    console.log('✅ UnifiedReactivityBridge initialized');
+                    
+                    // 4. Initialize Unified Effects System
+                    this.effectsSystem = new VIB3UnifiedEffectsSystem(this.homeMaster, this.reactivityBridge);
+                    this.intuitivePresets = new VIB3IntuitivePresets(this.effectsSystem);
+                    console.log('✅ Unified Effects System initialized');
+                    
+                    // 5. Initialize ReactiveHyperAVCore with integration
+                    const canvas = document.getElementById('reactive-canvas');
+                    if (canvas) {
+                        this.reactiveCore = new VIB3ReactiveHyperAVCore(canvas, this.homeMaster, this.reactivityBridge);
+                        console.log('✅ ReactiveHyperAVCore initialized');
+                    }
+                    
+                    // 6. Setup integrated interactions
+                    this.setupIntegratedInteractions();
+                    this.setupSectionTracking();
+                    this.setupKeyboardControls();
+                    
+                    // 7. Start unified parameter monitoring
+                    this.startUnifiedParameterMonitoring();
+                    
+                    this.isInitialized = true;
+                    console.log('🌟 VIB3 Complete Unified System fully initialized!');
+                    
+                    // Start with unified breathing effect
+                    setTimeout(() => {
+                        this.triggerEffect('unified-breathing');
+                    }, 1000);
+                    
+                } catch (error) {
+                    console.error('❌ Failed to initialize complete system:', error);
+                }
+            }
+            
+            setupIntegratedInteractions() {
+                // Enhanced section content interactions with unified effects
+                document.querySelectorAll('.section-content').forEach(content => {
+                    const section = content.closest('.section');
+                    const theme = section.dataset.theme;
+                    
+                    content.addEventListener('mouseenter', () => {
+                        // Trigger focus effect with theme-specific parameters
+                        this.triggerThemeSpecificFocus(content, theme);
+                    });
+                    
+                    content.addEventListener('mouseleave', () => {
+                        // Return to baseline with smooth transition
+                        this.triggerEffect('card-focus-out');
+                    });
+                    
+                    content.addEventListener('click', () => {
+                        // Dramatic click effect with theme-specific enhancement
+                        this.triggerThemeSpecificClick(content, theme);
+                    });
+                });
+                
+                console.log('✅ Integrated interactions setup complete');
+            }
+            
+            triggerThemeSpecificFocus(element, theme) {
+                // Apply theme-specific focus effects
+                element.classList.add('vib3-focused');
+                
+                // Get theme-specific parameters from HomeMaster
+                if (this.homeMaster) {
+                    const themeParams = this.homeMaster.getParametersForGeometry(theme);
+                    
+                    // Apply to reactive core
+                    if (this.reactiveCore) {
+                        this.reactiveCore.updateParameters(themeParams);
+                    }
+                }
+                
+                // Trigger unified focus effect
+                this.triggerEffect('card-focus-in', element);
+                
+                // Update CSS variables for theme
+                document.documentElement.style.setProperty('--focus-intensity', '0.8');
+                document.documentElement.style.setProperty('--global-intensity', '0.95');
+            }
+            
+            triggerThemeSpecificClick(element, theme) {
+                // Apply theme-specific click effects
+                element.classList.add('vib3-click-pulse');
+                
+                // Trigger reality effects for certain themes
+                if (['klein', 'fractal', 'wave'].includes(theme)) {
+                    this.triggerEffect('reality-glitch-click', element);
+                } else {
+                    this.triggerEffect('card-click-pulse', element);
+                }
+                
+                // Enhanced parameter boost for click
+                if (this.homeMaster) {
+                    this.homeMaster.registerInteraction('click', 1.0, 1000);
+                }
+                
+                // Remove classes after animation
+                setTimeout(() => {
+                    element.classList.remove('vib3-click-pulse');
+                }, 800);
+            }
+            
+            setupSectionTracking() {
+                // Section navigation with unified effects
+                document.querySelectorAll('.nav-dot').forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        const section = dot.dataset.section;
+                        const sectionElement = document.querySelector(`[data-section="${section}"]`);
+                        
+                        if (sectionElement) {
+                            // Trigger portal transition effect
+                            this.triggerEffect('portal-warp');
+                            
+                            // Smooth scroll to section
+                            setTimeout(() => {
+                                sectionElement.scrollIntoView({
+                                    behavior: 'smooth'
+                                });
+                            }, 200);
+                        }
+                    });
+                });
+                
+                // Enhanced intersection observer with effects
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const theme = entry.target.dataset.theme;
+                            const section = entry.target.dataset.section;
+                            
+                            this.setTheme(theme);
+                            this.currentSection = section;
+                            
+                            // Update navigation
+                            document.querySelectorAll('.nav-dot').forEach(dot => dot.classList.remove('active'));
+                            document.querySelector(`[data-section="${section}"]`)?.classList.add('active');
+                            
+                            // Trigger section transition effect
+                            this.triggerEffect('tesseract-navigate', null, { 
+                                fromTheme: this.previousTheme || 'hypercube',
+                                toTheme: theme 
+                            });
+                            
+                            this.previousTheme = theme;
+                        }
+                    });
+                }, { threshold: 0.5 });
+                
+                document.querySelectorAll('.section').forEach(section => {
+                    observer.observe(section);
+                });
+                
+                console.log('✅ Enhanced section tracking setup complete');
+            }
+            
+            setTheme(themeName) {
+                if (this.reactiveCore) {
+                    this.reactiveCore.setTheme(themeName);
+                }
+                
+                // Update HomeMaster section
+                if (this.homeMaster) {
+                    this.homeMaster.transitionToSection(themeName);
+                }
+                
+                // Update UI
+                document.getElementById('currentTheme').textContent = 
+                    themeName.charAt(0).toUpperCase() + themeName.slice(1);
+                
+                // Apply theme-specific CSS classes
+                document.body.className = `theme-${themeName} vib3-consciousness-breathing vib3-dimensional-shift vib3-reactive-element`;
+                
+                console.log(`🎨 Complete system theme changed to: ${themeName}`);
+            }
+            
+            setupKeyboardControls() {
+                document.addEventListener('keydown', (e) => {
+                    if (!this.isInitialized) return;
+                    
+                    switch(e.key) {
+                        case 'd':
+                        case 'D':
+                            this.toggleDevMode();
+                            break;
+                        case ' ':
+                            e.preventDefault();
+                            this.nextSection();
+                            break;
+                        case 'r':
+                        case 'R':
+                            this.resetSystem();
+                            break;
+                        case 'b':
+                        case 'B':
+                            this.triggerEffect('unified-breathing');
+                            break;
+                        case 'q':
+                        case 'Q':
+                            this.triggerEffect('quantum-entanglement');
+                            break;
+                        case 'g':
+                        case 'G':
+                            this.triggerEffect('vhs-glitch-cascade');
+                            break;
+                    }
+                });
+            }
+            
+            nextSection() {
+                const sections = ['home', 'hyperav', 'ema', 'audio', 'community', 'development', 'research', 'innovation'];
+                const currentIndex = sections.indexOf(this.currentSection);
+                const nextIndex = (currentIndex + 1) % sections.length;
+                const nextSection = sections[nextIndex];
+                
+                const sectionElement = document.querySelector(`[data-section="${nextSection}"]`);
+                if (sectionElement) {
+                    this.triggerEffect('portal-warp');
+                    setTimeout(() => {
+                        sectionElement.scrollIntoView({ behavior: 'smooth' });
+                    }, 200);
+                }
+            }
+            
+            toggleDevMode() {
+                const devControls = document.getElementById('devControls');
+                devControls.classList.toggle('visible');
+                
+                console.log('🔧 Dev mode toggled');
+            }
+            
+            testParameterChange() {
+                if (this.homeMaster) {
+                    // Test dramatic parameter changes
+                    this.homeMaster.overrideParameters({
+                        intensity: 1.2,
+                        complexity: 0.9,
+                        dimension: 4.5
+                    });
+                    
+                    // Trigger multiple effects simultaneously
+                    this.triggerEffect('quantum-entanglement');
+                    setTimeout(() => this.triggerEffect('reality-glitch-click'), 500);
+                    
+                    // Return to normal after 3 seconds
+                    setTimeout(() => {
+                        this.homeMaster.reset();
+                        this.triggerEffect('unified-breathing');
+                        console.log('🧪 Test parameters reset');
+                    }, 3000);
+                    
+                    console.log('🧪 Test parameter change applied');
+                }
+            }
+            
+            resetSystem() {
+                if (this.homeMaster) {
+                    this.homeMaster.reset();
+                }
+                
+                // Reset all visual effects
+                this.triggerEffect('card-focus-out');
+                
+                // Return to home
+                const homeSection = document.querySelector('[data-section="home"]');
+                if (homeSection) {
+                    homeSection.scrollIntoView({ behavior: 'smooth' });
+                }
+                
+                console.log('🔄 Complete system reset');
+            }
+            
+            triggerEffect(effectName, target = null, options = {}) {
+                if (this.effectsSystem) {
+                    this.effectsSystem.triggerEffect(effectName, target, options);
+                }
+            }
+            
+            startUnifiedParameterMonitoring() {
+                // Real-time parameter synchronization across all systems
+                setInterval(() => {
+                    if (this.homeMaster && this.reactiveCore) {
+                        const masterState = this.homeMaster.getSystemState();
+                        
+                        // Update reactive core parameters
+                        const currentParams = this.homeMaster.getParametersForGeometry(this.reactiveCore.currentTheme);
+                        this.reactiveCore.updateParameters(currentParams);
+                        
+                        // Update UI indicators
+                        this.updateParameterDisplay(masterState);
+                        
+                        // Update CSS variables for unified effects
+                        this.updateCSSVariables(masterState);
+                    }
+                }, 100); // 10fps monitoring
+            }
+            
+            updateParameterDisplay(masterState) {
+                if (this.reactiveCore) {
+                    const params = this.reactiveCore.params;
+                    document.getElementById('morphLevel').textContent = params.morphFactor.toFixed(2);
+                    document.getElementById('gridDensity').textContent = params.gridDensity.toFixed(1);
+                    document.getElementById('dimensionLevel').textContent = params.dimension.toFixed(2);
+                    document.getElementById('globalIntensity').textContent = masterState.masterState.intensity.toFixed(2);
+                    document.getElementById('interactionType').textContent = 
+                        this.reactiveCore.interactionState.type.charAt(0).toUpperCase() + 
+                        this.reactiveCore.interactionState.type.slice(1);
+                }
+            }
+            
+            updateCSSVariables(masterState) {
+                const root = document.documentElement;
+                
+                // Update global system variables
+                root.style.setProperty('--global-intensity', masterState.masterState.intensity);
+                root.style.setProperty('--system-coherence', masterState.masterState.coherence);
+                root.style.setProperty('--dimensional-depth', masterState.masterState.dimension || 3.5);
+                
+                // Update interaction variables
+                if (this.reactiveCore) {
+                    root.style.setProperty('--mouse-influence', this.reactiveCore.interactionState.intensity);
+                    root.style.setProperty('--click-pulse', this.reactiveCore.interactionState.clickPulse || 0);
+                }
+            }
+        }
+        
+        // Global system instance
+        let vib3System = null;
+        
+        // Initialize the complete unified system
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Initializing VIB3CODE Complete Unified System...');
+            
+            vib3System = new VIB3CompleteUnifiedSystem();
+            window.vib3System = vib3System; // Make globally accessible
+            
+            console.log('✅ VIB3CODE Complete Unified System loaded successfully!');
+            console.log('🎯 Interaction Guide:');
+            console.log('   • Scroll: Navigate between sections with theme transitions');
+            console.log('   • Hover sections: Focus effects with theme-specific parameters');
+            console.log('   • Click sections: Dramatic effects with reality distortion');
+            console.log('   • Hold canvas: Dimensional parameter shifts');
+            console.log('   • Navigation dots: Portal transitions between sections');
+            console.log('   • Keyboard: D=Dev, Space=Next, B=Breathing, Q=Quantum, G=Glitch');
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('reactive-canvas');
+            if (canvas) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        });
+        
+        console.log('🌟 VIB3CODE Complete Unified System script loaded');
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "vib3-unified-test",
+  "version": "1.0.0",
+  "description": "Testing suite for VIB3 unified system",
+  "main": "test-unified-vib3.js",
+  "scripts": {
+    "test": "node test-unified-vib3.js"
+  },
+  "dependencies": {
+    "puppeteer": "^24.11.0"
+  }
+}

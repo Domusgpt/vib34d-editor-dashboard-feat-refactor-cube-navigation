@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Editor Dashboard - Modular Edition</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .editor-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 350px;
+            grid-template-rows: 60px 1fr;
+            height: 100vh;
+            gap: 2px;
+        }
+        
+        /* Top Toolbar */
+        .editor-toolbar {
+            grid-column: 1 / -1;
+            background: rgba(255, 0, 255, 0.1);
+            border-bottom: 2px solid #ff00ff;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            justify-content: space-between;
+        }
+        
+        .toolbar-left {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .toolbar-title {
+            font-size: 18px;
+            color: #00ffff;
+            font-weight: bold;
+        }
+        
+        .toolbar-right {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .toolbar-button {
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .toolbar-button:hover {
+            background: rgba(0, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .toolbar-button.primary {
+            background: rgba(255, 0, 255, 0.3);
+            border-color: #ff00ff;
+            color: #ff00ff;
+        }
+        
+        .toolbar-button.primary:hover {
+            background: rgba(255, 0, 255, 0.6);
+        }
+        
+        /* Left Panel - Element Library */
+        .element-library {
+            background: rgba(0, 0, 0, 0.9);
+            border-right: 2px solid #333;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .library-section {
+            margin-bottom: 25px;
+        }
+        
+        .library-title {
+            color: #ff00ff;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        
+        .element-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        
+        .element-item {
+            background: rgba(255, 0, 255, 0.05);
+            border: 1px solid #ff00ff33;
+            border-radius: 5px;
+            padding: 12px;
+            cursor: grab;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .element-item:hover {
+            background: rgba(255, 0, 255, 0.2);
+            border-color: #ff00ff;
+            transform: scale(1.05);
+        }
+        
+        .element-item:active {
+            cursor: grabbing;
+        }
+        
+        .element-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .element-name {
+            font-size: 10px;
+            color: #00ffff;
+        }
+        
+        .element-type {
+            font-size: 8px;
+            color: #888;
+            margin-top: 2px;
+        }
+        
+        /* Center Canvas */
+        .canvas-workspace {
+            background: #0a0a0a;
+            position: relative;
+            overflow: auto;
+            border: 2px solid #333;
+        }
+        
+        .canvas-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 0, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+        
+        .canvas-content {
+            position: relative;
+            min-height: 100%;
+            padding: 20px;
+        }
+        
+        .dropped-element {
+            position: absolute;
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px dashed #00ffff;
+            border-radius: 5px;
+            padding: 10px;
+            min-width: 100px;
+            min-height: 60px;
+            cursor: move;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #00ffff;
+            flex-direction: column;
+        }
+        
+        .dropped-element:hover {
+            border-style: solid;
+            background: rgba(0, 255, 255, 0.2);
+        }
+        
+        .dropped-element.selected {
+            border-color: #ffff00;
+            background: rgba(255, 255, 0, 0.1);
+            color: #ffff00;
+        }
+        
+        .dropped-element.has-visualizer {
+            border-color: #ff00ff;
+            background: rgba(255, 0, 255, 0.1);
+        }
+        
+        .element-visualizer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            border-radius: 3px;
+            opacity: 0.8;
+        }
+        
+        /* Right Panel - Properties */
+        .properties-panel {
+            background: rgba(0, 0, 0, 0.9);
+            border-left: 2px solid #333;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .properties-section {
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 5px;
+            padding: 15px;
+            border: 1px solid #333;
+        }
+        
+        .properties-title {
+            color: #00ffff;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .property-group {
+            margin-bottom: 15px;
+        }
+        
+        .property-label {
+            color: #ffff00;
+            font-size: 12px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .property-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #555;
+            border-radius: 3px;
+            padding: 8px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        
+        .property-input:focus {
+            border-color: #00ffff;
+            outline: none;
+        }
+        
+        .property-slider {
+            width: 100%;
+            margin: 5px 0;
+        }
+        
+        .property-value {
+            color: #00ff00;
+            font-size: 11px;
+            text-align: right;
+            margin-top: 3px;
+        }
+        
+        .geometry-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+            margin: 10px 0;
+        }
+        
+        .geometry-option {
+            background: rgba(255, 0, 255, 0.1);
+            border: 1px solid #ff00ff33;
+            border-radius: 3px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .geometry-option:hover,
+        .geometry-option.selected {
+            background: rgba(255, 0, 255, 0.3);
+            border-color: #ff00ff;
+        }
+        
+        .code-output {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: #00ff00;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        /* Drop zones */
+        .canvas-workspace.drag-over {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <!-- Top Toolbar -->
+        <div class="editor-toolbar">
+            <div class="toolbar-left">
+                <div class="toolbar-title">🎨 VIB34D Editor Dashboard - Modular</div>
+                <button class="toolbar-button" onclick="newProject()">New</button>
+                <button class="toolbar-button" onclick="loadProject()">Load</button>
+                <button class="toolbar-button" onclick="saveProject()">Save</button>
+            </div>
+            <div class="toolbar-right">
+                <button class="toolbar-button" onclick="togglePreview()">Preview</button>
+                <button class="toolbar-button" onclick="window.vib34dCodeGenerator.exportCode()">Export Code</button>
+                <button class="toolbar-button primary" onclick="window.vib34dCodeGenerator.generatePage()">Generate Page</button>
+            </div>
+        </div>
+        
+        <!-- Left Panel - Element Library -->
+        <div class="element-library">
+            <div class="library-section">
+                <div class="library-title">🎮 Interactive Elements</div>
+                <div class="element-grid">
+                    <div class="element-item" draggable="true" data-type="button" data-geometry="hypercube">
+                        <span class="element-icon">🔲</span>
+                        <div class="element-name">Button</div>
+                        <div class="element-type">Hypercube</div>
+                    </div>
+                    <div class="element-item" draggable="true" data-type="card" data-geometry="sphere">
+                        <span class="element-icon">🎴</span>
+                        <div class="element-name">Card</div>
+                        <div class="element-type">Sphere</div>
+                    </div>
+                    <div class="element-item" draggable="true" data-type="nav" data-geometry="tetrahedron">
+                        <span class="element-icon">🧭</span>
+                        <div class="element-name">Navigation</div>
+                        <div class="element-type">Tetrahedron</div>
+                    </div>
+                    <div class="element-item" draggable="true" data-type="header" data-geometry="wave">
+                        <span class="element-icon">📄</span>
+                        <div class="element-name">Header</div>
+                        <div class="element-type">Wave</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="library-section">
+                <div class="library-title">🌊 Background Elements</div>
+                <div class="element-grid">
+                    <div class="element-item" draggable="true" data-type="background" data-geometry="klein">
+                        <span class="element-icon">🌌</span>
+                        <div class="element-name">Background</div>
+                        <div class="element-type">Klein</div>
+                    </div>
+                    <div class="element-item" draggable="true" data-type="section" data-geometry="fractal">
+                        <span class="element-icon">📐</span>
+                        <div class="element-name">Section</div>
+                        <div class="element-type">Fractal</div>
+                    </div>
+                    <div class="element-item" draggable="true" data-type="overlay" data-geometry="crystal">
+                        <span class="element-icon">💎</span>
+                        <div class="element-name">Overlay</div>
+                        <div class="element-type">Crystal</div>
+                    </div>
+                    <div class="element-item" draggable="true" data-type="accent" data-geometry="torus">
+                        <span class="element-icon">🍩</span>
+                        <div class="element-name">Accent</div>
+                        <div class="element-type">Torus</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Center Canvas -->
+        <div class="canvas-workspace" id="canvas-workspace">
+            <div class="canvas-grid"></div>
+            <div class="canvas-content" id="canvas-content">
+                <!-- Dropped elements will appear here -->
+            </div>
+        </div>
+        
+        <!-- Right Panel - Properties -->
+        <div class="properties-panel">
+            <div class="properties-section">
+                <div class="properties-title">🎯 Element Properties</div>
+                <div id="element-properties">
+                    <div style="color: #888; text-align: center; padding: 20px;">
+                        Select an element to edit its properties
+                    </div>
+                </div>
+            </div>
+            
+            <div class="properties-section">
+                <div class="properties-title">🔮 Visualizer Settings</div>
+                <div id="visualizer-settings">
+                    <div class="property-group">
+                        <label class="property-label">Geometry Type</label>
+                        <div class="geometry-selector" id="geometry-selector">
+                            <div class="geometry-option" data-geometry="hypercube">🔮 Cube</div>
+                            <div class="geometry-option" data-geometry="sphere">🌐 Sphere</div>
+                            <div class="geometry-option" data-geometry="tetrahedron">🔺 Tetra</div>
+                            <div class="geometry-option" data-geometry="torus">🍩 Torus</div>
+                            <div class="geometry-option" data-geometry="klein">🎭 Klein</div>
+                            <div class="geometry-option" data-geometry="fractal">🌿 Fractal</div>
+                            <div class="geometry-option" data-geometry="wave">🌊 Wave</div>
+                            <div class="geometry-option" data-geometry="crystal">💎 Crystal</div>
+                        </div>
+                    </div>
+                    
+                    <div class="property-group">
+                        <label class="property-label">Dimension</label>
+                        <input type="range" class="property-slider" id="dimension-slider" min="3.0" max="5.0" step="0.1" value="4.0">
+                        <div class="property-value" id="dimension-value">4.0</div>
+                    </div>
+                    
+                    <div class="property-group">
+                        <label class="property-label">Morph Factor</label>
+                        <input type="range" class="property-slider" id="morph-slider" min="0.0" max="1.5" step="0.01" value="0.7">
+                        <div class="property-value" id="morph-value">0.70</div>
+                    </div>
+                    
+                    <div class="property-group">
+                        <label class="property-label">Grid Density</label>
+                        <input type="range" class="property-slider" id="grid-slider" min="1.0" max="25.0" step="0.1" value="8.0">
+                        <div class="property-value" id="grid-value">8.0</div>
+                    </div>
+                    
+                    <div class="property-group">
+                        <label class="property-label">Rotation Speed</label>
+                        <input type="range" class="property-slider" id="rotation-slider" min="0.0" max="3.0" step="0.01" value="0.5">
+                        <div class="property-value" id="rotation-value">0.50</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="properties-section">
+                <div class="properties-title">🔗 Relationships</div>
+                <div class="property-group">
+                    <label class="property-label">Affects Other Elements</label>
+                    <select class="property-input" id="relationship-type">
+                        <option value="none">No Effect</option>
+                        <option value="sync">Sync Parameters</option>
+                        <option value="inverse">Inverse Response</option>
+                        <option value="cascade">Cascade Effect</option>
+                        <option value="amplify">Amplify Others</option>
+                    </select>
+                </div>
+                
+                <div class="property-group">
+                    <label class="property-label">Relationship Strength</label>
+                    <input type="range" class="property-slider" id="relationship-strength" min="0.0" max="1.0" step="0.1" value="0.5">
+                    <div class="property-value" id="relationship-strength-value">0.5</div>
+                </div>
+            </div>
+            
+            <div class="properties-section">
+                <div class="properties-title">📄 Generated Code</div>
+                <div class="code-output" id="code-output">
+                    // Select elements to see generated code
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load Modular Components -->
+    <script src="VIB34D_WORKING_CORE_ARCHITECTURE.js"></script>
+    <script src="VIB34D_MOIRE_RGB_SYSTEM.js"></script>
+    <script src="VIB34D_INTEGRATED_SYSTEM_BRIDGE.js"></script>
+    <script src="VIB34D_WEBGL_FALLBACK.js"></script>
+    <script src="VIB34D_EDITOR_CORE.js"></script>
+    <script src="VIB34D_PROPERTY_MANAGER.js"></script>
+    <script src="VIB34D_CODE_GENERATOR.js"></script>
+    
+    <script>
+        // Global Functions for Toolbar
+        function newProject() {
+            if (confirm('Create new project? This will clear the current workspace.')) {
+                window.vib34dEditorCore.elements.clear();
+                document.getElementById('canvas-content').innerHTML = '';
+                window.vib34dEditorCore.deselectAll();
+                console.log('✅ New project created');
+            }
+        }
+        
+        function loadProject() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const projectData = JSON.parse(e.target.result);
+                            console.log('📁 Project loaded:', projectData);
+                        } catch (error) {
+                            alert('Invalid project file');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+        
+        function saveProject() {
+            const projectData = {
+                version: '1.0',
+                elements: Array.from(window.vib34dEditorCore.elements.values()),
+                timestamp: Date.now()
+            };
+            
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'vib34d-project.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            console.log('💾 Project saved');
+        }
+        
+        function togglePreview() {
+            const container = document.querySelector('.editor-container');
+            const isPreview = container.classList.toggle('preview-mode');
+            document.querySelector('[onclick="togglePreview()"]').textContent = isPreview ? 'Edit' : 'Preview';
+        }
+        
+        // Initialize Modular Dashboard
+        let vib34dEditorCore, vib34dPropertyManager, vib34dCodeGenerator;
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            // Initialize core components
+            vib34dEditorCore = new VIB34DEditorCore();
+            vib34dPropertyManager = new VIB34DPropertyManager(vib34dEditorCore);
+            vib34dCodeGenerator = new VIB34DCodeGenerator(vib34dEditorCore);
+            
+            // Export to global scope for inter-component communication
+            window.vib34dEditorCore = vib34dEditorCore;
+            window.vib34dPropertyManager = vib34dPropertyManager;
+            window.vib34dCodeGenerator = vib34dCodeGenerator;
+            
+            // Initialize the dashboard
+            vib34dEditorCore.initialize();
+            
+            console.log('🚀 VIB34D Modular Editor Dashboard ready!');
+        });
+    </script>
+</body>
+</html>

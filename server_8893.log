@@ -1,0 +1,79 @@
+127.0.0.1 - - [28/Jun/2025 04:15:58] "HEAD / HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:12] "GET /index_VIB34D_PROFESSIONAL.html HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:12] "GET /core/DragScrollHandler.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:12] "GET /core/VIB3HomeMaster.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:12] "GET /core/ShaderManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:12] "GET /core/UnifiedReactivityBridge.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:12] "GET /core/HypercubeCore.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:12] "GET /core/GeometryManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:12] "GET /core/ProjectionManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:12] "GET /VIB3_JSON_CONFIG_SYSTEM.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:13] "GET /config/visuals.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:13] "GET /config/behavior.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:13] "GET /config/content.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:13] code 404, message File not found
+127.0.0.1 - - [28/Jun/2025 04:16:13] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [28/Jun/2025 04:16:13] "GET /presets/editor-dashboard-config.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:13] "GET /site-content.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:13] "GET /core/VIB34DCanvasPool.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:13] "GET /core/ReactiveHyperAVCore.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:16:13] code 404, message File not found
+127.0.0.1 - - [28/Jun/2025 04:16:13] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /index_VIB34D_PROFESSIONAL.html HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /core/DragScrollHandler.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /core/UnifiedReactivityBridge.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /core/GeometryManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /core/HypercubeCore.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /core/VIB3HomeMaster.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /core/ShaderManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /VIB3_JSON_CONFIG_SYSTEM.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /core/ProjectionManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /config/behavior.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /config/visuals.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /config/content.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /site-content.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /presets/editor-dashboard-config.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /core/VIB34DCanvasPool.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:22] "GET /core/ReactiveHyperAVCore.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:18:24] code 404, message File not found
+127.0.0.1 - - [28/Jun/2025 04:18:24] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [28/Jun/2025 04:20:01] "GET /index_VIB34D_PROFESSIONAL.html HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:01] "GET /core/DragScrollHandler.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:01] "GET /core/VIB3HomeMaster.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:01] "GET /core/UnifiedReactivityBridge.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:01] "GET /core/ShaderManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:01] "GET /core/HypercubeCore.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:01] "GET /core/GeometryManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:01] "GET /core/ProjectionManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:01] "GET /VIB3_JSON_CONFIG_SYSTEM.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:02] "GET /config/visuals.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:02] "GET /config/behavior.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:02] "GET /config/content.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:02] code 404, message File not found
+127.0.0.1 - - [28/Jun/2025 04:20:02] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [28/Jun/2025 04:20:02] "GET /presets/editor-dashboard-config.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:02] "GET /site-content.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:02] "GET /core/VIB34DCanvasPool.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:02] "GET /core/ReactiveHyperAVCore.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:20:14] code 404, message File not found
+127.0.0.1 - - [28/Jun/2025 04:20:14] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [28/Jun/2025 04:21:33] "GET /index_VIB34D_PROFESSIONAL.html HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:33] "GET /core/DragScrollHandler.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:34] "GET /core/VIB3HomeMaster.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:34] "GET /core/UnifiedReactivityBridge.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:34] "GET /core/ShaderManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:34] "GET /core/HypercubeCore.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:34] "GET /core/GeometryManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:34] "GET /core/ProjectionManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:34] "GET /VIB3_JSON_CONFIG_SYSTEM.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:34] "GET /config/visuals.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:34] "GET /config/behavior.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:34] "GET /config/content.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:34] code 404, message File not found
+127.0.0.1 - - [28/Jun/2025 04:21:34] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [28/Jun/2025 04:21:35] "GET /site-content.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:35] "GET /presets/editor-dashboard-config.json HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:35] "GET /core/VIB34DCanvasPool.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:35] "GET /core/ReactiveHyperAVCore.js HTTP/1.1" 200 -
+127.0.0.1 - - [28/Jun/2025 04:21:44] code 404, message File not found
+127.0.0.1 - - [28/Jun/2025 04:21:44] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -

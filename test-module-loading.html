@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Module Loading</title>
+</head>
+<body>
+    <h1>Testing ReactiveHyperAVCore Module Loading</h1>
+    <canvas id="testCanvas" width="800" height="600" style="border: 1px solid white; background: black;"></canvas>
+    
+    <script type="module">
+        console.log('Testing ES6 module loading...');
+        
+        // Test 1: Try loading ReactiveHyperAVCore directly
+        try {
+            const module = await import('./core/ReactiveHyperAVCore.js');
+            console.log('✅ ReactiveHyperAVCore loaded successfully!', module);
+            
+            // Try to instantiate it
+            const canvas = document.getElementById('testCanvas');
+            const core = new module.default(canvas);
+            console.log('✅ ReactiveHyperAVCore instantiated!', core);
+        } catch (error) {
+            console.error('❌ Failed to load ReactiveHyperAVCore:', error);
+        }
+        
+        // Test 2: Try loading dependencies
+        try {
+            const shaderManager = await import('./core/ShaderManager.js');
+            console.log('✅ ShaderManager loaded:', shaderManager);
+            
+            const geometryManager = await import('./core/GeometryManager.js');
+            console.log('✅ GeometryManager loaded:', geometryManager);
+            
+            const projectionManager = await import('./core/ProjectionManager.js');
+            console.log('✅ ProjectionManager loaded:', projectionManager);
+        } catch (error) {
+            console.error('❌ Failed to load dependencies:', error);
+        }
+    </script>
+</body>
+</html>

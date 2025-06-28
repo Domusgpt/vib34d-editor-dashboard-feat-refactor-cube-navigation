@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-06-28T08:16:11.484Z",
+  "testName": "VIB34D Smart Canvas Pool System",
+  "totalTests": 0,
+  "passed": 0,
+  "failed": 0,
+  "errors": [
+    {
+      "type": "load_error",
+      "message": "this.page.waitForTimeout is not a function",
+      "timestamp": "2025-06-28T08:16:14.204Z"
+    },
+    {
+      "type": "test_failure",
+      "message": "Failed to load dashboard",
+      "timestamp": "2025-06-28T08:16:14.204Z"
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "final_state",
+      "path": "mcp_canvas_pool_final_1751098574205.png",
+      "description": "Final state after all canvas pool tests"
+    }
+  ],
+  "canvasPoolData": {},
+  "performanceMetrics": {},
+  "successRate": 0,
+  "status": "FAILED"
+}

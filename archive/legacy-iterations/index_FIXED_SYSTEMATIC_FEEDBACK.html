@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB3CODE | SYSTEMATIC VISUAL FEEDBACK</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #000000 70%);
+        }
+        
+        /* REACTIVE HYPERAV BACKGROUND - VISIBLE GEOMETRY */
+        #reactive-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 1;
+            transition: filter 0.3s ease;
+            opacity: 0.8;
+        }
+        
+        /* HYPERCUBE NAVIGATION LAYER */
+        .hypercube-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 2000px;
+            transform-style: preserve-3d;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 10;
+        }
+        
+        /* FACE SYSTEM */
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 20px;
+            padding: 40px;
+            backface-visibility: hidden;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        /* Face positioning (hypercube navigation) */
+        .face.front { transform: translateZ(50vh); }
+        .face.back { transform: translateZ(-50vh) rotateY(180deg); }
+        .face.right { transform: rotateY(90deg) translateZ(50vh); }
+        .face.left { transform: rotateY(-90deg) translateZ(50vh); }
+        .face.top { transform: rotateX(90deg) translateZ(50vh); }
+        .face.bottom { transform: rotateX(-90deg) translateZ(50vh); }
+        
+        /* SYSTEMATIC FEEDBACK CARDS */
+        .card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        /* SYSTEMATIC VISUAL FEEDBACK SYSTEM */
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: scale(1.05);
+            background: rgba(0, 0, 0, 0.95);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            z-index: 100;
+        }
+        
+        /* Other cards react when one is hovered */
+        .face:hover .card:not(:hover) {
+            opacity: 0.6;
+            transform: scale(0.98);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Section-specific theming with reactive feedback */
+        .face[data-section="0"] .card { 
+            border-color: rgba(255, 0, 255, 0.3);
+        }
+        .face[data-section="0"] .card:hover { 
+            border-color: rgba(255, 0, 255, 1);
+            box-shadow: 0 0 50px rgba(255, 0, 255, 0.5);
+        }
+        
+        .face[data-section="1"] .card { 
+            border-color: rgba(0, 255, 255, 0.3);
+        }
+        .face[data-section="1"] .card:hover { 
+            border-color: rgba(0, 255, 255, 1);
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+        }
+        
+        .face[data-section="2"] .card { 
+            border-color: rgba(255, 255, 0, 0.3);
+        }
+        .face[data-section="2"] .card:hover { 
+            border-color: rgba(255, 255, 0, 1);
+            box-shadow: 0 0 50px rgba(255, 255, 0, 0.5);
+        }
+        
+        .face[data-section="3"] .card { 
+            border-color: rgba(0, 255, 0, 0.3);
+        }
+        .face[data-section="3"] .card:hover { 
+            border-color: rgba(0, 255, 0, 1);
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.5);
+        }
+        
+        .face[data-section="4"] .card { 
+            border-color: rgba(255, 128, 0, 0.3);
+        }
+        .face[data-section="4"] .card:hover { 
+            border-color: rgba(255, 128, 0, 1);
+            box-shadow: 0 0 50px rgba(255, 128, 0, 0.5);
+        }
+        
+        .card h3 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover h3 {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        
+        .card p {
+            color: #ccc;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover p {
+            color: #fff;
+        }
+        
+        /* FIXED DEV CONTROLS - ALWAYS ACCESSIBLE */
+        .dev-controls-fixed {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 10000;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            backdrop-filter: blur(20px);
+        }
+        
+        .dev-btn {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin: 2px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .dev-btn:hover {
+            background: rgba(0, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+        
+        /* PARAMETER DISPLAY - LIVE FEEDBACK */
+        .parameter-display {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff00ff;
+            border-radius: 15px;
+            padding: 15px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #ff00ff;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .param-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 3px 0;
+            min-width: 200px;
+        }
+        
+        .param-label {
+            color: #ffff00;
+        }
+        
+        .param-value {
+            color: #00ff00;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .param-value.active {
+            color: #ff00ff;
+            text-shadow: 0 0 5px #ff00ff;
+        }
+        
+        /* INTERACTION FEEDBACK */
+        .interaction-feedback {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #ccc;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* HYPERCUBE ROTATION STATES */
+        .hypercube-container.rotated-right {
+            transform: rotateY(-90deg);
+        }
+        
+        .hypercube-container.rotated-left {
+            transform: rotateY(90deg);
+        }
+        
+        .hypercube-container.rotated-up {
+            transform: rotateX(90deg);
+        }
+        
+        .hypercube-container.rotated-down {
+            transform: rotateX(-90deg);
+        }
+        
+        .hypercube-container.rotated-forward {
+            transform: translateZ(-50vh);
+        }
+        
+        .hypercube-container.rotated-back {
+            transform: translateZ(50vh);
+        }
+        
+        /* SYSTEMATIC FEEDBACK INDICATORS */
+        .system-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #00ff00;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin: 2px 0;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            background: #00ff00;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.error {
+            background: #ff0000;
+        }
+        
+        .status-dot.warning {
+            background: #ffff00;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* LOADING STATE */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-text {
+            color: #00ffff;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-text">
+            <div>🔮 VIB3CODE</div>
+            <div style="font-size: 1rem; margin-top: 10px;">Initializing Systematic Visual Feedback...</div>
+        </div>
+    </div>
+    
+    <!-- Reactive HyperAV Background -->
+    <canvas id="reactive-canvas" width="1920" height="1080"></canvas>
+    
+    <!-- Fixed Dev Controls -->
+    <div class="dev-controls-fixed">
+        <div style="color: #ffff00; font-weight: bold; margin-bottom: 5px;">🔧 DEV</div>
+        <button class="dev-btn" onclick="window.systemAPI.resetAll()">Reset</button>
+        <button class="dev-btn" onclick="window.systemAPI.cycleTheme()">Theme</button>
+        <button class="dev-btn" onclick="window.systemAPI.testInteraction()">Test</button>
+        <button class="dev-btn" onclick="window.systemAPI.maxEnergy()">Max</button>
+    </div>
+    
+    <!-- Parameter Display -->
+    <div class="parameter-display">
+        <div style="color: #ffff00; font-weight: bold; margin-bottom: 8px;">SYSTEM PARAMETERS</div>
+        <div class="param-row">
+            <span class="param-label">Section:</span>
+            <span class="param-value" id="currentSection">0</span>
+        </div>
+        <div class="param-row">
+            <span class="param-label">Theme:</span>
+            <span class="param-value" id="currentTheme">Hypercube</span>
+        </div>
+        <div class="param-row">
+            <span class="param-label">Dimension:</span>
+            <span class="param-value" id="dimensionLevel">3.50</span>
+        </div>
+        <div class="param-row">
+            <span class="param-label">Grid:</span>
+            <span class="param-value" id="gridDensity">12.0</span>
+        </div>
+        <div class="param-row">
+            <span class="param-label">Morph:</span>
+            <span class="param-value" id="morphLevel">0.50</span>
+        </div>
+        <div class="param-row">
+            <span class="param-label">Intensity:</span>
+            <span class="param-value" id="interactionIntensity">0.00</span>
+        </div>
+    </div>
+    
+    <!-- System Status -->
+    <div class="system-status">
+        <div class="status-indicator">
+            <div class="status-dot" id="webglStatus"></div>
+            <span>WebGL</span>
+        </div>
+        <div class="status-indicator">
+            <div class="status-dot" id="parameterStatus"></div>
+            <span>Parameters</span>
+        </div>
+        <div class="status-indicator">
+            <div class="status-dot" id="feedbackStatus"></div>
+            <span>Feedback</span>
+        </div>
+    </div>
+    
+    <!-- Interaction Feedback -->
+    <div class="interaction-feedback">
+        <h4 style="color: #ffff00; margin-bottom: 8px;">🎮 SYSTEMATIC CONTROLS</h4>
+        <div>• <strong>Hover cards</strong> - See systematic feedback</div>
+        <div>• <strong>Arrow keys</strong> - Navigate faces</div>
+        <div>• <strong>Mouse move</strong> - Shift geometry center</div>
+        <div>• <strong>Click/Hold</strong> - Increase dimension</div>
+        <div>• <strong>Scroll</strong> - Modify parameters</div>
+        <div>• <strong>Dev buttons</strong> - Force state changes</div>
+    </div>
+
+    <!-- Hypercube Navigation Container -->
+    <div class="hypercube-container" id="hypercube-container">
+        <!-- HOME FACE (FRONT) - Section 0 -->
+        <div class="face front" data-section="0" data-theme="hypercube">
+            <div class="card" data-info="core-system">
+                <h3>🏠 VIB3CODE Core</h3>
+                <p>Systematic visual feedback where every element communicates system state through geometric relationships.</p>
+            </div>
+            <div class="card" data-info="hyperav-engine">
+                <h3>🔮 HyperAV Engine</h3>
+                <p>8 geometries with real-time parameter feedback. Background adapts to focused elements.</p>
+            </div>
+            <div class="card" data-info="parameter-web">
+                <h3>🕸️ Parameter Web</h3>
+                <p>Unified parameter system where changing one value cascades through the entire visual ecosystem.</p>
+            </div>
+            <div class="card" data-info="reactive-network">
+                <h3>🌐 Reactive Network</h3>
+                <p>Focused elements cause unfocused elements to react systematically, conveying information relationships.</p>
+            </div>
+            <div class="card" data-info="visual-hierarchy">
+                <h3>⚡ Visual Hierarchy</h3>
+                <p>Information emerges through visual relationships. Every pixel contributes to understanding system state.</p>
+            </div>
+            <div class="card" data-info="feedback-loops">
+                <h3>🔄 Feedback Loops</h3>
+                <p>Interactions create cascading visual updates that make system relationships visible and intuitive.</p>
+            </div>
+            <div class="card" data-info="systematic-design">
+                <h3>🎯 Systematic Design</h3>
+                <p>Not just navigation - an information ecosystem where visual elements work together systematically.</p>
+            </div>
+            <div class="card" data-info="unified-experience">
+                <h3>🌟 Unified Experience</h3>
+                <p>Every interaction affects the whole system, creating a unique experience that conveys meaning through relationships.</p>
+            </div>
+            <div class="card" data-info="live-development">
+                <h3>🔧 Live Development</h3>
+                <p>Real-time parameter adjustment and systematic testing through integrated development controls.</p>
+            </div>
+        </div>
+        
+        <!-- TECH FACE (RIGHT) - Section 1 -->
+        <div class="face right" data-section="1" data-theme="tetrahedron">
+            <div class="card" data-info="tech-stack">
+                <h3>💻 Technology Stack</h3>
+                <p>WebGL shaders, systematic parameter hierarchies, real-time visual feedback systems.</p>
+            </div>
+            <div class="card" data-info="shader-system">
+                <h3>🔬 Shader System</h3>
+                <p>8 geometry generators with systematic parameter interpolation and visual state communication.</p>
+            </div>
+            <div class="card" data-info="vib3-architecture">
+                <h3>🎯 VIB3 Architecture</h3>
+                <p>Central parameter authority with systematic reactivity bridge for multi-layer synchronization.</p>
+            </div>
+            <div class="card" data-info="reactivity-engine">
+                <h3>🌊 Reactivity Engine</h3>
+                <p>Unified synchronization between CSS, JavaScript, and WebGL creating systematic visual feedback.</p>
+            </div>
+            <div class="card" data-info="performance-system">
+                <h3>📊 Performance System</h3>
+                <p>Optimized for 60fps with efficient parameter updates and systematic visual state management.</p>
+            </div>
+            <div class="card" data-info="interaction-network">
+                <h3>🎮 Interaction Network</h3>
+                <p>Multi-input system where every interaction creates systematic cascading visual responses.</p>
+            </div>
+            <div class="card" data-info="state-management">
+                <h3>🔄 State Management</h3>
+                <p>Centralized state with systematic parameter relationships and visual hierarchy emergence.</p>
+            </div>
+            <div class="card" data-info="systematic-feedback">
+                <h3>🎨 Systematic Feedback</h3>
+                <p>Visual elements communicate system state through coordinated parameter changes and geometric relationships.</p>
+            </div>
+            <div class="card" data-info="development-tools">
+                <h3>🔧 Development Tools</h3>
+                <p>Real-time parameter monitoring and systematic debugging with visual state verification.</p>
+            </div>
+        </div>
+        
+        <!-- Additional faces would go here... -->
+    </div>
+
+    <!-- Core VIB3 Systems -->
+    <script src="core/VIB3HomeMaster.js"></script>
+    <script src="core/UnifiedReactivityBridge.js"></script>
+    
+    <!-- Reactive HyperAV Core -->
+    <script src="VIB3_REACTIVE_HYPERAV_CORE.js"></script>
+
+    <script>
+        // SYSTEMATIC VISUAL FEEDBACK SYSTEM
+        class SystematicFeedbackEngine {
+            constructor() {
+                this.canvas = document.getElementById('reactive-canvas');
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                
+                this.currentSection = 0;
+                this.currentTheme = 'hypercube';
+                this.focusedElement = null;
+                
+                this.parameters = {
+                    dimension: 3.5,
+                    morphFactor: 0.5,
+                    gridDensity: 12.0,
+                    rotationSpeed: 0.5,
+                    glitchIntensity: 0.3,
+                    interactionIntensity: 0.0
+                };
+                
+                this.initializeSystematicFeedback();
+                this.initializeWebGL();
+                this.startParameterUpdates();
+                this.setupSystematicInteractions();
+                
+                console.log('🎯 Systematic Visual Feedback Engine initialized');
+            }
+            
+            initializeSystematicFeedback() {
+                // Setup card hover systematic feedback
+                document.querySelectorAll('.card').forEach(card => {
+                    card.addEventListener('mouseenter', (e) => {
+                        this.handleCardFocus(card);
+                    });
+                    
+                    card.addEventListener('mouseleave', (e) => {
+                        this.handleCardUnfocus(card);
+                    });
+                    
+                    card.addEventListener('click', (e) => {
+                        this.handleCardActivation(card);
+                    });
+                });
+                
+                // Setup face transition systematic feedback
+                document.addEventListener('keydown', (e) => {
+                    switch(e.key) {
+                        case 'ArrowRight':
+                            e.preventDefault();
+                            this.systematicTransition(1, 'tetrahedron');
+                            break;
+                        case 'ArrowLeft':
+                            e.preventDefault();
+                            this.systematicTransition(3, 'torus');
+                            break;
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            this.systematicTransition(4, 'klein');
+                            break;
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            this.systematicTransition(5, 'crystal');
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.systematicTransition(0, 'hypercube');
+                            break;
+                    }
+                });
+            }
+            
+            handleCardFocus(card) {
+                this.focusedElement = card;
+                const cardInfo = card.dataset.info;
+                
+                // Systematic parameter changes based on focused element
+                const focusEffects = {
+                    'core-system': { dimension: 4.0, morphFactor: 0.8, gridDensity: 15.0 },
+                    'hyperav-engine': { dimension: 3.8, morphFactor: 1.2, gridDensity: 20.0 },
+                    'parameter-web': { dimension: 3.6, morphFactor: 0.3, gridDensity: 25.0 },
+                    'reactive-network': { dimension: 4.2, morphFactor: 0.9, gridDensity: 18.0 },
+                    'visual-hierarchy': { dimension: 3.9, morphFactor: 0.6, gridDensity: 22.0 },
+                    'feedback-loops': { dimension: 4.1, morphFactor: 1.0, gridDensity: 16.0 },
+                    'systematic-design': { dimension: 3.7, morphFactor: 0.7, gridDensity: 14.0 },
+                    'unified-experience': { dimension: 4.3, morphFactor: 1.1, gridDensity: 12.0 },
+                    'live-development': { dimension: 3.5, morphFactor: 0.4, gridDensity: 10.0 }
+                };
+                
+                const effect = focusEffects[cardInfo] || focusEffects['core-system'];
+                this.animateParameterChange(effect);
+                
+                // Update interaction intensity
+                this.parameters.interactionIntensity = 0.8;
+                
+                // Visual feedback on parameter display
+                this.highlightActiveParameters();
+                
+                console.log(`🎯 Focused: ${cardInfo}`, effect);
+            }
+            
+            handleCardUnfocus(card) {
+                this.focusedElement = null;
+                
+                // Return to base parameters
+                this.animateParameterChange({
+                    dimension: 3.5,
+                    morphFactor: 0.5,
+                    gridDensity: 12.0
+                });
+                
+                this.parameters.interactionIntensity = 0.0;
+                this.removeParameterHighlights();
+            }
+            
+            handleCardActivation(card) {
+                const cardInfo = card.dataset.info;
+                
+                // Dramatic systematic response
+                this.animateParameterChange({
+                    dimension: 4.5,
+                    morphFactor: 1.5,
+                    gridDensity: 30.0,
+                    rotationSpeed: 2.0,
+                    glitchIntensity: 0.8
+                });
+                
+                this.parameters.interactionIntensity = 1.0;
+                
+                // Return to focused state after dramatic effect
+                setTimeout(() => {
+                    this.handleCardFocus(card);
+                }, 1000);
+                
+                console.log(`⚡ Activated: ${cardInfo}`);
+            }
+            
+            systematicTransition(section, theme) {
+                this.currentSection = section;
+                this.currentTheme = theme;
+                
+                // Update hypercube rotation
+                const container = document.getElementById('hypercube-container');
+                container.className = 'hypercube-container';
+                
+                const rotations = {
+                    0: '',
+                    1: 'rotated-right',
+                    2: 'rotated-back', 
+                    3: 'rotated-left',
+                    4: 'rotated-up',
+                    5: 'rotated-down'
+                };
+                
+                if (rotations[section]) {
+                    container.classList.add(rotations[section]);
+                }
+                
+                // Systematic theme parameter changes
+                const themeParameters = {
+                    'hypercube': { dimension: 3.5, gridDensity: 12.0, morphFactor: 0.5 },
+                    'tetrahedron': { dimension: 3.2, gridDensity: 8.0, morphFactor: 0.7 },
+                    'sphere': { dimension: 3.8, gridDensity: 15.0, morphFactor: 0.3 },
+                    'torus': { dimension: 3.6, gridDensity: 10.0, morphFactor: 0.8 },
+                    'klein': { dimension: 3.9, gridDensity: 14.0, morphFactor: 0.9 },
+                    'crystal': { dimension: 3.1, gridDensity: 18.0, morphFactor: 0.2 }
+                };
+                
+                this.animateParameterChange(themeParameters[theme]);
+                
+                console.log(`🔄 Systematic transition: Section ${section} (${theme})`);
+            }
+            
+            animateParameterChange(targetParams) {
+                const startParams = { ...this.parameters };
+                const startTime = Date.now();
+                const duration = 800; // ms
+                
+                const animate = () => {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / duration, 1.0);
+                    const eased = 0.5 - 0.5 * Math.cos(progress * Math.PI);
+                    
+                    Object.keys(targetParams).forEach(key => {
+                        if (this.parameters[key] !== undefined) {
+                            this.parameters[key] = startParams[key] + 
+                                (targetParams[key] - startParams[key]) * eased;
+                        }
+                    });
+                    
+                    if (progress < 1.0) {
+                        requestAnimationFrame(animate);
+                    }
+                };
+                
+                animate();
+            }
+            
+            initializeWebGL() {
+                this.gl = this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
+                
+                if (!this.gl) {
+                    document.getElementById('webglStatus').classList.add('error');
+                    console.error('WebGL not supported');
+                    return;
+                }
+                
+                // Simple but VISIBLE geometry shader
+                const vertexShaderSource = `
+                    attribute vec2 a_position;
+                    void main() {
+                        gl_Position = vec4(a_position, 0.0, 1.0);
+                    }
+                `;
+                
+                const fragmentShaderSource = `
+                    precision highp float;
+                    uniform vec2 u_resolution;
+                    uniform float u_time;
+                    uniform float u_dimension;
+                    uniform float u_gridDensity;
+                    uniform float u_morphFactor;
+                    uniform float u_interactionIntensity;
+                    
+                    void main() {
+                        vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+                        float aspect = u_resolution.x / u_resolution.y;
+                        uv.x *= aspect;
+                        
+                        // VISIBLE grid lines
+                        vec2 grid = fract(uv * u_gridDensity + u_time * 0.1);
+                        float lines = min(
+                            smoothstep(0.0, 0.02, grid.x) * smoothstep(0.0, 0.02, 1.0 - grid.x),
+                            smoothstep(0.0, 0.02, grid.y) * smoothstep(0.0, 0.02, 1.0 - grid.y)
+                        );
+                        
+                        // 4D effect
+                        float wave = sin(length(uv) * 10.0 + u_time) * (u_dimension - 3.0);
+                        lines += wave * u_morphFactor * 0.3;
+                        
+                        // Color based on interaction
+                        vec3 color = mix(
+                            vec3(0.2, 0.0, 0.4),
+                            vec3(1.0, 0.0, 1.0),
+                            lines * (0.5 + u_interactionIntensity * 0.5)
+                        );
+                        
+                        gl_FragColor = vec4(color, 0.8);
+                    }
+                `;
+                
+                this.program = this.createShaderProgram(vertexShaderSource, fragmentShaderSource);
+                this.setupBuffers();
+                
+                document.getElementById('webglStatus').classList.remove('error');
+                console.log('✅ WebGL geometry system initialized');
+            }
+            
+            createShaderProgram(vertexSource, fragmentSource) {
+                const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
+                this.gl.shaderSource(vertexShader, vertexSource);
+                this.gl.compileShader(vertexShader);
+                
+                const fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+                this.gl.shaderSource(fragmentShader, fragmentSource);
+                this.gl.compileShader(fragmentShader);
+                
+                const program = this.gl.createProgram();
+                this.gl.attachShader(program, vertexShader);
+                this.gl.attachShader(program, fragmentShader);
+                this.gl.linkProgram(program);
+                
+                return program;
+            }
+            
+            setupBuffers() {
+                const positions = new Float32Array([
+                    -1.0, -1.0,
+                     1.0, -1.0,
+                    -1.0,  1.0,
+                     1.0,  1.0,
+                ]);
+                
+                this.positionBuffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
+            }
+            
+            render() {
+                if (!this.gl || !this.program) return;
+                
+                this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+                this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+                this.gl.useProgram(this.program);
+                
+                // Set uniforms
+                const timeLocation = this.gl.getUniformLocation(this.program, 'u_time');
+                const resolutionLocation = this.gl.getUniformLocation(this.program, 'u_resolution');
+                const dimensionLocation = this.gl.getUniformLocation(this.program, 'u_dimension');
+                const gridLocation = this.gl.getUniformLocation(this.program, 'u_gridDensity');
+                const morphLocation = this.gl.getUniformLocation(this.program, 'u_morphFactor');
+                const interactionLocation = this.gl.getUniformLocation(this.program, 'u_interactionIntensity');
+                
+                this.gl.uniform1f(timeLocation, Date.now() / 1000);
+                this.gl.uniform2f(resolutionLocation, this.canvas.width, this.canvas.height);
+                this.gl.uniform1f(dimensionLocation, this.parameters.dimension);
+                this.gl.uniform1f(gridLocation, this.parameters.gridDensity);
+                this.gl.uniform1f(morphLocation, this.parameters.morphFactor);
+                this.gl.uniform1f(interactionLocation, this.parameters.interactionIntensity);
+                
+                // Draw
+                const positionLocation = this.gl.getAttribLocation(this.program, 'a_position');
+                this.gl.enableVertexAttribArray(positionLocation);
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+                this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+                
+                this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+                
+                requestAnimationFrame(() => this.render());
+            }
+            
+            startParameterUpdates() {
+                setInterval(() => {
+                    this.updateParameterDisplay();
+                }, 100);
+                
+                this.render();
+            }
+            
+            updateParameterDisplay() {
+                document.getElementById('currentSection').textContent = this.currentSection;
+                document.getElementById('currentTheme').textContent = 
+                    this.currentTheme.charAt(0).toUpperCase() + this.currentTheme.slice(1);
+                document.getElementById('dimensionLevel').textContent = 
+                    this.parameters.dimension.toFixed(2);
+                document.getElementById('gridDensity').textContent = 
+                    this.parameters.gridDensity.toFixed(1);
+                document.getElementById('morphLevel').textContent = 
+                    this.parameters.morphFactor.toFixed(2);
+                document.getElementById('interactionIntensity').textContent = 
+                    this.parameters.interactionIntensity.toFixed(2);
+            }
+            
+            highlightActiveParameters() {
+                document.querySelectorAll('.param-value').forEach(el => {
+                    el.classList.add('active');
+                });
+            }
+            
+            removeParameterHighlights() {
+                document.querySelectorAll('.param-value').forEach(el => {
+                    el.classList.remove('active');
+                });
+            }
+            
+            setupSystematicInteractions() {
+                // Mouse movement affects geometry center
+                this.canvas.addEventListener('mousemove', (e) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width;
+                    const y = 1.0 - (e.clientY - rect.top) / rect.height;
+                    
+                    this.parameters.interactionIntensity = 
+                        Math.max(this.parameters.interactionIntensity * 0.95, 0.2);
+                });
+                
+                // Scroll affects parameters
+                window.addEventListener('wheel', (e) => {
+                    const delta = e.deltaY / 1000;
+                    this.parameters.gridDensity = Math.max(5, Math.min(30, 
+                        this.parameters.gridDensity + delta * 2));
+                    this.parameters.interactionIntensity = 0.6;
+                }, { passive: true });
+                
+                // Click/hold affects dimension
+                let holdStart = 0;
+                this.canvas.addEventListener('mousedown', () => {
+                    holdStart = Date.now();
+                });
+                
+                this.canvas.addEventListener('mouseup', () => {
+                    holdStart = 0;
+                });
+                
+                setInterval(() => {
+                    if (holdStart > 0) {
+                        const duration = Date.now() - holdStart;
+                        this.parameters.dimension = Math.min(4.5, 3.5 + duration / 2000);
+                        this.parameters.interactionIntensity = 1.0;
+                    } else if (this.parameters.dimension > 3.5) {
+                        this.parameters.dimension = Math.max(3.5, this.parameters.dimension - 0.02);
+                    }
+                }, 50);
+            }
+        }
+        
+        // SYSTEM API FOR DEV CONTROLS
+        window.systemAPI = {
+            resetAll: () => {
+                if (window.feedbackEngine) {
+                    window.feedbackEngine.animateParameterChange({
+                        dimension: 3.5,
+                        morphFactor: 0.5,
+                        gridDensity: 12.0,
+                        rotationSpeed: 0.5,
+                        glitchIntensity: 0.3
+                    });
+                    window.feedbackEngine.systematicTransition(0, 'hypercube');
+                }
+                console.log('🔄 System reset');
+            },
+            
+            cycleTheme: () => {
+                if (window.feedbackEngine) {
+                    const themes = ['hypercube', 'tetrahedron', 'sphere', 'torus', 'klein', 'crystal'];
+                    const currentIndex = themes.indexOf(window.feedbackEngine.currentTheme);
+                    const nextIndex = (currentIndex + 1) % themes.length;
+                    window.feedbackEngine.systematicTransition(nextIndex, themes[nextIndex]);
+                }
+                console.log('🎨 Theme cycled');
+            },
+            
+            testInteraction: () => {
+                if (window.feedbackEngine) {
+                    window.feedbackEngine.animateParameterChange({
+                        dimension: 4.2,
+                        morphFactor: 1.2,
+                        gridDensity: 25.0,
+                        interactionIntensity: 1.0
+                    });
+                    setTimeout(() => {
+                        window.feedbackEngine.animateParameterChange({
+                            dimension: 3.5,
+                            morphFactor: 0.5,
+                            gridDensity: 12.0
+                        });
+                    }, 2000);
+                }
+                console.log('🧪 Interaction test');
+            },
+            
+            maxEnergy: () => {
+                if (window.feedbackEngine) {
+                    window.feedbackEngine.animateParameterChange({
+                        dimension: 4.5,
+                        morphFactor: 1.8,
+                        gridDensity: 35.0,
+                        rotationSpeed: 2.5,
+                        glitchIntensity: 1.0,
+                        interactionIntensity: 1.0
+                    });
+                }
+                console.log('⚡ Maximum energy');
+            }
+        };
+        
+        // Initialize the systematic feedback system
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Starting Systematic Visual Feedback System...');
+            
+            setTimeout(() => {
+                window.feedbackEngine = new SystematicFeedbackEngine();
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                
+                // Update status indicators
+                document.getElementById('parameterStatus').classList.remove('error');
+                document.getElementById('feedbackStatus').classList.remove('error');
+                
+                console.log('✅ Systematic Visual Feedback System operational');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,335 +1,371 @@
 /**
- * VIB34D ADAPTIVE CARD VISUALIZER
- * Adapts the working demo's ReactiveHyperAVCore into card-based architecture
- * with dynamic subclasses and master key integration
+ * VIB34D STYLE SYSTEM - CORE VISUALIZER
+ * Extracted from working demo, enhanced for multi-instance framework
+ * 
+ * Provides the mathematical foundation for reactive UI design
+ * where form maintains relational coherence even when scrambled
  */
 
-// WebGL Context Pool Manager - Prevents context overflow
-class WebGLContextPool {
-    constructor() {
-        this.pool = [];
-        this.activeContexts = new Set();
-        this.maxContexts = 4; // Maximum active WebGL contexts
-        this.canvasIndex = 0;
-    }
-    
-    getContext(width = 400, height = 300) {
-        // Reuse existing context if available
-        for (let i = 0; i < this.pool.length; i++) {
-            const contextData = this.pool[i];
-            if (!this.activeContexts.has(contextData.canvas)) {
-                // Resize canvas to requested dimensions
-                contextData.canvas.width = width;
-                contextData.canvas.height = height;
-                this.activeContexts.add(contextData.canvas);
-                console.log(`🔄 Reusing WebGL context ${i}`);
-                return contextData;
-            }
-        }
-        
-        // If we've hit the limit, reuse the oldest context
-        if (this.pool.length >= this.maxContexts) {
-            const oldestContext = this.pool[0];
-            this.releaseContext(oldestContext.canvas);
-            oldestContext.canvas.width = width;
-            oldestContext.canvas.height = height;
-            this.activeContexts.add(oldestContext.canvas);
-            console.log(`🔄 Recycling oldest WebGL context`);
-            return oldestContext;
-        }
-        
-        // Create new context
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        canvas.className = 'vib34d-pooled-canvas';
-        canvas.id = `vib34d-canvas-${this.canvasIndex++}`;
-        
-        const gl = canvas.getContext('webgl', { 
-            antialias: true, 
-            alpha: true,
-            preserveDrawingBuffer: false // Optimize memory
-        }) || canvas.getContext('experimental-webgl', { 
-            antialias: true, 
-            alpha: true,
-            preserveDrawingBuffer: false
-        });
-        
-        if (!gl) {
-            console.error('❌ Failed to create WebGL context');
-            return null;
-        }
-        
-        const contextData = { canvas, gl, id: canvas.id };
-        this.pool.push(contextData);
-        this.activeContexts.add(canvas);
-        
-        console.log(`✨ Created new WebGL context ${contextData.id} (${this.pool.length}/${this.maxContexts})`);
-        return contextData;
-    }
-    
-    releaseContext(canvas) {
-        this.activeContexts.delete(canvas);
-        console.log(`🔓 Released WebGL context ${canvas.id}`);
-    }
-    
-    clearInactiveContexts() {
-        // Clean up contexts that are no longer in DOM
-        this.pool = this.pool.filter(contextData => {
-            if (!document.body.contains(contextData.canvas)) {
-                this.activeContexts.delete(contextData.canvas);
-                console.log(`🗑️ Cleaned up orphaned context ${contextData.id}`);
-                return false;
-            }
-            return true;
-        });
-    }
-}
+console.log('🌌 VIB34D Core System Loading...');
 
-// Create global context pool
-window.vib34dContextPool = window.vib34dContextPool || new WebGLContextPool();
+const MAX_SHADER_LAYERS = 4; // Max layers the shader will support
 
-class AdaptiveCardVisualizer {
-    constructor(container, options = {}) {
-        this.container = container;
-        this.canvas = null;
-        this.gl = null;
-        this.program = null;
-        this.uniforms = {};
-        this.buffers = {};
-        this.isInitialized = false;
+// ===== VIB34D REACTIVE VISUALIZER CORE =====
+class VIB34DCore {
+    constructor(canvas, options = {}) {
+        this.canvas = canvas;
+        this.gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
         
-        // Card-specific options
-        this.options = {
-            width: options.width || 400,
-            height: options.height || 300,
-            geometry: options.geometry || 0, // 0-7 for 8 geometry types
-            theme: options.theme || 'hypercube',
-            responsive: options.responsive !== false,
-            masterKey: options.masterKey || 1.0,
-            subclasses: options.subclasses || [],
-            editorMode: options.editorMode || false,
-            ...options
+        if (!this.gl) {
+            console.error('WebGL not supported for VIB34D Core');
+            return;
+        }
+        
+        // Instance configuration
+        this.instanceId = options.instanceId || `vib34d-${Date.now()}`;
+        // this.instanceRole = options.role || 'background'; // Role is now per-layer, managed by MultiInstance
+        // this.parameterModifier = options.modifier || 1.0; // Modifier is now per-layer, managed by MultiInstance
+        
+        // Core state
+        this.startTime = Date.now();
+        this.currentTheme = options.geometry || 'hypercube'; // Base geometry for this core/section
+        this.interactionState = {
+            type: 'idle',
+            intensity: 0,
+            lastActivity: Date.now(),
+            holdStart: 0,
+            isHolding: false,
+            scrollVelocity: 0,
+            mouseX: 0.5,
+            mouseY: 0.5
         };
         
-        // Geometry configurations from demo (as multipliers of hypercube base)
-        this.geometryConfigs = {
-            0: { name: 'hypercube', multiplier: 1.0, complexity: 1.0 },
-            1: { name: 'tetrahedron', multiplier: 0.618, complexity: 0.5 },
-            2: { name: 'sphere', multiplier: 1.414, complexity: 0.8 },
-            3: { name: 'torus', multiplier: 2.0, complexity: 1.2 },
-            4: { name: 'klein', multiplier: 1.618, complexity: 1.5 },
-            5: { name: 'fractal', multiplier: 2.718, complexity: 2.0 },
-            6: { name: 'wave', multiplier: 3.141, complexity: 0.7 },
-            7: { name: 'crystal', multiplier: 1.732, complexity: 1.3 }
+        // Theme configurations (EXACT from working demo with crystal included)
+        this.themeConfigs = {
+            hypercube: {
+                baseColor: [1.0, 0.0, 1.0],      // Magenta
+                gridDensity: 12.0,
+                morphFactor: 0.5,
+                dimension: 3.5,
+                glitchIntensity: 0.3,
+                rotationSpeed: 0.5,
+                geometry: 'hypercube'
+            },
+            tetrahedron: {
+                baseColor: [0.0, 1.0, 1.0],      // Cyan
+                gridDensity: 8.0,
+                morphFactor: 0.7,
+                dimension: 3.2,
+                glitchIntensity: 0.2,
+                rotationSpeed: 0.7,
+                geometry: 'tetrahedron'
+            },
+            sphere: {
+                baseColor: [1.0, 1.0, 0.0],      // Yellow
+                gridDensity: 15.0,
+                morphFactor: 0.3,
+                dimension: 3.8,
+                glitchIntensity: 0.1,
+                rotationSpeed: 0.3,
+                geometry: 'sphere'
+            },
+            torus: {
+                baseColor: [0.0, 1.0, 0.0],      // Green
+                gridDensity: 10.0,
+                morphFactor: 0.8,
+                dimension: 3.6,
+                glitchIntensity: 0.4,
+                rotationSpeed: 0.6,
+                geometry: 'torus'
+            },
+            klein: {
+                baseColor: [1.0, 0.5, 0.0],      // Orange
+                gridDensity: 14.0,
+                morphFactor: 0.9,
+                dimension: 3.9,
+                glitchIntensity: 0.5,
+                rotationSpeed: 0.4,
+                geometry: 'klein'
+            },
+            fractal: {
+                baseColor: [0.5, 0.0, 1.0],      // Purple
+                gridDensity: 20.0,
+                morphFactor: 0.6,
+                dimension: 3.7,
+                glitchIntensity: 0.6,
+                rotationSpeed: 0.8,
+                geometry: 'fractal'
+            },
+            wave: {
+                baseColor: [1.0, 0.0, 0.5],      // Pink
+                gridDensity: 16.0,
+                morphFactor: 0.4,
+                dimension: 3.3,
+                glitchIntensity: 0.3,
+                rotationSpeed: 0.9,
+                geometry: 'wave'
+            },
+            crystal: {
+                baseColor: [0.0, 1.0, 0.5],      // Mint - Universal UI Framework
+                gridDensity: 18.0,
+                morphFactor: 0.2,
+                dimension: 3.1,
+                glitchIntensity: 0.2,
+                rotationSpeed: 0.2,
+                geometry: 'crystal'
+            }
         };
         
-        // Animation state
-        this.time = 0;
-        this.animationId = null;
-        this.mouse = { x: 0, y: 0 };
+        // Current parameters (reactive) with instance modifier applied
+        this.params = this.applyInstanceModifier({ ...this.themeConfigs[this.currentTheme] });
         
-        // Editor parameters
-        this.editorParams = {
-            rotation: 0,
-            scale: 1,
-            intensity: 1,
-            complexity: 1,
-            colorShift: 0,
-            distortion: 0,
-            ...options.editorParams
-        };
+        this.initShaders();
+        this.initBuffers();
+        this.resize();
         
-        this.init();
+        // Don't auto-start animation - controlled by MultiInstanceManager
+        this.isActive = false;
+        this.activeEffects = {}; // To store original values during temporary effects
+        
+        console.log(`✅ VIB34D Core [${this.instanceId}] initialized - ${this.currentTheme}`);
     }
     
-    init() {
-        console.log(`🎨 Initializing AdaptiveCardVisualizer for geometry ${this.options.geometry}...`);
-        
-        try {
-            // Use existing canvas if provided, otherwise get from pool
-            if (this.options.canvas) {
-                console.log('🎨 Using provided canvas element:', this.options.canvas.id);
-                this.canvas = this.options.canvas;
-                this.canvas.width = this.options.width;
-                this.canvas.height = this.options.height;
-                this.gl = this.canvas.getContext('webgl', { antialias: true, alpha: true });
-                this.contextId = this.canvas.id || 'provided-canvas';
-            } else {
-                // Get WebGL context from pool
-                console.log('🔧 Getting WebGL context from pool...');
-                const contextData = window.vib34dContextPool.getContext(this.options.width, this.options.height);
-                
-                if (!contextData) {
-                    console.log('⚠️ WebGL context pool exhausted, falling back to Canvas 2D');
-                    this.initCanvas2DFallback();
-                    return;
-                }
-                
-                this.canvas = contextData.canvas;
-                this.gl = contextData.gl;
-                this.contextId = contextData.id;
-            }
-            
-            // Update canvas styling and make it visible
-            this.canvas.className = 'vib34d-adaptive-canvas';
-            this.canvas.style.display = 'block';
-            this.canvas.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-            this.canvas.style.border = '1px solid rgba(0, 255, 255, 0.3)';
-            console.log(`🖼️ Canvas styled and made visible: ${this.canvas.width}x${this.canvas.height}`);
-            
-            // Apply dynamic subclasses
-            if (this.options.subclasses.length > 0) {
-                this.canvas.className += ' ' + this.options.subclasses.join(' ');
-            }
-            
-            // Only append if canvas not already in container
-            if (!this.options.canvas) {
-                this.container.appendChild(this.canvas);
-            }
-            
-            console.log(`✅ Using WebGL context ${this.contextId}`);
-            
-            // Setup WebGL components
-            if (!this.setupShaders()) {
-                console.log('❌ Shader setup failed, falling back to Canvas 2D');
-                this.initCanvas2DFallback();
-                return;
-            }
-            
-            this.setupBuffers();
-            this.setupUniforms();
-            
-            // Add interactivity
-            this.setupInteraction();
-            
-            // Handle responsive sizing
-            if (this.options.responsive) {
-                this.setupResponsive();
-            }
-            
-            // Start WebGL animation
-            this.isInitialized = true;
-            this.animate();
-            
-            console.log(`✅ WebGL visualizer initialized for geometry ${this.options.geometry}`);
-            
-        } catch (error) {
-            console.error('❌ Error during initialization, falling back to Canvas 2D:', error);
-            this.initCanvas2DFallback();
-        }
-    }
+    // applyInstanceModifier is removed as modifiers are handled by VIB34DMultiInstance before params are passed to VIB34DCore layers.
+    // VIB34DCore now expects pre-calculated parameters for each layer if rendering multiple layers,
+    // or uses its this.params as the single source of truth if rendering one configuration.
     
-    setupShaders() {
-        try {
-            // DEBUG: Simplified vertex shader that MUST work
-            const vertexShaderSource = `
-                precision mediump float;
-                attribute vec3 a_position;
-                uniform mat4 u_matrix;
-                uniform float u_time;
-                uniform float u_geometry;
-                uniform float u_masterKey;
-                varying vec3 v_position;
-                varying float v_depth;
-                
-                void main() {
-                    // DEBUG: Use simple position with no complex transformations
-                    vec3 pos = a_position * 0.5; // Make smaller to ensure it's in view
-                    
-                    // Simple rotation only
-                    float angle = u_time * 0.2;
-                    float c = cos(angle);
-                    float s = sin(angle);
-                    
-                    vec3 rotated = vec3(
-                        pos.x * c - pos.z * s,
-                        pos.y,
-                        pos.x * s + pos.z * c
-                    );
-                    
-                    v_position = rotated;
-                    v_depth = 0.0;
-                    
-                    // DEBUG: Use simple orthographic projection instead of complex matrix
-                    gl_Position = vec4(rotated.xy, 0.0, 1.0);
-                }
-            `;
+    initShaders() {
+        const vertexShaderSource = `
+          attribute vec2 a_position;
+          void main() {
+            gl_Position = vec4(a_position, 0.0, 1.0);
+          }
+        `;
+        
+        // EXACT fragment shader from working demo
+        const fragmentShaderSource = `
+          precision highp float;
+          
+          uniform vec2 u_resolution;
+          uniform float u_time;
+          uniform vec2 u_mouse;
+          uniform float u_morphFactor;
+          uniform float u_glitchIntensity;
+          uniform float u_rotationSpeed;
+          uniform float u_dimension;
+          uniform float u_gridDensity;
+          uniform vec3 u_baseColor;
+          uniform float u_interactionIntensity;
+          uniform float u_geometry; // 0=hypercube, 1=tetrahedron, 2=sphere, 3=torus, 4=klein, 5=fractal, 6=wave, 7=crystal
+          
+          // 4D rotation matrices
+          mat4 rotateXW(float theta) {
+            float c = cos(theta);
+            float s = sin(theta);
+            return mat4(c, 0, 0, -s, 0, 1, 0, 0, 0, 0, 1, 0, s, 0, 0, c);
+          }
+          
+          mat4 rotateYW(float theta) {
+            float c = cos(theta);
+            float s = sin(theta);
+            return mat4(1, 0, 0, 0, 0, c, 0, -s, 0, 0, 1, 0, 0, s, 0, c);
+          }
+          
+          mat4 rotateZW(float theta) {
+            float c = cos(theta);
+            float s = sin(theta);
+            return mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, c, -s, 0, 0, s, c);
+          }
+          
+          vec3 project4Dto3D(vec4 p) {
+            float w = 2.0 / (2.0 + p.w);
+            return vec3(p.x * w, p.y * w, p.z * w);
+          }
+          
+          // Geometry generators (EXACT from demo)
+          float hypercubeLattice(vec3 p, float gridSize) {
+            vec3 grid = fract(p * gridSize);
+            vec3 edges = 1.0 - smoothstep(0.0, 0.03, abs(grid - 0.5));
+            return max(max(edges.x, edges.y), edges.z);
+          }
+          
+          float tetrahedronLattice(vec3 p, float gridSize) {
+            vec3 q = fract(p * gridSize) - 0.5;
+            float d1 = length(q);
+            float d2 = length(q - vec3(0.5, 0.0, 0.0));
+            float d3 = length(q - vec3(0.0, 0.5, 0.0));
+            float d4 = length(q - vec3(0.0, 0.0, 0.5));
+            return 1.0 - smoothstep(0.0, 0.1, min(min(d1, d2), min(d3, d4)));
+          }
+          
+          float sphereLattice(vec3 p, float gridSize) {
+            vec3 q = fract(p * gridSize) - 0.5;
+            float r = length(q);
+            return 1.0 - smoothstep(0.2, 0.5, r);
+          }
+          
+          float torusLattice(vec3 p, float gridSize) {
+            vec3 q = fract(p * gridSize) - 0.5;
+            float r1 = sqrt(q.x*q.x + q.y*q.y);
+            float r2 = sqrt((r1 - 0.3)*(r1 - 0.3) + q.z*q.z);
+            return 1.0 - smoothstep(0.0, 0.1, r2);
+          }
+          
+          float kleinLattice(vec3 p, float gridSize) {
+            vec3 q = fract(p * gridSize);
+            float u = q.x * 2.0 * 3.14159;
+            float v = q.y * 2.0 * 3.14159;
+            float x = cos(u) * (3.0 + cos(u/2.0) * sin(v) - sin(u/2.0) * sin(2.0*v));
+            float klein = length(vec2(x, q.z)) - 0.1;
+            return 1.0 - smoothstep(0.0, 0.05, abs(klein));
+          }
+          
+          float fractalLattice(vec3 p, float gridSize) {
+            vec3 q = p * gridSize;
+            float scale = 1.0;
+            float fractal = 0.0;
+            for(int i = 0; i < 4; i++) {
+              q = fract(q) - 0.5;
+              fractal += abs(length(q)) / scale;
+              scale *= 2.0;
+              q *= 2.0;
+            }
+            return 1.0 - smoothstep(0.0, 1.0, fractal);
+          }
+          
+          float waveLattice(vec3 p, float gridSize) {
+            vec3 q = p * gridSize;
+            float wave = sin(q.x * 2.0) * sin(q.y * 2.0) * sin(q.z * 2.0 + u_time);
+            return smoothstep(-0.5, 0.5, wave);
+          }
+          
+          float crystalLattice(vec3 p, float gridSize) {
+            vec3 q = fract(p * gridSize) - 0.5;
+            float d = max(max(abs(q.x), abs(q.y)), abs(q.z));
+            return 1.0 - smoothstep(0.3, 0.5, d);
+          }
+          
+          float getGeometryValue(vec3 p, float gridSize, float geomType) {
+            if (geomType < 0.5) return hypercubeLattice(p, gridSize);
+            else if (geomType < 1.5) return tetrahedronLattice(p, gridSize);
+            else if (geomType < 2.5) return sphereLattice(p, gridSize);
+            else if (geomType < 3.5) return torusLattice(p, gridSize);
+            else if (geomType < 4.5) return kleinLattice(p, gridSize);
+            else if (geomType < 5.5) return fractalLattice(p, gridSize);
+            else if (geomType < 6.5) return waveLattice(p, gridSize);
+            else return crystalLattice(p, gridSize);
+          }
+          
+          void main() {
+            vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+            float aspectRatio = u_resolution.x / u_resolution.y;
+            uv.x *= aspectRatio;
             
-            // DEBUG: Simple fragment shader that MUST be visible
-            const fragmentShaderSource = `
-                precision mediump float;
-                
-                uniform float u_time;
-                uniform vec2 u_resolution;
-                uniform vec2 u_mouse;
-                uniform float u_geometry;
-                uniform float u_intensity;
-                uniform float u_complexity;
-                uniform float u_rotation;
-                uniform float u_scale;
-                uniform float u_colorShift;
-                uniform float u_distortion;
-                uniform float u_audioLevel;
-                uniform float u_beatPulse;
-                uniform float u_dimension;
-                uniform float u_projection;
-                uniform float u_emergence;
-                uniform float u_crystallization;
-                uniform float u_holographic;
-                
-                varying vec3 v_position;
-                varying float v_depth;
-                
-                void main() {
-                    vec2 uv = gl_FragCoord.xy / u_resolution;
-                    
-                    // DEBUG: Force bright, obvious colors that MUST be visible
-                    vec3 debugColor = vec3(
-                        0.5 + 0.5 * sin(u_time + uv.x * 10.0),
-                        0.5 + 0.5 * sin(u_time + uv.y * 10.0 + 2.0),
-                        0.5 + 0.5 * sin(u_time + (uv.x + uv.y) * 10.0 + 4.0)
-                    );
-                    
-                    // Ensure minimum brightness - FORCE visibility
-                    debugColor = max(debugColor, vec3(0.3));
-                    
-                    // Add pulsing to make it obvious
-                    float pulse = 0.7 + 0.3 * sin(u_time * 3.0);
-                    debugColor *= pulse;
-                    
-                    // Force full opacity
-                    gl_FragColor = vec4(debugColor, 1.0);
-                }
-            `;
+            vec2 center = vec2(u_mouse.x * aspectRatio, u_mouse.y);
+            vec3 p = vec3(uv - center, 0.0);
             
-            // Compile shaders
-            const vertexShader = this.createShader(this.gl.VERTEX_SHADER, vertexShaderSource);
-            const fragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
+            // Interaction-driven rotation
+            float timeRotation = u_time * 0.2 * u_rotationSpeed * (1.0 + u_interactionIntensity);
+            mat2 rotation = mat2(cos(timeRotation), -sin(timeRotation), sin(timeRotation), cos(timeRotation));
+            p.xy = rotation * p.xy;
+            p.z = sin(u_time * 0.1) * 0.5;
             
-            if (!vertexShader || !fragmentShader) {
-                console.error('❌ Shader compilation failed');
-                return false;
+            // Apply 4D transformations based on interaction
+            if (u_dimension > 3.0) {
+              float w = sin(length(p) * 3.0 + u_time * 0.3) * (u_dimension - 3.0) * (1.0 + u_interactionIntensity * 0.5);
+              vec4 p4d = vec4(p, w);
+              
+              p4d = rotateXW(timeRotation * 0.31) * p4d;
+              p4d = rotateYW(timeRotation * 0.27) * p4d;
+              p4d = rotateZW(timeRotation * 0.23) * p4d;
+              
+              p = project4Dto3D(p4d);
             }
             
-            // Create program
-            this.program = this.gl.createProgram();
-            this.gl.attachShader(this.program, vertexShader);
-            this.gl.attachShader(this.program, fragmentShader);
-            this.gl.linkProgram(this.program);
+            // Dynamic grid density based on interaction
+            float dynamicGridDensity = u_gridDensity * (1.0 + u_interactionIntensity * 0.3);
             
-            if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS)) {
-                console.error('❌ Shader program failed to link:', this.gl.getProgramInfoLog(this.program));
-                return false;
-            }
+            // Get geometry value
+            float lattice = getGeometryValue(p, dynamicGridDensity, u_geometry);
             
-            console.log('✅ Shaders compiled and linked successfully');
-            return true;
+            // Interaction-driven glitch effects
+            float glitchAmount = u_glitchIntensity * (0.1 + 0.1 * sin(u_time * 5.0)) * (1.0 + u_interactionIntensity);
             
-        } catch (error) {
-            console.error('❌ Error in shader setup:', error);
-            return false;
+            vec2 rOffset = vec2(glitchAmount, glitchAmount * 0.5);
+            vec2 gOffset = vec2(-glitchAmount * 0.3, glitchAmount * 0.2);
+            vec2 bOffset = vec2(glitchAmount * 0.1, -glitchAmount * 0.4);
+            
+            float r = getGeometryValue(vec3(p.xy + rOffset, p.z), dynamicGridDensity, u_geometry);
+            float g = getGeometryValue(vec3(p.xy + gOffset, p.z), dynamicGridDensity, u_geometry);
+            float b = getGeometryValue(vec3(p.xy + bOffset, p.z), dynamicGridDensity, u_geometry);
+            
+            // Base colors with theme-specific tinting
+            vec3 baseColor = vec3(0.02, 0.05, 0.1);
+            vec3 latticeColor = u_baseColor * (0.8 + 0.2 * u_interactionIntensity);
+            
+            vec3 color = mix(baseColor, latticeColor, vec3(r, g, b));
+            
+            // Interaction-responsive glow
+            color += u_baseColor * 0.1 * (0.5 + 0.5 * sin(u_time * 0.5)) * u_interactionIntensity;
+            
+            // Vignette
+            float vignette = 1.0 - smoothstep(0.4, 1.4, length(uv - vec2(center.x, center.y)));
+            color *= vignette;
+            
+            gl_FragColor = vec4(color, 0.95);
+          }
+        `;
+        
+        const vertexShader = this.createShader(this.gl.VERTEX_SHADER, vertexShaderSource);
+        const fragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
+        
+        if (!vertexShader || !fragmentShader) {
+            console.error('VIB34D shader compilation failed');
+            return;
         }
+        
+        this.program = this.gl.createProgram();
+        this.gl.attachShader(this.program, vertexShader);
+        this.gl.attachShader(this.program, fragmentShader);
+        this.gl.linkProgram(this.program);
+        
+        if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS)) {
+            console.error('VIB34D program linking failed:', this.gl.getProgramInfoLog(this.program));
+            return;
+        }
+        
+        // Get uniform locations
+        this.uniforms = {
+            resolution: this.gl.getUniformLocation(this.program, 'u_resolution'),
+            time: this.gl.getUniformLocation(this.program, 'u_time'),
+            mouse: this.gl.getUniformLocation(this.program, 'u_mouse'),
+            interactionIntensity: this.gl.getUniformLocation(this.program, 'u_interactionIntensity'),
+            geometry: this.gl.getUniformLocation(this.program, 'u_geometry'), // Global for all layers in this instance
+
+            // Layer-specific array uniforms
+            // Note: WebGL1 requires array uniforms to be addressed like 'u_LayerOpacities[0]' in gl.getUniformLocation
+            // For simplicity here, we'll fetch the base name and assume the shader handles array indexing.
+            // Or, more commonly, one sets each element u_LayerOpacities[0], u_LayerOpacities[1], ... individually.
+            layerOpacities: [],
+            layerBaseColors: [],
+            layerGridDensities: [],
+            layerMorphFactors: [],
+            layerGlitchIntensities: [],
+            layerRotationSpeeds: [],
+            layerDimensions: []
+        };
+
+        for (let i = 0; i < MAX_SHADER_LAYERS; i++) {
+            this.uniforms.layerOpacities[i] = this.gl.getUniformLocation(this.program, `u_LayerOpacities[${i}]`);
+            this.uniforms.layerBaseColors[i] = this.gl.getUniformLocation(this.program, `u_LayerBaseColors[${i}]`);
+            this.uniforms.layerGridDensities[i] = this.gl.getUniformLocation(this.program, `u_LayerGridDensities[${i}]`);
+            this.uniforms.layerMorphFactors[i] = this.gl.getUniformLocation(this.program, `u_LayerMorphFactors[${i}]`);
+            this.uniforms.layerGlitchIntensities[i] = this.gl.getUniformLocation(this.program, `u_LayerGlitchIntensities[${i}]`);
+            this.uniforms.layerRotationSpeeds[i] = this.gl.getUniformLocation(this.program, `u_LayerRotationSpeeds[${i}]`);
+            this.uniforms.layerDimensions[i] = this.gl.getUniformLocation(this.program, `u_LayerDimensions[${i}]`);
+        }
+        // Add u_numLayers uniform to tell shader how many layers are active
+        this.uniforms.numLayers = this.gl.getUniformLocation(this.program, 'u_numLayers');
     }
     
     createShader(type, source) {
@@ -338,637 +374,211 @@ class AdaptiveCardVisualizer {
         this.gl.compileShader(shader);
         
         if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-            console.error('Shader compilation error:', this.gl.getShaderInfoLog(shader));
+            console.error('VIB34D shader compilation error:', this.gl.getShaderInfoLog(shader));
+            this.gl.deleteShader(shader);
             return null;
         }
         
         return shader;
     }
     
-    setupBuffers() {
-        // Create geometry based on current geometry type
-        const geometry = this.createGeometry(this.options.geometry);
+    initBuffers() {
+        const positions = new Float32Array([
+            -1, -1,
+             1, -1,
+            -1,  1,
+             1,  1
+        ]);
         
-        // Position buffer
-        this.buffers.position = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(geometry.vertices), this.gl.STATIC_DRAW);
+        this.buffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
         
-        // Index buffer
-        this.buffers.indices = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
-        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(geometry.indices), this.gl.STATIC_DRAW);
-        
-        this.indexCount = geometry.indices.length;
+        const positionLocation = this.gl.getAttribLocation(this.program, 'a_position');
+        this.gl.enableVertexAttribArray(positionLocation);
+        this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
     }
-    
-    createGeometry(type) {
-        const config = this.geometryConfigs[type] || this.geometryConfigs[0];
-        
-        // Base hypercube vertices (8 vertices of a cube for simplicity)
-        const baseVertices = [
-            -1, -1, -1,  1, -1, -1,  1,  1, -1, -1,  1, -1,
-            -1, -1,  1,  1, -1,  1,  1,  1,  1, -1,  1,  1
-        ];
-        
-        // Apply geometry-specific transformation
-        const vertices = [];
-        for (let i = 0; i < baseVertices.length; i += 3) {
-            vertices.push(
-                baseVertices[i] * config.multiplier,
-                baseVertices[i + 1] * config.multiplier,
-                baseVertices[i + 2] * config.multiplier
-            );
+
+    applyTemporaryEffect(effectParams) {
+        if (!effectParams || typeof effectParams !== 'object') return;
+
+        const { duration = 1000, glitchIntensityAdd = 0, dimensionShift = 0, rotationSpeedFactor = 1 } = effectParams;
+
+        // Store original values before applying, if not already overridden by another effect
+        if (this.activeEffects['glitchIntensity'] === undefined) {
+            this.activeEffects['glitchIntensity'] = this.params.glitchIntensity;
         }
-        
-        // Cube indices
-        const indices = [
-            0, 1, 2, 0, 2, 3,  // Front
-            4, 5, 6, 4, 6, 7,  // Back
-            0, 4, 5, 0, 5, 1,  // Bottom
-            2, 6, 7, 2, 7, 3,  // Top
-            0, 4, 7, 0, 7, 3,  // Left
-            1, 5, 6, 1, 6, 2   // Right
-        ];
-        
-        return { vertices, indices };
+        if (this.activeEffects['dimension'] === undefined) {
+            this.activeEffects['dimension'] = this.params.dimension;
+        }
+        if (this.activeEffects['rotationSpeed'] === undefined) {
+            this.activeEffects['rotationSpeed'] = this.params.rotationSpeed;
+        }
+
+        // Apply effects (additive or multiplicative as appropriate)
+        this.params.glitchIntensity += glitchIntensityAdd;
+        this.params.dimension += dimensionShift; // Could also be a target value if shader supports it well
+        this.params.rotationSpeed *= rotationSpeedFactor;
+
+        // Clamp parameters to sensible ranges to avoid breaking visuals
+        this.params.glitchIntensity = Math.max(0, Math.min(1.0, this.params.glitchIntensity));
+        this.params.dimension = Math.max(3.0, Math.min(4.0, this.params.dimension));
+        this.params.rotationSpeed = Math.max(0, Math.min(5.0, this.params.rotationSpeed));
+
+        console.log(`💥 VIB34DCore [${this.instanceId}] applying temp effect. New params:`, this.params);
+
+        // Set a timeout to revert the effect
+        setTimeout(() => {
+            console.log(`💥 VIB34DCore [${this.instanceId}] reverting temp effect.`);
+            // Revert to stored original values
+            this.params.glitchIntensity = this.activeEffects['glitchIntensity'];
+            this.params.dimension = this.activeEffects['dimension'];
+            this.params.rotationSpeed = this.activeEffects['rotationSpeed'];
+
+            // Clear stored originals for these specific parameters
+            delete this.activeEffects['glitchIntensity'];
+            delete this.activeEffects['dimension'];
+            delete this.activeEffects['rotationSpeed'];
+
+            // Potentially re-apply instance modifier if base params changed during effect
+            // This requires knowing the true 'base' parameters from HomeMaster for this section/geometry
+            // For now, this simple revert assumes base params didn't change.
+        }, duration);
     }
     
-    setupUniforms() {
-        // Get all uniform locations
-        const uniformNames = [
-            'u_matrix', 'u_time', 'u_resolution', 'u_mouse', 'u_geometry',
-            'u_intensity', 'u_complexity', 'u_rotation', 'u_scale',
-            'u_colorShift', 'u_distortion', 'u_audioLevel', 'u_beatPulse',
-            'u_dimension', 'u_projection', 'u_emergence', 'u_crystallization',
-            'u_holographic', 'u_masterKey'
-        ];
+    resize() {
+        const width = this.canvas.clientWidth;
+        const height = this.canvas.clientHeight;
         
-        uniformNames.forEach(name => {
-            this.uniforms[name] = this.gl.getUniformLocation(this.program, name);
-        });
-        
-        // Get attribute location
-        this.uniforms.a_position = this.gl.getAttribLocation(this.program, 'a_position');
+        if (this.canvas.width !== width || this.canvas.height !== height) {
+            this.canvas.width = width;
+            this.canvas.height = height;
+            this.gl.viewport(0, 0, width, height);
+        }
     }
     
-    setupInteraction() {
-        // Mouse tracking
-        this.canvas.addEventListener('mousemove', (e) => {
-            const rect = this.canvas.getBoundingClientRect();
-            this.mouse.x = (e.clientX - rect.left) / rect.width * 2 - 1;
-            this.mouse.y = -((e.clientY - rect.top) / rect.height * 2 - 1);
-        });
-        
-        // Touch support
-        this.canvas.addEventListener('touchmove', (e) => {
-            if (e.touches.length > 0) {
-                const rect = this.canvas.getBoundingClientRect();
-                const touch = e.touches[0];
-                this.mouse.x = (touch.clientX - rect.left) / rect.width * 2 - 1;
-                this.mouse.y = -((touch.clientY - rect.top) / rect.height * 2 - 1);
-            }
-        });
+    updateTheme(newTheme, baseParamsForTheme = null) {
+        // This method now primarily updates the base geometry type for the section's renderer
+        // and its own default 'this.params'.
+        // The MultiInstanceManager is responsible for creating the varied layer parameters.
+        if (this.themeConfigs[newTheme]) {
+            this.currentTheme = newTheme;
+            // Update own 'this.params' to the defaults for this new theme.
+            // These params might be used if render() is called without arrayOfLayerParams,
+            // or as a fallback.
+            this.params = { ...(baseParamsForTheme || this.themeConfigs[newTheme]) };
+            console.log(`🎨 VIB34DCore [${this.instanceId}] base theme set to: ${newTheme}`);
+        } else {
+            console.warn(`🎨 VIB34DCore [${this.instanceId}] unknown theme: ${newTheme}`);
+        }
     }
     
-    setupResponsive() {
-        const resizeObserver = new ResizeObserver(entries => {
-            for (let entry of entries) {
-                const { width, height } = entry.contentRect;
-                this.canvas.width = width;
-                this.canvas.height = height;
-                this.gl.viewport(0, 0, width, height);
-            }
-        });
+    updateInteractionState(state) {
+        Object.assign(this.interactionState, state);
         
-        resizeObserver.observe(this.container);
+        // Enhanced interaction parameter modification
+        switch(state.type) {
+            case 'scroll':
+                const scrollModifier = Math.min(state.scrollVelocity / 20, 1.0);
+                this.params.gridDensity = (this.params.gridDensity / this.parameterModifier) * this.parameterModifier * (1.0 + scrollModifier * 0.5);
+                this.params.dimension = (this.params.dimension / this.parameterModifier) * this.parameterModifier + scrollModifier * 0.3;
+                break;
+                
+            case 'hold':
+                if (state.isHolding) {
+                    const holdDuration = (Date.now() - state.holdStart) / 1000;
+                    this.params.morphFactor = Math.min((this.params.morphFactor / this.parameterModifier) * this.parameterModifier + holdDuration * 0.2, 1.0);
+                    this.params.dimension = Math.min((this.params.dimension / this.parameterModifier) * this.parameterModifier + holdDuration * 0.1, 4.0);
+                }
+                break;
+        }
     }
     
-    updateGeometry(geometryIndex) {
-        this.options.geometry = geometryIndex;
-        this.setupBuffers();
-    }
-    
-    updateParams(params) {
-        Object.assign(this.editorParams, params);
-    }
-    
-    animate() {
-        if (!this.isInitialized) return;
+    render(arrayOfLayerParams = []) {
+        if (!this.program || !this.isActive || !this.glContext) return; // Check glContext too
         
-        this.time += 0.016; // ~60fps
-        
-        // Clear with subtle background that shows geometry
-        const bgAlpha = 0.1 + Math.sin(this.time * 0.5) * 0.05; // Subtle pulsing background
-        const bgIntensity = 0.03 + this.editorParams.intensity * 0.02;
-        this.gl.clearColor(
-            bgIntensity, 
-            bgIntensity * 0.7, 
-            bgIntensity * 1.2, 
-            bgAlpha
-        );
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-        
-        // Enable depth testing and blending for proper 3D rendering
-        this.gl.enable(this.gl.DEPTH_TEST);
-        this.gl.enable(this.gl.BLEND);
-        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-        
-        // Use program
+        this.resize(); // Ensure canvas size is up-to-date
         this.gl.useProgram(this.program);
         
-        // Update uniforms
-        this.gl.uniform1f(this.uniforms.u_time, this.time);
-        this.gl.uniform2f(this.uniforms.u_resolution, this.canvas.width, this.canvas.height);
-        this.gl.uniform2f(this.uniforms.u_mouse, this.mouse.x, this.mouse.y);
-        this.gl.uniform1f(this.uniforms.u_geometry, this.options.geometry);
-        this.gl.uniform1f(this.uniforms.u_masterKey, this.options.masterKey);
+        const time = (Date.now() - this.startTime) / 1000;
         
-        // Editor parameters
-        this.gl.uniform1f(this.uniforms.u_intensity, this.editorParams.intensity);
-        this.gl.uniform1f(this.uniforms.u_complexity, this.editorParams.complexity);
-        this.gl.uniform1f(this.uniforms.u_rotation, this.editorParams.rotation);
-        this.gl.uniform1f(this.uniforms.u_scale, this.editorParams.scale);
-        this.gl.uniform1f(this.uniforms.u_colorShift, this.editorParams.colorShift);
-        this.gl.uniform1f(this.uniforms.u_distortion, this.editorParams.distortion);
-        
-        // Fixed values for now
-        this.gl.uniform1f(this.uniforms.u_audioLevel, 0.5);
-        this.gl.uniform1f(this.uniforms.u_beatPulse, Math.sin(this.time * 2) * 0.5 + 0.5);
-        this.gl.uniform1f(this.uniforms.u_dimension, 4.0);
-        this.gl.uniform1f(this.uniforms.u_projection, 1.0);
-        this.gl.uniform1f(this.uniforms.u_emergence, 0.8);
-        this.gl.uniform1f(this.uniforms.u_crystallization, 0.6);
-        this.gl.uniform1f(this.uniforms.u_holographic, 1.0);
-        
-        // Create perspective matrix
-        const matrix = this.createPerspectiveMatrix();
-        this.gl.uniformMatrix4fv(this.uniforms.u_matrix, false, matrix);
-        
-        // Bind buffers and draw
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
-        this.gl.enableVertexAttribArray(this.uniforms.a_position);
-        this.gl.vertexAttribPointer(this.uniforms.a_position, 3, this.gl.FLOAT, false, 0, 0);
-        
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
-        
-        // Draw filled triangles
-        this.gl.drawElements(this.gl.TRIANGLES, this.indexCount, this.gl.UNSIGNED_SHORT, 0);
-        
-        // Also draw wireframe for extra visibility
-        this.gl.enable(this.gl.POLYGON_OFFSET_FILL);
-        this.gl.polygonOffset(1.0, 1.0);
-        
-        // Set wireframe color uniform (brighter)
-        this.gl.uniform1f(this.uniforms.u_intensity, this.editorParams.intensity * 2.0);
-        
-        // Draw wireframe lines
-        for (let i = 0; i < this.indexCount; i += 3) {
-            this.gl.drawElements(this.gl.LINE_LOOP, 3, this.gl.UNSIGNED_SHORT, i * 2);
-        }
-        
-        this.gl.disable(this.gl.POLYGON_OFFSET_FILL);
-        
-        this.animationId = requestAnimationFrame(() => this.animate());
-    }
-    
-    createPerspectiveMatrix() {
-        const aspect = this.canvas.width / this.canvas.height;
-        const fov = Math.PI / 4;
-        const near = 0.1;
-        const far = 100;
-        
-        // Create perspective projection matrix
-        const f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
-        const rangeInv = 1.0 / (near - far);
-        
-        const perspective = new Float32Array(16);
-        perspective[0] = f / aspect;
-        perspective[5] = f;
-        perspective[10] = (near + far) * rangeInv;
-        perspective[11] = -1;
-        perspective[14] = near * far * rangeInv * 2;
-        perspective[15] = 0;
-        
-        // Create view matrix (camera positioned back to see geometry)
-        const view = new Float32Array(16);
-        view[0] = 1; view[5] = 1; view[10] = 1; view[15] = 1; // Identity
-        view[14] = -5; // Move camera back 5 units to see geometry
-        
-        // Create rotation matrix
-        const rotX = this.time * 0.5 + this.editorParams.rotation;
-        const rotY = this.time * 0.3;
-        const rotZ = this.time * 0.2;
-        
-        const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
-        const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
-        const cosZ = Math.cos(rotZ), sinZ = Math.sin(rotZ);
-        
-        // Combined rotation matrix
-        const rotation = new Float32Array(16);
-        rotation[0] = cosY * cosZ;
-        rotation[1] = -cosY * sinZ;
-        rotation[2] = sinY;
-        rotation[4] = cosX * sinZ + sinX * sinY * cosZ;
-        rotation[5] = cosX * cosZ - sinX * sinY * sinZ;
-        rotation[6] = -sinX * cosY;
-        rotation[8] = sinX * sinZ - cosX * sinY * cosZ;
-        rotation[9] = sinX * cosZ + cosX * sinY * sinZ;
-        rotation[10] = cosX * cosY;
-        rotation[15] = 1;
-        
-        // Apply scale - make geometry much larger and more visible
-        const scale = this.editorParams.scale * 2.0; // Doubled scale for visibility
-        rotation[0] *= scale;
-        rotation[5] *= scale;
-        rotation[10] *= scale;
-        
-        // Multiply matrices: perspective * view * rotation
-        const result = new Float32Array(16);
-        this.multiplyMatrices(result, perspective, view);
-        this.multiplyMatrices(result, result, rotation);
-        
-        return result;
-    }
-    
-    multiplyMatrices(out, a, b) {
-        const a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
-        const a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
-        const a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
-        const a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
-        
-        const b00 = b[0], b01 = b[1], b02 = b[2], b03 = b[3];
-        const b10 = b[4], b11 = b[5], b12 = b[6], b13 = b[7];
-        const b20 = b[8], b21 = b[9], b22 = b[10], b23 = b[11];
-        const b30 = b[12], b31 = b[13], b32 = b[14], b33 = b[15];
-        
-        out[0] = a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30;
-        out[1] = a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31;
-        out[2] = a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32;
-        out[3] = a00 * b03 + a01 * b13 + a02 * b23 + a03 * b33;
-        out[4] = a10 * b00 + a11 * b10 + a12 * b20 + a13 * b30;
-        out[5] = a10 * b01 + a11 * b11 + a12 * b21 + a13 * b31;
-        out[6] = a10 * b02 + a11 * b12 + a12 * b22 + a13 * b32;
-        out[7] = a10 * b03 + a11 * b13 + a12 * b23 + a13 * b33;
-        out[8] = a20 * b00 + a21 * b10 + a22 * b20 + a23 * b30;
-        out[9] = a20 * b01 + a21 * b11 + a22 * b21 + a23 * b31;
-        out[10] = a20 * b02 + a21 * b12 + a22 * b22 + a23 * b32;
-        out[11] = a20 * b03 + a21 * b13 + a22 * b23 + a23 * b33;
-        out[12] = a30 * b00 + a31 * b10 + a32 * b20 + a33 * b30;
-        out[13] = a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31;
-        out[14] = a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32;
-        out[15] = a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33;
-    }
-    
-    initCanvas2DFallback() {
-        console.log(`🎨 Initializing Canvas 2D fallback for geometry ${this.options.geometry}`);
-        
-        try {
-            this.ctx = this.canvas.getContext('2d');
-            this.isInitialized = true;
-            
-            // Start 2D animation
-            this.animate2D();
-            
-            console.log(`✅ Canvas 2D fallback initialized for geometry ${this.options.geometry}`);
-        } catch (error) {
-            console.error('❌ Canvas 2D fallback failed:', error);
-        }
-    }
-    
-    animate2D() {
-        if (!this.isInitialized || !this.ctx) return;
-        
-        this.time += 0.016;
-        
-        // Clear canvas with slight fade for trail effect
-        this.ctx.globalAlpha = 0.1;
-        this.ctx.fillStyle = '#000000';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.globalAlpha = 1.0;
-        
-        // Get geometry configuration
-        const config = this.geometryConfigs[this.options.geometry] || this.geometryConfigs[0];
-        const centerX = this.canvas.width / 2;
-        const centerY = this.canvas.height / 2;
-        const baseRadius = Math.min(centerX, centerY) * 0.6;
-        const radius = baseRadius * config.multiplier * this.editorParams.scale;
-        
-        // Base color from geometry index with color shift
-        const baseHue = (this.options.geometry * 45 + this.editorParams.colorShift) % 360;
-        
-        // Draw geometry-specific pattern
-        switch (this.options.geometry) {
-            case 0: // Hypercube
-                this.draw2DHypercube(centerX, centerY, radius, baseHue);
-                break;
-            case 1: // Tetrahedron
-                this.draw2DTetrahedron(centerX, centerY, radius, baseHue);
-                break;
-            case 2: // Sphere
-                this.draw2DSphere(centerX, centerY, radius, baseHue);
-                break;
-            case 3: // Torus
-                this.draw2DTorus(centerX, centerY, radius, baseHue);
-                break;
-            case 4: // Klein
-                this.draw2DKlein(centerX, centerY, radius, baseHue);
-                break;
-            case 5: // Fractal
-                this.draw2DFractal(centerX, centerY, radius, baseHue);
-                break;
-            case 6: // Wave
-                this.draw2DWave(centerX, centerY, radius, baseHue);
-                break;
-            case 7: // Crystal
-                this.draw2DCrystal(centerX, centerY, radius, baseHue);
-                break;
-        }
-        
-        // Add holographic center glow
-        const pulseRadius = 15 + Math.sin(this.time * 3) * 8;
-        const gradient = this.ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, pulseRadius);
-        gradient.addColorStop(0, `hsla(${baseHue}, 100%, 80%, ${this.editorParams.intensity * 0.8})`);
-        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-        
-        this.ctx.fillStyle = gradient;
-        this.ctx.beginPath();
-        this.ctx.arc(centerX, centerY, pulseRadius, 0, Math.PI * 2);
-        this.ctx.fill();
-        
-        requestAnimationFrame(() => this.animate2D());
-    }
-    
-    draw2DHypercube(centerX, centerY, radius, hue) {
-        const points = 8;
-        const innerRadius = radius * 0.5;
-        
-        // Outer cube
-        this.ctx.strokeStyle = `hsla(${hue}, 100%, 60%, ${this.editorParams.intensity})`;
-        this.ctx.lineWidth = 2;
-        this.ctx.beginPath();
-        for (let i = 0; i <= points; i++) {
-            const angle = (i / points) * Math.PI * 2 + this.time + this.editorParams.rotation;
-            const x = centerX + Math.cos(angle) * radius;
-            const y = centerY + Math.sin(angle) * radius;
-            if (i === 0) this.ctx.moveTo(x, y);
-            else this.ctx.lineTo(x, y);
-        }
-        this.ctx.stroke();
-        
-        // Inner cube with connections
-        this.ctx.strokeStyle = `hsla(${(hue + 180) % 360}, 100%, 50%, ${this.editorParams.intensity * 0.7})`;
-        this.ctx.lineWidth = 1;
-        this.ctx.beginPath();
-        for (let i = 0; i <= points; i++) {
-            const angle = (i / points) * Math.PI * 2 - this.time + this.editorParams.rotation;
-            const x = centerX + Math.cos(angle) * innerRadius;
-            const y = centerY + Math.sin(angle) * innerRadius;
-            if (i === 0) this.ctx.moveTo(x, y);
-            else this.ctx.lineTo(x, y);
-        }
-        this.ctx.stroke();
-    }
-    
-    draw2DTetrahedron(centerX, centerY, radius, hue) {
-        const points = 3;
-        this.ctx.strokeStyle = `hsla(${hue}, 100%, 60%, ${this.editorParams.intensity})`;
-        this.ctx.lineWidth = 3;
-        this.ctx.beginPath();
-        for (let i = 0; i <= points; i++) {
-            const angle = (i / points) * Math.PI * 2 + this.time + this.editorParams.rotation;
-            const x = centerX + Math.cos(angle) * radius;
-            const y = centerY + Math.sin(angle) * radius;
-            if (i === 0) this.ctx.moveTo(x, y);
-            else this.ctx.lineTo(x, y);
-        }
-        this.ctx.stroke();
-    }
-    
-    draw2DSphere(centerX, centerY, radius, hue) {
-        // Multiple concentric circles
-        for (let i = 1; i <= 5; i++) {
-            const r = radius * (i / 5);
-            const alpha = this.editorParams.intensity * (1 - i / 6);
-            this.ctx.strokeStyle = `hsla(${hue + i * 20}, 100%, 60%, ${alpha})`;
-            this.ctx.lineWidth = 2;
-            this.ctx.beginPath();
-            this.ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
-            this.ctx.stroke();
-        }
-    }
-    
-    draw2DTorus(centerX, centerY, radius, hue) {
-        // Flowing torus pattern
-        const segments = 16;
-        this.ctx.strokeStyle = `hsla(${hue}, 100%, 60%, ${this.editorParams.intensity})`;
-        this.ctx.lineWidth = 2;
-        
-        for (let i = 0; i < segments; i++) {
-            const angle1 = (i / segments) * Math.PI * 2 + this.time;
-            const angle2 = ((i + 1) / segments) * Math.PI * 2 + this.time;
-            const r1 = radius + Math.sin(angle1 * 3) * radius * 0.3;
-            const r2 = radius + Math.sin(angle2 * 3) * radius * 0.3;
-            
-            this.ctx.beginPath();
-            this.ctx.moveTo(centerX + Math.cos(angle1) * r1, centerY + Math.sin(angle1) * r1);
-            this.ctx.lineTo(centerX + Math.cos(angle2) * r2, centerY + Math.sin(angle2) * r2);
-            this.ctx.stroke();
-        }
-    }
-    
-    draw2DKlein(centerX, centerY, radius, hue) {
-        // Klein bottle topology approximation
-        const segments = 20;
-        this.ctx.strokeStyle = `hsla(${hue}, 100%, 60%, ${this.editorParams.intensity})`;
-        this.ctx.lineWidth = 2;
-        this.ctx.beginPath();
-        
-        for (let i = 0; i <= segments; i++) {
-            const t = (i / segments) * Math.PI * 4 + this.time;
-            const x = centerX + radius * Math.cos(t) * (1 + Math.cos(t / 2) * 0.5);
-            const y = centerY + radius * Math.sin(t) * Math.sin(t / 2) * 0.5;
-            if (i === 0) this.ctx.moveTo(x, y);
-            else this.ctx.lineTo(x, y);
-        }
-        this.ctx.stroke();
-    }
-    
-    draw2DFractal(centerX, centerY, radius, hue) {
-        // Recursive fractal pattern
-        const drawBranch = (x, y, length, angle, depth) => {
-            if (depth === 0) return;
-            
-            const endX = x + Math.cos(angle) * length;
-            const endY = y + Math.sin(angle) * length;
-            
-            this.ctx.strokeStyle = `hsla(${hue + depth * 30}, 100%, 60%, ${this.editorParams.intensity * (depth / 4)})`;
-            this.ctx.lineWidth = depth;
-            this.ctx.beginPath();
-            this.ctx.moveTo(x, y);
-            this.ctx.lineTo(endX, endY);
-            this.ctx.stroke();
-            
-            const newLength = length * 0.7;
-            drawBranch(endX, endY, newLength, angle - 0.5 + this.time * 0.1, depth - 1);
-            drawBranch(endX, endY, newLength, angle + 0.5 - this.time * 0.1, depth - 1);
-        };
-        
-        drawBranch(centerX, centerY + radius * 0.3, radius * 0.6, -Math.PI / 2, 4);
-    }
-    
-    draw2DWave(centerX, centerY, radius, hue) {
-        // Wave function pattern
-        const segments = 50;
-        this.ctx.strokeStyle = `hsla(${hue}, 100%, 60%, ${this.editorParams.intensity})`;
-        this.ctx.lineWidth = 2;
-        this.ctx.beginPath();
-        
-        for (let i = 0; i <= segments; i++) {
-            const x = centerX - radius + (i / segments) * radius * 2;
-            const y = centerY + Math.sin((i / segments) * Math.PI * 4 + this.time * 2) * radius * 0.3;
-            if (i === 0) this.ctx.moveTo(x, y);
-            else this.ctx.lineTo(x, y);
-        }
-        this.ctx.stroke();
-    }
-    
-    draw2DCrystal(centerX, centerY, radius, hue) {
-        // Crystal lattice structure
-        const points = 6;
-        for (let ring = 1; ring <= 3; ring++) {
-            const r = radius * (ring / 3);
-            this.ctx.strokeStyle = `hsla(${hue}, 100%, 60%, ${this.editorParams.intensity * (1 - ring / 4)})`;
-            this.ctx.lineWidth = 2;
-            
-            for (let i = 0; i < points; i++) {
-                const angle = (i / points) * Math.PI * 2 + this.time * 0.5;
-                const x = centerX + Math.cos(angle) * r;
-                const y = centerY + Math.sin(angle) * r;
-                
-                // Draw connections to center
-                this.ctx.beginPath();
-                this.ctx.moveTo(centerX, centerY);
-                this.ctx.lineTo(x, y);
-                this.ctx.stroke();
-                
-                // Draw connections to adjacent points
-                const nextAngle = ((i + 1) / points) * Math.PI * 2 + this.time * 0.5;
-                const nextX = centerX + Math.cos(nextAngle) * r;
-                const nextY = centerY + Math.sin(nextAngle) * r;
-                
-                this.ctx.beginPath();
-                this.ctx.moveTo(x, y);
-                this.ctx.lineTo(nextX, nextY);
-                this.ctx.stroke();
-            }
-        }
-    }
-    
-    updateGeometry(newGeometry, vib3Params = {}) {
-        if (!this.isInitialized) return;
-        
-        this.options.geometry = newGeometry;
-        this.vib3Params = vib3Params;
-        console.log(`🔄 Geometry updated to: ${newGeometry} with VIB3 params:`, vib3Params);
-        
-        // Update WebGL uniforms to reflect new geometry and VIB3 parameters
-        if (this.gl && this.program) {
-            this.setupUniforms(); // Use existing method
-            this.updateVIB3Uniforms(vib3Params);
-        }
-    }
-    
-    updateVIB3Uniforms(params) {
-        if (!this.gl || !this.program) return;
-        
-        const gl = this.gl;
-        
-        // Apply VIB3 parameters to shader uniforms with visual feedback
-        if (params.intensity !== undefined) {
-            const intensityLocation = gl.getUniformLocation(this.program, 'u_intensity');
-            if (intensityLocation) gl.uniform1f(intensityLocation, params.intensity);
-        }
-        
-        if (params.dimension !== undefined) {
-            const dimensionLocation = gl.getUniformLocation(this.program, 'u_dimension');
-            if (dimensionLocation) gl.uniform1f(dimensionLocation, params.dimension);
-        }
-        
-        if (params.complexity !== undefined) {
-            const complexityLocation = gl.getUniformLocation(this.program, 'u_emergence');
-            if (complexityLocation) gl.uniform1f(complexityLocation, params.complexity);
-        }
-        
-        if (params.coherence !== undefined) {
-            const coherenceLocation = gl.getUniformLocation(this.program, 'u_crystallization');
-            if (coherenceLocation) gl.uniform1f(coherenceLocation, params.coherence);
-        }
-        
-        // Update geometry uniform based on current geometry
+        // Set global uniforms (apply to all layers)
+        this.gl.uniform2f(this.uniforms.resolution, this.canvas.width, this.canvas.height);
+        this.gl.uniform1f(this.uniforms.time, time);
+        this.gl.uniform2f(this.uniforms.mouse, this.interactionState.mouseX, this.interactionState.mouseY);
+        this.gl.uniform1f(this.uniforms.interactionIntensity, this.interactionState.intensity);
+
         const geometryMap = {
-            'hypercube': 1.0,
-            'tetrahedron': 2.0,
-            'sphere': 3.0,
-            'torus': 4.0,
-            'fractal': 5.0
+            hypercube: 0, tetrahedron: 1, sphere: 2, torus: 3,
+            klein: 4, fractal: 5, wave: 6, crystal: 7
         };
-        
-        const geometryValue = geometryMap[this.options.geometry] || 1.0;
-        const geometryLocation = gl.getUniformLocation(this.program, 'u_geometry');
-        if (geometryLocation) {
-            gl.uniform1f(geometryLocation, geometryValue);
-            console.log(`🔄 Geometry uniform updated: ${this.options.geometry} = ${geometryValue}`);
-        }
-        
-        console.log('✅ VIB3 uniforms updated with visual changes');
-    }
+        // currentTheme is the base geometry for the section (all layers share this base geometric type)
+        this.gl.uniform1f(this.uniforms.geometry, geometryMap[this.currentTheme] || 0);
 
-    destroy() {
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
+        let numActiveLayers = 0;
+        if (arrayOfLayerParams && arrayOfLayerParams.length > 0) {
+            numActiveLayers = Math.min(arrayOfLayerParams.length, MAX_SHADER_LAYERS);
+            for (let i = 0; i < numActiveLayers; i++) {
+                const layerParams = arrayOfLayerParams[i];
+                if (!layerParams) continue;
+
+                // Set layer-specific uniforms
+                // Ensure VIB34DMultiInstance provides these correctly structured, including defaults.
+                if(this.uniforms.layerOpacities[i]) this.gl.uniform1f(this.uniforms.layerOpacities[i], layerParams.opacity || 0.5);
+                if(this.uniforms.layerBaseColors[i]) this.gl.uniform3fv(this.uniforms.layerBaseColors[i], new Float32Array(layerParams.baseColor || [1,0,1]));
+                if(this.uniforms.layerGridDensities[i]) this.gl.uniform1f(this.uniforms.layerGridDensities[i], layerParams.gridDensity || 10.0);
+                if(this.uniforms.layerMorphFactors[i]) this.gl.uniform1f(this.uniforms.layerMorphFactors[i], layerParams.morphFactor || 0.5);
+                if(this.uniforms.layerGlitchIntensities[i]) this.gl.uniform1f(this.uniforms.layerGlitchIntensities[i], layerParams.glitchIntensity || 0.1);
+                if(this.uniforms.layerRotationSpeeds[i]) this.gl.uniform1f(this.uniforms.layerRotationSpeeds[i], layerParams.rotationSpeed || 0.5);
+                if(this.uniforms.layerDimensions[i]) this.gl.uniform1f(this.uniforms.layerDimensions[i], layerParams.dimension || 3.5);
+            }
+        } else {
+            // Fallback: Render a single layer using this.params if no array is provided
+            // This is useful for CrystalUIElement or simple single-layer visualizers
+            numActiveLayers = 1;
+            if(this.uniforms.layerOpacities[0]) this.gl.uniform1f(this.uniforms.layerOpacities[0], this.params.opacity || 0.8); // Assuming opacity is in this.params
+            if(this.uniforms.layerBaseColors[0]) this.gl.uniform3fv(this.uniforms.layerBaseColors[0], new Float32Array(this.params.baseColor || [1,0,1]));
+            if(this.uniforms.layerGridDensities[0]) this.gl.uniform1f(this.uniforms.layerGridDensities[0], this.params.gridDensity || 10.0);
+            if(this.uniforms.layerMorphFactors[0]) this.gl.uniform1f(this.uniforms.layerMorphFactors[0], this.params.morphFactor || 0.5);
+            if(this.uniforms.layerGlitchIntensities[0]) this.gl.uniform1f(this.uniforms.layerGlitchIntensities[0], this.params.glitchIntensity || 0.1);
+            if(this.uniforms.layerRotationSpeeds[0]) this.gl.uniform1f(this.uniforms.layerRotationSpeeds[0], this.params.rotationSpeed || 0.5);
+            if(this.uniforms.layerDimensions[0]) this.gl.uniform1f(this.uniforms.layerDimensions[0], this.params.dimension || 3.5);
         }
+
+        if(this.uniforms.numLayers) this.gl.uniform1i(this.uniforms.numLayers, numActiveLayers);
+
+
+        // Enable blending for multi-layer rendering
+        this.gl.enable(this.gl.BLEND);
+        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA); // Standard alpha blending
+        // For additive screen-like effects, might use: gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE);
         
-        // Release WebGL context back to pool
-        if (this.canvas && this.contextId && window.vib34dContextPool) {
-            window.vib34dContextPool.releaseContext(this.canvas);
-            console.log(`🔓 Released WebGL context ${this.contextId} back to pool`);
-        }
+        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
         
-        if (this.canvas && this.canvas.parentNode) {
-            this.canvas.parentNode.removeChild(this.canvas);
-        }
-        
-        this.canvas = null;
-        this.gl = null;
-        this.contextId = null;
-        this.isInitialized = false;
+        this.gl.disable(this.gl.BLEND); // Disable blend after drawing if not needed globally
+
+        // Decay interaction intensity
+        this.interactionState.intensity *= 0.95;
     }
     
-    // Static method to clean up inactive contexts
-    static cleanupContextPool() {
-        if (window.vib34dContextPool) {
-            window.vib34dContextPool.clearInactiveContexts();
-        }
+    start() {
+        this.isActive = true;
+        console.log(`🎬 VIB34D [${this.instanceId}] started`);
+    }
+    
+    pause() {
+        this.isActive = false;
+        console.log(`⏸️ VIB34D [${this.instanceId}] paused`);
+    }
+    
+    destroy() {
+        this.isActive = false;
+        if (this.program) this.gl.deleteProgram(this.program);
+        if (this.buffer) this.gl.deleteBuffer(this.buffer);
+        console.log(`🗑️ VIB34D [${this.instanceId}] destroyed`);
     }
 }
 
-// Factory function for creating card visualizers
-function createCardVisualizer(container, options) {
-    return new AdaptiveCardVisualizer(container, options);
-}
-
-// Global window exports for direct usage
-window.AdaptiveCardVisualizer = AdaptiveCardVisualizer;
-window.createCardVisualizer = createCardVisualizer;
-
-// Integration with VIB3STYLEPACK
-if (window.VIB34D) {
-    window.VIB34D.AdaptiveCardVisualizer = AdaptiveCardVisualizer;
-    window.VIB34D.createCardVisualizer = createCardVisualizer;
-}
-
-// Export for module usage
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { AdaptiveCardVisualizer, createCardVisualizer };
-}
+// Export for VIB34D Style System
+window.VIB34DCore = VIB34DCore;
+console.log('✅ VIB34D Core System loaded - Ready for multi-instance framework');

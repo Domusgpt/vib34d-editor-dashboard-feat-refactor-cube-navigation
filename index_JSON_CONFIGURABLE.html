@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">VIB3CODE | JSON-Configurable System</title>
+    <style id="dynamic-styles">
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #000000 70%);
+        }
+        
+        /* REACTIVE HYPERAV BACKGROUND */
+        #reactive-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 1;
+            transition: filter 0.3s ease;
+            opacity: 0.8;
+        }
+        
+        /* HYPERCUBE NAVIGATION LAYER */
+        .hypercube-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 2000px;
+            transform-style: preserve-3d;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 10;
+        }
+        
+        /* FACE SYSTEM */
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 20px;
+            padding: 40px;
+            backface-visibility: hidden;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        /* Face positioning */
+        .face.front { transform: translateZ(50vh); }
+        .face.back { transform: translateZ(-50vh) rotateY(180deg); }
+        .face.right { transform: rotateY(90deg) translateZ(50vh); }
+        .face.left { transform: rotateY(-90deg) translateZ(50vh); }
+        .face.top { transform: rotateX(90deg) translateZ(50vh); }
+        .face.bottom { transform: rotateX(-90deg) translateZ(50vh); }
+        
+        /* JSON-CONFIGURABLE CARDS */
+        .card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: scale(1.05);
+            background: rgba(0, 0, 0, 0.95);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            z-index: 100;
+        }
+        
+        /* Systematic feedback from JSON config */
+        .face:hover .card:not(:hover) {
+            opacity: 0.6;
+            transform: scale(0.98);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .card h3 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover h3 {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        
+        .card p {
+            color: #ccc;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover p {
+            color: #fff;
+        }
+        
+        /* JSON-CONFIGURABLE UI COMPONENTS */
+        .config-panel {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .parameter-display {
+            top: 20px;
+            left: 20px;
+            border-color: #ff00ff;
+            color: #ff00ff;
+            font-size: 0.8rem;
+        }
+        
+        .dev-controls {
+            top: 10px;
+            right: 10px;
+            border-color: #00ffff;
+            color: #00ffff;
+            font-size: 10px;
+        }
+        
+        .system-status {
+            bottom: 20px;
+            right: 20px;
+            border-color: #00ff00;
+            color: #00ff00;
+            font-size: 10px;
+        }
+        
+        .agent-console {
+            bottom: 20px;
+            left: 20px;
+            border-color: #ffff00;
+            color: #ffff00;
+            font-size: 10px;
+            max-width: 300px;
+        }
+        
+        .config-button {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin: 2px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .config-button:hover {
+            background: rgba(0, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .param-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 3px 0;
+            min-width: 200px;
+        }
+        
+        .param-label {
+            color: #ffff00;
+        }
+        
+        .param-value {
+            color: #00ff00;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .param-value.active {
+            color: #ff00ff;
+            text-shadow: 0 0 5px #ff00ff;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin: 2px 0;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            background: #00ff00;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.error {
+            background: #ff0000;
+        }
+        
+        .status-dot.warning {
+            background: #ffff00;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* HYPERCUBE ROTATION STATES */
+        .hypercube-container.rotated-right { transform: rotateY(-90deg); }
+        .hypercube-container.rotated-left { transform: rotateY(90deg); }
+        .hypercube-container.rotated-up { transform: rotateX(90deg); }
+        .hypercube-container.rotated-down { transform: rotateX(-90deg); }
+        .hypercube-container.rotated-forward { transform: translateZ(-50vh); }
+        .hypercube-container.rotated-back { transform: translateZ(50vh); }
+        
+        /* LOADING STATE */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-text {
+            color: #00ffff;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-text">
+            <div id="loadingTitle">🔮 VIB3CODE</div>
+            <div id="loadingSubtitle" style="font-size: 1rem; margin-top: 10px;">Loading JSON Configurations...</div>
+        </div>
+    </div>
+    
+    <!-- Reactive HyperAV Background -->
+    <canvas id="reactive-canvas" width="1920" height="1080"></canvas>
+    
+    <!-- JSON-Configurable UI Components -->
+    <div class="config-panel parameter-display">
+        <div style="color: #ffff00; font-weight: bold; margin-bottom: 8px;">SYSTEM PARAMETERS</div>
+        <div class="param-row">
+            <span class="param-label">Section:</span>
+            <span class="param-value" id="currentSection">0</span>
+        </div>
+        <div class="param-row">
+            <span class="param-label">Theme:</span>
+            <span class="param-value" id="currentTheme">Loading...</span>
+        </div>
+        <div class="param-row">
+            <span class="param-label">Dimension:</span>
+            <span class="param-value" id="dimensionLevel">3.50</span>
+        </div>
+        <div class="param-row">
+            <span class="param-label">Grid:</span>
+            <span class="param-value" id="gridDensity">12.0</span>
+        </div>
+        <div class="param-row">
+            <span class="param-label">Morph:</span>
+            <span class="param-value" id="morphLevel">0.50</span>
+        </div>
+        <div class="param-row">
+            <span class="param-label">Intensity:</span>
+            <span class="param-value" id="interactionIntensity">0.00</span>
+        </div>
+    </div>
+    
+    <div class="config-panel dev-controls">
+        <div style="color: #ffff00; font-weight: bold; margin-bottom: 5px;">🔧 AGENT CONTROLS</div>
+        <button class="config-button" onclick="applyJSONPreset('reset')">Reset</button>
+        <button class="config-button" onclick="cycleJSONTheme()">Theme</button>
+        <button class="config-button" onclick="applyJSONPreset('highEnergy')">Energy</button>
+        <button class="config-button" onclick="applyJSONPreset('maximum')">Max</button>
+        <button class="config-button" onclick="exportJSONConfig()">Export</button>
+        <button class="config-button" onclick="hotReloadJSON()">Reload</button>
+    </div>
+    
+    <div class="config-panel system-status">
+        <div style="color: #ffff00; font-weight: bold; margin-bottom: 5px;">SYSTEM STATUS</div>
+        <div class="status-indicator">
+            <div class="status-dot" id="configStatus"></div>
+            <span>JSON Config</span>
+        </div>
+        <div class="status-indicator">
+            <div class="status-dot" id="webglStatus"></div>
+            <span>WebGL</span>
+        </div>
+        <div class="status-indicator">
+            <div class="status-dot" id="agentStatus"></div>
+            <span>Agent API</span>
+        </div>
+        <div class="status-indicator">
+            <div class="status-dot" id="feedbackStatus"></div>
+            <span>Feedback</span>
+        </div>
+    </div>
+    
+    <div class="config-panel agent-console">
+        <div style="color: #ffff00; font-weight: bold; margin-bottom: 5px;">🤖 AGENT CONSOLE</div>
+        <div style="font-size: 9px; color: #ccc; margin-bottom: 8px;">window.agentAPI available</div>
+        <div id="agentLog" style="max-height: 100px; overflow-y: auto; font-size: 9px; line-height: 1.2;">
+            System ready for agent configuration...
+        </div>
+    </div>
+
+    <!-- Hypercube Navigation Container -->
+    <div class="hypercube-container" id="hypercube-container">
+        <!-- Content will be generated from JSON -->
+    </div>
+
+    <!-- JSON Configuration System -->
+    <script src="VIB3_JSON_CONFIG_SYSTEM.js"></script>
+
+    <script>
+        // JSON-CONFIGURABLE VIB3 SYSTEM
+        class JSONConfigurableVIB3System {
+            constructor() {
+                this.configSystem = new VIB3JsonConfigSystem();
+                this.configs = null;
+                this.canvas = document.getElementById('reactive-canvas');
+                this.gl = null;
+                this.currentSection = 0;
+                this.currentTheme = 'hypercube';
+                this.parameters = {
+                    dimension: 3.5,
+                    morphFactor: 0.5,
+                    gridDensity: 12.0,
+                    rotationSpeed: 0.5,
+                    glitchIntensity: 0.3,
+                    interactionIntensity: 0.0
+                };
+                
+                this.focusedElement = null;
+                this.program = null;
+                
+                console.log('🚀 JSON-Configurable VIB3 System initializing...');
+            }
+            
+            async initialize() {
+                try {
+                    // Load JSON configurations
+                    this.configs = await this.configSystem.loadAllConfigs();
+                    this.updateStatusIndicator('configStatus', 'success');
+                    
+                    // Update page title from config
+                    const title = this.configs.content.metadata?.title || 'VIB3CODE';
+                    document.getElementById('page-title').textContent = title;
+                    document.getElementById('loadingTitle').textContent = 
+                        this.configs.content.globalSettings?.branding?.logoText || title;
+                    
+                    // Generate content from JSON
+                    this.generateContentFromJSON();
+                    
+                    // Initialize WebGL
+                    this.initializeWebGL();
+                    
+                    // Setup interactions from JSON config
+                    this.setupJSONInteractions();
+                    
+                    // Subscribe to configuration changes
+                    this.setupConfigSubscriptions();
+                    
+                    // Start parameter updates
+                    this.startParameterUpdates();
+                    
+                    // Hide loading overlay
+                    setTimeout(() => {
+                        document.getElementById('loadingOverlay').classList.add('hidden');
+                    }, 1000);
+                    
+                    this.logToAgent('System initialized with JSON configurations');
+                    console.log('✅ JSON-Configurable VIB3 System operational');
+                    
+                } catch (error) {
+                    console.error('❌ Failed to initialize system:', error);
+                    this.updateStatusIndicator('configStatus', 'error');
+                    this.logToAgent(`Error: ${error.message}`);
+                }
+            }
+            
+            generateContentFromJSON() {
+                const container = document.getElementById('hypercube-container');
+                container.innerHTML = '';
+                
+                const sections = this.configs.content.sections;
+                const navigation = this.configs.content.navigation;
+                
+                Object.entries(sections).forEach(([sectionIndex, sectionData]) => {
+                    const face = document.createElement('div');
+                    face.className = `face ${this.getSectionFaceClass(parseInt(sectionIndex))}`;
+                    face.dataset.section = sectionIndex;
+                    face.dataset.theme = sectionData.theme;
+                    
+                    // Generate cards from JSON
+                    sectionData.cards.forEach(cardData => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.dataset.cardId = cardData.id;
+                        card.dataset.category = cardData.category || 'default';
+                        
+                        const title = document.createElement('h3');
+                        title.textContent = cardData.title;
+                        
+                        const content = document.createElement('p');
+                        content.textContent = cardData.content;
+                        
+                        card.appendChild(title);
+                        card.appendChild(content);
+                        
+                        // Setup JSON-configured interactions
+                        this.setupCardInteractions(card, cardData);
+                        
+                        face.appendChild(card);
+                    });
+                    
+                    container.appendChild(face);
+                });
+                
+                this.logToAgent(`Generated ${Object.keys(sections).length} sections from JSON`);
+            }
+            
+            getSectionFaceClass(sectionIndex) {
+                const faceClasses = ['front', 'right', 'back', 'left', 'top', 'bottom'];
+                return faceClasses[sectionIndex] || 'front';
+            }
+            
+            setupCardInteractions(cardElement, cardData) {
+                const behaviorConfig = this.configs.behavior.interactions;
+                
+                // Hover interactions from JSON
+                if (behaviorConfig.cardHover?.enabled) {
+                    cardElement.addEventListener('mouseenter', () => {
+                        this.handleJSONCardFocus(cardElement, cardData);
+                    });
+                    
+                    cardElement.addEventListener('mouseleave', () => {
+                        this.handleJSONCardUnfocus(cardElement, cardData);
+                    });
+                }
+                
+                // Click interactions from JSON
+                if (behaviorConfig.cardClick?.enabled) {
+                    cardElement.addEventListener('click', () => {
+                        this.handleJSONCardClick(cardElement, cardData);
+                    });
+                }
+            }
+            
+            handleJSONCardFocus(cardElement, cardData) {
+                this.focusedElement = cardElement;
+                
+                // Apply JSON-configured parameter changes
+                const reactivity = cardData.reactivity;
+                if (reactivity?.parameterChanges) {
+                    this.animateParameterChange(reactivity.parameterChanges);
+                }
+                
+                // Update interaction intensity from JSON config
+                const hoverConfig = this.configs.behavior.interactions.cardHover;
+                this.parameters.interactionIntensity = reactivity?.hoverIntensity || 0.8;
+                
+                // Apply visual effects from JSON
+                this.applyJSONVisualEffects(cardElement, reactivity?.focusEffect);
+                
+                this.highlightActiveParameters();
+                this.logToAgent(`Focused: ${cardData.id}`);
+            }
+            
+            handleJSONCardUnfocus(cardElement, cardData) {
+                this.focusedElement = null;
+                
+                // Return to theme base parameters
+                const themeConfig = this.configs.visuals.themes[this.currentTheme];
+                if (themeConfig?.parameters) {
+                    this.animateParameterChange(themeConfig.parameters);
+                }
+                
+                this.parameters.interactionIntensity = 0.0;
+                this.removeParameterHighlights();
+            }
+            
+            handleJSONCardClick(cardElement, cardData) {
+                const clickConfig = this.configs.behavior.interactions.cardClick;
+                
+                if (clickConfig.effects?.dramatic) {
+                    // Dramatic effect from JSON config
+                    const multiplier = clickConfig.effects.parameterMultiplier || 1.5;
+                    const dramaticParams = {};
+                    
+                    Object.entries(this.parameters).forEach(([key, value]) => {
+                        if (typeof value === 'number' && key !== 'interactionIntensity') {
+                            dramaticParams[key] = value * multiplier;
+                        }
+                    });
+                    
+                    this.animateParameterChange(dramaticParams);
+                    this.parameters.interactionIntensity = 1.0;
+                    
+                    // Return to focused state after duration
+                    const duration = clickConfig.effects?.duration || 1000;
+                    setTimeout(() => {
+                        this.handleJSONCardFocus(cardElement, cardData);
+                    }, duration);
+                }
+                
+                this.logToAgent(`Activated: ${cardData.id}`);
+            }
+            
+            applyJSONVisualEffects(element, effectName) {
+                if (!effectName) return;
+                
+                const effects = this.configs.visuals.effects?.focusEffects?.[effectName];
+                if (!effects) return;
+                
+                // Apply visual effects from JSON
+                if (effects.visualEffects?.glow) {
+                    element.style.boxShadow = '0 0 30px rgba(255, 255, 255, 0.5)';
+                }
+                
+                if (effects.visualEffects?.scale) {
+                    element.style.transform = `scale(${effects.visualEffects.scale})`;
+                }
+                
+                if (effects.visualEffects?.pulse) {
+                    element.style.animation = 'pulse 2s infinite';
+                }
+            }
+            
+            initializeWebGL() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                
+                this.gl = this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
+                
+                if (!this.gl) {
+                    this.updateStatusIndicator('webglStatus', 'error');
+                    this.logToAgent('WebGL not supported');
+                    return;
+                }
+                
+                // Get shader sources from JSON config
+                const webglConfig = this.configs.visuals.webgl;
+                
+                const vertexShaderSource = `
+                    attribute vec2 a_position;
+                    void main() {
+                        gl_Position = vec4(a_position, 0.0, 1.0);
+                    }
+                `;
+                
+                const fragmentShaderSource = `
+                    precision highp float;
+                    uniform vec2 u_resolution;
+                    uniform float u_time;
+                    uniform float u_dimension;
+                    uniform float u_gridDensity;
+                    uniform float u_morphFactor;
+                    uniform float u_interactionIntensity;
+                    uniform float u_geometry;
+                    uniform vec3 u_baseColor;
+                    
+                    void main() {
+                        vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+                        float aspect = u_resolution.x / u_resolution.y;
+                        uv.x *= aspect;
+                        
+                        // Visible grid lines (JSON-configurable)
+                        vec2 grid = fract(uv * u_gridDensity + u_time * 0.1);
+                        float lines = min(
+                            smoothstep(0.0, 0.02, grid.x) * smoothstep(0.0, 0.02, 1.0 - grid.x),
+                            smoothstep(0.0, 0.02, grid.y) * smoothstep(0.0, 0.02, 1.0 - grid.y)
+                        );
+                        
+                        // 4D effect from JSON parameters
+                        float wave = sin(length(uv) * 10.0 + u_time) * (u_dimension - 3.0);
+                        lines += wave * u_morphFactor * 0.3;
+                        
+                        // Theme color from JSON
+                        vec3 color = mix(
+                            vec3(0.1, 0.0, 0.2),
+                            u_baseColor,
+                            lines * (0.3 + u_interactionIntensity * 0.7)
+                        );
+                        
+                        gl_FragColor = vec4(color, 0.8);
+                    }
+                `;
+                
+                this.program = this.createShaderProgram(vertexShaderSource, fragmentShaderSource);
+                this.setupBuffers();
+                
+                this.updateStatusIndicator('webglStatus', 'success');
+                this.logToAgent('WebGL initialized with JSON-configured shaders');
+            }
+            
+            createShaderProgram(vertexSource, fragmentSource) {
+                const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
+                this.gl.shaderSource(vertexShader, vertexSource);
+                this.gl.compileShader(vertexShader);
+                
+                const fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+                this.gl.shaderSource(fragmentShader, fragmentSource);
+                this.gl.compileShader(fragmentShader);
+                
+                const program = this.gl.createProgram();
+                this.gl.attachShader(program, vertexShader);
+                this.gl.attachShader(program, fragmentShader);
+                this.gl.linkProgram(program);
+                
+                return program;
+            }
+            
+            setupBuffers() {
+                const positions = new Float32Array([
+                    -1.0, -1.0,
+                     1.0, -1.0,
+                    -1.0,  1.0,
+                     1.0,  1.0,
+                ]);
+                
+                this.positionBuffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
+            }
+            
+            setupJSONInteractions() {
+                const behaviorConfig = this.configs.behavior.interactions;
+                
+                // Keyboard controls from JSON
+                if (this.configs.content.navigation?.controls?.keyboard?.enabled) {
+                    document.addEventListener('keydown', (e) => {
+                        const keyMap = this.configs.content.navigation.controls.keyboard.keys;
+                        const action = keyMap[e.key];
+                        
+                        if (action?.action === 'navigateSection') {
+                            e.preventDefault();
+                            this.transitionToSection(action.target);
+                        }
+                    });
+                }
+                
+                // Mouse interactions from JSON
+                if (behaviorConfig.mouseMovement?.enabled) {
+                    this.canvas.addEventListener('mousemove', (e) => {
+                        const effects = behaviorConfig.mouseMovement.effects;
+                        if (effects.interactionIntensity) {
+                            this.parameters.interactionIntensity = 
+                                Math.max(this.parameters.interactionIntensity * 0.95, effects.interactionIntensity);
+                        }
+                    });
+                }
+                
+                // Scroll interactions from JSON
+                if (behaviorConfig.scrollInteraction?.enabled) {
+                    window.addEventListener('wheel', (e) => {
+                        const scrollConfig = behaviorConfig.scrollInteraction.effects;
+                        if (scrollConfig.gridDensity?.enabled) {
+                            const delta = e.deltaY / 1000;
+                            const sensitivity = scrollConfig.gridDensity.sensitivity || 2.0;
+                            const min = scrollConfig.gridDensity.min || 5;
+                            const max = scrollConfig.gridDensity.max || 30;
+                            
+                            this.parameters.gridDensity = Math.max(min, Math.min(max, 
+                                this.parameters.gridDensity + delta * sensitivity));
+                            this.parameters.interactionIntensity = scrollConfig.interactionIntensity || 0.6;
+                        }
+                    }, { passive: true });
+                }
+                
+                this.updateStatusIndicator('feedbackStatus', 'success');
+                this.logToAgent('JSON-configured interactions enabled');
+            }
+            
+            setupConfigSubscriptions() {
+                // Subscribe to configuration changes
+                this.configSystem.subscribe('configUpdated', (data) => {
+                    this.logToAgent(`Config updated: ${data.configType}.${data.path}`);
+                    
+                    // Handle real-time updates
+                    if (data.configType === 'visuals' && data.path.includes('parameters')) {
+                        this.updateParametersFromJSON();
+                    }
+                    
+                    if (data.configType === 'content') {
+                        this.generateContentFromJSON();
+                    }
+                });
+                
+                this.configSystem.subscribe('presetApplied', (data) => {
+                    this.logToAgent(`Preset applied: ${data.presetName}`);
+                    this.updateParametersFromJSON();
+                });
+            }
+            
+            updateParametersFromJSON() {
+                const themeConfig = this.configs.visuals.themes[this.currentTheme];
+                if (themeConfig?.parameters) {
+                    this.animateParameterChange(themeConfig.parameters);
+                }
+            }
+            
+            transitionToSection(sectionIndex) {
+                this.currentSection = sectionIndex;
+                
+                // Get theme from JSON config
+                const sectionData = this.configs.content.sections[sectionIndex.toString()];
+                if (sectionData?.theme) {
+                    this.currentTheme = sectionData.theme;
+                    this.updateParametersFromJSON();
+                }
+                
+                // Update hypercube rotation
+                const container = document.getElementById('hypercube-container');
+                container.className = 'hypercube-container';
+                
+                const rotations = {
+                    0: '',
+                    1: 'rotated-right',
+                    2: 'rotated-back',
+                    3: 'rotated-left',
+                    4: 'rotated-up',
+                    5: 'rotated-down'
+                };
+                
+                if (rotations[sectionIndex]) {
+                    container.classList.add(rotations[sectionIndex]);
+                }
+                
+                this.logToAgent(`Transitioned to section ${sectionIndex} (${this.currentTheme})`);
+            }
+            
+            animateParameterChange(targetParams) {
+                const startParams = { ...this.parameters };
+                const startTime = Date.now();
+                const duration = this.configs.behavior.interactions?.sectionTransition?.duration || 800;
+                
+                const animate = () => {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / duration, 1.0);
+                    const eased = 0.5 - 0.5 * Math.cos(progress * Math.PI);
+                    
+                    Object.keys(targetParams).forEach(key => {
+                        if (this.parameters[key] !== undefined) {
+                            this.parameters[key] = startParams[key] + 
+                                (targetParams[key] - startParams[key]) * eased;
+                        }
+                    });
+                    
+                    if (progress < 1.0) {
+                        requestAnimationFrame(animate);
+                    }
+                };
+                
+                animate();
+            }
+            
+            render() {
+                if (!this.gl || !this.program) return;
+                
+                this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+                this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+                this.gl.useProgram(this.program);
+                
+                // Get current theme color from JSON
+                const themeConfig = this.configs.visuals.themes[this.currentTheme];
+                const baseColor = themeConfig?.baseColor || [1.0, 0.0, 1.0];
+                const geometryIndex = this.configs.visuals.webgl?.geometries?.[this.currentTheme]?.index || 0;
+                
+                // Set uniforms
+                const timeLocation = this.gl.getUniformLocation(this.program, 'u_time');
+                const resolutionLocation = this.gl.getUniformLocation(this.program, 'u_resolution');
+                const dimensionLocation = this.gl.getUniformLocation(this.program, 'u_dimension');
+                const gridLocation = this.gl.getUniformLocation(this.program, 'u_gridDensity');
+                const morphLocation = this.gl.getUniformLocation(this.program, 'u_morphFactor');
+                const interactionLocation = this.gl.getUniformLocation(this.program, 'u_interactionIntensity');
+                const geometryLocation = this.gl.getUniformLocation(this.program, 'u_geometry');
+                const colorLocation = this.gl.getUniformLocation(this.program, 'u_baseColor');
+                
+                this.gl.uniform1f(timeLocation, Date.now() / 1000);
+                this.gl.uniform2f(resolutionLocation, this.canvas.width, this.canvas.height);
+                this.gl.uniform1f(dimensionLocation, this.parameters.dimension);
+                this.gl.uniform1f(gridLocation, this.parameters.gridDensity);
+                this.gl.uniform1f(morphLocation, this.parameters.morphFactor);
+                this.gl.uniform1f(interactionLocation, this.parameters.interactionIntensity);
+                this.gl.uniform1f(geometryLocation, geometryIndex);
+                this.gl.uniform3fv(colorLocation, baseColor);
+                
+                // Draw
+                const positionLocation = this.gl.getAttribLocation(this.program, 'a_position');
+                this.gl.enableVertexAttribArray(positionLocation);
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+                this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+                
+                this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+                
+                requestAnimationFrame(() => this.render());
+            }
+            
+            startParameterUpdates() {
+                setInterval(() => {
+                    this.updateParameterDisplay();
+                }, 100);
+                
+                this.render();
+            }
+            
+            updateParameterDisplay() {
+                document.getElementById('currentSection').textContent = this.currentSection;
+                document.getElementById('currentTheme').textContent = 
+                    this.currentTheme.charAt(0).toUpperCase() + this.currentTheme.slice(1);
+                document.getElementById('dimensionLevel').textContent = 
+                    this.parameters.dimension.toFixed(2);
+                document.getElementById('gridDensity').textContent = 
+                    this.parameters.gridDensity.toFixed(1);
+                document.getElementById('morphLevel').textContent = 
+                    this.parameters.morphFactor.toFixed(2);
+                document.getElementById('interactionIntensity').textContent = 
+                    this.parameters.interactionIntensity.toFixed(2);
+            }
+            
+            highlightActiveParameters() {
+                document.querySelectorAll('.param-value').forEach(el => {
+                    el.classList.add('active');
+                });
+            }
+            
+            removeParameterHighlights() {
+                document.querySelectorAll('.param-value').forEach(el => {
+                    el.classList.remove('active');
+                });
+            }
+            
+            updateStatusIndicator(indicatorId, status) {
+                const indicator = document.getElementById(indicatorId);
+                if (indicator) {
+                    indicator.className = 'status-dot';
+                    if (status === 'error') {
+                        indicator.classList.add('error');
+                    } else if (status === 'warning') {
+                        indicator.classList.add('warning');
+                    }
+                }
+            }
+            
+            logToAgent(message) {
+                const log = document.getElementById('agentLog');
+                const timestamp = new Date().toLocaleTimeString();
+                log.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+                log.scrollTop = log.scrollHeight;
+            }
+        }
+        
+        // GLOBAL FUNCTIONS FOR JSON CONFIG SYSTEM
+        async function applyJSONPreset(presetName) {
+            if (window.agentAPI) {
+                try {
+                    await window.agentAPI.applyPreset(presetName);
+                    console.log(`Applied preset: ${presetName}`);
+                } catch (error) {
+                    console.error(`Failed to apply preset ${presetName}:`, error);
+                }
+            }
+        }
+        
+        function cycleJSONTheme() {
+            if (window.vib3System) {
+                const themes = Object.keys(window.vib3System.configs.visuals.themes);
+                const currentIndex = themes.indexOf(window.vib3System.currentTheme);
+                const nextIndex = (currentIndex + 1) % themes.length;
+                const nextTheme = themes[nextIndex];
+                
+                window.vib3System.currentTheme = nextTheme;
+                window.vib3System.updateParametersFromJSON();
+                window.vib3System.logToAgent(`Theme cycled to: ${nextTheme}`);
+            }
+        }
+        
+        function exportJSONConfig() {
+            if (window.agentAPI) {
+                const config = window.agentAPI.exportConfig();
+                const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'vib3-config-export.json';
+                a.click();
+                URL.revokeObjectURL(url);
+                console.log('Configuration exported');
+            }
+        }
+        
+        async function hotReloadJSON() {
+            if (window.vib3System) {
+                try {
+                    await window.vib3System.configSystem.hotReload();
+                    window.vib3System.generateContentFromJSON();
+                    window.vib3System.logToAgent('Hot reload completed');
+                } catch (error) {
+                    console.error('Hot reload failed:', error);
+                }
+            }
+        }
+        
+        // Initialize the JSON-configurable system
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Starting JSON-Configurable VIB3 System...');
+            
+            window.vib3System = new JSONConfigurableVIB3System();
+            await window.vib3System.initialize();
+            
+            // Update agent API status
+            if (window.agentAPI) {
+                window.vib3System.updateStatusIndicator('agentStatus', 'success');
+                window.vib3System.logToAgent('Agent API ready for dashboard integration');
+            }
+        });
+    </script>
+</body>
+</html>
