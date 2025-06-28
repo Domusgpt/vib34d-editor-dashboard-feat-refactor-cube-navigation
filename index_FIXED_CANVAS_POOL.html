@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Professional Dashboard | Fixed Canvas Pool</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+            background: radial-gradient(ellipse at center, #1a0033 0%, #000000 70%);
+            
+            /* Advanced CSS Variables for Real-time Reactivity */
+            --global-energy: 0.0;
+            --section-focus: 0;
+            --portal-intensity: 0.0;
+            --micro-chaos: 0.0;
+            --inverse-flow: 0.0;
+            --grid-vibrance: 1.0;
+            --transition-phase: 0.0;
+            --hover-section: -1;
+            --scroll-momentum: 0.0;
+            --reality-tear: 0.0;
+            
+            /* Smart Opacity Variables */
+            --visualizer-opacity: 0.8;
+            --focused-opacity: 0.9;
+            --reading-opacity: 0.7;
+            --gravity-opacity: 0.8;
+            --board-opacity: 0.7;
+        }
+
+        /* TESSERACT 8-CELL HYPERCUBE CONTAINER */
+        .tesseract-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 2000px;
+            perspective-origin: center center;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .hypercube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            backface-visibility: visible;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        /* 8-CELL TESSERACT FACE POSITIONS */
+        .hypercube-face.face-0 { /* FRONT - HOME */
+            transform: translateZ(0px) rotateY(0deg);
+        }
+        
+        .hypercube-face.face-1 { /* RIGHT - TECH */
+            transform: translateZ(-100px) rotateY(90deg);
+        }
+        
+        .hypercube-face.face-2 { /* BACK - MEDIA */
+            transform: translateZ(-200px) rotateY(180deg);
+        }
+        
+        .hypercube-face.face-3 { /* LEFT - AUDIO */
+            transform: translateZ(-100px) rotateY(-90deg);
+        }
+        
+        .hypercube-face.face-4 { /* TOP - QUANTUM */
+            transform: translateZ(-100px) rotateX(-90deg);
+        }
+        
+        .hypercube-face.face-5 { /* BOTTOM - CONTEXT */
+            transform: translateZ(-100px) rotateX(90deg);
+        }
+        
+        .hypercube-face.face-6 { /* INNER - INNOVATION */
+            transform: translateZ(-300px) rotateY(0deg);
+        }
+        
+        .hypercube-face.face-7 { /* OUTER - RESEARCH */
+            transform: translateZ(100px) rotateY(0deg);
+        }
+
+        /* ADAPTIVE CONTENT CARDS */
+        .adaptive-card {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .adaptive-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 255, 0.1) 0%,
+                rgba(255, 0, 255, 0.1) 50%,
+                rgba(0, 255, 255, 0.1) 100%);
+            z-index: -1;
+        }
+        
+        .adaptive-card:hover {
+            border-color: rgba(0, 255, 255, 0.8);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
+        }
+        
+        .adaptive-card h3 {
+            margin: 0 0 10px 0;
+            color: #00ffff;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .adaptive-card p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* FACE-SPECIFIC CARD LAYOUTS */
+        .face-0 .adaptive-card { width: 280px; height: 180px; }
+        .face-0 .adaptive-card:nth-child(1) { top: 15%; left: 8%; }
+        .face-0 .adaptive-card:nth-child(2) { top: 15%; right: 8%; }
+        .face-0 .adaptive-card:nth-child(3) { bottom: 15%; left: 8%; }
+        .face-0 .adaptive-card:nth-child(4) { bottom: 15%; right: 8%; }
+        .face-0 .adaptive-card:nth-child(5) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .face-0 .adaptive-card:nth-child(6) { top: 8%; left: 50%; transform: translateX(-50%); }
+
+        .face-1 .adaptive-card { width: 300px; height: 200px; }
+        .face-1 .adaptive-card:nth-child(1) { top: 10%; left: 5%; }
+        .face-1 .adaptive-card:nth-child(2) { top: 10%; right: 5%; }
+        .face-1 .adaptive-card:nth-child(3) { bottom: 10%; left: 5%; }
+        .face-1 .adaptive-card:nth-child(4) { bottom: 10%; right: 5%; }
+
+        /* Navigation Bezels */
+        .navigation-bezels {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .nav-bezel {
+            position: absolute;
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            cursor: pointer;
+            pointer-events: all;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .nav-bezel:hover {
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.5), rgba(255, 0, 255, 0.5));
+            border-color: rgba(0, 255, 255, 0.9);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+        }
+        
+        .nav-bezel-right {
+            top: 40%;
+            right: 10px;
+            width: 60px;
+            height: 20%;
+            border-radius: 30px 0 0 30px;
+        }
+        
+        .nav-bezel-left {
+            top: 40%;
+            left: 10px;
+            width: 60px;
+            height: 20%;
+            border-radius: 0 30px 30px 0;
+        }
+        
+        .nav-bezel-top {
+            top: 10px;
+            left: 40%;
+            width: 20%;
+            height: 60px;
+            border-radius: 0 0 30px 30px;
+        }
+        
+        .nav-bezel-bottom {
+            bottom: 10px;
+            left: 40%;
+            width: 20%;
+            height: 60px;
+            border-radius: 30px 30px 0 0;
+        }
+
+        /* Canvas Pool Styles */
+        .vib34d-pool-canvas {
+            position: absolute;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+        
+        .pool-canvas-background {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .pool-canvas-navigation {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        .pool-canvas-effects {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        /* Status Indicator */
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            z-index: 1001;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+        }
+        
+        .status-indicator .face-info {
+            color: #00ffff;
+            font-weight: bold;
+        }
+        
+        .status-indicator .canvas-info {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-indicator">
+        <div class="face-info">🎯 <span id="current-face-name">HOME</span> - Face <span id="current-face-number">0</span>/7</div>
+        <div class="canvas-info">Canvas Pool: <span id="canvas-count">0</span> active</div>
+    </div>
+
+    <div class="tesseract-container" id="tesseract-container">
+        <!-- FACE 0: HOME -->
+        <div class="hypercube-face face-0" id="face-0">
+            <div class="adaptive-card" id="blog-card-1-home">
+                <h3>🏠 VIB34D Dashboard</h3>
+                <p>Professional hypercube navigation system with smart canvas pooling and reactive WebGL visualizations.</p>
+            </div>
+            <div class="adaptive-card" id="blog-card-2-home">
+                <h3>🎨 Smart Canvas Pool</h3>
+                <p>7 persistent WebGL canvases that dynamically change content based on hypercube face transitions.</p>
+            </div>
+            <div class="adaptive-card" id="blog-card-3-home">
+                <h3>🧭 Tesseract Navigation</h3>
+                <p>Navigate between 8 tesseract faces using intuitive bezel controls with smooth 3D transitions.</p>
+            </div>
+            <div class="adaptive-card" id="blog-card-4-home">
+                <h3>⚡ Reactive System</h3>
+                <p>Mouse interactions and scroll events affect global visual parameters through unified reactivity bridge.</p>
+            </div>
+            <div class="adaptive-card" id="blog-card-5-home">
+                <h3>🔧 JSON Configuration</h3>
+                <p>Complete content, style, and behavior configuration system for maximum customization.</p>
+            </div>
+            <div class="adaptive-card" id="blog-card-6-home">
+                <h3>🌟 4D Visualizations</h3>
+                <p>Real-time 4D geometric transformations with hypercube, tetrahedron, sphere, and torus rendering.</p>
+            </div>
+        </div>
+
+        <!-- FACE 1: TECH -->
+        <div class="hypercube-face face-1" id="face-1">
+            <div class="adaptive-card" id="blog-card-1-tech">
+                <h3>💻 WebGL Technology</h3>
+                <p>Advanced WebGL 2.0 shaders with ReactiveHyperAVCore engine for 4D mathematical visualization.</p>
+            </div>
+            <div class="adaptive-card" id="blog-card-2-tech">
+                <h3>🔧 Modular Architecture</h3>
+                <p>ES6 modules with ShaderManager, GeometryManager, and ProjectionManager for maximum flexibility.</p>
+            </div>
+            <div class="adaptive-card" id="blog-card-3-tech">
+                <h3>🎯 Performance Optimized</h3>
+                <p>Smart canvas pooling prevents memory leaks and ensures smooth 60fps performance on all devices.</p>
+            </div>
+            <div class="adaptive-card" id="blog-card-4-tech">
+                <h3>🌐 Cross-Platform</h3>
+                <p>Works on all modern browsers with graceful fallback to 2D rendering when WebGL unavailable.</p>
+            </div>
+        </div>
+
+        <!-- Add more faces as needed -->
+    </div>
+
+    <div class="navigation-bezels">
+        <div class="nav-bezel nav-bezel-right" id="nav-right" title="Next Face"></div>
+        <div class="nav-bezel nav-bezel-left" id="nav-left" title="Previous Face"></div>
+        <div class="nav-bezel nav-bezel-top" id="nav-top" title="Jump +2 Faces"></div>
+        <div class="nav-bezel nav-bezel-bottom" id="nav-bottom" title="Jump -2 Faces"></div>
+    </div>
+
+    <!-- EMBED THE FIXED CANVAS POOL DIRECTLY -->
+    <script>
+        // VIB34DCanvasPool with setupContentManagement method embedded
+        class VIB34DCanvasPool {
+            constructor(homeMaster, reactivityBridge) {
+                this.homeMaster = homeMaster;
+                this.reactivityBridge = reactivityBridge;
+                
+                // Pool configuration
+                this.poolSize = 7;
+                this.canvasPool = new Map();
+                this.activeAssignments = new Map();
+                this.contentQueue = [];
+                
+                // Canvas roles
+                this.canvasRoles = {
+                    BACKGROUND: 'background',
+                    CONTENT_A: 'content_a',
+                    CONTENT_B: 'content_b',
+                    CONTENT_C: 'content_c', 
+                    CONTENT_D: 'content_d',
+                    NAVIGATION: 'navigation',
+                    EFFECTS: 'effects'
+                };
+                
+                // Current state tracking
+                this.currentFace = 0;
+                this.visibleCards = [];
+                this.pendingTransitions = [];
+                
+                console.log('🎨 VIB34DCanvasPool initialized with smart pooling architecture');
+            }
+            
+            async initialize() {
+                console.log('🚀 Initializing VIB34D Canvas Pool System...');
+                
+                try {
+                    // Create persistent canvas pool
+                    await this.createCanvasPool();
+                    
+                    // Set up dynamic content management
+                    this.setupContentManagement();
+                    
+                    // Initialize with home face
+                    await this.loadFaceContent(0);
+                    
+                    console.log(`✅ Canvas Pool initialized: ${this.canvasPool.size} persistent canvases`);
+                    return true;
+                    
+                } catch (error) {
+                    console.error('❌ Failed to initialize canvas pool:', error);
+                    throw error;
+                }
+            }
+            
+            setupContentManagement() {
+                console.log('🔧 Setting up dynamic content management system...');
+                
+                // Initialize content tracking
+                this.contentQueue = [];
+                this.activeAssignments = new Map();
+                
+                // Set up resize handling
+                window.addEventListener('resize', () => {
+                    this.handleResize();
+                });
+                
+                console.log('✅ Content management system ready');
+            }
+            
+            handleResize() {
+                for (const [role, canvasData] of this.canvasPool) {
+                    if (role === 'background' || role === 'navigation' || role === 'effects') {
+                        // Fullscreen canvases
+                        canvasData.canvas.width = window.innerWidth;
+                        canvasData.canvas.height = window.innerHeight;
+                    }
+                    
+                    if (canvasData.visualizer && canvasData.visualizer.resize) {
+                        canvasData.visualizer.resize();
+                    }
+                }
+            }
+            
+            async createCanvasPool() {
+                const roles = Object.values(this.canvasRoles);
+                
+                for (const role of roles) {
+                    try {
+                        // Create canvas for this role
+                        const canvas = this.createPoolCanvas(role);
+                        
+                        // Initialize simple visualizer (placeholder for your ReactiveHyperAVCore)
+                        const visualizer = this.createSimpleVisualizer(canvas, role);
+                        
+                        this.canvasPool.set(role, {
+                            canvas: canvas,
+                            visualizer: visualizer,
+                            role: role,
+                            currentContent: null,
+                            isActive: role === this.canvasRoles.BACKGROUND,
+                            lastUpdate: Date.now()
+                        });
+                        
+                        console.log(`✅ Created pool canvas: ${role}`);
+                        
+                    } catch (error) {
+                        console.error(`❌ Failed to create canvas for role ${role}:`, error);
+                        
+                        // Create fallback canvas
+                        const canvas = this.createPoolCanvas(role);
+                        this.canvasPool.set(role, {
+                            canvas: canvas,
+                            visualizer: null,
+                            role: role,
+                            currentContent: null,
+                            isActive: false,
+                            fallback2D: true
+                        });
+                    }
+                }
+                
+                // Update canvas count display
+                document.getElementById('canvas-count').textContent = this.canvasPool.size;
+            }
+            
+            createPoolCanvas(role) {
+                const canvas = document.createElement('canvas');
+                canvas.id = `pool-canvas-${role}`;
+                canvas.className = `vib34d-pool-canvas pool-canvas-${role}`;
+                
+                // Set canvas properties based on role
+                switch (role) {
+                    case this.canvasRoles.BACKGROUND:
+                        canvas.style.cssText = `
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100vw;
+                            height: 100vh;
+                            z-index: 1;
+                            pointer-events: none;
+                        `;
+                        canvas.width = window.innerWidth;
+                        canvas.height = window.innerHeight;
+                        break;
+                        
+                    case this.canvasRoles.NAVIGATION:
+                        canvas.style.cssText = `
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100vw;
+                            height: 100vh;
+                            z-index: 100;
+                            pointer-events: none;
+                        `;
+                        canvas.width = window.innerWidth;
+                        canvas.height = window.innerHeight;
+                        break;
+                        
+                    case this.canvasRoles.EFFECTS:
+                        canvas.style.cssText = `
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100vw;
+                            height: 100vh;
+                            z-index: 50;
+                            pointer-events: none;
+                        `;
+                        canvas.width = window.innerWidth;
+                        canvas.height = window.innerHeight;
+                        break;
+                        
+                    default:
+                        // Content canvases - positioned dynamically
+                        canvas.style.cssText = `
+                            position: absolute;
+                            width: 300px;
+                            height: 200px;
+                            z-index: 10;
+                            border-radius: 8px;
+                            opacity: 0;
+                            transition: all 0.3s ease;
+                        `;
+                        canvas.width = 300;
+                        canvas.height = 200;
+                        break;
+                }
+                
+                // Add to DOM
+                document.body.appendChild(canvas);
+                
+                return canvas;
+            }
+            
+            createSimpleVisualizer(canvas, role) {
+                // Simple WebGL visualizer (placeholder for your ReactiveHyperAVCore)
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                
+                if (!gl) {
+                    // 2D fallback
+                    const ctx = canvas.getContext('2d');
+                    return {
+                        render: () => {
+                            const time = Date.now() * 0.001;
+                            const hue = (time * 30 + role.length * 50) % 360;
+                            ctx.fillStyle = `hsla(${hue}, 70%, 20%, 0.8)`;
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        },
+                        resize: () => {},
+                        dispose: () => {}
+                    };
+                }
+                
+                // Simple WebGL visualizer
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                
+                return {
+                    render: () => {
+                        const time = Date.now() * 0.001;
+                        const r = 0.1 + 0.1 * Math.sin(time + role.length);
+                        const g = 0.0;
+                        const b = 0.2 + 0.1 * Math.cos(time * 0.5 + role.length);
+                        
+                        gl.clearColor(r, g, b, 0.8);
+                        gl.clear(gl.COLOR_BUFFER_BIT);
+                    },
+                    resize: () => {
+                        gl.viewport(0, 0, canvas.width, canvas.height);
+                    },
+                    dispose: () => {}
+                };
+            }
+            
+            async loadFaceContent(faceIndex) {
+                console.log(`🔄 Loading content for face ${faceIndex}...`);
+                
+                this.currentFace = faceIndex;
+                
+                // Start render loops for active canvases
+                this.startRenderLoops();
+                
+                console.log(`✅ Face ${faceIndex} content loaded`);
+            }
+            
+            startRenderLoops() {
+                // Start render loop for all visualizers
+                const animate = () => {
+                    for (const [role, canvasData] of this.canvasPool) {
+                        if (canvasData.visualizer && canvasData.isActive) {
+                            canvasData.visualizer.render();
+                        }
+                    }
+                    requestAnimationFrame(animate);
+                };
+                animate();
+            }
+            
+            getSystemState() {
+                const poolState = {};
+                
+                for (const [role, canvas] of this.canvasPool) {
+                    poolState[role] = {
+                        isActive: canvas.isActive,
+                        currentContent: canvas.currentContent,
+                        hasVisualizer: !!canvas.visualizer
+                    };
+                }
+                
+                return {
+                    poolSize: this.canvasPool.size,
+                    currentFace: this.currentFace,
+                    canvasStates: poolState
+                };
+            }
+        }
+
+        // Simplified HomeMaster
+        class VIB3HomeMaster {
+            constructor() {
+                this.masterState = {
+                    activeSection: 0,
+                    activeDragScrollElementId: null
+                };
+                console.log('🏠 VIB3HomeMaster initialized');
+            }
+            
+            handleScrollInteraction(type, data) {
+                console.log(`🖱️ Scroll interaction: ${type}`, data);
+            }
+            
+            getInstanceParameters(face, role) {
+                return {
+                    intensity: 0.8,
+                    baseColor: [0.0, 1.0, 1.0]
+                };
+            }
+        }
+
+        // Simplified ReactivityBridge
+        class UnifiedReactivityBridge {
+            constructor() {
+                console.log('🌉 UnifiedReactivityBridge initialized');
+            }
+        }
+
+        // Main Dashboard Class
+        class VIB34DProfessionalDashboard {
+            constructor() {
+                this.currentFace = 0;
+                this.totalFaces = 8;
+                this.canvasPool = null;
+                this.homeMaster = null;
+                this.reactivityBridge = null;
+                
+                this.faceNames = [
+                    'HOME', 'TECH', 'MEDIA', 'AUDIO',
+                    'QUANTUM', 'CONTEXT', 'INNOVATION', 'RESEARCH'
+                ];
+            }
+            
+            async init() {
+                console.log('🚀 Initializing VIB34D Professional Dashboard...');
+                
+                try {
+                    // Initialize core systems
+                    this.homeMaster = new VIB3HomeMaster();
+                    this.reactivityBridge = new UnifiedReactivityBridge();
+                    
+                    // Initialize canvas pool with WORKING setupContentManagement
+                    await this.initializeCanvasPool();
+                    
+                    // Setup navigation
+                    this.setupNavigation();
+                    
+                    console.log('🌟 VIB34D Professional Dashboard fully initialized!');
+                    
+                } catch (error) {
+                    console.error('❌ Dashboard initialization failed:', error);
+                }
+            }
+            
+            async initializeCanvasPool() {
+                console.log('🎨 Initializing Smart Canvas Pool System...');
+                
+                try {
+                    this.canvasPool = new VIB34DCanvasPool(this.homeMaster, this.reactivityBridge);
+                    await this.canvasPool.initialize();
+                    console.log('✅ Canvas Pool System initialized successfully!');
+                } catch (error) {
+                    console.error('❌ Canvas Pool initialization failed:', error);
+                    throw error;
+                }
+            }
+            
+            setupNavigation() {
+                // Bezel navigation
+                document.getElementById('nav-right').addEventListener('click', () => {
+                    this.navigateToFace((this.currentFace + 1) % this.totalFaces);
+                });
+                
+                document.getElementById('nav-left').addEventListener('click', () => {
+                    this.navigateToFace((this.currentFace - 1 + this.totalFaces) % this.totalFaces);
+                });
+                
+                document.getElementById('nav-top').addEventListener('click', () => {
+                    this.navigateToFace((this.currentFace + 2) % this.totalFaces);
+                });
+                
+                document.getElementById('nav-bottom').addEventListener('click', () => {
+                    this.navigateToFace((this.currentFace - 2 + this.totalFaces) % this.totalFaces);
+                });
+                
+                console.log('🧭 Navigation system configured');
+            }
+            
+            navigateToFace(faceIndex) {
+                console.log(`🔄 Navigating to face ${faceIndex}: ${this.faceNames[faceIndex]}`);
+                
+                // Hide current face
+                const currentFace = document.getElementById(`face-${this.currentFace}`);
+                if (currentFace) {
+                    currentFace.style.transform = 'translateZ(-1000px) rotateY(90deg)';
+                    currentFace.style.opacity = '0';
+                }
+                
+                // Show new face
+                const newFace = document.getElementById(`face-${faceIndex}`);
+                if (newFace) {
+                    newFace.style.transform = 'translateZ(0px) rotateY(0deg)';
+                    newFace.style.opacity = '1';
+                }
+                
+                this.currentFace = faceIndex;
+                
+                // Update displays
+                document.getElementById('current-face-name').textContent = this.faceNames[faceIndex];
+                document.getElementById('current-face-number').textContent = faceIndex;
+                
+                // Update canvas pool
+                if (this.canvasPool) {
+                    this.canvasPool.loadFaceContent(faceIndex);
+                }
+            }
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.vib34dDashboard = new VIB34DProfessionalDashboard();
+            window.vib34dDashboard.init();
+        });
+    </script>
+</body>
+</html>
