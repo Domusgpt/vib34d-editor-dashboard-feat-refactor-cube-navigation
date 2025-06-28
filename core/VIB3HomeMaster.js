@@ -490,6 +490,47 @@ class VIB3HomeMaster {
     }
     
     /**
+     * Handle scroll interactions from DragScrollHandler
+     */
+    handleScrollInteraction(type, data) {
+        console.log(`🖱️ VIB3HomeMaster scroll interaction: ${type}`, data);
+        
+        // Track active drag scroll element
+        if (type === 'dragScrollStart') {
+            this.masterState.activeDragScrollElementId = data.elementId;
+        } else if (type === 'dragScrollEnd') {
+            this.masterState.activeDragScrollElementId = null;
+        }
+        
+        switch(type) {
+            case 'dragScrollStart':
+                this.updateInteraction('click', { intensity: 0.3 });
+                break;
+                
+            case 'dragScrollMove':
+                // Calculate scroll velocity for chaos effect
+                const deltaX = data.currentX - (this.lastScrollX || data.currentX);
+                const deltaY = data.currentY - (this.lastScrollY || data.currentY);
+                const velocity = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                
+                this.updateInteraction('scroll', { 
+                    chaos: velocity * 0.01,
+                    velocity: velocity * 0.001
+                });
+                
+                this.lastScrollX = data.currentX;
+                this.lastScrollY = data.currentY;
+                break;
+                
+            case 'dragScrollEnd':
+                // Gradual decay handled by update loop
+                this.lastScrollX = null;
+                this.lastScrollY = null;
+                break;
+        }
+    }
+
+    /**
      * Reset to baseline state
      */
     reset() {
@@ -504,7 +545,8 @@ class VIB3HomeMaster {
             clickPulse: 0.0,
             scrollChaos: 0.0,
             activeSection: 0,
-            transitionProgress: 1.0
+            transitionProgress: 1.0,
+            activeDragScrollElementId: null
         };
         
         console.log('🔄 VIB3HomeMaster reset to baseline state');
