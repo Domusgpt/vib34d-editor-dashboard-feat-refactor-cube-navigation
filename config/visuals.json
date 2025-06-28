@@ -1,0 +1,264 @@
+{
+  "version": "1.0.0",
+  "lastModified": "2025-06-27T12:00:00.000Z",
+  "themes": {
+    "hypercube": {
+      "name": "Magenta Sovereignty",
+      "baseColor": [1.0, 0.0, 1.0],
+      "accentColor": [0.0, 1.0, 1.0],
+      "parameters": {
+        "dimension": 3.7,
+        "morphFactor": 0.5,
+        "gridDensity": 12.0,
+        "glitchIntensity": 0.3,
+        "rotationSpeed": 0.5
+      },
+      "cssVariables": {
+        "--primary-color": "#ff00ff",
+        "--accent-color": "#00ffff",
+        "--background-gradient": "linear-gradient(135deg, #1a0033 0%, #000000 70%)",
+        "--glow-color": "#ff00ff80",
+        "--border-color": "#ff00ff40"
+      },
+      "shaderUniforms": {
+        "u_baseColor": [1.0, 0.0, 1.0],
+        "u_accentColor": [0.0, 1.0, 1.0],
+        "u_glitchIntensity": 0.3,
+        "u_chromaticAberration": 0.002
+      }
+    },
+    "tetrahedron": {
+      "name": "Cyan Precision",
+      "baseColor": [0.0, 1.0, 1.0],
+      "accentColor": [1.0, 1.0, 0.0],
+      "parameters": {
+        "dimension": 3.2,
+        "morphFactor": 0.7,
+        "gridDensity": 8.0,
+        "glitchIntensity": 0.2,
+        "rotationSpeed": 0.7
+      },
+      "cssVariables": {
+        "--primary-color": "#00ffff",
+        "--accent-color": "#ffff00",
+        "--background-gradient": "linear-gradient(135deg, #001a33 0%, #000000 70%)",
+        "--glow-color": "#00ffff80",
+        "--border-color": "#00ffff40"
+      },
+      "shaderUniforms": {
+        "u_baseColor": [0.0, 1.0, 1.0],
+        "u_accentColor": [1.0, 1.0, 0.0],
+        "u_glitchIntensity": 0.2,
+        "u_chromaticAberration": 0.001
+      }
+    },
+    "sphere": {
+      "name": "Yellow Potential",
+      "baseColor": [1.0, 1.0, 0.0],
+      "accentColor": [1.0, 0.0, 1.0],
+      "parameters": {
+        "dimension": 3.8,
+        "morphFactor": 0.3,
+        "gridDensity": 15.0,
+        "glitchIntensity": 0.1,
+        "rotationSpeed": 0.3
+      },
+      "cssVariables": {
+        "--primary-color": "#ffff00",
+        "--accent-color": "#ff00ff",
+        "--background-gradient": "linear-gradient(135deg, #332a00 0%, #000000 70%)",
+        "--glow-color": "#ffff0080",
+        "--border-color": "#ffff0040"
+      },
+      "shaderUniforms": {
+        "u_baseColor": [1.0, 1.0, 0.0],
+        "u_accentColor": [1.0, 0.0, 1.0],
+        "u_glitchIntensity": 0.1,
+        "u_chromaticAberration": 0.0005
+      }
+    },
+    "torus": {
+      "name": "Green Flow",
+      "baseColor": [0.0, 1.0, 0.0],
+      "accentColor": [0.0, 0.0, 1.0],
+      "parameters": {
+        "dimension": 3.6,
+        "morphFactor": 0.8,
+        "gridDensity": 10.0,
+        "glitchIntensity": 0.4,
+        "rotationSpeed": 0.6
+      },
+      "cssVariables": {
+        "--primary-color": "#00ff00",
+        "--accent-color": "#0000ff",
+        "--background-gradient": "linear-gradient(135deg, #001a00 0%, #000000 70%)",
+        "--glow-color": "#00ff0080",
+        "--border-color": "#00ff0040"
+      },
+      "shaderUniforms": {
+        "u_baseColor": [0.0, 1.0, 0.0],
+        "u_accentColor": [0.0, 0.0, 1.0],
+        "u_glitchIntensity": 0.4,
+        "u_chromaticAberration": 0.003
+      }
+    },
+    "kleinbottle": {
+      "name": "Orange Paradox",
+      "baseColor": [1.0, 0.5, 0.0],
+      "accentColor": [0.5, 0.0, 1.0],
+      "parameters": {
+        "dimension": 3.9,
+        "morphFactor": 1.2,
+        "gridDensity": 16.0,
+        "glitchIntensity": 0.6,
+        "rotationSpeed": 0.8
+      },
+      "cssVariables": {
+        "--primary-color": "#ff8000",
+        "--accent-color": "#8000ff",
+        "--background-gradient": "linear-gradient(135deg, #331a00 0%, #000000 70%)",
+        "--glow-color": "#ff800080",
+        "--border-color": "#ff800040"
+      },
+      "shaderUniforms": {
+        "u_baseColor": [1.0, 0.5, 0.0],
+        "u_accentColor": [0.5, 0.0, 1.0],
+        "u_glitchIntensity": 0.6,
+        "u_chromaticAberration": 0.004
+      }
+    },
+    "fractal": {
+      "name": "Rainbow Spiral",
+      "baseColor": [1.0, 0.0, 0.5],
+      "accentColor": [0.0, 0.5, 1.0],
+      "parameters": {
+        "dimension": 3.4,
+        "morphFactor": 1.5,
+        "gridDensity": 20.0,
+        "glitchIntensity": 0.8,
+        "rotationSpeed": 1.2
+      },
+      "cssVariables": {
+        "--primary-color": "#ff0080",
+        "--accent-color": "#0080ff",
+        "--background-gradient": "linear-gradient(135deg, #2d001a 0%, #1a002d 50%, #000000 100%)",
+        "--glow-color": "#ff008080",
+        "--border-color": "#ff008040"
+      },
+      "shaderUniforms": {
+        "u_baseColor": [1.0, 0.0, 0.5],
+        "u_accentColor": [0.0, 0.5, 1.0],
+        "u_glitchIntensity": 0.8,
+        "u_chromaticAberration": 0.005
+      }
+    },
+    "wave": {
+      "name": "Blue Current",
+      "baseColor": [0.0, 0.5, 1.0],
+      "accentColor": [1.0, 1.0, 1.0],
+      "parameters": {
+        "dimension": 3.3,
+        "morphFactor": 0.9,
+        "gridDensity": 14.0,
+        "glitchIntensity": 0.25,
+        "rotationSpeed": 0.4
+      },
+      "cssVariables": {
+        "--primary-color": "#0080ff",
+        "--accent-color": "#ffffff",
+        "--background-gradient": "linear-gradient(135deg, #001a33 0%, #000000 70%)",
+        "--glow-color": "#0080ff80",
+        "--border-color": "#0080ff40"
+      },
+      "shaderUniforms": {
+        "u_baseColor": [0.0, 0.5, 1.0],
+        "u_accentColor": [1.0, 1.0, 1.0],
+        "u_glitchIntensity": 0.25,
+        "u_chromaticAberration": 0.0015
+      }
+    },
+    "crystal": {
+      "name": "White Prism",
+      "baseColor": [0.9, 0.9, 1.0],
+      "accentColor": [0.7, 0.7, 0.9],
+      "parameters": {
+        "dimension": 3.1,
+        "morphFactor": 0.4,
+        "gridDensity": 11.0,
+        "glitchIntensity": 0.15,
+        "rotationSpeed": 0.2
+      },
+      "cssVariables": {
+        "--primary-color": "#e6e6ff",
+        "--accent-color": "#b3b3e6",
+        "--background-gradient": "linear-gradient(135deg, #1a1a2e 0%, #000000 70%)",
+        "--glow-color": "#e6e6ff80",
+        "--border-color": "#e6e6ff40"
+      },
+      "shaderUniforms": {
+        "u_baseColor": [0.9, 0.9, 1.0],
+        "u_accentColor": [0.7, 0.7, 0.9],
+        "u_glitchIntensity": 0.15,
+        "u_chromaticAberration": 0.0008
+      }
+    }
+  },
+  "currentTheme": "hypercube",
+  "globalStyles": {
+    "transitionDuration": "300ms",
+    "easingFunction": "cubic-bezier(0.4, 0, 0.2, 1)",
+    "borderRadius": "8px",
+    "shadowIntensity": 0.3,
+    "glowIntensity": 0.6,
+    "backdropBlur": "10px"
+  },
+  "vib34dEffects": {
+    "moireRGB": {
+      "enabled": true,
+      "interferencePatterns": ["sine", "cosine", "diagonal", "radial"],
+      "colorChannelOffset": 0.002,
+      "temporalModulation": true,
+      "spatialFrequency": 0.1
+    },
+    "buttonCrystallization": {
+      "enabled": true,
+      "crystallinePatterns": ["hexagonal", "cubic", "tetrahedral"],
+      "refractionIndex": 1.5,
+      "dispersionCoefficient": 0.3,
+      "interferenceThreshold": 0.7
+    },
+    "parameterCascade": {
+      "visualFeedback": true,
+      "rippleEffect": true,
+      "connectionVisualization": true,
+      "intensityMapping": "logarithmic"
+    },
+    "backgroundReactivity": {
+      "geometryShift": true,
+      "colorInterpolation": true,
+      "dimensionalMorphing": true,
+      "gridPatternAdaptation": true
+    }
+  },
+  "canvasStyles": {
+    "border": "2px solid var(--border-color)",
+    "borderRadius": "12px",
+    "boxShadow": "0 0 20px var(--glow-color), inset 0 0 20px rgba(0,0,0,0.3)",
+    "backdropFilter": "blur(5px)",
+    "transition": "all 300ms cubic-bezier(0.4, 0, 0.2, 1)"
+  },
+  "resizeHandles": {
+    "size": "12px",
+    "color": "var(--accent-color)",
+    "hoverScale": 1.3,
+    "opacity": 0.7,
+    "positions": ["nw", "n", "ne", "e", "se", "s", "sw", "w"]
+  },
+  "performanceOptimization": {
+    "enableFrameSkipping": true,
+    "targetFrameRate": 60,
+    "qualityScaling": true,
+    "memoryThreshold": 0.8,
+    "contextPooling": true
+  }
+}

@@ -370,57 +370,15 @@ class VIB3HomeMaster {
      * Transition to a new section with smooth interpolation
      */
     transitionToSection(newSection) {
-        // Convert section name to index if needed
-        const sectionNameToIndex = {
-            'HOME': 0,
-            'TECH': 1, 
-            'RESEARCH': 2,
-            'MEDIA': 2, // Map to existing MEDIA section
-            'INNOVATION': 4, // Map to QUANTUM section
-            'AUDIO': 3
-        };
+        if (newSection === this.masterState.activeSection) return;
         
-        const sectionIndex = typeof newSection === 'string' ? sectionNameToIndex[newSection] : newSection;
+        console.log(`🌀 VIB3HomeMaster transitioning: ${this.sectionModifiers[this.masterState.activeSection].name} → ${this.sectionModifiers[newSection].name}`);
         
-        if (sectionIndex === undefined || sectionIndex === this.masterState.activeSection) return;
-        
-        const currentSection = this.sectionModifiers[this.masterState.activeSection];
-        const targetSection = this.sectionModifiers[sectionIndex];
-        
-        console.log(`🌀 VIB3HomeMaster transitioning: ${currentSection?.name || 'UNKNOWN'} → ${targetSection?.name || 'UNKNOWN'}`);
-        
-        this.masterState.activeSection = sectionIndex;
+        this.masterState.activeSection = newSection;
         this.masterState.transitionProgress = 0.0;
         
         // Trigger coherence enhancement during transitions
         this.masterState.coherence = 1.5; // Temporarily boost system unity
-    }
-    
-    /**
-     * Get VIB3 parameters for a specific geometry
-     */
-    getParametersForGeometry(geometry) {
-        const geometryToSection = {
-            'hypercube': 0,
-            'tetrahedron': 1,
-            'sphere': 2,
-            'torus': 3,
-            'fractal': 4
-        };
-        
-        const sectionIndex = geometryToSection[geometry] || 0;
-        const section = this.sectionModifiers[sectionIndex];
-        
-        if (!section) return {};
-        
-        return {
-            intensity: this.masterState.intensity * section.intensityMod,
-            dimension: this.masterState.dimension,
-            complexity: this.masterState.complexity * section.complexityMod,
-            coherence: this.masterState.coherence,
-            geometry: section.geometry,
-            baseColor: section.baseColor
-        };
     }
     
     /**
@@ -553,4 +511,4 @@ class VIB3HomeMaster {
     }
 }
 
-// VIB3HomeMaster class available globally
+export default VIB3HomeMaster;

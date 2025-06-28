@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Quick Manual Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #2d5a2d; }
+        .error { background: #5a2d2d; }
+        .info { background: #2d2d5a; }
+        canvas {
+            border: 1px solid #666;
+            margin: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #333;
+            color: #fff;
+            border: 1px solid #666;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 VIB34D Quick Manual Test</h1>
+    
+    <div class="test-section">
+        <h2>1. WebGL Support Test</h2>
+        <div id="webgl-result" class="test-result info">Testing WebGL...</div>
+        <canvas id="webgl-canvas" width="200" height="200"></canvas>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Module Loading Test</h2>
+        <div id="module-result" class="test-result info">Testing module loading...</div>
+        <button onclick="testModuleLoading()">Test ReactiveHyperAVCore Import</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. JSON Config Test</h2>
+        <div id="config-result" class="test-result info">Testing JSON config loading...</div>
+        <button onclick="testConfigLoading()">Test Config Files</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Dashboard Components Test</h2>
+        <div id="dashboard-result" class="test-result info">Testing dashboard elements...</div>
+        <button onclick="testDashboardElements()">Test Dashboard Structure</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. Manual Browser Test</h2>
+        <div class="test-result info">
+            <p><strong>Open the full dashboard:</strong></p>
+            <a href="index_VIB34D_PROFESSIONAL.html" target="_blank" style="color: #66f;">🚀 Open VIB34D Professional Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        // Test WebGL Support
+        function testWebGL() {
+            const canvas = document.getElementById('webgl-canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            const result = document.getElementById('webgl-result');
+            
+            if (gl) {
+                const version = gl.getParameter(gl.VERSION);
+                const renderer = gl.getParameter(gl.RENDERER);
+                const vendor = gl.getParameter(gl.VENDOR);
+                
+                result.className = 'test-result success';
+                result.innerHTML = `
+                    ✅ WebGL Supported!<br>
+                    Version: ${version}<br>
+                    Renderer: ${renderer}<br>
+                    Vendor: ${vendor}
+                `;
+                
+                // Draw a simple triangle to test rendering
+                const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+                gl.shaderSource(vertexShader, `
+                    attribute vec2 position;
+                    void main() {
+                        gl_Position = vec4(position, 0.0, 1.0);
+                    }
+                `);
+                gl.compileShader(vertexShader);
+                
+                const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+                gl.shaderSource(fragmentShader, `
+                    precision mediump float;
+                    void main() {
+                        gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+                    }
+                `);
+                gl.compileShader(fragmentShader);
+                
+                const program = gl.createProgram();
+                gl.attachShader(program, vertexShader);
+                gl.attachShader(program, fragmentShader);
+                gl.linkProgram(program);
+                gl.useProgram(program);
+                
+                const vertices = new Float32Array([
+                    0.0,  0.5,
+                   -0.5, -0.5,
+                    0.5, -0.5
+                ]);
+                
+                const buffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+                
+                const position = gl.getAttribLocation(program, 'position');
+                gl.enableVertexAttribArray(position);
+                gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+                
+                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.drawArrays(gl.TRIANGLES, 0, 3);
+                
+            } else {
+                result.className = 'test-result error';
+                result.innerHTML = '❌ WebGL not supported in this browser';
+            }
+        }
+        
+        // Test Module Loading
+        async function testModuleLoading() {
+            const result = document.getElementById('module-result');
+            result.innerHTML = 'Testing module import...';
+            
+            try {
+                const module = await import('./core/ReactiveHyperAVCore.js');
+                result.className = 'test-result success';
+                result.innerHTML = '✅ ReactiveHyperAVCore module loaded successfully!';
+            } catch (error) {
+                result.className = 'test-result error';
+                result.innerHTML = `❌ Module loading failed: ${error.message}`;
+            }
+        }
+        
+        // Test Config Loading
+        async function testConfigLoading() {
+            const result = document.getElementById('config-result');
+            result.innerHTML = 'Testing config file loading...';
+            
+            try {
+                const configs = await Promise.all([
+                    fetch('./config/visuals.json').then(r => r.json()),
+                    fetch('./config/behavior.json').then(r => r.json()),
+                    fetch('./config/content.json').then(r => r.json())
+                ]);
+                
+                result.className = 'test-result success';
+                result.innerHTML = `
+                    ✅ All config files loaded successfully!<br>
+                    - Visuals: ${Object.keys(configs[0]).length} keys<br>
+                    - Behavior: ${Object.keys(configs[1]).length} keys<br>
+                    - Content: ${Object.keys(configs[2]).length} keys
+                `;
+            } catch (error) {
+                result.className = 'test-result error';
+                result.innerHTML = `❌ Config loading failed: ${error.message}`;
+            }
+        }
+        
+        // Test Dashboard Elements
+        function testDashboardElements() {
+            const result = document.getElementById('dashboard-result');
+            
+            // Check for basic HTML structure that should exist
+            const tests = [
+                { name: 'Document ready', test: () => document.readyState === 'complete' },
+                { name: 'Module support', test: () => 'import' in document.createElement('script') },
+                { name: 'Local storage', test: () => typeof Storage !== 'undefined' },
+                { name: 'Canvas support', test: () => !!document.createElement('canvas').getContext },
+                { name: 'Fetch API', test: () => typeof fetch !== 'undefined' }
+            ];
+            
+            const results = tests.map(test => {
+                try {
+                    const passed = test.test();
+                    return `${passed ? '✅' : '❌'} ${test.name}`;
+                } catch (error) {
+                    return `❌ ${test.name}: ${error.message}`;
+                }
+            });
+            
+            result.className = 'test-result info';
+            result.innerHTML = results.join('<br>');
+        }
+        
+        // Run initial tests
+        document.addEventListener('DOMContentLoaded', () => {
+            testWebGL();
+            testDashboardElements();
+        });
+    </script>
+</body>
+</html>

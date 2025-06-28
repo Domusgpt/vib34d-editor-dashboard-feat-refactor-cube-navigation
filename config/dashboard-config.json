@@ -1,0 +1,361 @@
+{
+  "editorDashboard": {
+    "version": "3.0.0",
+    "lastModified": "2025-06-27T12:00:00.000Z",
+    "
+": {
+      "visualIntensity": {
+        "type": "slider",
+        "min": 0.1,
+        "max": 2.0,
+        "default": 0.8,
+        "step": 0.05,
+        "label": "Master Visual Intensity",
+        "description": "Controls overall intensity of all visual effects",
+        "affects": ["all-visualizers", "all-animations", "portal-effects"],
+        "cssProperty": "--master-intensity",
+        "shaderUniform": "u_masterIntensity",
+        "parameterMapping": {
+          "morphFactor": { "multiplier": 1.2, "offset": 0.0 },
+          "gridDensity": { "multiplier": 1.0, "offset": 2.0 },
+          "rotationSpeed": { "multiplier": 0.8, "offset": 0.1 }
+        }
+      },
+      "gridComplexity": {
+        "type": "slider",
+        "min": 1,
+        "max": 5,
+        "default": 3,
+        "step": 0.2,
+        "label": "Grid Complexity",
+        "description": "Master control for all grid-based visualizations",
+        "affects": ["background-grids", "tessellation-patterns", "fractal-depth"],
+        "cssProperty": "--grid-complexity",
+        "shaderUniform": "u_gridComplexity",
+        "parameterMapping": {
+          "gridDensity": { "formula": "base * (complexity / 3.0)", "min": 4.0, "max": 30.0 }
+        }
+      },
+      "colorTemperature": {
+        "type": "slider",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.5,
+        "step": 0.01,
+        "label": "Color Temperature",
+        "description": "Warm to cool color spectrum control",
+        "affects": ["all-color-schemes", "portal-colors", "consciousness-colors"],
+        "cssProperty": "--color-temperature",
+        "shaderUniform": "u_colorTemperature",
+        "parameterMapping": {
+          "baseColorHue": { "formula": "temperature * 360", "wrap": true },
+          "accentColorHue": { "formula": "(temperature + 0.5) * 360", "wrap": true }
+        }
+      },
+      "realityStability": {
+        "type": "slider",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.8,
+        "step": 0.05,
+        "label": "Reality Stability",
+        "description": "Controls quantum coherence and reality distortion levels",
+        "affects": ["portal-transitions", "quantum-effects", "consciousness-flux"],
+        "cssProperty": "--reality-stability",
+        "shaderUniform": "u_realityStability",
+        "parameterMapping": {
+          "quantumCoherence": { "formula": "stability", "min": 0.0, "max": 1.0 },
+          "distortionIntensity": { "formula": "1.0 - stability", "min": 0.0, "max": 1.0 }
+        }
+      },
+      "consciousnessLevel": {
+        "type": "slider",
+        "min": 0.0,
+        "max": 1.0,
+        "default": 0.6,
+        "step": 0.01,
+        "label": "Consciousness Level",
+        "description": "Global awareness and reactivity of the interface",
+        "affects": ["element-awareness", "interaction-sensitivity", "emergent-behaviors"],
+        "cssProperty": "--consciousness-level",
+        "shaderUniform": "u_consciousnessLevel",
+        "parameterMapping": {
+          "awarenessThreshold": { "formula": "consciousness * 0.8", "min": 0.1, "max": 1.0 },
+          "interactionIntensity": { "formula": "consciousness", "min": 0.0, "max": 1.0 }
+        }
+      }
+    },
+    "pageRelations": {
+      "home": {
+        "role": "master",
+        "geometry": "hypercube",
+        "title": "VIB3STYLEPACK Dashboard",
+        "description": "Master control center for 4D visualization system",
+        "colorBase": [1.0, 0.0, 1.0],
+        "colorAccent": [0.0, 1.0, 1.0],
+        "modifiers": {
+          "intensityModifier": 1.0,
+          "gridModifier": 1.0,
+          "colorModifier": 1.0,
+          "realityModifier": 1.0,
+          "consciousnessModifier": 1.0
+        },
+        "parameters": {
+          "dimension": 3.7,
+          "morphFactor": 0.6,
+          "gridDensity": 12.0,
+          "rotationSpeed": 0.8
+        }
+      },
+      "visualizers": {
+        "role": "derivative",
+        "geometry": "adaptive",
+        "title": "4D Geometry Visualizers",
+        "description": "Live 4D polytopal visualization workspace",
+        "relationToMaster": "calculated",
+        "derivationFormula": {
+          "intensityModifier": "master.intensityModifier * 0.9",
+          "gridModifier": "master.gridModifier * 1.2",
+          "colorModifier": "master.colorModifier",
+          "dimensionOffset": "+0.1"
+        },
+        "geometryOptions": [
+          "hypercube", "tetrahedron", "sphere", "torus", 
+          "kleinbottle", "fractal", "wave", "crystal"
+        ]
+      },
+      "controls": {
+        "role": "derivative",
+        "geometry": "interface",
+        "title": "Parameter Controls",
+        "description": "Real-time parameter manipulation interface",
+        "relationToMaster": "inversely-calculated",
+        "derivationFormula": {
+          "intensityModifier": "1.0 - (master.intensityModifier * 0.3)",
+          "responsivenessModifier": "master.consciousnessModifier * 1.5"
+        }
+      },
+      "consciousness": {
+        "role": "emergent",
+        "geometry": "neural-network",
+        "title": "Visual Consciousness Monitor",
+        "description": "Emergence tracking and consciousness visualization",
+        "relationToMaster": "emergent-calculated",
+        "emergenceFactors": {
+          "interactionComplexity": { "weight": 0.4, "decay": 0.95 },
+          "parameterCascades": { "weight": 0.3, "decay": 0.9 },
+          "systemCoherence": { "weight": 0.3, "decay": 0.99 }
+        }
+      }
+    },
+    "interactionPresets": {
+      "cardHoverEffects": {
+        "enabled": true,
+        "description": "Card hover with consciousness propagation",
+        "targetCardDOM": {
+          "scale": 1.08,
+          "brightness": 1.2,
+          "shadowIntensity": 2.0,
+          "transition": "all 300ms cubic-bezier(0.4, 0, 0.2, 1)"
+        },
+        "otherCardsDOM": {
+          "opacity": 0.6,
+          "scale": 0.98,
+          "brightness": 0.8,
+          "transition": "all 300ms cubic-bezier(0.4, 0, 0.2, 1)"
+        },
+        "consciousnessWave": {
+          "enabled": true,
+          "propagationSpeed": 200,
+          "intensityFalloff": "quadratic",
+          "visualFeedback": "ripple-effect"
+        }
+      },
+      "portalTransitionEffects": {
+        "enabled": true,
+        "description": "Dimensional gateway transitions between geometries",
+        "portalOpeningDuration": 2000,
+        "transitionDuration": 1500,
+        "closingDuration": 1000,
+        "realityDistortion": {
+          "spacetimeIntensity": 0.8,
+          "quantumSuperposition": 0.6,
+          "dimensionalFold": 0.4
+        },
+        "visualEffects": {
+          "energyField": "electromagnetic",
+          "interferencePatterns": ["sine", "cosine", "radial"],
+          "quantumSpectrum": true,
+          "chromaticAberration": 0.003
+        }
+      },
+      "quantumEntanglementEffects": {
+        "enabled": true,
+        "description": "Synchronized effects across all visualizers",
+        "entanglementPairs": {
+          "hypercube-tetrahedron": { "coherence": 0.95, "correlation": 0.92 },
+          "sphere-torus": { "coherence": 0.88, "correlation": 0.85 },
+          "kleinbottle-fractal": { "coherence": 0.75, "correlation": 0.90 }
+        },
+        "synchronizationEvents": {
+          "parameterChange": { "delay": 0, "correlation": 1.0 },
+          "geometryTransition": { "delay": 100, "correlation": 0.8 },
+          "colorShift": { "delay": 50, "correlation": 0.9 }
+        }
+      },
+      "realityDistortionEffects": {
+        "enabled": true,
+        "description": "Physics-defying visual mechanics",
+        "distortionTypes": {
+          "spacetime": {
+            "curvature": 0.5,
+            "temporalFlux": 0.3,
+            "gravitationalLensing": 0.4
+          },
+          "quantum": {
+            "superposition": 0.6,
+            "uncertainty": 0.4,
+            "waveCollapse": 0.7
+          },
+          "dimensional": {
+            "folding": 0.5,
+            "tessellation": 0.8,
+            "hyperRotation": 0.6
+          }
+        },
+        "visualManifestations": {
+          "vertexDisplacement": true,
+          "normalBending": true,
+          "colorSpaceDistortion": true,
+          "temporalGlitches": true
+        }
+      }
+    },
+    "adaptiveCardConfig": {
+      "defaultSettings": {
+        "canvasSize": { "width": 400, "height": 300, "minWidth": 200, "minHeight": 150 },
+        "resizeHandles": 8,
+        "dragEnabled": true,
+        "contextMenuEnabled": true,
+        "parameterLinking": true,
+        "consciousnessTracking": true
+      },
+      "geometrySpecificSettings": {
+        "hypercube": {
+          "optimalDimensions": { "width": 450, "height": 350 },
+          "preferredParameters": {
+            "dimension": 3.7,
+            "morphFactor": 0.5,
+            "gridDensity": 12.0,
+            "rotationSpeed": 0.6
+          },
+          "visualStyle": {
+            "borderColor": "#ff00ff",
+            "glowColor": "#ff00ff80",
+            "backgroundColor": "rgba(26, 0, 51, 0.3)"
+          }
+        },
+        "tetrahedron": {
+          "optimalDimensions": { "width": 380, "height": 320 },
+          "preferredParameters": {
+            "dimension": 3.2,
+            "morphFactor": 0.7,
+            "gridDensity": 8.0,
+            "rotationSpeed": 0.7
+          },
+          "visualStyle": {
+            "borderColor": "#00ffff",
+            "glowColor": "#00ffff80", 
+            "backgroundColor": "rgba(0, 26, 51, 0.3)"
+          }
+        },
+        "fractal": {
+          "optimalDimensions": { "width": 500, "height": 400 },
+          "preferredParameters": {
+            "dimension": 3.4,
+            "morphFactor": 1.5,
+            "gridDensity": 20.0,
+            "rotationSpeed": 1.2
+          },
+          "visualStyle": {
+            "borderColor": "#ff0080",
+            "glowColor": "#ff008080",
+            "backgroundColor": "rgba(45, 0, 26, 0.3)"
+          }
+        }
+      }
+    },
+    "editorInterface": {
+      "panels": {
+        "masterControls": {
+          "position": "top-center",
+          "size": { "width": 600, "height": 120 },
+          "collapsible": true,
+          "title": "Master Controls"
+        },
+        "geometrySelector": {
+          "position": "left-side",
+          "size": { "width": 280, "height": "100%" },
+          "sections": ["sacred-geometries", "adaptive-presets", "consciousness-monitor"]
+        },
+        "propertyEditor": {
+          "position": "right-side", 
+          "size": { "width": 320, "height": "100%" },
+          "sections": ["selected-parameters", "portal-controls", "quantum-settings"]
+        },
+        "visualWorkspace": {
+          "position": "center",
+          "size": { "width": "auto", "height": "auto" },
+          "features": ["drag-drop", "multi-select", "context-menus", "real-time-preview"]
+        }
+      },
+      "keyboardShortcuts": {
+        "Ctrl+Shift+P": "activatePortalMode",
+        "Ctrl+Shift+R": "triggerRealityDistortion", 
+        "Ctrl+Shift+Q": "synchronizeQuantumEntanglement",
+        "Ctrl+Shift+C": "boostConsciousness",
+        "Ctrl+Z": "undo",
+        "Ctrl+Y": "redo",
+        "Ctrl+S": "saveConfiguration",
+        "Ctrl+L": "loadConfiguration",
+        "Space": "pauseAllAnimations",
+        "Tab": "cycleSelectedElements"
+      },
+      "contextMenus": {
+        "canvasElement": [
+          { "label": "Duplicate", "action": "duplicateElement" },
+          { "label": "Delete", "action": "deleteElement" },
+          { "separator": true },
+          { "label": "Portal To...", "submenu": "geometryList" },
+          { "label": "Entangle With...", "submenu": "availableElements" },
+          { "separator": true },
+          { "label": "Properties", "action": "openPropertyEditor" }
+        ],
+        "workspace": [
+          { "label": "Add Visualizer", "submenu": "geometryList" },
+          { "label": "Import Configuration", "action": "importConfig" },
+          { "separator": true },
+          { "label": "Reset Workspace", "action": "resetWorkspace" }
+        ]
+      }
+    },
+    "performanceSettings": {
+      "maxActiveVisualizers": 12,
+      "webglContextPoolSize": 10,
+      "animationFrameTargetFPS": 60,
+      "memoryThreshold": 0.8,
+      "consciousnessUpdateInterval": 100,
+      "parameterWebUpdateInterval": 16.67,
+      "portalTransitionQueueSize": 5,
+      "quantumEntanglementSyncInterval": 50
+    },
+    "debugSettings": {
+      "enableConsoleLogging": true,
+      "enablePerformanceMonitoring": true,
+      "enableParameterWebVisualization": false,
+      "enableQuantumStateLogging": false,
+      "enablePortalTransitionLogging": true,
+      "enableConsciousnessLogging": true
+    }
+  }
+}

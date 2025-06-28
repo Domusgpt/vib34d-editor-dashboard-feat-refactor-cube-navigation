@@ -1,0 +1,202 @@
+{
+  "version": "1.0.0",
+  "lastModified": "2025-06-27T12:00:00.000Z",
+  "interactions": {
+    "cardHover": {
+      "enabled": true,
+      "dimOthersIntensity": 0.6,
+      "backgroundResponseIntensity": 0.8,
+      "transitionDuration": 300,
+      "mathematicalCurve": "exponential",
+      "propagationDelay": 50
+    },
+    "elementFocus": {
+      "enabled": true,
+      "backgroundShiftIntensity": 0.9,
+      "relatedElementBrightness": 1.2,
+      "transitionDuration": 500,
+      "geometryMorphing": true,
+      "colorInterpolation": true
+    },
+    "canvasInteraction": {
+      "enabled": true,
+      "dragSensitivity": 1.0,
+      "resizeHandles": 8,
+      "snapToGrid": false,
+      "realTimeParameterUpdate": true,
+      "morphFactorRange": { "min": 0.0, "max": 2.0 },
+      "dimensionRange": { "min": 3.0, "max": 4.0 }
+    },
+    "sectionTransition": {
+      "enabled": true,
+      "duration": 800,
+      "easingFunction": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "parameterInterpolation": true
+    },
+    "parameterCascade": {
+      "enabled": true,
+      "propagationSpeed": 200,
+      "dampening": 0.8,
+      "maxDepth": 3,
+      "mathematicalRelationships": {
+        "linear": { "coefficient": 1.0 },
+        "exponential": { "base": 1.5 },
+        "logarithmic": { "scale": 0.5 },
+        "sine": { "frequency": 1.0, "amplitude": 1.0 }
+      }
+    },
+    "buttonCrystallization": {
+      "enabled": true,
+      "duration": 1000,
+      "moireInterference": true,
+      "parameterRipple": true,
+      "crystallinePattern": "vib34d-sacred"
+    }
+  },
+  "presets": {
+    "production": {
+      "description": "Production settings for optimal performance and visual impact",
+      "parameters": {
+        "dimension": 3.5,
+        "morphFactor": 0.6,
+        "gridDensity": 12.0,
+        "rotationSpeed": 0.6,
+        "interactionIntensity": 0.8
+      },
+      "section": 0,
+      "theme": "hypercube",
+      "ecosystemReactivity": true
+    },
+    "demo": {
+      "description": "Demonstration mode with enhanced reactivity and visual effects",
+      "parameters": {
+        "dimension": 3.8,
+        "morphFactor": 0.9,
+        "gridDensity": 18.0,
+        "rotationSpeed": 1.0,
+        "interactionIntensity": 1.0
+      },
+      "section": 0,
+      "theme": "hypercube",
+      "ecosystemReactivity": true
+    },
+    "debug": {
+      "description": "Debug mode with reduced effects for development",
+      "parameters": {
+        "dimension": 3.2,
+        "morphFactor": 0.3,
+        "gridDensity": 8.0,
+        "rotationSpeed": 0.3,
+        "interactionIntensity": 0.2
+      },
+      "section": 1,
+      "theme": "tetrahedron",
+      "ecosystemReactivity": false
+    },
+    "performance": {
+      "description": "Optimized for maximum performance",
+      "parameters": {
+        "dimension": 3.0,
+        "morphFactor": 0.2,
+        "gridDensity": 6.0,
+        "rotationSpeed": 0.3,
+        "interactionIntensity": 0.1
+      },
+      "canvasPoolLimit": 5,
+      "ecosystemReactivity": false
+    }
+  },
+  "vib34dGeometries": {
+    "hypercube": {
+      "displayName": "Hypercube",
+      "defaultParameters": {
+        "dimension": 3.7,
+        "morphFactor": 0.5,
+        "gridDensity": 12.0
+      },
+      "colorProfile": "magenta-cyan"
+    },
+    "tetrahedron": {
+      "displayName": "Tetrahedron", 
+      "defaultParameters": {
+        "dimension": 3.2,
+        "morphFactor": 0.7,
+        "gridDensity": 8.0
+      },
+      "colorProfile": "cyan-yellow"
+    },
+    "sphere": {
+      "displayName": "Sphere",
+      "defaultParameters": {
+        "dimension": 3.8,
+        "morphFactor": 0.3,
+        "gridDensity": 15.0
+      },
+      "colorProfile": "yellow-magenta"
+    },
+    "torus": {
+      "displayName": "Torus",
+      "defaultParameters": {
+        "dimension": 3.6,
+        "morphFactor": 0.8,
+        "gridDensity": 10.0
+      },
+      "colorProfile": "green-blue"
+    },
+    "kleinbottle": {
+      "displayName": "Klein Bottle",
+      "defaultParameters": {
+        "dimension": 3.9,
+        "morphFactor": 1.2,
+        "gridDensity": 16.0
+      },
+      "colorProfile": "orange-purple"
+    },
+    "fractal": {
+      "displayName": "Fractal",
+      "defaultParameters": {
+        "dimension": 3.4,
+        "morphFactor": 1.5,
+        "gridDensity": 20.0
+      },
+      "colorProfile": "rainbow-spiral"
+    },
+    "wave": {
+      "displayName": "Wave",
+      "defaultParameters": {
+        "dimension": 3.3,
+        "morphFactor": 0.9,
+        "gridDensity": 14.0
+      },
+      "colorProfile": "blue-white"
+    },
+    "crystal": {
+      "displayName": "Crystal",
+      "defaultParameters": {
+        "dimension": 3.1,
+        "morphFactor": 0.4,
+        "gridDensity": 11.0
+      },
+      "colorProfile": "white-prism"
+    }
+  },
+  "agentAPI": {
+    "enabled": true,
+    "validation": {
+      "parameterRanges": {
+        "dimension": { "min": 3.0, "max": 4.0 },
+        "morphFactor": { "min": 0.0, "max": 2.0 },
+        "gridDensity": { "min": 1.0, "max": 30.0 },
+        "rotationSpeed": { "min": 0.0, "max": 3.0 },
+        "interactionIntensity": { "min": 0.0, "max": 1.0 }
+      },
+      "geometryTypes": ["hypercube", "tetrahedron", "sphere", "torus", "kleinbottle", "fractal", "wave", "crystal"]
+    },
+    "permissions": {
+      "canModifyParameters": true,
+      "canSwitchGeometries": true,
+      "canApplyPresets": true,
+      "canExportConfig": true
+    }
+  }
+}
