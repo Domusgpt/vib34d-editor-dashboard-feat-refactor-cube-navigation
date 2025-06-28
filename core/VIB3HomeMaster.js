@@ -117,6 +117,78 @@ class VIB3HomeMaster {
                 interactionSensitivity: 1.0,
                 color: 'base'
             },
+            'content-a': {
+                gridScale: 1.0,
+                morphScale: 1.0,
+                rotationScale: 1.0,
+                dimensionBoost: 0.0,
+                interactionSensitivity: 1.0,
+                color: 'base'
+            },
+            'content-b': {
+                gridScale: 1.0,
+                morphScale: 1.0,
+                rotationScale: 1.0,
+                dimensionBoost: 0.0,
+                interactionSensitivity: 1.0,
+                color: 'base'
+            },
+            'content_a': {
+                gridScale: 1.0,
+                morphScale: 1.0,
+                rotationScale: 1.0,
+                dimensionBoost: 0.0,
+                interactionSensitivity: 1.0,
+                color: 'base'
+            },
+            'content_b': {
+                gridScale: 1.0,
+                morphScale: 1.0,
+                rotationScale: 1.0,
+                dimensionBoost: 0.0,
+                interactionSensitivity: 1.0,
+                color: 'base'
+            },
+            'content_c': {
+                gridScale: 1.0,
+                morphScale: 1.0,
+                rotationScale: 1.0,
+                dimensionBoost: 0.0,
+                interactionSensitivity: 1.0,
+                color: 'base'
+            },
+            'content_d': {
+                gridScale: 1.0,
+                morphScale: 1.0,
+                rotationScale: 1.0,
+                dimensionBoost: 0.0,
+                interactionSensitivity: 1.0,
+                color: 'base'
+            },
+            'navigation': {
+                gridScale: 0.7,
+                morphScale: 0.5,
+                rotationScale: 0.8,
+                dimensionBoost: 0.1,
+                interactionSensitivity: 0.8,
+                color: 'brighten'
+            },
+            'effects': {
+                gridScale: 0.9,
+                morphScale: 1.2,
+                rotationScale: 1.5,
+                dimensionBoost: 0.3,
+                interactionSensitivity: 1.8,
+                color: 'complement'
+            },
+            'bezel': {
+                gridScale: 0.6,
+                morphScale: 0.3,
+                rotationScale: 0.5,
+                dimensionBoost: 0.0,
+                interactionSensitivity: 0.7,
+                color: 'brighten'
+            },
             'highlight': {
                 gridScale: 1.5,
                 morphScale: 0.8,
