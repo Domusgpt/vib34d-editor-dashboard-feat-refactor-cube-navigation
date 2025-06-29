@@ -15,6 +15,7 @@ class VisualizerPool {
         console.log('🎭 VisualizerPool initializing...');
         
         this.setupGlobalUniforms();
+        this.setupInteractionListeners();
         this.startRenderLoop();
         
         console.log('✅ VisualizerPool initialized');
@@ -40,6 +41,78 @@ class VisualizerPool {
             u_shellWidth: 0.1,
             u_universeModifier: 1.0
         };
+    }
+
+    setupInteractionListeners() {
+        // Listen for uniform animation events from InteractionCoordinator
+        document.addEventListener('animateUniform', (event) => {
+            this.handleUniformAnimation(event.detail);
+        });
+        
+        console.log('🎯 Interaction listeners set up for uniform animations');
+    }
+
+    handleUniformAnimation(animationData) {
+        const { visualizerId, uniform, targetValue, duration, curve } = animationData;
+        
+        const visualizer = this.visualizers.get(visualizerId);
+        if (!visualizer) {
+            console.warn(`⚠️ Visualizer not found: ${visualizerId}`);
+            return;
+        }
+
+        this.animateVisualizer(visualizer, uniform, targetValue, duration, curve);
+    }
+
+    animateVisualizer(visualizer, uniform, targetValue, duration, curve) {
+        const startTime = performance.now();
+        const startValue = visualizer.uniforms[uniform] || 0;
+        
+        // Parse target value operations
+        let finalValue;
+        if (targetValue.operation === 'multiply') {
+            finalValue = startValue * targetValue.value;
+        } else if (targetValue.operation === 'add') {
+            finalValue = startValue + targetValue.value;
+        } else if (targetValue.operation === 'reset') {
+            finalValue = this.globalUniforms[uniform] || 0;
+        } else {
+            finalValue = targetValue.value;
+        }
+
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Apply easing curve
+            const easedProgress = this.applyEasing(progress, curve);
+            
+            // Interpolate value
+            const currentValue = startValue + (finalValue - startValue) * easedProgress;
+            
+            // Update uniform
+            visualizer.uniforms[uniform] = currentValue;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                // Animation complete
+                console.log(`✅ Uniform animation complete: ${uniform} = ${finalValue}`);
+            }
+        };
+
+        requestAnimationFrame(animate);
+    }
+
+    applyEasing(t, curve) {
+        switch (curve) {
+            case 'linear': return t;
+            case 'easeIn': return t * t;
+            case 'easeOut': return 1 - Math.pow(1 - t, 2);
+            case 'easeInOut': return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+            case 'parabolic': return t * t * (3 - 2 * t);
+            default: return 1 - Math.pow(1 - t, 2); // Default to easeOut
+        }
     }
 
     async createVisualizer(canvasElement, geometryName, parameters = {}) {

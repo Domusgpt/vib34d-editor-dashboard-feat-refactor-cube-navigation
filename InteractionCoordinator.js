@@ -120,9 +120,26 @@ class InteractionCoordinator {
     }
 
     executeBlueprint(subjectElement, blueprint, event) {
-        const { reactions } = blueprint;
+        const { reactions, stateModifiers } = blueprint;
         
-        reactions.forEach(reaction => {
+        // Apply state-specific modifiers if they exist
+        let activeReactions = reactions;
+        if (stateModifiers && this.homeMaster) {
+            const currentState = this.homeMaster.getCurrentState();
+            const stateModifier = stateModifiers[currentState];
+            
+            if (stateModifier) {
+                // Override or enhance reactions based on current state
+                activeReactions = stateModifier.reactions || reactions;
+                
+                // Apply state-specific parameter multipliers
+                if (stateModifier.parameterMultipliers) {
+                    activeReactions = this.applyParameterMultipliers(activeReactions, stateModifier.parameterMultipliers);
+                }
+            }
+        }
+        
+        activeReactions.forEach(reaction => {
             const targetElements = this.resolveTargets(subjectElement, reaction.target);
             targetElements.forEach(targetElement => {
                 this.applyReaction(targetElement, reaction, event);
@@ -133,9 +150,31 @@ class InteractionCoordinator {
             detail: { 
                 blueprint: blueprint,
                 subject: subjectElement,
-                event: event.type
+                event: event.type,
+                currentState: this.homeMaster?.getCurrentState()
             }
         }));
+    }
+
+    applyParameterMultipliers(reactions, multipliers) {
+        return reactions.map(reaction => {
+            const newReaction = JSON.parse(JSON.stringify(reaction)); // Deep clone
+            
+            if (newReaction.animation) {
+                Object.entries(newReaction.animation).forEach(([property, animData]) => {
+                    if (multipliers[property]) {
+                        if (typeof animData.to === 'number') {
+                            animData.to *= multipliers[property];
+                        } else if (typeof animData.to === 'string' && animData.to.startsWith('*=')) {
+                            const value = parseFloat(animData.to.slice(2));
+                            animData.to = `*=${value * multipliers[property]}`;
+                        }
+                    }
+                });
+            }
+            
+            return newReaction;
+        });
     }
 
     resolveTargets(subjectElement, targetType) {
@@ -242,6 +281,29 @@ class InteractionCoordinator {
             }
         }
         return { operation: 'set', value: parseFloat(value) || value };
+    }
+
+    executeRevertAnimation(subjectElement, blueprint, event) {
+        const { revertAnimation } = blueprint;
+        if (!revertAnimation) return;
+
+        // Execute revert reactions targeting the same elements as original
+        if (revertAnimation.reactions) {
+            revertAnimation.reactions.forEach(reaction => {
+                const targetElements = this.resolveTargets(subjectElement, reaction.target);
+                targetElements.forEach(targetElement => {
+                    this.applyReaction(targetElement, reaction, event);
+                });
+            });
+        }
+
+        this.eventBus.dispatchEvent(new CustomEvent('revertAnimationExecuted', {
+            detail: { 
+                blueprint: blueprint,
+                subject: subjectElement,
+                event: event.type
+            }
+        }));
     }
 
     getCSSEasing(curve) {

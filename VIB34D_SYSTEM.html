@@ -434,10 +434,13 @@
             }, 5000);
         }
 
-        // Global Agent API for external control
+        // Enhanced Global Agent API for external control
         window.agentAPI = {
+            // Core Navigation
             getState: () => vib34dSystem ? vib34dSystem.getState() : null,
             navigateTo: (stateId) => vib34dSystem ? vib34dSystem.navigateTo(stateId) : false,
+            
+            // Advanced Parameter Control
             setMasterParameter: (param, value) => {
                 if (vib34dSystem) {
                     vib34dSystem.eventBus.dispatchEvent(new CustomEvent('parameterUpdated', {
@@ -447,12 +450,75 @@
                 }
                 return false;
             },
+            
+            // Multi-parameter batch update
+            setParameters: (parameterMap) => {
+                if (!vib34dSystem) return false;
+                Object.entries(parameterMap).forEach(([param, value]) => {
+                    vib34dSystem.eventBus.dispatchEvent(new CustomEvent('parameterUpdated', {
+                        detail: { param, value }
+                    }));
+                });
+                return true;
+            },
+            
+            // Visualizer Control
+            updateVisualizerGeometry: (cardId, geometryName) => {
+                if (vib34dSystem && vib34dSystem.visualizerPool) {
+                    return vib34dSystem.visualizerPool.setVisualizerGeometry(cardId, geometryName);
+                }
+                return false;
+            },
+            
+            // Interactive Animation Triggers
+            triggerInteraction: (elementSelector, interactionType) => {
+                const element = document.querySelector(elementSelector);
+                if (element) {
+                    const event = new Event(interactionType);
+                    element.dispatchEvent(event);
+                    return true;
+                }
+                return false;
+            },
+            
+            // Configuration Management
             updateConfig: async (configType, newData) => {
                 if (vib34dSystem && vib34dSystem.jsonConfigSystem) {
                     return await vib34dSystem.jsonConfigSystem.updateConfig(configType, newData);
                 }
                 return null;
             },
+            
+            reloadConfigs: async () => {
+                if (vib34dSystem && vib34dSystem.jsonConfigSystem) {
+                    await vib34dSystem.jsonConfigSystem.loadAllConfigs();
+                    return true;
+                }
+                return false;
+            },
+            
+            // Theme Management
+            setTheme: (themeName) => {
+                if (vib34dSystem && vib34dSystem.homeMaster) {
+                    vib34dSystem.homeMaster.setTheme(themeName);
+                    return true;
+                }
+                return false;
+            },
+            
+            // Performance Monitoring
+            getPerformanceMetrics: () => {
+                if (vib34dSystem && vib34dSystem.visualizerPool) {
+                    return {
+                        visualizerCount: vib34dSystem.visualizerPool.visualizers.size,
+                        renderingFPS: vib34dSystem.visualizerPool.currentFPS || 0,
+                        activeInteractions: vib34dSystem.interactionCoordinator?.getActiveInteractions() || []
+                    };
+                }
+                return null;
+            },
+            
+            // System State Export/Import
             exportSystemState: () => {
                 if (vib34dSystem) {
                     const state = vib34dSystem.getState();
@@ -466,6 +532,67 @@
                     return state;
                 }
                 return null;
+            },
+            
+            importSystemState: async (stateData) => {
+                if (vib34dSystem && typeof stateData === 'object') {
+                    try {
+                        // Update configurations
+                        if (stateData.configs) {
+                            for (const [configType, configData] of Object.entries(stateData.configs)) {
+                                await vib34dSystem.jsonConfigSystem.updateConfig(configType, configData);
+                            }
+                        }
+                        
+                        // Navigate to saved state
+                        if (stateData.currentState) {
+                            vib34dSystem.navigateTo(stateData.currentState);
+                        }
+                        
+                        return true;
+                    } catch (error) {
+                        console.error('Failed to import system state:', error);
+                        return false;
+                    }
+                }
+                return false;
+            },
+            
+            // Development & Debugging
+            enableDebugMode: () => {
+                window.VIB34D_DEBUG = true;
+                console.log('🐛 VIB34D Debug Mode Enabled');
+                return true;
+            },
+            
+            disableDebugMode: () => {
+                window.VIB34D_DEBUG = false;
+                console.log('🐛 VIB34D Debug Mode Disabled');
+                return true;
+            },
+            
+            getSystemVersion: () => ({
+                version: '1.0.0',
+                build: 'Phase 5 Complete',
+                features: ['Relational Interactions', 'State Management', 'WebGL Rendering', 'Agent API'],
+                timestamp: new Date().toISOString()
+            }),
+            
+            // Remote Control Interface
+            remoteControl: {
+                start: () => {
+                    console.log('🌐 Remote control interface started');
+                    // Could implement WebSocket server for remote control
+                    return true;
+                },
+                
+                executeCommand: (command, params = {}) => {
+                    if (typeof window.agentAPI[command] === 'function') {
+                        return window.agentAPI[command](params);
+                    }
+                    console.warn(`Unknown command: ${command}`);
+                    return false;
+                }
             }
         };
 
