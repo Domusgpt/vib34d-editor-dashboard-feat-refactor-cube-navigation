@@ -9,6 +9,7 @@ class SystemController {
         this.isInitialized = false;
         this.currentState = null;
         this.layoutEngine = new LayoutEngine();
+        this.activeVisualizers = new Map();
     }
 
     async initialize() {
@@ -28,6 +29,9 @@ class SystemController {
             this.layoutEngine.initialize(configs.layout);
             this.generateStaticLayout();
             this.applyBasicTheming(configs.visuals);
+            
+            await this.initializeVisualizerSystem(configs.visuals);
+            await this.attachVisualizersToCards(configs.layout.cards, configs.visuals);
             
             this.isInitialized = true;
             console.log('✅ VIB34D System Initialized');
@@ -255,6 +259,78 @@ class SystemController {
         }
         
         console.log('✅ Basic theming applied');
+    }
+
+    async initializeVisualizerSystem(visualsConfig) {
+        console.log('🎭 Initializing visualizer system...');
+        
+        this.geometryRegistry = new GeometryRegistry();
+        await this.geometryRegistry.initialize(visualsConfig);
+        
+        this.visualizerPool = new VisualizerPool();
+        await this.visualizerPool.initialize(this.geometryRegistry);
+        
+        this.setupVisualizerEventListeners();
+        
+        console.log('✅ Visualizer system initialized');
+    }
+
+    async attachVisualizersToCards(cards, visualsConfig) {
+        if (!cards || !Array.isArray(cards)) return;
+        
+        console.log('🔗 Attaching visualizers to cards...');
+        
+        for (const card of cards) {
+            const cardElement = document.getElementById(card.id);
+            if (!cardElement) continue;
+            
+            const canvas = cardElement.querySelector('.card-visualizer');
+            if (!canvas) continue;
+            
+            const geometry = card.geometry || 'hypercube';
+            const parameters = {
+                ...visualsConfig.parameters ? Object.fromEntries(
+                    Object.entries(visualsConfig.parameters).map(([k, v]) => [k, v.default])
+                ) : {},
+                ...card.parameters || {}
+            };
+            
+            try {
+                const visualizer = await this.visualizerPool.createVisualizer(
+                    canvas, 
+                    geometry, 
+                    parameters
+                );
+                
+                this.activeVisualizers.set(card.id, visualizer);
+                console.log(`✅ Attached ${geometry} visualizer to card: ${card.id}`);
+                
+            } catch (error) {
+                console.error(`❌ Failed to attach visualizer to ${card.id}:`, error);
+            }
+        }
+        
+        console.log(`🎨 ${this.activeVisualizers.size} visualizers attached`);
+    }
+
+    setupVisualizerEventListeners() {
+        this.visualizerPool.addEventListener('visualizerCreated', (event) => {
+            console.log('🎨 Visualizer created:', event.detail);
+        });
+        
+        this.visualizerPool.addEventListener('renderFrame', (event) => {
+            const { time, visualizerCount } = event.detail;
+            if (Math.floor(time) % 5 === 0 && time % 1 < 0.1) {
+                console.log(`🎬 Rendering ${visualizerCount} visualizers at ${time.toFixed(1)}s`);
+            }
+        });
+        
+        this.eventBus.addEventListener('parameterUpdated', (event) => {
+            const { param, value } = event.detail;
+            if (this.visualizerPool) {
+                this.visualizerPool.updateGlobalParameter(param, value);
+            }
+        });
     }
 
     navigateTo(stateId) {

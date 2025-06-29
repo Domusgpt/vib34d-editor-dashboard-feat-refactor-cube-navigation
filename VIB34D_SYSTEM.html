@@ -290,6 +290,8 @@
 
     <!-- Core System Scripts -->
     <script src="JsonConfigSystem.js"></script>
+    <script src="GeometryRegistry.js"></script>
+    <script src="VisualizerPool.js"></script>
     <script src="SystemController.js"></script>
 
     <!-- System Initialization -->
@@ -308,6 +310,7 @@
                     document.getElementById('loading-indicator').style.display = 'none';
                     document.getElementById('system-status').style.display = 'block';
                     document.getElementById('current-state').textContent = event.detail.currentState;
+                    document.getElementById('current-mode').textContent = 'Phase 2 - WebGL Active';
                     
                     setupNavigationListeners();
                     setupParameterListeners();
@@ -355,14 +358,14 @@
         function setupParameterListeners() {
             vib34dSystem.addEventListener('parameterUpdated', (event) => {
                 const { param, value } = event.detail;
-                
-                const allCards = document.querySelectorAll('.adaptive-card');
-                allCards.forEach(card => {
-                    const canvas = card.querySelector('.card-visualizer');
-                    if (canvas) {
-                        canvas.style.filter = `hue-rotate(${value * 180}deg) brightness(${1 + value * 0.5})`;
-                    }
-                });
+                console.log(`🎛️ Parameter updated: ${param} = ${value}`);
+            });
+            
+            vib34dSystem.visualizerPool?.addEventListener('renderFrame', (event) => {
+                const { time, visualizerCount } = event.detail;
+                if (Math.floor(time) % 10 === 0 && time % 1 < 0.1) {
+                    console.log(`🎬 ${visualizerCount} visualizers rendering`);
+                }
             });
         }
 
