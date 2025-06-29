@@ -270,7 +270,14 @@ class SystemController {
         this.visualizerPool = new VisualizerPool();
         await this.visualizerPool.initialize(this.geometryRegistry);
         
+        this.homeMaster = new HomeMaster();
+        this.homeMaster.initialize(this.jsonConfigSystem.getConfig('stateMap'));
+        
+        this.interactionCoordinator = new InteractionCoordinator();
+        this.interactionCoordinator.initialize(this.homeMaster, this.jsonConfigSystem.getConfig('behavior'));
+        
         this.setupVisualizerEventListeners();
+        this.setupStateEventListeners();
         
         console.log('✅ Visualizer system initialized');
     }
@@ -333,27 +340,119 @@ class SystemController {
         });
     }
 
-    navigateTo(stateId) {
-        const stateConfig = this.jsonConfigSystem.getConfigValue('stateMap', `states.${stateId}`);
+    setupStateEventListeners() {
+        if (!this.homeMaster) return;
+
+        this.homeMaster.addEventListener('stateWillChange', (event) => {
+            console.log('🔄 State transition starting:', event.detail);
+            this.prepareStateTransition(event.detail.from, event.detail.to);
+        });
+
+        this.homeMaster.addEventListener('stateDidChange', (event) => {
+            console.log('✅ State transition complete:', event.detail);
+            this.completeStateTransition(event.detail);
+        });
+
+        this.homeMaster.addEventListener('activeCardsChanged', (event) => {
+            this.updateCardVisibility(event.detail.activeCards);
+        });
+
+        this.homeMaster.addEventListener('themeChanged', (event) => {
+            this.applyTheme(event.detail.theme);
+        });
+
+        this.homeMaster.addEventListener('masterParameterChanged', (event) => {
+            const { parameter, value } = event.detail;
+            if (this.visualizerPool) {
+                this.visualizerPool.updateGlobalParameter(parameter, value);
+            }
+        });
+
+        this.homeMaster.addEventListener('backgroundGeometryChanged', (event) => {
+            this.updateBackgroundGeometry(event.detail.geometry);
+        });
+    }
+
+    prepareStateTransition(fromState, toState) {
+        const cards = document.querySelectorAll('.adaptive-card');
+        cards.forEach(card => {
+            card.classList.add('transitioning');
+        });
+    }
+
+    completeStateTransition(transitionData) {
+        const { newState, config } = transitionData;
         
-        if (!stateConfig) {
-            console.error(`❌ State '${stateId}' not found`);
-            return false;
+        setTimeout(() => {
+            const cards = document.querySelectorAll('.adaptive-card');
+            cards.forEach(card => {
+                card.classList.remove('transitioning');
+            });
+        }, 500);
+
+        this.eventBus.dispatchEvent(new CustomEvent('stateDidChange', {
+            detail: { newState, config }
+        }));
+    }
+
+    updateCardVisibility(activeCardIds) {
+        const allCards = document.querySelectorAll('.adaptive-card');
+        allCards.forEach(card => {
+            const cardId = card.id;
+            if (activeCardIds.includes(cardId)) {
+                card.style.display = 'block';
+                card.classList.add('state-active');
+                card.classList.remove('state-inactive');
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 50);
+            } else {
+                card.classList.add('state-inactive');
+                card.classList.remove('state-active');
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.display = 'none';
+                }, 300);
+            }
+        });
+    }
+
+    applyTheme(themeName) {
+        const visualsConfig = this.jsonConfigSystem.getConfig('visuals');
+        const theme = visualsConfig?.themes?.[themeName];
+        
+        if (theme) {
+            const root = document.documentElement;
+            Object.entries(theme).forEach(([key, value]) => {
+                const cssVar = `--vib34d-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+                root.style.setProperty(cssVar, value);
+            });
+            
+            document.body.style.backgroundColor = theme.background || '#000';
+            document.body.style.color = theme.primary || '#FFF';
+            
+            console.log(`🎨 Applied theme: ${themeName}`);
+        }
+    }
+
+    updateBackgroundGeometry(geometryName) {
+        const backgroundCanvas = document.querySelector('#background-visualizer');
+        if (backgroundCanvas && this.visualizerPool) {
+            this.visualizerPool.setVisualizerGeometry(backgroundCanvas.id, geometryName);
+        }
+    }
+
+    navigateTo(stateId) {
+        if (this.homeMaster) {
+            return this.homeMaster.navigateTo(stateId);
         }
         
-        console.log(`🚀 Navigating to state: ${stateId}`);
-        
-        this.eventBus.dispatchEvent(new CustomEvent('stateWillChange', {
-            detail: { from: this.currentState, to: stateId }
-        }));
-        
-        this.currentState = stateId;
-        
-        this.eventBus.dispatchEvent(new CustomEvent('stateDidChange', {
-            detail: { newState: stateId, config: stateConfig }
-        }));
-        
-        return true;
+        console.error('❌ HomeMaster not initialized');
+        return false;
     }
 
     addEventListener(eventType, listener) {
