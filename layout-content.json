@@ -1,0 +1,103 @@
+{
+  "layout": {
+    "grid": {
+      "columns": "300px 1fr 300px",
+      "rows": "auto 1fr",
+      "gap": "20px",
+      "padding": "20px"
+    }
+  },
+  "components": [
+    {
+      "id": "nav-main",
+      "type": "NavContainer",
+      "layoutArea": "header",
+      "brand": "VIB34D System"
+    },
+    {
+      "id": "param-intensity",
+      "type": "ParamSlider",
+      "layoutArea": "sidebar-left",
+      "label": "Master Intensity",
+      "parameter": "masterIntensity",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "defaultValue": 1.0
+    },
+    {
+      "id": "param-morph",
+      "type": "ParamSlider",
+      "layoutArea": "sidebar-right",
+      "label": "Morph Factor",
+      "parameter": "u_morphFactor",
+      "min": 0,
+      "max": 1.5,
+      "step": 0.01,
+      "defaultValue": 0.5
+    }
+  ],
+  "cards": [
+    {
+      "id": "card-01",
+      "title": "Hypercube Projection",
+      "content": "4D hypercube tessellation with adaptive grid density and morphological transitions.",
+      "geometry": "hypercube",
+      "parameters": {
+        "u_dimension": 4.0,
+        "u_gridDensity": 8.0,
+        "u_morphFactor": 0.5
+      }
+    },
+    {
+      "id": "card-02", 
+      "title": "Tetrahedron Network",
+      "content": "Edge-based tetrahedral rendering with pattern intensity modulation.",
+      "geometry": "tetrahedron",
+      "parameters": {
+        "u_tetraThickness": 0.02,
+        "u_patternIntensity": 1.2
+      }
+    },
+    {
+      "id": "card-03",
+      "title": "Spherical Harmonics",
+      "content": "Quantum probability distributions rendered as spherical wave functions.",
+      "geometry": "sphere",
+      "parameters": {
+        "u_shellWidth": 0.1,
+        "u_morphFactor": 0.8
+      }
+    },
+    {
+      "id": "card-04",
+      "title": "Toroidal Flow",
+      "content": "Fluid dynamics simulation on toroidal topology with universe modifiers.",
+      "geometry": "torus",
+      "parameters": {
+        "u_rotationSpeed": 1.5,
+        "u_universeModifier": 0.7
+      }
+    },
+    {
+      "id": "card-05",
+      "title": "Klein Bottle",
+      "content": "Non-orientable surface topology with color shift dynamics.",
+      "geometry": "klein",
+      "parameters": {
+        "u_morphFactor": 1.0,
+        "u_colorShift": 0.3
+      }
+    },
+    {
+      "id": "card-06",
+      "title": "Fractal Recursion",
+      "content": "Self-similar recursive structures with glitch intensity modulation.",
+      "geometry": "fractal",
+      "parameters": {
+        "u_glitchIntensity": 0.08,
+        "u_dimension": 3.5
+      }
+    }
+  ]
+}

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIB34D Polytonal Visualizer System</title>
+    <style>
+        :root {
+            --vib34d-background: #0a0a0a;
+            --vib34d-primary: #ffffff;
+            --vib34d-secondary: #888888;
+            --vib34d-accent: #00ffff;
+            --vib34d-highlight: #ff00ff;
+            --vib34d-border: #333333;
+            --vib34d-glow: #0099ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--vib34d-background);
+            color: var(--vib34d-primary);
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            background: radial-gradient(circle at center, rgba(0, 100, 200, 0.1) 0%, var(--vib34d-background) 70%);
+        }
+
+        #vib34d-container {
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            grid-template-rows: auto 1fr;
+            grid-template-areas: 
+                "sidebar-left header sidebar-right"
+                "sidebar-left main sidebar-right";
+            gap: 20px;
+            padding: 20px;
+        }
+
+        /* Navigation Styles */
+        .vib34d-navigation {
+            grid-area: header;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--vib34d-border);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--vib34d-accent);
+            text-shadow: 0 0 10px var(--vib34d-glow);
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--vib34d-border);
+            color: var(--vib34d-primary);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .nav-btn:hover {
+            background: var(--vib34d-accent);
+            color: var(--vib34d-background);
+            box-shadow: 0 0 15px var(--vib34d-glow);
+        }
+
+        /* Sidebar Styles */
+        .vib34d-component[data-layout-area="sidebar-left"] {
+            grid-area: sidebar-left;
+        }
+
+        .vib34d-component[data-layout-area="sidebar-right"] {
+            grid-area: sidebar-right;
+        }
+
+        .vib34d-component {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--vib34d-border);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Parameter Slider Styles */
+        .param-slider-label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--vib34d-accent);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .param-slider-input {
+            width: 100%;
+            height: 6px;
+            background: var(--vib34d-border);
+            border-radius: 3px;
+            outline: none;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .param-slider-input::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--vib34d-accent);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--vib34d-glow);
+        }
+
+        .param-slider-value {
+            color: var(--vib34d-highlight);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Cards Grid */
+        .vib34d-cards-grid {
+            grid-area: main;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+
+        /* Adaptive Card Styles */
+        .adaptive-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--vib34d-border);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .adaptive-card:hover {
+            border-color: var(--vib34d-accent);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .card-visualizer {
+            width: 100%;
+            height: 200px;
+            display: block;
+            background: radial-gradient(circle, rgba(0, 100, 200, 0.2) 0%, transparent 70%);
+            border-bottom: 1px solid var(--vib34d-border);
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-title {
+            color: var(--vib34d-accent);
+            font-size: 18px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px var(--vib34d-glow);
+        }
+
+        .card-text {
+            color: var(--vib34d-secondary);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* Loading and Error States */
+        .loading-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--vib34d-accent);
+            font-size: 18px;
+            text-shadow: 0 0 10px var(--vib34d-glow);
+        }
+
+        .error-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff4444;
+            color: #ff6666;
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            max-width: 400px;
+        }
+
+        /* System Status */
+        .system-status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            color: #00ff88;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-family: monospace;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--vib34d-background);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--vib34d-border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--vib34d-accent);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            #vib34d-container {
+                grid-template-columns: 250px 1fr 250px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            #vib34d-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr;
+                grid-template-areas: 
+                    "header"
+                    "controls"
+                    "main";
+            }
+            
+            .vib34d-component[data-layout-area="sidebar-left"],
+            .vib34d-component[data-layout-area="sidebar-right"] {
+                grid-area: controls;
+                display: inline-block;
+                width: calc(50% - 10px);
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="vib34d-container">
+        <!-- Dynamic content will be generated here by SystemController -->
+    </div>
+
+    <div class="loading-indicator" id="loading-indicator">
+        🚀 Initializing VIB34D System...
+    </div>
+
+    <div class="system-status" id="system-status" style="display: none;">
+        System Ready | State: <span id="current-state">---</span> | Mode: <span id="current-mode">Phase 1</span>
+    </div>
+
+    <!-- Core System Scripts -->
+    <script src="JsonConfigSystem.js"></script>
+    <script src="SystemController.js"></script>
+
+    <!-- System Initialization -->
+    <script>
+        let vib34dSystem = null;
+
+        async function initializeVIB34DSystem() {
+            try {
+                console.log('🚀 Starting VIB34D System...');
+                
+                vib34dSystem = new SystemController();
+                
+                vib34dSystem.addEventListener('systemInitialized', (event) => {
+                    console.log('✅ System Initialized:', event.detail);
+                    
+                    document.getElementById('loading-indicator').style.display = 'none';
+                    document.getElementById('system-status').style.display = 'block';
+                    document.getElementById('current-state').textContent = event.detail.currentState;
+                    
+                    setupNavigationListeners();
+                    setupParameterListeners();
+                });
+                
+                vib34dSystem.addEventListener('stateDidChange', (event) => {
+                    console.log('🔄 State Changed:', event.detail);
+                    document.getElementById('current-state').textContent = event.detail.newState;
+                });
+                
+                vib34dSystem.addEventListener('parameterUpdated', (event) => {
+                    console.log('⚙️ Parameter Updated:', event.detail);
+                });
+                
+                await vib34dSystem.initialize();
+                
+            } catch (error) {
+                console.error('❌ System initialization failed:', error);
+                showError(`System initialization failed: ${error.message}`);
+            }
+        }
+
+        function setupNavigationListeners() {
+            document.addEventListener('keydown', (event) => {
+                const stateMap = vib34dSystem.jsonConfigSystem.getConfig('stateMap');
+                if (!stateMap || !stateMap.navigation) return;
+                
+                const action = stateMap.navigation[event.code];
+                if (action) {
+                    event.preventDefault();
+                    executeNavigationAction(action);
+                }
+            });
+            
+            document.addEventListener('click', (event) => {
+                if (event.target.matches('.nav-btn[data-action="navigate"]')) {
+                    const target = event.target.getAttribute('data-target');
+                    if (target) {
+                        vib34dSystem.navigateTo(target);
+                    }
+                }
+            });
+        }
+
+        function setupParameterListeners() {
+            vib34dSystem.addEventListener('parameterUpdated', (event) => {
+                const { param, value } = event.detail;
+                
+                const allCards = document.querySelectorAll('.adaptive-card');
+                allCards.forEach(card => {
+                    const canvas = card.querySelector('.card-visualizer');
+                    if (canvas) {
+                        canvas.style.filter = `hue-rotate(${value * 180}deg) brightness(${1 + value * 0.5})`;
+                    }
+                });
+            });
+        }
+
+        function executeNavigationAction(action) {
+            if (action.startsWith('navigateTo(')) {
+                const stateId = action.match(/navigateTo\('(.+)'\)/)[1];
+                vib34dSystem.navigateTo(stateId);
+            } else if (action === 'navigateNext()') {
+                navigateNext();
+            } else if (action === 'navigatePrevious()') {
+                navigatePrevious();
+            } else if (action === 'cycleState()') {
+                cycleState();
+            }
+        }
+
+        function navigateNext() {
+            const stateMap = vib34dSystem.jsonConfigSystem.getConfig('stateMap');
+            const currentState = vib34dSystem.currentState;
+            const stateOrder = stateMap.stateOrder || Object.keys(stateMap.states);
+            const currentIndex = stateOrder.indexOf(currentState);
+            const nextIndex = (currentIndex + 1) % stateOrder.length;
+            vib34dSystem.navigateTo(stateOrder[nextIndex]);
+        }
+
+        function navigatePrevious() {
+            const stateMap = vib34dSystem.jsonConfigSystem.getConfig('stateMap');
+            const currentState = vib34dSystem.currentState;
+            const stateOrder = stateMap.stateOrder || Object.keys(stateMap.states);
+            const currentIndex = stateOrder.indexOf(currentState);
+            const previousIndex = (currentIndex - 1 + stateOrder.length) % stateOrder.length;
+            vib34dSystem.navigateTo(stateOrder[previousIndex]);
+        }
+
+        function cycleState() {
+            navigateNext();
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.parentNode.removeChild(errorDiv);
+                }
+            }, 5000);
+        }
+
+        // Global Agent API for external control
+        window.agentAPI = {
+            getState: () => vib34dSystem ? vib34dSystem.getState() : null,
+            navigateTo: (stateId) => vib34dSystem ? vib34dSystem.navigateTo(stateId) : false,
+            setMasterParameter: (param, value) => {
+                if (vib34dSystem) {
+                    vib34dSystem.eventBus.dispatchEvent(new CustomEvent('parameterUpdated', {
+                        detail: { param, value }
+                    }));
+                    return true;
+                }
+                return false;
+            },
+            updateConfig: async (configType, newData) => {
+                if (vib34dSystem && vib34dSystem.jsonConfigSystem) {
+                    return await vib34dSystem.jsonConfigSystem.updateConfig(configType, newData);
+                }
+                return null;
+            },
+            exportSystemState: () => {
+                if (vib34dSystem) {
+                    const state = vib34dSystem.getState();
+                    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `vib34d-state-${Date.now()}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    return state;
+                }
+                return null;
+            }
+        };
+
+        // Initialize system when page loads
+        document.addEventListener('DOMContentLoaded', initializeVIB34DSystem);
+    </script>
+</body>
+</html>

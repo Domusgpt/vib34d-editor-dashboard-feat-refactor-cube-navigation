@@ -1,0 +1,168 @@
+{
+  "interactionBlueprints": {
+    "cardHoverResponse": {
+      "trigger": "onHover",
+      "selector": ".adaptive-card",
+      "reactions": [
+        {
+          "target": "subject",
+          "animation": {
+            "transform.scale": { "to": 1.05, "curve": "easeOut", "duration": 300 },
+            "u_patternIntensity": { "to": "*=1.3", "curve": "easeOut", "duration": 300 },
+            "u_lineThickness": { "to": "*=1.5", "curve": "easeOut", "duration": 300 }
+          }
+        },
+        {
+          "target": "ecosystem",
+          "animation": {
+            "u_patternIntensity": { "to": "*=0.7", "curve": "easeOut", "duration": 400 },
+            "u_morphFactor": { "to": "+=0.1", "curve": "linear", "duration": 400 }
+          }
+        }
+      ],
+      "revertOn": "onLeave",
+      "revertAnimation": {
+        "transform.scale": { "to": 1.0, "curve": "easeIn", "duration": 200 },
+        "u_patternIntensity": { "to": "initial", "curve": "easeIn", "duration": 200 },
+        "u_lineThickness": { "to": "initial", "curve": "easeIn", "duration": 200 }
+      }
+    },
+    "cardClickResponse": {
+      "trigger": "onClick",
+      "selector": ".adaptive-card",
+      "reactions": [
+        {
+          "target": "subject",
+          "animation": {
+            "transform.scale": { "to": 1.1, "curve": "parabolic", "duration": 150 },
+            "u_glitchIntensity": { "to": "+=0.05", "curve": "easeOut", "duration": 200 },
+            "u_colorShift": { "to": "+=0.3", "curve": "easeOut", "duration": 300 }
+          }
+        },
+        {
+          "target": "parent",
+          "animation": {
+            "u_rotationSpeed": { "to": "*=1.5", "curve": "easeIn", "duration": 300 }
+          }
+        },
+        {
+          "target": "siblings",
+          "animation": {
+            "u_morphFactor": { "to": "*=0.8", "curve": "linear", "duration": 400, "delay": 50 }
+          }
+        },
+        {
+          "target": "global",
+          "animation": {
+            "u_dimension": { "to": "+=0.2", "curve": "easeOut", "duration": 500, "delay": 100 }
+          }
+        }
+      ],
+      "revertOn": "onRelease",
+      "revertAnimation": {
+        "transform.scale": { "to": 1.0, "curve": "easeOut", "duration": 300 },
+        "u_glitchIntensity": { "to": "initial", "curve": "easeIn", "duration": 400 },
+        "u_colorShift": { "to": "initial", "curve": "easeIn", "duration": 500 },
+        "u_rotationSpeed": { "to": "initial", "curve": "easeIn", "duration": 400 },
+        "u_morphFactor": { "to": "initial", "curve": "easeIn", "duration": 500 },
+        "u_dimension": { "to": "initial", "curve": "easeIn", "duration": 600 }
+      }
+    },
+    "navButtonHover": {
+      "trigger": "onHover",
+      "selector": ".nav-btn",
+      "reactions": [
+        {
+          "target": "subject",
+          "animation": {
+            "backgroundColor": { "to": "var(--vib34d-accent)", "curve": "easeOut", "duration": 200 },
+            "color": { "to": "var(--vib34d-background)", "curve": "easeOut", "duration": 200 }
+          }
+        },
+        {
+          "target": "global",
+          "animation": {
+            "u_patternIntensity": { "to": "*=1.1", "curve": "linear", "duration": 300 }
+          }
+        }
+      ],
+      "revertOn": "onLeave",
+      "revertAnimation": {
+        "backgroundColor": { "to": "initial", "curve": "easeIn", "duration": 150 },
+        "color": { "to": "initial", "curve": "easeIn", "duration": 150 },
+        "u_patternIntensity": { "to": "initial", "curve": "linear", "duration": 250 }
+      }
+    },
+    "sliderInteraction": {
+      "trigger": "onInput",
+      "selector": ".param-slider-input",
+      "reactions": [
+        {
+          "target": "global",
+          "animation": {
+            "parameter": { "to": "inputValue", "curve": "linear", "duration": 50 }
+          }
+        },
+        {
+          "target": "ecosystem",
+          "animation": {
+            "u_glitchIntensity": { "to": "+=0.02", "curve": "linear", "duration": 100 }
+          }
+        }
+      ],
+      "revertOn": "onInputEnd",
+      "revertAnimation": {
+        "u_glitchIntensity": { "to": "initial", "curve": "easeOut", "duration": 300 }
+      }
+    }
+  },
+  "stateModifiers": {
+    "tech": {
+      "cardHoverResponse": {
+        "reactions": [
+          {
+            "target": "subject",
+            "animation": {
+              "u_gridDensity": { "to": "*=1.5", "curve": "easeOut", "duration": 300 },
+              "u_dimension": { "to": "+=0.3", "curve": "easeOut", "duration": 400 }
+            }
+          }
+        ]
+      }
+    },
+    "media": {
+      "cardHoverResponse": {
+        "reactions": [
+          {
+            "target": "subject",
+            "animation": {
+              "u_morphFactor": { "to": "*=1.4", "curve": "parabolic", "duration": 250 },
+              "u_colorShift": { "to": "+=0.2", "curve": "easeOut", "duration": 350 }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "masterParameterMaps": {
+    "masterIntensity": {
+      "u_patternIntensity": "*=1.0",
+      "u_gridDensity": "*=1.0",
+      "u_lineThickness": "*=1.0",
+      "u_rotationSpeed": "*=1.2",
+      "u_glitchIntensity": "*=0.8"
+    },
+    "masterChaos": {
+      "u_glitchIntensity": "*=3.0",
+      "u_morphFactor": "+=0.5",
+      "u_rotationSpeed": "*=2.0", 
+      "u_colorShift": "+=0.5"
+    },
+    "masterHarmony": {
+      "u_patternIntensity": "*=0.8",
+      "u_lineThickness": "*=0.7",
+      "u_rotationSpeed": "*=0.6",
+      "u_glitchIntensity": "*=0.1"
+    }
+  }
+}

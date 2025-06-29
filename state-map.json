@@ -1,0 +1,86 @@
+{
+  "states": {
+    "home": {
+      "layout": "default",
+      "activeCards": ["card-01", "card-02", "card-03", "card-04", "card-05", "card-06"],
+      "activeTheme": "dark_matter",
+      "backgroundGeometry": "hypercube",
+      "masterParameters": {
+        "u_dimension": 4.0,
+        "u_patternIntensity": 1.0,
+        "u_rotationSpeed": 1.0
+      }
+    },
+    "tech": {
+      "layout": "default",
+      "activeCards": ["card-01", "card-02", "card-06"],
+      "activeTheme": "quantum_flux",
+      "backgroundGeometry": "tetrahedron",
+      "masterParameters": {
+        "u_dimension": 4.5,
+        "u_patternIntensity": 1.3,
+        "u_rotationSpeed": 1.5,
+        "u_gridDensity": 12.0
+      }
+    },
+    "media": {
+      "layout": "default", 
+      "activeCards": ["card-03", "card-04", "card-05"],
+      "activeTheme": "neural_matrix",
+      "backgroundGeometry": "sphere",
+      "masterParameters": {
+        "u_dimension": 3.8,
+        "u_patternIntensity": 1.1,
+        "u_morphFactor": 0.8,
+        "u_colorShift": 0.3
+      }
+    },
+    "innovation": {
+      "layout": "default",
+      "activeCards": ["card-02", "card-05", "card-06"],
+      "activeTheme": "dark_matter",
+      "backgroundGeometry": "fractal",
+      "masterParameters": {
+        "u_dimension": 4.2,
+        "u_patternIntensity": 1.4,
+        "u_glitchIntensity": 0.08,
+        "u_morphFactor": 1.2
+      }
+    },
+    "context": {
+      "layout": "default",
+      "activeCards": ["card-01", "card-03", "card-04"],
+      "activeTheme": "quantum_flux",
+      "backgroundGeometry": "torus",
+      "masterParameters": {
+        "u_dimension": 3.5,
+        "u_patternIntensity": 0.9,
+        "u_rotationSpeed": 2.0,
+        "u_universeModifier": 1.3
+      }
+    }
+  },
+  "navigation": {
+    "ArrowRight": "navigateNext()",
+    "ArrowLeft": "navigatePrevious()",
+    "ArrowUp": "navigateTo('home')",
+    "Space": "cycleState()",
+    "Digit1": "navigateTo('home')",
+    "Digit2": "navigateTo('tech')",
+    "Digit3": "navigateTo('media')",
+    "Digit4": "navigateTo('innovation')",
+    "Digit5": "navigateTo('context')",
+    "KeyH": "navigateTo('home')",
+    "KeyT": "navigateTo('tech')",
+    "KeyM": "navigateTo('media')",
+    "KeyI": "navigateTo('innovation')",
+    "KeyC": "navigateTo('context')"
+  },
+  "stateOrder": ["home", "tech", "media", "innovation", "context"],
+  "initialState": "home",
+  "transitions": {
+    "fadeTime": 500,
+    "morphTime": 800,
+    "easingFunction": "cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+  }
+}

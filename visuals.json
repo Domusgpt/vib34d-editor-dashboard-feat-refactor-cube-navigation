@@ -1,0 +1,165 @@
+{
+  "themes": {
+    "dark_matter": {
+      "background": "#0a0a0a",
+      "primary": "#ffffff",
+      "secondary": "#888888",
+      "accent": "#00ffff",
+      "highlight": "#ff00ff",
+      "border": "#333333",
+      "glow": "#0099ff"
+    },
+    "quantum_flux": {
+      "background": "#000511",
+      "primary": "#e0e0ff",
+      "secondary": "#7777aa",
+      "accent": "#ffaa00",
+      "highlight": "#ff4488",
+      "border": "#224466",
+      "glow": "#66aaff"
+    },
+    "neural_matrix": {
+      "background": "#001100",
+      "primary": "#00ff00",
+      "secondary": "#006600",
+      "accent": "#ffff00",
+      "highlight": "#ff0080",
+      "border": "#004400",
+      "glow": "#00cc00"
+    }
+  },
+  "geometries": [
+    {
+      "name": "hypercube",
+      "shaderFile": "shaders/hypercube.glsl",
+      "description": "4D lattice projection"
+    },
+    {
+      "name": "tetrahedron", 
+      "shaderFile": "shaders/tetrahedron.glsl",
+      "description": "Edge-based geometric rendering"
+    },
+    {
+      "name": "sphere",
+      "shaderFile": "shaders/sphere.glsl",
+      "description": "Spherical harmonics"
+    },
+    {
+      "name": "torus",
+      "shaderFile": "shaders/torus.glsl", 
+      "description": "Toroidal flow patterns"
+    },
+    {
+      "name": "klein",
+      "shaderFile": "shaders/klein.glsl",
+      "description": "Non-orientable surface topology"
+    },
+    {
+      "name": "fractal",
+      "shaderFile": "shaders/fractal.glsl",
+      "description": "Recursive self-similarity"
+    },
+    {
+      "name": "wave",
+      "shaderFile": "shaders/wave.glsl",
+      "description": "Quantum probability distribution"
+    },
+    {
+      "name": "crystal",
+      "shaderFile": "shaders/crystal.glsl",
+      "description": "Ordered molecular structures"
+    }
+  ],
+  "parameters": {
+    "u_time": {
+      "default": 0.0,
+      "min": 0.0,
+      "max": 999999.0,
+      "description": "Master clock for all animations"
+    },
+    "u_dimension": {
+      "default": 4.0,
+      "min": 3.0,
+      "max": 5.0,
+      "description": "Controls the 4D-ness of geometry"
+    },
+    "u_morphFactor": {
+      "default": 0.5,
+      "min": 0.0,
+      "max": 1.5,
+      "description": "Blends between geometric states"
+    },
+    "u_rotationSpeed": {
+      "default": 1.0,
+      "min": 0.0,
+      "max": 3.0,
+      "description": "Speed of 4D rotational animation"
+    },
+    "u_gridDensity": {
+      "default": 8.0,
+      "min": 1.0,
+      "max": 25.0,
+      "description": "Density of lattice patterns"
+    },
+    "u_lineThickness": {
+      "default": 0.02,
+      "min": 0.002,
+      "max": 0.1,
+      "description": "Thickness of visualizer lines"
+    },
+    "u_patternIntensity": {
+      "default": 1.0,
+      "min": 0.0,
+      "max": 3.0,
+      "description": "Overall brightness/contrast"
+    },
+    "u_colorShift": {
+      "default": 0.0,
+      "min": -1.0,
+      "max": 1.0,
+      "description": "Hue rotation applied to theme"
+    },
+    "u_glitchIntensity": {
+      "default": 0.05,
+      "min": 0.0,
+      "max": 0.15,
+      "description": "Digital glitch effect amount"
+    },
+    "u_tetraThickness": {
+      "default": 0.02,
+      "min": 0.001,
+      "max": 0.05,
+      "description": "Tetrahedron edge thickness"
+    },
+    "u_shellWidth": {
+      "default": 0.1,
+      "min": 0.01,
+      "max": 0.5,
+      "description": "Spherical shell width"
+    },
+    "u_universeModifier": {
+      "default": 1.0,
+      "min": 0.1,
+      "max": 2.0,
+      "description": "Universal geometry modifier"
+    }
+  },
+  "effects": {
+    "bloom": {
+      "isActive": true,
+      "intensity": 0.3,
+      "threshold": 0.8,
+      "radius": 1.0
+    },
+    "glitch": {
+      "isActive": false,
+      "intensity": 0.05,
+      "frequency": 0.1
+    },
+    "chromatic": {
+      "isActive": true,
+      "intensity": 0.02,
+      "offset": 0.001
+    }
+  }
+}
